@@ -23,7 +23,7 @@ do_install() {
 	# changed. Since the our headers are static and we're not compiling an
 	# actual kernel, re-adding UTS_RELEASE does't hurt, and it allows uclibc to
 	# compile with kernel headers that work with EABI on ARM
-	echo '#define UTS_RELEASE "2.6.18"' >> ${STAGING_INCDIR}/linux/version.h
+	echo '#define UTS_RELEASE "2.6.18"' >> ${D}${exec_prefix}/include/linux/version.h
 }
 
 do_install_append_arm() {
