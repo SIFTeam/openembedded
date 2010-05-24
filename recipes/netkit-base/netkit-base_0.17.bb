@@ -6,6 +6,7 @@ PR = "r1"
 SRC_URI = "ftp://ftp.uk.linux.org/pub/linux/Networking/netkit/netkit-base-${PV}.tar.gz \
            file://configure.patch \
            file://mconfig.patch \
+           file://gcc4_buildfix.patch \
            file://init \
            file://inetd.conf"
 
