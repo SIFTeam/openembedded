@@ -5,7 +5,13 @@ DEPENDS += "unifdef-native"
 PR = "r5"
 
 SRC_URI = "${KERNELORG_MIRROR}/pub/linux/kernel/v2.6/linux-2.6.18.tar.bz2 \
-           file://arm-syscall-define.patch"
+           file://arm-syscall-define.patch \
+           file://fix-dvb-headers.patch"
+
+SRC_URI_append_mipsel = " file://mips-add-missing-headers.patch \
+           file://mips-fix-ptrace-header.patch"
+
+SRC_URI_append_openpli = " file://mips-brcm-add-missing-syscalls.patch"
 
 S = "${WORKDIR}/linux-2.6.18"
 
