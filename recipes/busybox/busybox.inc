@@ -32,7 +32,7 @@ SRC_URI_append_nylon = " file://xargs-double-size.patch"
 
 export EXTRA_CFLAGS = "${CFLAGS}"
 EXTRA_OEMAKE_append = " CROSS=${HOST_PREFIX}"
-PACKAGES =+ "${PN}-mountall ${PN}-httpd ${PN}-syslog ${PN}-udhcpd"
+PACKAGES =+ "${PN}-mountall ${PN}-httpd ${PN}-syslog ${PN}-udhcpd ${PN}-cron"
 
 # We need this RRECOMMENDS_${PN} because libc dlopens libgcc
 # and shlib mechanism can not detect it because its not
@@ -48,15 +48,17 @@ RRECOMMENDS_${PN} += "libgcc ${PN}-syslog"
 FILES_${PN}-httpd = "${sysconfdir}/init.d/busybox-httpd /srv/www"
 FILES_${PN}-syslog = "${sysconfdir}/init.d/syslog.${PN} ${sysconfdir}/syslog.conf"
 FILES_${PN}-udhcpd = "${sysconfdir}/init.d/busybox-udhcpd"
+FILES_${PN}-cron = "${sysconfdir}/init.d/busybox-cron ${sysconfdir}/cron"
 
 FILES_${PN} += "${datadir}/udhcpc"
 
 # syslog initscript is handled explicitly because order of
 # update-rc.d and update-alternatives is important (see below)
-INITSCRIPT_PACKAGES = "${PN}-httpd ${PN}-udhcpd"
+INITSCRIPT_PACKAGES = "${PN}-httpd ${PN}-udhcpd ${PN}-cron"
 INITSCRIPT_NAME_${PN}-httpd = "busybox-httpd"
 INITSCRIPT_NAME_${PN}-syslog = "syslog"
 INITSCRIPT_NAME_${PN}-udhcpd = "busybox-udhcpd"
+INITSCRIPT_NAME_${PN}-cron = "busybox-cron"
 CONFFILES_${PN}-syslog = "${sysconfdir}/syslog.conf"
 
 # This disables the syslog startup links in slugos (see slugos-init)
@@ -65,6 +67,7 @@ INITSCRIPT_PARAMS_${PN}-syslog_slugos = "start 20 ."
 RDEPENDS_${PN}-httpd += "${PN}"
 RDEPENDS_${PN}-syslog += "${PN}"
 RDEPENDS_${PN}-udhcpd += "${PN}"
+RDEPENDS_${PN}-cron += "${PN}"
 
 # Use gcc for linking so LDFLAGS actually makes sense
 LD = "${CC} -nostdlib"
@@ -171,6 +174,7 @@ do_install () {
 	fi
 	if grep "CONFIG_CROND=y" ${WORKDIR}/defconfig; then
 		install -m 0755 ${WORKDIR}/busybox-cron ${D}${sysconfdir}/init.d/
+		install -d ${D}${sysconfdir}/cron/crontabs
 	fi
 	if grep "CONFIG_HTTPD=y" ${WORKDIR}/defconfig; then
 		install -m 0755 ${WORKDIR}/busybox-httpd ${D}${sysconfdir}/init.d/
