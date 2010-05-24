@@ -1,6 +1,11 @@
 require busybox.inc
 PR = "${INC_PR}.3"
 
+# assume that busybox-mdev emulates every udev feature that might be
+# required by packages claiming to depend on 'udev'
+PROVIDES += "udev"
+RPROVIDES_${PN}-mdev += "udev"
+
 SRC_URI = "\
   http://www.busybox.net/downloads/busybox-${PV}.tar.bz2;name=tarball \
   file://fdisk_nios2.patch \
