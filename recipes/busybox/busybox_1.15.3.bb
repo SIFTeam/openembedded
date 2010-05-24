@@ -26,6 +26,7 @@ SRC_URI = "\
   file://defconfig \
   file://mdev \
   file://mdev.conf \
+  file://mdev-mount.sh \
 "
 SRC_URI[tarball.md5sum] = "6059ac9456de6fb18dc8ee4cd0ec9240"
 SRC_URI[tarball.sha256sum] = "d74020ad2cc5a4dcc5109c44dbd0e22582d6ce42954b0f1ff29763c8c0ff03cb"
@@ -51,5 +52,6 @@ do_install_append() {
     install -d ${D}${sysconfdir}/init.d/
     install -d ${D}${sysconfdir}/mdev
     install -m 0755 ${WORKDIR}/find-touchscreen.sh ${D}${sysconfdir}/mdev/
+    install -m 0755 ${WORKDIR}/mdev-mount.sh ${D}${sysconfdir}/mdev/
     install -m 0755 ${WORKDIR}/mdev ${D}${sysconfdir}/init.d/
 }
