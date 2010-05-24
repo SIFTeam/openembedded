@@ -1,0 +1,49 @@
+--- a/drivers/ata/sata_svw.c
++++ b/drivers/ata/sata_svw.c
+@@ -1164,10 +1164,11 @@ static int k2_sata_do_softreset(struct ata_link *link, unsigned int *class, int
+ 	void __iomem *port = (void __iomem *)ap->ioaddr.cmd_addr;
+ 	struct k2_port_priv *pp = ap->private_data;
+ 	struct ata_taskfile tf;
++	int retry_cnt = 0;
+ 
+ 	if (pp->do_port_srst)
+ 		goto out;
+-		
++
+ 	if (ata_link_offline(link)) {
+ 		*class = ATA_DEV_NONE;
+ 		goto out;
+@@ -1177,17 +1178,27 @@ static int k2_sata_do_softreset(struct ata_link *link, unsigned int *class, int
+ 
+ 	writeb(ATA_SRST, (void __iomem *) ap->ioaddr.ctl_addr);
+ 	msleep(1);
+-	writeb(0x0, (void __iomem *) ap->ioaddr.ctl_addr);	
++	writeb(0x0, (void __iomem *) ap->ioaddr.ctl_addr);
+ 	msleep(1);
+-		
+-	memset(&tf, 0, sizeof(tf));
+ 
++tf_read_retry:
++	memset(&tf, 0, sizeof(tf));
+ 	ap->ops->tf_read(ap, &tf);
+-	*class = ata_dev_classify(&tf);
+ 
+-	if (*class == ATA_DEV_UNKNOWN)
+-		*class = ATA_DEV_NONE;
++	*class = ata_dev_classify(&tf);
+ 
++	if (*class == ATA_DEV_UNKNOWN) {
++		printk("tf_read status %02x, device %02x, feature %02x, nsect %02x, class %02x %02x %02x\n", tf.command, tf.device, tf.feature, tf.nsect, tf.lbal, tf.lbam, tf.lbah);
++		if (retry_cnt < 20) {
++			printk("dev_classify try %d failed.. retry\n", retry_cnt);
++			msleep(250);
++			++retry_cnt;
++			goto tf_read_retry;
++		}
++		*class = ATA_DEV_NONE;
++	}
++	else if (retry_cnt)
++		printk("tf_read status %02x, device %02x, feature %02x, nsect %02x, class %02x %02x %02x\n", tf.command, tf.device, tf.feature, tf.nsect, tf.lbal, tf.lbam, tf.lbah);
+ out:
+ 	pp->do_port_srst = 1;
+ 	return 0;

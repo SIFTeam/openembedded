@@ -1,0 +1,89 @@
+diff -auNr a/arch/mips/lib/Makefile b/arch/mips/lib/Makefile
+--- a/arch/mips/lib/Makefile	2009-06-02 22:49:38.000000000 +0200
++++ b/arch/mips/lib/Makefile	2009-06-02 22:52:00.000000000 +0200
+@@ -5,4 +5,6 @@
+ lib-y	+= csum_partial_copy.o dec_and_lock.o memcpy.o promlib.o strlen_user.o \
+ 	   strncpy_user.o strnlen_user.o uncached.o
+ 
++obj-y += ucmpdi2.o
++
+ EXTRA_AFLAGS := $(CFLAGS)
+diff -auNr a/arch/mips/lib/libgcc.h b/arch/mips/lib/libgcc.h
+--- a/arch/mips/lib/libgcc.h	1970-01-01 01:00:00.000000000 +0100
++++ b/arch/mips/lib/libgcc.h	2009-06-02 22:52:00.000000000 +0200
+@@ -0,0 +1,26 @@
++#ifndef __ASM_LIBGCC_H
++#define __ASM_LIBGCC_H
++
++#include <asm/byteorder.h>
++
++typedef int word_type __attribute__ ((mode (__word__)));
++
++#ifdef __BIG_ENDIAN
++struct DWstruct {
++	int high, low;
++};
++#elif defined(__LITTLE_ENDIAN)
++struct DWstruct {
++	int low, high;
++};
++#else
++#error I feel sick.
++#endif
++
++typedef union
++{
++	struct DWstruct s;
++	long long ll;
++} DWunion;
++
++#endif /* __ASM_LIBGCC_H */
+diff -auNr a/arch/mips/lib/ucmpdi2.c b/arch/mips/lib/ucmpdi2.c
+--- a/arch/mips/lib/ucmpdi2.c	1970-01-01 01:00:00.000000000 +0100
++++ b/arch/mips/lib/ucmpdi2.c	2009-06-02 22:52:00.000000000 +0200
+@@ -0,0 +1,21 @@
++#include <linux/module.h>
++
++#include "libgcc.h"
++
++word_type __ucmpdi2(unsigned long long a, unsigned long long b)
++{
++	const DWunion au = {.ll = a};
++	const DWunion bu = {.ll = b};
++
++	if ((unsigned int) au.s.high < (unsigned int) bu.s.high)
++		return 0;
++	else if ((unsigned int) au.s.high > (unsigned int) bu.s.high)
++		return 2;
++	if ((unsigned int) au.s.low < (unsigned int) bu.s.low)
++		return 0;
++	else if ((unsigned int) au.s.low > (unsigned int) bu.s.low)
++		return 2;
++	return 1;
++}
++
++EXPORT_SYMBOL(__ucmpdi2);
+diff -auNr a/drivers/scsi/sd.c b/drivers/scsi/sd.c
+--- a/drivers/scsi/sd.c	2009-06-02 22:53:52.000000000 +0200
++++ b/drivers/scsi/sd.c	2009-06-02 22:54:34.000000000 +0200
+@@ -1721,7 +1721,7 @@
+  *
+  *	Note: this function unregisters this driver from the scsi mid-level.
+  **/
+-static void __exit exit_sd(void)
++static void exit_sd(void)
+ {
+ 	int i;
+ 
+diff -auNr a/include/linux/bio.h b/include/linux/bio.h
+--- a/include/linux/bio.h	2009-06-02 23:33:29.000000000 +0200
++++ b/include/linux/bio.h	2009-06-02 23:33:19.000000000 +0200
+@@ -339,7 +339,7 @@
+ #define bvec_kunmap_irq(buf, flags)	do { *(flags) = 0; } while (0)
+ #endif
+ 
+-extern inline char *__bio_kmap_irq(struct bio *bio, unsigned short idx,
++static inline char *__bio_kmap_irq(struct bio *bio, unsigned short idx,
+ 				   unsigned long *flags)
+ {
+ 	return bvec_kmap_irq(bio_iovec_idx(bio, idx), flags);

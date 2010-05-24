@@ -1,0 +1,170 @@
+diff -auNr linux-2.6.9/arch/ppc/kernel/time.c linux-2.6.9-gcc4/arch/ppc/kernel/time.c
+--- linux-2.6.9/arch/ppc/kernel/time.c	2004-10-18 23:54:54.000000000 +0200
++++ linux-2.6.9-gcc4/arch/ppc/kernel/time.c	2008-12-15 13:51:25.000000000 +0100
+@@ -89,7 +89,7 @@
+ 
+ extern unsigned long wall_jiffies;
+ 
+-static long time_offset;
++static long timezone_offset;
+ 
+ spinlock_t rtc_lock = SPIN_LOCK_UNLOCKED;
+ 
+@@ -171,7 +171,7 @@
+ 		     xtime.tv_sec - last_rtc_update >= 659 &&
+ 		     abs((xtime.tv_nsec / 1000) - (1000000-1000000/HZ)) < 500000/HZ &&
+ 		     jiffies - wall_jiffies == 1) {
+-		  	if (ppc_md.set_rtc_time(xtime.tv_sec+1 + time_offset) == 0)
++		  	if (ppc_md.set_rtc_time(xtime.tv_sec+1 + timezone_offset) == 0)
+ 				last_rtc_update = xtime.tv_sec+1;
+ 			else
+ 				/* Try again one minute later */
+@@ -292,7 +292,7 @@
+ 	unsigned old_stamp, stamp, elapsed;
+ 
+         if (ppc_md.time_init != NULL)
+-                time_offset = ppc_md.time_init();
++                timezone_offset = ppc_md.time_init();
+ 
+ 	if (__USE_RTC()) {
+ 		/* 601 processor: dec counts down by 128 every 128ns */
+@@ -337,10 +337,10 @@
+ 	set_dec(tb_ticks_per_jiffy);
+ 
+ 	/* If platform provided a timezone (pmac), we correct the time */
+-        if (time_offset) {
+-		sys_tz.tz_minuteswest = -time_offset / 60;
++        if (timezone_offset) {
++		sys_tz.tz_minuteswest = -timezone_offset / 60;
+ 		sys_tz.tz_dsttime = 0;
+-		xtime.tv_sec -= time_offset;
++		xtime.tv_sec -= timezone_offset;
+         }
+         set_normalized_timespec(&wall_to_monotonic,
+                                 -xtime.tv_sec, -xtime.tv_nsec);
+diff -auNr linux-2.6.9/include/asm-m68k/setup.h linux-2.6.9-gcc4/include/asm-m68k/setup.h
+--- linux-2.6.9/include/asm-m68k/setup.h	2004-10-18 23:54:37.000000000 +0200
++++ linux-2.6.9-gcc4/include/asm-m68k/setup.h	2008-12-15 13:52:40.000000000 +0100
+@@ -362,12 +362,13 @@
+ #ifndef __ASSEMBLY__
+ extern int m68k_num_memory;		/* # of memory blocks found (and used) */
+ extern int m68k_realnum_memory;		/* real # of memory blocks found */
+-extern struct mem_info m68k_memory[NUM_MEMINFO];/* memory description */
+ 
+ struct mem_info {
+ 	unsigned long addr;		/* physical address of memory chunk */
+ 	unsigned long size;		/* length of memory chunk (in bytes) */
+ };
++
++extern struct mem_info m68k_memory[NUM_MEMINFO];/* memory description */
+ #endif
+ 
+ #endif /* __KERNEL__ */
+diff -auNr linux-2.6.9/include/linux/fb.h linux-2.6.9-gcc4/include/linux/fb.h
+--- linux-2.6.9/include/linux/fb.h	2004-10-18 23:53:45.000000000 +0200
++++ linux-2.6.9-gcc4/include/linux/fb.h	2008-12-15 13:56:47.000000000 +0100
+@@ -374,6 +374,23 @@
+ 	__u32 whitey;
+ };
+ 
++struct fb_videomode {
++	const char *name;	/* optional */
++	u32 refresh;		/* optional */
++	u32 xres;
++	u32 yres;
++	u32 pixclock;
++	u32 left_margin;
++	u32 right_margin;
++	u32 upper_margin;
++	u32 lower_margin;
++	u32 hsync_len;
++	u32 vsync_len;
++	u32 sync;
++	u32 vmode;
++	u32 flag;
++};
++
+ struct fb_monspecs {
+ 	struct fb_chroma chroma;
+ 	struct fb_videomode *modedb;	/* mode database */
+@@ -776,23 +793,6 @@
+ extern struct fb_cmap *fb_default_cmap(int len);
+ extern void fb_invert_cmaps(void);
+ 
+-struct fb_videomode {
+-	const char *name;	/* optional */
+-	u32 refresh;		/* optional */
+-	u32 xres;
+-	u32 yres;
+-	u32 pixclock;
+-	u32 left_margin;
+-	u32 right_margin;
+-	u32 upper_margin;
+-	u32 lower_margin;
+-	u32 hsync_len;
+-	u32 vsync_len;
+-	u32 sync;
+-	u32 vmode;
+-	u32 flag;
+-};
+-
+ struct fb_modelist {
+ 	struct list_head list;
+ 	struct fb_videomode mode;
+diff -auNr linux-2.6.9/include/linux/i2c.h linux-2.6.9-gcc4/include/linux/i2c.h
+--- linux-2.6.9/include/linux/i2c.h	2004-10-18 23:53:26.000000000 +0200
++++ linux-2.6.9-gcc4/include/linux/i2c.h	2008-12-15 13:54:25.000000000 +0100
+@@ -36,7 +36,6 @@
+ 
+ /* --- General options ------------------------------------------------	*/
+ 
+-struct i2c_msg;
+ struct i2c_algorithm;
+ struct i2c_adapter;
+ struct i2c_client;
+@@ -45,6 +44,22 @@
+ union i2c_smbus_data;
+ 
+ /*
++ * I2C Message - used for pure i2c transaction, also from /dev interface
++ */
++struct i2c_msg {
++	__u16 addr;	/* slave address			*/
++ 	__u16 flags;		
++#define I2C_M_TEN	0x10	/* we have a ten bit chip address	*/
++#define I2C_M_RD	0x01
++#define I2C_M_NOSTART	0x4000
++#define I2C_M_REV_DIR_ADDR	0x2000
++#define I2C_M_IGNORE_NAK	0x1000
++#define I2C_M_NO_RD_ACK		0x0800
++ 	__u16 len;		/* msg length				*/
++ 	__u8 *buf;		/* pointer to msg data			*/
++};
++
++/*
+  * The master routines are the ones normally used to transmit data to devices
+  * on a bus (or read from them). Apart from two basic transfer functions to 
+  * transmit one message at a time, a more complex version can be used to 
+@@ -387,22 +402,6 @@
+ /* Return 1 if adapter supports everything we need, 0 if not. */
+ extern int i2c_check_functionality (struct i2c_adapter *adap, u32 func);
+ 
+-/*
+- * I2C Message - used for pure i2c transaction, also from /dev interface
+- */
+-struct i2c_msg {
+-	__u16 addr;	/* slave address			*/
+- 	__u16 flags;		
+-#define I2C_M_TEN	0x10	/* we have a ten bit chip address	*/
+-#define I2C_M_RD	0x01
+-#define I2C_M_NOSTART	0x4000
+-#define I2C_M_REV_DIR_ADDR	0x2000
+-#define I2C_M_IGNORE_NAK	0x1000
+-#define I2C_M_NO_RD_ACK		0x0800
+- 	__u16 len;		/* msg length				*/
+- 	__u8 *buf;		/* pointer to msg data			*/
+-};
+-
+ /* To determine what functionality is present */
+ 
+ #define I2C_FUNC_I2C			0x00000001
