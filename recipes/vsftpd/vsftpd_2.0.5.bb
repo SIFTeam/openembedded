@@ -1,7 +1,7 @@
 DESCRIPTION = "Secure ftp daemon"
 SECTION = "console/network"
 LICENSE = "GPL"
-PR = "r2"
+PR = "r3"
 
 SRC_URI = "ftp://vsftpd.beasts.org/users/cevans/vsftpd-${PV}.tar.gz \
            file://makefile.patch \
@@ -17,6 +17,12 @@ do_configure() {
         cat tunables.c|sed s:\"/usr:\"${prefix}:g|sed s:\"/var:\"${localstatedir}:g \
         |sed s:\"${prefix}/share/empty:\"${localstatedir}/share/empty:g |sed s:\"/etc:\"${sysconfdir}:g > tunables.c.new
         mv tunables.c.new tunables.c
+}
+
+do_configure_append_openpli() {
+        # do not link against libcap
+        sed -i '/^#define VSF_SYSDEP_HAVE_LIBCAP$/ d' sysdeputil.c
+        sed -i '/libcap/ d' vsf_findlibs.sh
 }
 
 do_compile() {
