@@ -10,3 +10,4 @@ FILESPATHPKG =. "unionfs-${PV}:unionfs:"
 
 export UCFLAGS = '${CFLAGS} -DNODEBUG -DUNIONFS_VERSION=\\"${PV}\\"'
 CFLAGS = "${BUILD_OPTIMIZATION}"
+CFLAGS_openpli = ""
