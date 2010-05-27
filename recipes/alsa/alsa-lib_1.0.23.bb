@@ -14,6 +14,8 @@ SRC_URI = "ftp://ftp.alsa-project.org/pub/lib/alsa-lib-${PV}.tar.bz2 \
            file://fix_libmath.patch \
 	  "
 
+SRC_URI_append_openpli = " file://asound.conf"
+
 SRC_URI[md5sum] = "f48b50421d8a69d2d806d9c47e534f0d"
 SRC_URI[sha256sum] = "b4238ecaba5e4a1383af06180611a57ef29f9bf47bc177136dba1bb5b70ff423"
 
@@ -30,12 +32,17 @@ EXTRA_OECONF += "${@get_alsa_fpu_setting(bb, d)} "
 require alsa-versym.inc
 EXTRA_OECONF += "${@get_alsa_versym_setting(bb, d)} "
 
+do_install_append_openpli() {
+	install -d ${D}${sysconfdir}
+	install -m 0644 ${WORKDIR}/asound.conf ${D}${sysconfdir}/asound.conf
+}
 
 PACKAGES =+ "alsa-server libasound alsa-conf-base alsa-conf alsa-doc alsa-dev"
 FILES_${PN}-dbg += "${libdir}/alsa-lib/*/.debu*"
 FILES_libasound = "${libdir}/libasound.so.*"
 FILES_alsa-server = "${bindir}/*"
 FILES_alsa-conf = "${datadir}/alsa/"
+FILES_alsa-conf_openpli += "${sysconfdir}/asound.conf"
 FILES_alsa-dev += "${libdir}/pkgconfig/ /usr/include/ ${datadir}/aclocal/*"
 FILES_alsa-conf-base = "\
 ${datadir}/alsa/alsa.conf \
