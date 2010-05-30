@@ -1,16 +1,29 @@
-Index: mc-4.6.2/src/Makefile.am
-===================================================================
---- mc-4.6.2.orig/src/Makefile.am	2009-02-01 19:30:21.000000000 +0000
-+++ mc-4.6.2/src/Makefile.am	2009-02-25 13:24:16.000000000 +0000
-@@ -14,7 +14,10 @@
+--- mc-4.6.2/Makefile.am~	2010-05-30 18:56:06.000000000 +0200
++++ mc-4.6.2/Makefile.am	2010-05-30 18:56:06.000000000 +0200
+@@ -2,7 +2,7 @@
+ 
+ AUTOMAKE_OPTIONS = 1.5
+ 
+-SUBDIRS = intl po m4 vfs slang edit src lib doc syntax
++SUBDIRS = intl po m4 vfs slang edit src lib syntax
+ 
+ EXTRA_DIST = FAQ HACKING INSTALL.FAST MAINTAINERS README.QNX TODO pkginfo.in prototype.in mc.qpg mc.spec
+ 
+--- mc-4.6.2/src/Makefile.am~	2010-05-30 18:57:09.000000000 +0200
++++ mc-4.6.2/src/Makefile.am	2010-05-30 18:57:09.000000000 +0200
+@@ -13,15 +13,10 @@
+ AM_CPPFLAGS = -DDATADIR=\""$(pkgdatadir)/"\" -DLOCALEDIR=\""$(localedir)"\"
  endif
  
- noinst_PROGRAMS = man2hlp
+-noinst_PROGRAMS = man2hlp
 -man2hlp_LDADD = $(GLIB_LIBS)
-+man2hlp_CFLAGS = $(GLIB_CFLAGS_FOR_BUILD)
-+man2hlp_LDADD = $(GLIB_LIBS_FOR_BUILD)
-+$(man2hlp_OBJECTS): CC=$(CC_FOR_BUILD)
-+man2hlp_LINK = $(LD_FOR_BUILD) -o $@
- 
+-
  mcmfmt_SOURCES = mfmt.c
  
+ cons_saver_SOURCES = cons.saver.c
+ 
+-man2hlp_SOURCES = man2hlp.c glibcompat.c
+-
+ if INCLUDED_SLANG
+ SLANGLIB = ../slang/libmcslang.a
+ endif
