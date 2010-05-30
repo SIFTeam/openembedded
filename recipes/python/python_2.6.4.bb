@@ -2,6 +2,7 @@ require python.inc
 DEPENDS = "python-native db gdbm openssl readline sqlite3 tcl zlib\
            ${@base_contains('DISTRO_FEATURES', 'tk', 'tk', '', d)}"
 DEPENDS_sharprom = "python-native db readline zlib gdbm openssl"
+DEPENDS_openpli += "sqlite3"
 # set to .0 on every increase of INC_PR
 PR = "${INC_PR}.0"
 
@@ -28,6 +29,9 @@ SRC_URI = "\
 "
 SRC_URI[archive.md5sum] = "fee5408634a54e721a93531aba37f8c1"
 SRC_URI[archive.sha256sum] = "dad8d5575144a210d5cc4fdbc40b8a26386e9cdb1ef58941bec0be02c7cb9d89"
+
+SRC_URI_append_openpli = " \
+  file://forced_largefile_support.patch"
 
 S = "${WORKDIR}/Python-${PV}"
 
