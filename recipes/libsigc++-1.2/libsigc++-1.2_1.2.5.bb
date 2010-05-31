@@ -1,11 +1,13 @@
 DESCRIPTION = "A library for loose coupling of C++ method calls"
 SECTION = "libs"
 PRIORITY = "optional"
-PR = "r1"
+PR = "r2"
 LICENSE = "GPL LGPL"
 SRC_URI = "${SOURCEFORGE_MIRROR}/libsigc/libsigc++-${PV}.tar.gz \
-	   file://autofoo.patch \
-	   file://pkgconfig.patch"
+		file://autofoo.patch \
+		file://pkgconfig.patch \
+		file://duplicate_header_fix.patch \
+		"
 S = "${WORKDIR}/libsigc++-${PV}"
 
 inherit autotools pkgconfig
