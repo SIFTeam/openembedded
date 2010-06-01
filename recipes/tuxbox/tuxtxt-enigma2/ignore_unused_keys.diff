@@ -1,0 +1,10 @@
+--- ~/tuxtxt.c.orig	2010-01-11 16:13:33.000000000 +0100
++++ ~/tuxtxt.c	2010-01-11 16:14:05.000000000 +0100
+@@ -2900,6 +2900,7 @@
+ 				case KEY_MENU:		RCCode = RC_DBOX;	break;
+ 				case KEY_EXIT:		RCCode = RC_HOME;	break;
+ 				case KEY_POWER:		RCCode = RC_STANDBY;	break;
++				default:			RCCode = -1;		break;
+ 				}
+ 				return 1;
+ 			}

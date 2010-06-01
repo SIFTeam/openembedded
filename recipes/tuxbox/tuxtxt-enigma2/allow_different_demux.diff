@@ -1,0 +1,55 @@
+diff -u tuxtxt_orig/tuxtxt.c tuxtxt/tuxtxt.c
+--- tuxtxt_orig/tuxtxt.c	2009-01-29 21:52:19.000000000 +0100
++++ tuxtxt/tuxtxt.c	2009-01-29 21:54:31.000000000 +0100
+@@ -168,7 +168,7 @@
+  * plugin_exec                                                                *
+  ******************************************************************************/
+ 
+-int tuxtxt_run_ui(int pid)
++int tuxtxt_run_ui(int pid, int demux)
+ {
+ 	char cvs_revision[] = "$Revision: 1.108 $";
+ 
+@@ -180,6 +180,12 @@
+ 		tuxtxt_cache.page = 0x100;
+ #endif
+ 
++#if HAVE_DVB_API_VERSION < 3
++	snprintf(tuxtxt_cache.demux, 64, "/dev/dvb/card0/demux%d", demux);
++#else
++	snprintf(tuxtxt_cache.demux, 64, "/dev/dvb/adapter0/demux%d", demux);
++#endif
++
+ 	/* show versioninfo */
+ 	sscanf(cvs_revision, "%*s %s", versioninfo);
+ 	printf("TuxTxt %s\n", versioninfo);
+@@ -612,7 +618,7 @@
+ 	tuxtxt_init_demuxer();
+ 	tuxtxt_start_thread();
+ #else
+-	tuxtxt_start(tuxtxt_cache.vtxtpid);
++	tuxtxt_start(tuxtxt_cache.vtxtpid, -1);
+ #endif
+ 
+ 
+@@ -1817,7 +1823,7 @@
+ 								tuxtxt_cache.vtxtpid = pid_table[current_pid].vtxt_pid;
+ 								tuxtxt_start_thread();
+ #else
+-								tuxtxt_start(pid_table[current_pid].vtxt_pid);
++								tuxtxt_start(pid_table[current_pid].vtxt_pid, -1);
+ #endif
+ 							}
+ //							tuxtxt_cache.pageupdate = 1;
+diff -u tuxtxt_orig/tuxtxt.h tuxtxt/tuxtxt.h
+--- tuxtxt_orig/tuxtxt.h	2009-01-29 21:44:29.000000000 +0100
++++ tuxtxt/tuxtxt.h	2009-01-29 21:54:31.000000000 +0100
+@@ -63,7 +63,7 @@
+ extern tstPageAttr tuxtxt_atrtable[];
+ extern int tuxtxt_init();
+ extern void tuxtxt_close();
+-extern int  tuxtxt_start(int tpid);  // Start caching
++extern int  tuxtxt_start(int tpid, int demux);  // Start caching
+ extern int  tuxtxt_stop(); // Stop caching
+ extern void tuxtxt_next_dec(int *i); /* skip to next decimal */
+ extern void tuxtxt_prev_dec(int *i); /* counting down */

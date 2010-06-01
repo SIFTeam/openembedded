@@ -1,0 +1,28 @@
+--- ~/tuxtxt.c.orig	2010-04-11 16:43:26.000000000 +0200
++++ ~/tuxtxt.c	2010-04-12 10:23:48.000000000 +0200
+@@ -238,7 +238,6 @@
+ 	if ((lcd=open("/dev/dbox/lcd0", O_RDWR)) == -1)
+ 	{
+ 		perror("TuxTxt <open /dev/dbox/lcd0>");
+-		return 0;
+ 	}
+ 
+ 	renderinfo.previousbackcolor = tuxtxt_color_transp;
+@@ -686,7 +685,7 @@
+ 	}
+ 
+ 	/* close lcd */
+-	close(lcd);
++	if (lcd >= 0) close(lcd);
+ 	
+ 	/* close rc */
+ 	if (rc[0] >= 0)
+@@ -2490,6 +2489,8 @@
+ {
+ 	int x, y;
+ 
++	if (lcd < 0) return;
++
+ 	/* render digit to lcd backbuffer */
+ 	for (y = 0; y < 15; y++)
+ 	{

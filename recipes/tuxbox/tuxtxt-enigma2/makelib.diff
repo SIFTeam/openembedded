@@ -1,0 +1,110 @@
+diff -u tuxtxt_orig/Makefile.am tuxtxt/Makefile.am
+--- tuxtxt_orig/Makefile.am	2009-01-29 21:36:10.000000000 +0100
++++ tuxtxt/Makefile.am	2009-01-29 21:52:19.000000000 +0100
+@@ -6,13 +6,14 @@
+ 	@FREETYPE_CFLAGS@ \
+ 	-funsigned-char \
+ 	-I$(top_srcdir)/include \
+-	-I$(prefix)/$(includedir)/tuxbox/tuxtxt 
++	-I$(prefix)/$(includedir)/tuxbox/tuxtxt
+ 
+-bin_PROGRAMS = tuxtxt
+-tuxtxt_LDADD = -lpthread -lz \
++libtuxtxt32bpp_la_LIBADD = -lpthread -lz \
+ 	@FREETYPE_LIBS@ \
+ 	@TUXTXT_LIBS@
+ 
+-tuxtxt_SOURCES = tuxtxt.c
++lib_LTLIBRARIES = libtuxtxt32bpp.la
++
++libtuxtxt32bpp_la_SOURCES = tuxtxt.c
+ 
+ install_DATA = tuxtxt2.conf
+diff -u tuxtxt_orig/configure.ac tuxtxt/configure.ac
+--- tuxtxt_orig/configure.ac	2009-01-29 21:36:10.000000000 +0100
++++ tuxtxt/configure.ac	2009-01-29 21:52:19.000000000 +0100
+@@ -1,5 +1,9 @@
+-AC_INIT(tuxbox-tuxtxt-32bpp,1.96)
+-AM_INIT_AUTOMAKE(tuxbox-tuxtxt-32bpp,1.96)
++AC_INIT(libtuxtxt32bpp,1.96)
++AM_INIT_AUTOMAKE(libtuxtxt32bpp,1.96)
++
++AM_PROG_LIBTOOL
++
++AC_DISABLE_STATIC
+ 
+ TUXBOX_APPS
+ TUXBOX_APPS_DIRECTORY
+diff -u tuxtxt_orig/tuxtxt.c tuxtxt/tuxtxt.c
+--- tuxtxt_orig/tuxtxt.c	2009-01-29 21:44:29.000000000 +0100
++++ tuxtxt/tuxtxt.c	2009-01-29 21:52:19.000000000 +0100
+@@ -168,7 +168,7 @@
+  * plugin_exec                                                                *
+  ******************************************************************************/
+ 
+-int main(int argc, char **argv)
++int tuxtxt_run_ui(int pid)
+ {
+ 	char cvs_revision[] = "$Revision: 1.108 $";
+ 
+@@ -187,17 +187,8 @@
+ 
+ 	tuxtxt_SetRenderingDefaults(&renderinfo);
+ 	/* get params */
+-	tuxtxt_cache.vtxtpid = renderinfo.fb = lcd = renderinfo.sx = renderinfo.ex = renderinfo.sy = renderinfo.ey = -1;
+-	if (argc==1)
+-	{
+-		printf("\nUSAGE: tuxtxt vtpid\n");
+-		printf("No PID given, so scanning for PIDs ...\n\n");
+-		tuxtxt_cache.vtxtpid=0;
+-	}
+-	else 
+-	{
+-		tuxtxt_cache.vtxtpid = atoi(argv[1]);
+-	}
++	renderinfo.fb = lcd = renderinfo.sx = renderinfo.ex = renderinfo.sy = renderinfo.ey = -1;
++	tuxtxt_cache.vtxtpid = pid;
+ 
+ 	/* open Framebuffer */
+ 	if ((renderinfo.fb=open("/dev/fb/0", O_RDWR)) == -1)
+@@ -462,11 +453,13 @@
+ 
+ 
+  	//page_atrb[32] = transp<<4 | transp;
+-
+-	for (magazine = 1; magazine < 9; magazine++)
++	if (!tuxtxt_cache.thread_starting && !tuxtxt_cache.receiving)
+ 	{
+-		tuxtxt_cache.current_page  [magazine] = -1;
+-		tuxtxt_cache.current_subpage [magazine] = -1;
++		for (magazine = 1; magazine < 9; magazine++)
++		{
++			tuxtxt_cache.current_page  [magazine] = -1;
++			tuxtxt_cache.current_subpage [magazine] = -1;
++		}
+ 	}
+ #if TUXTXT_CFG_STANDALONE
+ /* init data */
+@@ -489,13 +482,16 @@
+ 	tuxtxt_cache.page       = 0x100;
+ #endif
+ 	lastpage   = tuxtxt_cache.page;
+-	tuxtxt_cache.subpage    = tuxtxt_cache.subpagetable[tuxtxt_cache.page];
+-	if (tuxtxt_cache.subpage == 0xff)
+-	tuxtxt_cache.subpage    = 0;
+-	
+-	tuxtxt_cache.pageupdate = 0;
++	if (!tuxtxt_cache.thread_starting && !tuxtxt_cache.receiving)
++	{
++		tuxtxt_cache.subpage    = tuxtxt_cache.subpagetable[tuxtxt_cache.page];
++		if (tuxtxt_cache.subpage == 0xff)
++			tuxtxt_cache.subpage    = 0;
+ 
+-	tuxtxt_cache.zap_subpage_manual = 0;
++		tuxtxt_cache.pageupdate = 0;
++
++		tuxtxt_cache.zap_subpage_manual = 0;
++	}
+ 
+ 	/* init lcd */
+ 	UpdateLCD();
