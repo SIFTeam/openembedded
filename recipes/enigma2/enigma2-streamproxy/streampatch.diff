@@ -1,0 +1,34 @@
+Index: src/streamproxy.c
+===================================================================
+RCS file: /cvsroot/streamproxy/enigma2-streamproxy/src/streamproxy.c,v
+retrieving revision 1.10
+diff -u -p -r1.10 streamproxy.c
+--- src/streamproxy.c	13 Feb 2008 18:20:01 -0000	1.10
++++ src/streamproxy.c	13 Jul 2009 11:32:25 -0000
+@@ -7,6 +7,7 @@
+ #include <unistd.h>
+ #include <sys/ioctl.h>
+ #include <linux/dvb/dmx.h>
++#include <errno.h>
+ 
+ #define MAX_PIDS 32
+ #define MAX_LINE_LENGTH 512
+@@ -128,8 +129,16 @@ int main(int argc, char **argv)
+ 			static unsigned char buffer[BSIZE];
+ 			int r = read(demux_fd, buffer, BSIZE);
+ 			if (r < 0)
+-				break;
+-			write(1, buffer, r);
++			{
++				if (errno != EOVERFLOW && errno != EINTR)
++				{
++					break;
++				}
++			}
++			else
++			{
++				write(1, buffer, r);
++			}
+ 		}
+ 	}
+ 	

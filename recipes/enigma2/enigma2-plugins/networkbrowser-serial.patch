@@ -1,0 +1,72 @@
+Index: enigma2-plugins/networkbrowser/src/AutoMount.py
+===================================================================
+--- enigma2-plugins.orig/networkbrowser/src/AutoMount.py	2010-03-07 21:27:45.000000000 +0100
++++ enigma2-plugins/networkbrowser/src/AutoMount.py	2010-06-07 19:50:30.864283363 +0200
+@@ -60,7 +60,6 @@
+ 					data['sharedir'] = getValue(mount.findall("sharedir"), "/exports/").encode("UTF-8")
+ 					data['sharename'] = getValue(mount.findall("sharename"), "MEDIA").encode("UTF-8")
+ 					data['options'] = getValue(mount.findall("options"), "rw,nolock").encode("UTF-8")
+-					print "NFSMOUNT",data
+ 					self.automounts[data['sharename']] = data
+ 				except Exception, e:
+ 					print "[MountManager] Error reading Mounts:", e
+@@ -81,22 +80,22 @@
+ 					data['options'] = getValue(mount.findall("options"), "rw,nolock").encode("UTF-8")
+ 					data['username'] = getValue(mount.findall("username"), "guest").encode("UTF-8")
+ 					data['password'] = getValue(mount.findall("password"), "").encode("UTF-8")
+-					print "CIFSMOUNT",data
+ 					self.automounts[data['sharename']] = data
+ 				except Exception, e:
+ 					print "[MountManager] Error reading Mounts:", e
+ 
+ 		print "[AutoMount.py] -getAutoMountPoints:self.automounts -->",self.automounts
+-		if len(self.automounts) == 0:
++		self.checkList = self.automounts.keys()
++		if not self.checkList:
+ 			print "[AutoMount.py] self.automounts without mounts",self.automounts
+ 			if callback is not None:
+ 				callback(True)
+ 		else:
+-			for sharename, sharedata in self.automounts.items():
+-				self.CheckMountPoint(sharedata, callback)
++			self.CheckMountPoint(self.checkList.pop(), callback)
+ 
+-	def CheckMountPoint(self, data, callback):
+-		print "[AutoMount.py] CheckMountPoint"
++	def CheckMountPoint(self, item, callback):
++		data = self.automounts[item]
++		print "[AutoMount.py] CheckMountPoint", data
+ 		print "[AutoMount.py] activeMounts:--->",self.activeMountsCounter
+ 		if not self.MountConsole:
+ 			self.MountConsole = Console()
+@@ -125,13 +124,17 @@
+ 
+ 				if data['mounttype'] == 'nfs':
+ 					if not os_path.ismount(path):
+-						tmpcmd = 'mount -t nfs -o tcp,'+ data['options'] +',rsize=8192,wsize=8192 ' + data['ip'] + ':/' + tmpsharedir + ' ' + path
++						if data['options']:
++							options = "tcp,noatime," + data['options']
++						else:
++							options = "tcp,noatime"
++						tmpcmd = 'mount -t nfs -o ' + options + ' ' + data['ip'] + ':/' + tmpsharedir + ' ' + path
+ 						self.command = tmpcmd.encode("UTF-8")
+ 
+ 				if data['mounttype'] == 'cifs':
+ 					if not os_path.ismount(path):
+ 						tmpusername = data['username'].replace(" ", "\\ ")
+-						tmpcmd = 'mount -t cifs -o '+ data['options'] +',iocharset=utf8,rsize=8192,wsize=8192,username='+ tmpusername + ',password='+ data['password'] + ' //' + data['ip'] + '/' + tmpsharedir + ' ' + path
++						tmpcmd = 'mount -t cifs -o '+ data['options'] +',noatime,iocharset=utf8,username='+ tmpusername + ',password='+ data['password'] + ' //' + data['ip'] + '/' + tmpsharedir + ' ' + path
+ 						self.command = tmpcmd.encode("UTF-8")
+ 
+ 			if self.command is not None:
+@@ -163,7 +166,9 @@
+ 					if not os_path.ismount(path):
+ 						removeDir(path)
+ 						harddiskmanager.removeMountedPartition(path)
+-
++		if self.checkList:
++			# Go to next item in list...
++			self.CheckMountPoint(self.checkList.pop(), callback)
+ 		if self.MountConsole:
+ 			if len(self.MountConsole.appContainers) == 0:
+ 				if callback is not None:

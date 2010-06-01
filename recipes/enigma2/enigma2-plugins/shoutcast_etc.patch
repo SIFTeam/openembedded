@@ -1,0 +1,23 @@
+Index: enigma2-plugins/shoutcast/src/plugin.py
+===================================================================
+--- enigma2-plugins.orig/shoutcast/src/plugin.py
++++ enigma2-plugins/shoutcast/src/plugin.py
+@@ -121,7 +121,8 @@ class SHOUTcastWidget(Screen, InfoBarSee
+ 	STREAMRIPPER_BIN = '/usr/bin/streamripper'
+ 
+ 	FAVORITE_FILE_DEFAULT = '/usr/lib/enigma2/python/Plugins/Extensions/SHOUTcast/favorites'
+-	FAVORITE_FILE = '/usr/lib/enigma2/python/Plugins/Extensions/SHOUTcast/favorites.user'
++	FAVORITE_FILE_OLD = '/usr/lib/enigma2/python/Plugins/Extensions/SHOUTcast/favorites.user'
++	FAVORITE_FILE = '/etc/enigma2/SHOUTcast.favorites'
+ 
+ 	sz_w = getDesktop(0).size().width()
+ 	if sz_w == 1280:
+@@ -230,6 +231,8 @@ class SHOUTcastWidget(Screen, InfoBarSee
+ 		self.favoriteConfig = Config()
+ 		if os.path.exists(self.FAVORITE_FILE):
+ 			self.favoriteConfig.loadFromFile(self.FAVORITE_FILE)
++		elif os.path.exists(self.FAVORITE_FILE_OLD):
++			self.favoriteConfig.loadFromFile(self.FAVORITE_FILE_OLD)
+ 		else:
+ 			self.favoriteConfig.loadFromFile(self.FAVORITE_FILE_DEFAULT)
+ 		self.favoriteConfig.entriescount =  ConfigInteger(0)

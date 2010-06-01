@@ -1,0 +1,12 @@
+Index: enigma2-plugins/Makefile.am
+===================================================================
+--- enigma2-plugins.orig/Makefile.am
++++ enigma2-plugins/Makefile.am
+@@ -13,7 +13,6 @@ SUBDIRS = \
+ 	filebrowser \
+ 	fritzcall \
+ 	ftpbrowser \
+-	genuinedreambox \
+ 	googlemaps \
+ 	growlee \
+ 	httpproxy \
