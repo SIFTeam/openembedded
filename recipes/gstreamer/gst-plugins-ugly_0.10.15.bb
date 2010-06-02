@@ -3,6 +3,7 @@ require gst-plugins.inc
 PR = "${INC_PR}.0"
 
 DEPENDS += "gst-plugins-base mpeg2dec libsidplay"
+DEPENDS_openpli += "gst-plugins-base libsidplay"
 
 SRC_URI += "\
   file://gstmad_16bit.patch \

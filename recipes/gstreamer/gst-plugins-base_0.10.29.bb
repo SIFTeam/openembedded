@@ -16,9 +16,11 @@ PROVIDES += "gst-plugins"
 # not get an error if this is not present, just 
 # a missing alsa plugin
 DEPENDS += "udev cdparanoia pango libtheora alsa-lib libsm virtual/libx11 freetype gnome-vfs libxv"
+DEPENDS_openpli += "alsa-lib"
 
 # Needs a udev that enabled gudev, which isn't the default
 EXTRA_OECONF_append = " --with-gudev"
+EXTRA_OECONF_openpli_append = " --disable-theora --disable-pango --with-audioresample-format=int"
 
 do_configure_prepend() {
 	sed -i -e s:QtGui:NoQtGui:g ${S}/configure.ac
