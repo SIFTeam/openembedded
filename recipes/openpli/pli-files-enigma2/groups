@@ -1,0 +1,3 @@
+#!/bin/sh
+id -gn
+exit $?

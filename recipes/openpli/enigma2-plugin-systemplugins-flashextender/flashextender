@@ -1,0 +1,130 @@
+#!/bin/sh
+
+echo "MiLo's FLASH Extender"
+
+error() {
+    echo $*
+    exit 1
+}
+
+if [ ! -d /media/cf ]
+then
+    error "No CF card, cannot continue"
+fi
+
+if [ ! -d /boot/mnt/flash/delta ]
+then
+    error "This system does not have a /boot/mnt/flash/delta, so probably this is not a DM7025!"
+fi
+
+IMAGEVERSION=`cat /etc/version`
+NEWDELTA=/media/cf/delta.${IMAGEVERSION}
+
+do_start() {
+    if unionctl --list / | grep "${NEWDELTA}"
+    then
+        echo "Flash extender is already active on this image, aborted"
+	exit 0
+    fi
+
+    if [ ! -d ${NEWDELTA} ]
+    then
+        error "Already removed, use install if you want to start using it for the first time"
+    fi
+    
+    if unionctl / --add --mode rw ${NEWDELTA}
+    then
+	# Stop writing to flash...
+	unionctl / --mode /boot/mnt/flash/delta ro
+        echo "Congratulations with all the extra space you got now!"
+    else
+        error "Failed to add your CF card to the root union, sorry"
+    fi 
+}
+
+do_stop() {
+    if ! unionctl --list / | grep "${NEWDELTA}"
+    then
+        echo "Flash extender is not active on this image, cannot stop"
+	exit 0
+    fi
+    unionctl / --mode /boot/mnt/flash/delta rw
+    if unionctl / --remove ${NEWDELTA}
+    then
+        echo "Flash extender stopped"
+    else
+        error "Failed to stop the extender, sorry"
+    fi 
+}
+
+do_install() {
+    if [ -d ${NEWDELTA} ]
+    then
+        echo "Delta path already existing, uninstall first or simply use the start option instead"
+	exit 0
+    else
+	echo "Removing existing Delta paths."
+	rm -r -f /media/cf/delta.*
+        mkdir ${NEWDELTA}
+        ln -s ${NEWDELTA} /media/cf/delta.current
+        if [ ! -d /media/cf/delta.current ]
+        then
+            error "Cannot create symbolic links on /media/cf, format the card with EXT2 or EXT3 filesystem."
+        fi
+	if [ ! -e /etc/rcS.d/S09flashextender ]
+	then
+		echo "Creating startup link"
+		rm -f /etc/rcS.d/S*flashextender
+		ln -s ../init.d/flashextender /etc/rcS.d/S09flashextender
+	fi
+    fi
+    
+    do_start
+}
+
+do_uninstall() {
+    if [ ! -d ${NEWDELTA} ]
+    then
+        echo "Already removed, no need to remove again"
+	exit 0
+    fi
+    
+    # stop the union if still running
+    if unionctl --list / | grep "${NEWDELTA}"
+    then
+        unionctl / --mode /boot/mnt/flash/delta rw
+        if unionctl / --remove ${NEWDELTA}
+        then
+            echo "Flash extender stopped"
+        else
+            error "Failed to stop the extender, sorry"
+        fi 
+    fi    
+    
+    #attempt to undo it 
+    if cp -rfp ${NEWDELTA}/* /boot/mnt/flash/delta/
+    then
+        echo "Succeeded in copying everything back to internal flash"
+        rm -rf ${NEWDELTA} 
+        echo "Removed extender data directory ${NEWDELTA}"
+    else
+        error "Sorry, could not copy ${NEWDELTA} back into flash!"
+    fi
+
+    echo "Removing startup link(s)"
+    rm -f /etc/rcS.d/S*flashextender
+}
+
+case "$1" in
+    install|uninstall|start|stop)
+        do_$1
+        ;;
+    *)
+        echo "Usage: $0 install|uninstall|start|stop"
+        echo "start/stop is for /etc/rcS.d usage, so that the extender is loaded on boot"
+        echo "Use install to activate the extender"
+        echo "Use uninstall to attempt to put everything back into the internal flash"
+        exit 1
+        ;;    
+esac
+
