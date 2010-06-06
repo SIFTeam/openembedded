@@ -101,4 +101,4 @@ chmod u+s /usr/libexec/dbus-daemon-launch-helper
 CONFFILES_${PN} = "${sysconfdir}/dbus-1/system.conf ${sysconfdir}/dbus-1/session.conf"
 
 INITSCRIPT_NAME = "dbus-1"
-INITSCRIPT_PARAMS = "start 02 5 2 . stop 20 0 1 6 ."
+INITSCRIPT_PARAMS = "defaults 02 20"
