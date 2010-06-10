@@ -43,6 +43,16 @@ RDEPENDS_${PN} += "\
   ${PN}-words \
 "
 
+RDEPENDS_${PN}-web += "\
+	python-zopeinterface \
+	python-netserver \
+	${PN}-protocols \
+	"
+
+RDEPENDS_${PN}-mail += "\
+	${PN}-protocols \
+	"
+
 ALLOW_EMPTY = "1"
 FILES_${PN} = ""
 
