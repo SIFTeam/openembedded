@@ -1,13 +1,20 @@
+#include <sys/mman.h>
 #include <sys/mount.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <sys/utsname.h>
+
 #include <stdio.h>
 #include <fcntl.h>
 #include <linux/loop.h>
+#include <linux/kdev_t.h>
 #include <dirent.h>
 #include <errno.h>
-#include <sys/mman.h>
+
 #include <unistd.h>
 #include <stdlib.h>
 #include <string.h>
+
 
 #define PREFIX
 //#define PREFIX "/boot"
@@ -92,16 +99,19 @@ int main(int argc, char *argv[], char *envp[])
 	int res, x;
 
 		/* first, load some needed kernel modules located in the root of our boot partition */
-	const char *modules[] = { "fs/squashfs/unlzma.ko", "fs/squashfs/sqlzma.ko", "fs/squashfs/squashfs.ko", "fs/unionfs.ko", "drivers/block/loop.ko", 0 };
-	const char *modules_path = PREFIX"/lib/modules/2.6.12.6/kernel/";
+	const char *modules[] = { "lib/decompress_unlzma.ko", "fs/squashfs/squashfs.ko", "fs/unionfs/unionfs.ko", "drivers/block/loop.ko", 0 };
 	char path[255];
+	struct utsname uts;
+
+	if (uname(&uts) != 0)
+		printf("FATAL! couldnt get kernel name!\n");
 
 	printf("Hello world!\n");
 
 	x=0;
 	while(modules[x]) {
-		strcpy(path, modules_path);
-		strcat(path, modules[x++]);
+		sprintf(path, PREFIX"/lib/modules/%s/kernel/", uts.release);
+		strcat(path, modules[x++]);                        
 		printf("insmodding %s..\n", path);
 		if (insmod(path))
 			return 1;
@@ -109,7 +119,7 @@ int main(int argc, char *argv[], char *envp[])
 	
 		/* mount the RW jffs2 partition, which contains the squashfs image (in /squashfs) and the deltas (in /delta) */
 	printf("mounting mtd...\n");
-	res = mount("/dev/mtdblock/3", PREFIX"/mnt/flash", "jffs2", 0, 0);
+	res = mount("/dev/mtdblock3", PREFIX"/mnt/flash", "jffs2", 0, 0);
 
 	if (res)
 	{
@@ -127,11 +137,11 @@ int main(int argc, char *argv[], char *envp[])
 	}
 	
 	printf("setup loop\n");
-	int loop_fd = open("/dev/loop/0", O_RDONLY);
+	int loop_fd = open("/dev/loop0", O_RDONLY);
 	
 	if (loop_fd < 0)
 	{
-		perror("/dev/loop/0");
+		perror("/dev/loop0");
 		return 1;
 	}
 	
@@ -155,7 +165,7 @@ int main(int argc, char *argv[], char *envp[])
 	printf("mounting squashfs..\n");
 
 		/* and then mounting the loop device. */
-	if (mount("/dev/loop/0", PREFIX"/mnt/squashfs", "squashfs", MS_MGC_VAL|MS_RDONLY, "") < 0)
+	if (mount("/dev/loop0", PREFIX"/mnt/squashfs", "squashfs", MS_MGC_VAL|MS_RDONLY, "") < 0)
 	{
 		perror("mounting squashfs");
 		return 1;
@@ -186,18 +196,6 @@ int main(int argc, char *argv[], char *envp[])
 		perror("pivot_root");
 		return 1;
 	}
-
-	printf("mounting devfs..\n");
-	res = mount("none", "/dev", "devfs", 0, 0);
-	if (res)
-	{
-		perror("mounting /dev");
-		return res;
-	}
-	
-	printf("try umount old devfs..\n");
-	res = umount("/boot/dev");
-	perror("umount /boot/dev");
 
 	printf("call init!\n");
 	execve("/sbin/init", argv, envp);
