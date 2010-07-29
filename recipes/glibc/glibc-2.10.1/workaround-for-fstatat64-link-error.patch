@@ -1,0 +1,13 @@
+Index: glibc-2.10.1/io/sys/stat.h
+===================================================================
+--- glibc-2.10.1.orig/io/sys/stat.h	2010-07-28 20:33:38.029593481 +0200
++++ glibc-2.10.1/io/sys/stat.h	2010-07-28 20:34:25.714084624 +0200
+@@ -446,7 +446,7 @@
+ 		       __mode_t __mode, __dev_t *__dev)
+      __THROW __nonnull ((3, 5));
+ 
+-#if defined __GNUC__ && __GNUC__ >= 2 && defined __USE_EXTERN_INLINES
++#if defined __GNUC__ && __GNUC__ >= 2 
+ /* Inlined versions of the real stat and mknod functions.  */
+ 
+ __extern_inline int
