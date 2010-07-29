@@ -31,7 +31,7 @@ python do_convert_bouquets() {
 		outfile.close()
 }
 
-addtask convert_bouquets before do_install
+addtask convert_bouquets after do_compile before do_install
 
 do_install() {
 	install -d ${D}/etc/enigma2
