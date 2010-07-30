@@ -41,7 +41,7 @@ do_stage_dm800() {
 do_install_dm800() {
 	install -d ${D}/tmp
 	install ${WORKDIR}/secondstage-${MACHINE}-${PV}.nfi ${D}/tmp/secondstage.nfi
-	install -m 0755 ${WORKDIR}/writenfi-r1 ${D}/tmp/writenfi
+	install -m 0755 ${WORKDIR}/writenfi-mipsel-2.6.18-r1 ${D}/tmp/writenfi
 }
 
 do_stage_dm8000() {
