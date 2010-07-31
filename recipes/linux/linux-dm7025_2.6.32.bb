@@ -1,6 +1,8 @@
+PATCHLEVEL = ".16"
+
 require linux-opendreambox.inc
 
-SRCREV = "cc2180fb0be6e69acc19245126a7f86d76df7ed2"
+SRCREV = "3b5bab90dc6d57b80ed0bbbdf745e6532207e61f"
 PR = "r0"
 
 SRC_URI_append = "\

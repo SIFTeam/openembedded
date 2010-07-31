@@ -4,7 +4,9 @@ LICENSE = "GPL"
 
 inherit kernel
 
-SRC_URI = "${KERNELORG_MIRROR}/pub/linux/kernel/v2.6/linux-${PV}.tar.bz2 \
+PATCHLEVEL ?= ""
+
+SRC_URI = "${KERNELORG_MIRROR}/pub/linux/kernel/v2.6/linux-${PV}${PATCHLEVEL}.tar.bz2 \
 	http://sources.dreamboxupdate.com/download/kernel-patches/${P}-${SRCREV}.patch.bz2 \
 	file://defconfig"
 
@@ -21,6 +23,14 @@ RPROVIDES_kernel = "kernel-${KERNEL_VERSION}"
 RPROVIDES_kernel-image = "kernel-image-${KERNEL_VERSION}"
 RPROVIDES_kernel-base = "kernel-base-${KERNEL_VERSION}"
 PROVIDES += "kernel-${KERNEL_VERSION} kernel-image-${KERNEL_VERSION} kernel-base-${KERNEL_VERSION}"
+
+addtask munge after before do_patch after do_unpack
+
+do_munge () {
+        if [ ${PATCHLEVEL} != "" ]; then
+                mv ${S}${PATCHLEVEL} ${S};
+        fi;
+}
 
 do_configure_prepend () {
 	install -m 0644 ${WORKDIR}/defconfig ${S}/.config
