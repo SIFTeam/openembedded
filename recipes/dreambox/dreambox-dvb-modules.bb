@@ -16,8 +16,8 @@ PV_dm600pvr = "${KV}-20090430"
 KV_dm500plus = "2.6.12"
 PV_dm500plus = "${KV}-20080822"
 
-KV_dm7025 = "2.6.32-dm7025"
-PV_dm7025 = "${KV}-20100303"
+KV_dm7025 = "2.6.32-1.3-dm7025"
+PV_dm7025 = "${KV}-20100727"
 
 KV_dm500hd = "${@base_contains('PREFERRED_VERSION_linux-dm500hd', '2.6.18', '2.6.18-7.3-dm500hd', '2.6.30-dm500hd', d)}"
 PV_dm500hd = "${KV}-${@base_contains('PREFERRED_VERSION_linux-dm500hd', '2.6.18', '20100623', '20090727', d)}"
