@@ -1,0 +1,67 @@
+From: maximilian attems <max@stro.at>
+Subject: [PATCH 3/3] [klibc] Add relevant socket.h definitions
+
+linux-2.6 9c501935a3cdcf6b1d35aaee3aa11c7a7051a305 cleaned
+<linux/socket.h> from allmost any userspace export.
+
+thus define the stuff that used to be there in klibc socket.h
+
+Origin: vendor, http://www.zytor.com/pipermail/klibc/2010-February/002488.html
+Bug-Ubuntu: https://bugs.launchpad.net/bugs/534281
+Forwarded: yes
+Last-Update: 2010-03-10
+
+diff -Nur -x '*.orig' -x '*~' klibc-1.5.15/usr/include/sys/socket.h klibc-1.5.15.new/usr/include/sys/socket.h
+--- klibc-1.5.15/usr/include/sys/socket.h	2009-01-04 19:28:03.000000000 +0000
++++ klibc-1.5.15.new/usr/include/sys/socket.h	2010-03-10 18:33:01.000000000 +0000
+@@ -9,6 +9,9 @@
+ #include <klibc/compiler.h>
+ #include <klibc/sysconfig.h>
+ #include <linux/socket.h>
++#include <linux/sockios.h>		/* the SIOCxxx I/O controls     */
++#include <linux/uio.h>			/* iovec support                */
++#include <asm/socket.h>			/* arch-dependent defines       */
+ #if _KLIBC_HAS_ARCHSOCKET_H
+ #include <klibc/archsocket.h>
+ #endif
+@@ -27,6 +30,40 @@
+ # define SOCK_PACKET    10
+ #endif
+ 
++
++typedef unsigned short	sa_family_t;
++
++struct sockaddr {
++	sa_family_t	sa_family;	/* address family, AF_xxx	*/
++	char		sa_data[14];	/* 14 bytes of protocol address	*/
++};
++
++
++/*
++ *	As we do 4.4BSD message passing we use a 4.4BSD message passing
++ *	system, not 4.3. Thus msg_accrights(len) are now missing. They
++ *	belong in an obscure libc emulation or the bin.
++ */
++ 
++struct msghdr {
++	void	*	msg_name;	/* Socket name			*/
++	int		msg_namelen;	/* Length of name		*/
++	struct iovec *	msg_iov;	/* Data blocks			*/
++	size_t		msg_iovlen;	/* Number of blocks		*/
++	void 	*	msg_control;	/* Per protocol magic (eg BSD file descriptor passing) */
++	size_t		msg_controllen;	/* Length of cmsg list */
++	unsigned	msg_flags;
++};
++
++
++/* address families */
++#define AF_INET		2	/* Internet IP Protocol 	*/
++#define AF_INET6	10	/* IP version 6			*/
++#define AF_PACKET	17	/* Packet family		*/
++
++/* Flags we can use with send/ and recv. */
++#define MSG_PEEK	2
++
+ typedef int socklen_t;
+ 
+ __extern int socket(int, int, int);

@@ -1,0 +1,58 @@
+From: maximilian attems <max@stro.at>
+Subject: [PATCH 2/3] [klibc] nfsmount: s/PF_INET/AF_INET/
+
+use AF_INET directly.
+
+Origin: vendor, http://www.zytor.com/pipermail/klibc/2010-February/002487.html
+Bug-Ubuntu: https://bugs.launchpad.net/bugs/534281
+Forwarded: yes
+Last-Update: 2010-03-10
+
+diff -Nur -x '*.orig' -x '*~' klibc-1.5.15/usr/kinit/nfsmount/dummypmap.c klibc-1.5.15.new/usr/kinit/nfsmount/dummypmap.c
+--- klibc-1.5.15/usr/kinit/nfsmount/dummypmap.c	2009-01-04 19:28:03.000000000 +0000
++++ klibc-1.5.15.new/usr/kinit/nfsmount/dummypmap.c	2010-03-10 18:40:43.000000000 +0000
+@@ -39,7 +39,7 @@
+ 
+ static int bind_portmap(void)
+ {
+-	int sock = socket(PF_INET, SOCK_DGRAM, 0);
++	int sock = socket(AF_INET, SOCK_DGRAM, 0);
+ 	struct sockaddr_in sin;
+ 
+ 	if (sock < 0)
+diff -Nur -x '*.orig' -x '*~' klibc-1.5.15/usr/kinit/nfsmount/mount.c klibc-1.5.15.new/usr/kinit/nfsmount/mount.c
+--- klibc-1.5.15/usr/kinit/nfsmount/mount.c	2010-03-10 18:40:41.000000000 +0000
++++ klibc-1.5.15.new/usr/kinit/nfsmount/mount.c	2010-03-10 18:40:43.000000000 +0000
+@@ -295,9 +295,9 @@
+ 	mounted = 1;
+ 
+ 	if (data->flags & NFS_MOUNT_TCP) {
+-		sock = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
++		sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+ 	} else {
+-		sock = socket(PF_INET, SOCK_DGRAM, IPPROTO_UDP);
++		sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+ 	}
+ 
+ 	if (sock == -1) {
+diff -Nur -x '*.orig' -x '*~' klibc-1.5.15/usr/kinit/nfsmount/sunrpc.c klibc-1.5.15.new/usr/kinit/nfsmount/sunrpc.c
+--- klibc-1.5.15/usr/kinit/nfsmount/sunrpc.c	2009-01-04 19:28:03.000000000 +0000
++++ klibc-1.5.15.new/usr/kinit/nfsmount/sunrpc.c	2010-03-10 18:40:43.000000000 +0000
+@@ -152,7 +152,7 @@
+ 
+ 	memset(clnt, 0, sizeof(clnt));
+ 
+-	if ((sock = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP)) == -1) {
++	if ((sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) == -1) {
+ 		perror("socket");
+ 		goto bail;
+ 	}
+@@ -197,7 +197,7 @@
+ 
+ 	memset(clnt, 0, sizeof(clnt));
+ 
+-	if ((sock = socket(PF_INET, SOCK_DGRAM, IPPROTO_UDP)) == -1) {
++	if ((sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) == -1) {
+ 		perror("socket");
+ 		goto bail;
+ 	}
