@@ -34,6 +34,9 @@ SRCDATE_libdvbsi++ ?= "20100126"
 SRCDATE_inadyn-mt ?= "20100519"
 SRCDATE_gst-plugin-dvbmediasink ?= "20100607"
 
+# dm7025
+SRCDATE_squashfs-tools-native = "20100319"
+
 # others
 SRCDATE_enigma2-plugin-extensions-xmltvimport-rytec ?= "20100601"
 SRCDATE_enigma2-plugin-picons-sat ?= "20100628"
