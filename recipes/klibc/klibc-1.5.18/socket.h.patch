@@ -26,7 +26,7 @@ Index: klibc-1.5.16/usr/include/sys/socket.h
  #include <linux/socket.h>
 +
 +#include <linux/version.h>
-+#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,33)
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,32)
 +#include <linux/sockios.h>		/* the SIOCxxx I/O controls     */
 +#include <linux/uio.h>			/* iovec support                */
 +#include <asm/socket.h>			/* arch-dependent defines       */
@@ -39,7 +39,7 @@ Index: klibc-1.5.16/usr/include/sys/socket.h
  # define SOCK_PACKET    10
  #endif
  
-+#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,33)
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,32)
 +
  #ifndef AF_INET
  #define AF_UNSPEC	0
@@ -53,7 +53,7 @@ Index: klibc-1.5.16/usr/include/sys/socket.h
 +
  typedef int socklen_t;
 +
-+#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,33)
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,32)
  struct msghdr {
  	void *msg_name;
  	int msg_namelen;
@@ -75,7 +75,7 @@ Index: klibc-1.5.16/usr/kinit/nfsmount/nfsmount.h
  #include <linux/nfs_mount.h>
  
 +#include <linux/version.h>
-+#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,33)
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,32)
 +#define MNTPROC_MNT            1
 +#define MNTPROC_UMNT           3
 +#endif
@@ -92,7 +92,7 @@ Index: klibc-1.5.16/usr/kinit/nfsmount/dummypmap.c
  static int bind_portmap(void)
  {
 +#include <linux/version.h>
-+#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,33)
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,32)
 +	int sock = socket(AF_INET, SOCK_DGRAM, 0);
 +#else
  	int sock = socket(PF_INET, SOCK_DGRAM, 0);
@@ -109,7 +109,7 @@ Index: klibc-1.5.16/usr/kinit/nfsmount/mount.c
  	mounted = 1;
  
 +#include <linux/version.h>
-+#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,33)
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,32)
 +	if (data->flags & NFS_MOUNT_TCP) {
 +		sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 +	} else {
@@ -135,7 +135,7 @@ Index: klibc-1.5.16/usr/kinit/nfsmount/sunrpc.c
  	memset(clnt, 0, sizeof(clnt));
  
 +#include <linux/version.h>
-+#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,33)
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,32)
 +	if ((sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) == -1) {
 +#else
  	if ((sock = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP)) == -1) {
@@ -148,7 +148,7 @@ Index: klibc-1.5.16/usr/kinit/nfsmount/sunrpc.c
  	memset(clnt, 0, sizeof(clnt));
  
 +#include <linux/version.h>
-+#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,33)
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,32)
 +	if ((sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) == -1) {
 +#else
  	if ((sock = socket(PF_INET, SOCK_DGRAM, IPPROTO_UDP)) == -1) {
