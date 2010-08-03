@@ -2,7 +2,7 @@ DESCRIPTION = "Enigma2 is an experimental, but useful framebuffer-based frontend
 MAINTAINER = "Felix Domke <tmbinc@elitedvb.net>"
 DEPENDS = "jpeg libungif libmad libpng libsigc++-1.2 gettext-native \
 	dreambox-dvbincludes freetype libdvbsi++ python python-twisted swig-native  \
-	dvd+rw-tools dvdauthor mjpegtools cdrkit python-imaging projectx \
+	dvd+rw-tools dvdauthor mjpegtools cdrkit python-imaging replex \
 	libfribidi libxmlccwrap libdreamdvd libdvdcss tuxtxt-enigma2 ethtool \
 	gstreamer gst-plugins-bad gst-plugins-good gst-plugins-ugly"
 RDEPENDS_${PN} = "python-codecs python-core python-lang python-re python-threading \
@@ -68,7 +68,7 @@ RDEPENDS_enigma2-plugin-extensions-modem = "dreambox-modem-ppp-scripts"
 DESCRIPTION_append_enigma2-plugin-systemplugins-wirelesslan = "helps you configuring your wireless lan"
 RDEPENDS_enigma2-plugin-systemplugins-wirelesslan = "wpa-supplicant wireless-tools"
 DESCRIPTION_append_enigma2-plugin-systemplugins-networkwizard = "provides easy step by step network configuration"
-RDEPENDS_enigma2-plugin-extensions-dvdburn = "dvd+rw-tools dvdauthor mjpegtools cdrkit python-imaging projectx"
+RDEPENDS_enigma2-plugin-extensions-dvdburn = "dvd+rw-tools dvdauthor mjpegtools cdrkit python-imaging replex"
 
 inherit gitpkgv
 
