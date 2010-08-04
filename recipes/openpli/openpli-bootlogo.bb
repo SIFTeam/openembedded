@@ -47,7 +47,9 @@ do_install() {
 		install -m 0755 ${S}/bootlogo-${MACHINE}-${BINARY_VERSION}.elf ${D}/boot/bootlogo.elf
 		install -m 0755 ${S}/bootlogo.jpg ${D}/boot/
 	fi
-	mv ${S}/${BOOTLOGOMVI} ${S}/bootlogo.mvi
+	if [ "${BOOTLOGOMVI}" !- "bootlogo.mvi" ]; then
+		mv ${S}/${BOOTLOGOMVI} ${S}/bootlogo.mvi
+	fi
 	for i in ${MVI}; do
 		install -m 0755 ${S}/$i ${D}/usr/share/
 		ln -sf /usr/share/$i ${D}/boot/$i
