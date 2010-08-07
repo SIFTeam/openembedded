@@ -4,13 +4,16 @@ PRIORITY = "required"
 PR = "r94"
 LICENSE = "GPL"
 
+FSTAB_dm7025 = "${@base_contains('PREFERRED_VERSION_linux-dm7025', '2.6.12.6', 'fstab_old', 'fstab', d)}"
+FSTAB ?= "fstab"
+
 SRC_URI = " \
            file://nsswitch.conf \
            file://motd \
            file://inputrc \
            file://host.conf \
            file://profile \
-           file://fstab \
+           file://${FSTAB} \
            file://filesystems \
            file://issue.net \
            file://issue \
@@ -112,7 +115,7 @@ do_install () {
                         install -m 0644 ${WORKDIR}/issue.net ${D}${sysconfdir}/issue.net
                 fi
 
-                install -m 0644 ${WORKDIR}/fstab ${D}${sysconfdir}/fstab
+                install -m 0644 ${WORKDIR}/${FSTAB} ${D}${sysconfdir}/fstab
         	install -m 0644 ${WORKDIR}/filesystems ${D}${sysconfdir}/filesystems
         	install -m 0644 ${WORKDIR}/usbd ${D}${sysconfdir}/default/usbd
         	install -m 0644 ${WORKDIR}/profile ${D}${sysconfdir}/profile

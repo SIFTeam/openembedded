@@ -99,7 +99,9 @@ int main(int argc, char *argv[], char *envp[])
 	int res, x;
 
 		/* first, load some needed kernel modules located in the root of our boot partition */
-	const char *modules[] = { "lib/decompress_unlzma.ko", "fs/squashfs/squashfs.ko", "fs/unionfs/unionfs.ko", "drivers/block/loop.ko", 0 };
+	const char *modules_new[] = { "lib/decompress_unlzma.ko", "fs/squashfs/squashfs.ko", "fs/unionfs/unionfs.ko", "drivers/block/loop.ko", 0 };
+	const char *modules_old[] = { "fs/squashfs/unlzma.ko", "fs/squashfs/sqlzma.ko", "fs/squashfs/squashfs.ko", "fs/unionfs.ko", "drivers/block/loop.ko", 0 };
+	const char **modules;
 	char path[255];
 	struct utsname uts;
 
@@ -107,6 +109,11 @@ int main(int argc, char *argv[], char *envp[])
 		printf("FATAL! couldnt get kernel name!\n");
 
 	printf("Hello world!\n");
+
+	if (strstr(uts.release, "2.6.12.6"))
+		modules = modules_old;
+	else
+		modules = modules_new;
 
 	x=0;
 	while(modules[x]) {

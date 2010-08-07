@@ -5,7 +5,7 @@ KV = "2.6.12"
 PV = "2.6.12.6"
 PR = "s7"
 
-DEPENDS = "zlib-native"
+DEPENDS = "zlib-native zlib"
 
 # note, the rX in the filename is *NOT* the packet revision - it's the patch revision.
 SRC_URI += "${KERNELORG_MIRROR}/pub/linux/kernel/v2.6/linux-${PV}.tar.bz2 \
@@ -18,13 +18,17 @@ SRC_URI += "${KERNELORG_MIRROR}/pub/linux/kernel/v2.6/linux-${PV}.tar.bz2 \
 	http://sources.dreamboxupdate.com/download/kernel-patches/linux-2.6.12-update-wireless.patch.bz2 \
 	file://linux-2.6-trailing-whitespaces-in-params.patch \
 	file://linuxmips-2.6.12-gcc433-compile-fix.patch \
+	file://linuxmips-2.6.12-gcc44-compile-fixes.patch \
+	file://linuxmips-2.6.12-revert-fadvise-fix.patch \
+	http://www.kernel.org/pub/linux/kernel/people/rml/inotify/v2.6/0.23/inotify-0.23-rml-2.6.12-15.patch \
 #squashfs-lzma stuff
 	http://squashfs-lzma.org/dl/sqlzma3.2-r2b.tar.bz2 \
 	http://dreamboxupdate.com/download/kernel-patches/sqlzma2k-3.2-r2-2.6.12.6.patch.bz2 \
 	http://dreamboxupdate.com/download/patches/fix_lzma_squashfs_makefiles_for_oe-r2.patch.bz2 \
 	${SOURCEFORGE_MIRROR}/squashfs/squashfs3.2-r2.tar.gz \
 	${SOURCEFORGE_MIRROR}/sevenzip/lzma443.tar.bz2 \
-	file://${WORKDIR}/squashfs-lzma/kernel-patches/linux-2.6.12/squashfs3.2-patch "
+	file://${WORKDIR}/squashfs-lzma/kernel-patches/linux-2.6.12/squashfs3.2-patch \
+	"
 
 S = "${WORKDIR}/linux-${PV}"
 
@@ -117,10 +121,10 @@ FILES_mksquashfs = "/usr/bin/mksquashfs"
 FILES_unsquashfs = "/usr/bin/unsquashfs"
 
 do_stage() {
-	install ${WORKDIR}/squashfs-lzma/C/7zip/Compress/LZMA_Alone/lzma ${STAGING_BINDIR}
-	install ${WORKDIR}/squashfs-lzma/C/7zip/Compress/LZMA_C/lzmadec ${STAGING_BINDIR}
-	install ${WORKDIR}/squashfs-lzma/squashfs-tools/mksquashfs ${STAGING_BINDIR}
-	install ${WORKDIR}/squashfs-lzma/squashfs-tools/unsquashfs ${STAGING_BINDIR}
+	install ${WORKDIR}/squashfs-lzma/C/7zip/Compress/LZMA_Alone/lzma ${STAGING_BINDIR_NATIVE}
+	install ${WORKDIR}/squashfs-lzma/C/7zip/Compress/LZMA_C/lzmadec ${STAGING_BINDIR_NATIVE}
+	install ${WORKDIR}/squashfs-lzma/squashfs-tools/mksquashfs ${STAGING_BINDIR_NATIVE}
+	install ${WORKDIR}/squashfs-lzma/squashfs-tools/unsquashfs ${STAGING_BINDIR_NATIVE}
 }
 
 pkg_preinst_kernel-image () {

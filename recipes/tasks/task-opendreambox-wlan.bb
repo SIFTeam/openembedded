@@ -39,21 +39,21 @@ WLAN_USB_MODULES = "\
   zd1211-firmware \
 "
 
-WLAN_USB_MODULES_2_6_18 = "\
+WLAN_USB_MODULES_LEGACY = "\
   zd1211b \
   wlan-rt73 \
 "
 
 RDEPENDS_${PN}_append_dm500hd = "\
-  ${@base_contains('PREFERRED_VERSION_linux-dm500hd', '2.6.18', '${WLAN_USB_MODULES_2_6_18}', '${WLAN_CRYPTO_MODULES} ${WLAN_USB_MODULES}', d)} \
+  ${@base_contains('PREFERRED_VERSION_linux-dm500hd', '2.6.18', '${WLAN_USB_MODULES_LEGACY}', '${WLAN_CRYPTO_MODULES} ${WLAN_USB_MODULES}', d)} \
 "
 
 RDEPENDS_${PN}_append_dm800 = "\
-  ${@base_contains('PREFERRED_VERSION_linux-dm800', '2.6.18', '${WLAN_USB_MODULES_2_6_18}', '${WLAN_CRYPTO_MODULES} ${WLAN_USB_MODULES}', d)} \
+  ${@base_contains('PREFERRED_VERSION_linux-dm800', '2.6.18', '${WLAN_USB_MODULES_LEGACY}', '${WLAN_CRYPTO_MODULES} ${WLAN_USB_MODULES}', d)} \
 "
 
 RDEPENDS_${PN}_append_dm800se = "\
-  ${@base_contains('PREFERRED_VERSION_linux-dm800se', '2.6.18', '${WLAN_USB_MODULES_2_6_18}', '${WLAN_CRYPTO_MODULES} ${WLAN_USB_MODULES}', d)} \
+  ${@base_contains('PREFERRED_VERSION_linux-dm800se', '2.6.18', '${WLAN_USB_MODULES_LEGACY}', '${WLAN_CRYPTO_MODULES} ${WLAN_USB_MODULES}', d)} \
 "
 
 RDEPENDS_${PN}_append_dm8000 = "\
@@ -61,8 +61,7 @@ RDEPENDS_${PN}_append_dm8000 = "\
 "
 
 RDEPENDS_${PN}_append_dm7025 = "\
-  ${WLAN_CRYPTO_MODULES} \
-  ${WLAN_USB_MODULES} \
+  ${@base_contains('PREFERRED_VERSION_linux-dm7025', '2.6.12.6', '${WLAN_USB_MODULES_LEGACY}', '${WLAN_CRYPTO_MODULES} ${WLAN_USB_MODULES}', d)} \
 "
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"

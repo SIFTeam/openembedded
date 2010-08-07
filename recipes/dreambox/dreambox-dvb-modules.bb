@@ -16,8 +16,9 @@ PV_dm600pvr = "${KV}-20090430"
 KV_dm500plus = "2.6.12"
 PV_dm500plus = "${KV}-20080822"
 
-KV_dm7025 = "2.6.32-1.3-dm7025"
-PV_dm7025 = "${KV}-20100727"
+KV_dm7025 = "${@base_contains('PREFERRED_VERSION_linux-dm7025', '2.6.12.6', '2.6.12.6', '2.6.32-1.3-dm7025', d)}"
+PV_dm7025 = "${KV}-${@base_contains('PREFERRED_VERSION_linux-dm7025', '2.6.12.6', '20100804', '20100727', d)}"
+GCC_dm7025 = "${@base_contains('PREFERRED_VERSION_linux-dm7025', '2.6.12.6', '-gcc4.4', '', d)}"
 
 KV_dm500hd = "${@base_contains('PREFERRED_VERSION_linux-dm500hd', '2.6.18', '2.6.18-7.3-dm500hd', '2.6.30-dm500hd', d)}"
 PV_dm500hd = "${KV}-${@base_contains('PREFERRED_VERSION_linux-dm500hd', '2.6.18', '20100623', '20090727', d)}"
@@ -33,13 +34,14 @@ PV_dm8000 = "${KV}-${@base_contains('PREFERRED_VERSION_linux-dm8000', '2.6.18', 
 
 RDEPENDS_${PN} = "kernel (${KV})"
 MACHINE_KERNEL_PR_append = ".0"
+GCC ?= ""
 
 inherit module
 
 do_compile() {
 }
 
-SRC_URI = "http://sources.dreamboxupdate.com/snapshots/dreambox-dvb-modules-${MACHINE}-${PV}.tar.bz2 "
+SRC_URI = "http://sources.dreamboxupdate.com/snapshots/dreambox-dvb-modules-${MACHINE}-${PV}${GCC}.tar.bz2 "
 SRC_URI_append_dm7025 = "http://sources.dreamboxupdate.com/download/7020/fpupgrade-${MACHINE}-v7"
 SRC_URI_append_dm8000 = "http://sources.dreamboxupdate.com/download/7020/fpupgrade-${MACHINE}-v7"
 
@@ -61,7 +63,6 @@ do_install_mipsel() {
 	done
 	install -d ${D}/${sysconfdir}/modutils
 	for i in `ls | grep \\.ko | sed -e 's/.ko//g'`; do
-		echo $i >> ${D}/${sysconfdir}/modutils/dreambox
 	done
 }
 

@@ -1,0 +1,303 @@
+--- linux-2.6.12.6.org/arch/mips/Makefile	2010-08-03 13:53:13.786025121 +0200
++++ linux-2.6.12.6/arch/mips/Makefile	2010-08-03 13:46:01.066025294 +0200
+@@ -22,7 +22,7 @@
+ # Select the object file format to substitute into the linker script.
+ #
+ ifdef CONFIG_CPU_LITTLE_ENDIAN
+-32bit-tool-prefix	= mipsel-linux-
++32bit-tool-prefix	= mipsel-oe-linux-
+ 64bit-tool-prefix	= mips64el-linux-
+ 32bit-bfd		= elf32-tradlittlemips
+ 64bit-bfd		= elf64-tradlittlemips
+--- linux-2.6.12.6.org/arch/mips/kernel/time.c	2005-08-29 18:55:27.000000000 +0200
++++ linux-2.6.12.6/arch/mips/kernel/time.c	2010-08-03 13:42:31.590021528 +0200
+@@ -268,10 +268,14 @@
+ 	/* .. relative to previous jiffy (32 bits is enough) */
+ 	count -= timerlo;
+ 
++#ifndef GCC_NO_H_CONSTRAINT
+ 	__asm__("multu	%1,%2"
+ 		: "=h" (res)
+ 		: "r" (count), "r" (sll32_usecs_per_cycle)
+ 		: "lo", GCC_REG_ACCUM);
++#else
++	res = ((uintx_t)count * sll32_usecs_per_cycle) >> BITS_PER_LONG;
++#endif
+ 
+ 	/*
+ 	 * Due to possible jiffies inconsistencies, we need to check
+@@ -323,10 +327,14 @@
+ 	/* .. relative to previous jiffy (32 bits is enough) */
+ 	count -= timerlo;
+ 
++#ifndef GCC_NO_H_CONSTRAINT
+ 	__asm__("multu  %1,%2"
+ 		: "=h" (res)
+ 		: "r" (count), "r" (quotient)
+ 		: "lo", GCC_REG_ACCUM);
++#else
++	res = ((uintx_t)count * quotient) >> BITS_PER_LONG;
++#endif
+ 
+ 	/*
+ 	 * Due to possible jiffies inconsistencies, we need to check
+@@ -379,10 +387,14 @@
+ 	/* .. relative to previous jiffy (32 bits is enough) */
+ 	count -= timerlo;
+ 
++#ifndef GCC_NO_H_CONSTRAINT
+ 	__asm__("multu	%1,%2"
+ 		: "=h" (res)
+ 		: "r" (count), "r" (quotient)
+ 		: "lo", GCC_REG_ACCUM);
++#else
++	res = ((uintx_t)count * quotient) >> BITS_PER_LONG;
++#endif
+ 
+ 	/*
+ 	 * Due to possible jiffies inconsistencies, we need to check
+--- linux-2.6.12.6.org/arch/mips/lib/Makefile	2010-08-03 13:53:14.270022698 +0200
++++ linux-2.6.12.6/arch/mips/lib/Makefile	2010-08-03 13:48:44.066022062 +0200
+@@ -7,6 +7,6 @@
+ 
+ obj-y	+= iomap.o
+ 
+-obj-y += ucmpdi2.o
++obj-y += ucmpdi2.o ashrdi3.o ashldi3.o lshrdi3.o
+ 
+ EXTRA_AFLAGS := $(CFLAGS)
+--- linux-2.6.12.6.org/arch/mips/lib/ashldi3.c	1970-01-01 01:00:00.000000000 +0100
++++ linux-2.6.12.6/arch/mips/lib/ashldi3.c	2006-09-20 05:42:06.000000000 +0200
+@@ -0,0 +1,29 @@
++#include <linux/module.h>
++
++#include "libgcc.h"
++
++long long __ashldi3(long long u, word_type b)
++{
++	DWunion uu, w;
++	word_type bm;
++
++	if (b == 0)
++		return u;
++
++	uu.ll = u;
++	bm = 32 - b;
++
++	if (bm <= 0) {
++		w.s.low = 0;
++		w.s.high = (unsigned int) uu.s.low << -bm;
++	} else {
++		const unsigned int carries = (unsigned int) uu.s.low >> bm;
++
++		w.s.low = (unsigned int) uu.s.low << b;
++		w.s.high = ((unsigned int) uu.s.high << b) | carries;
++	}
++
++	return w.ll;
++}
++
++EXPORT_SYMBOL(__ashldi3);
+--- linux-2.6.12.6.org/arch/mips/lib/ashrdi3.c	1970-01-01 01:00:00.000000000 +0100
++++ linux-2.6.12.6/arch/mips/lib/ashrdi3.c	2006-09-20 05:42:06.000000000 +0200
+@@ -0,0 +1,31 @@
++#include <linux/module.h>
++
++#include "libgcc.h"
++
++long long __ashrdi3(long long u, word_type b)
++{
++	DWunion uu, w;
++	word_type bm;
++
++	if (b == 0)
++		return u;
++
++	uu.ll = u;
++	bm = 32 - b;
++
++	if (bm <= 0) {
++		/* w.s.high = 1..1 or 0..0 */
++		w.s.high =
++		    uu.s.high >> 31;
++		w.s.low = uu.s.high >> -bm;
++	} else {
++		const unsigned int carries = (unsigned int) uu.s.high << bm;
++
++		w.s.high = uu.s.high >> b;
++		w.s.low = ((unsigned int) uu.s.low >> b) | carries;
++	}
++
++	return w.ll;
++}
++
++EXPORT_SYMBOL(__ashrdi3);
+--- linux-2.6.12.6-org/arch/mips/lib/lshrdi3.c	1970-01-01 01:00:00.000000000 +0100
++++ linux-2.6.12.6/arch/mips/lib/lshrdi3.c	2006-09-20 05:42:06.000000000 +0200
+@@ -0,0 +1,29 @@
++#include <linux/module.h>
++
++#include "libgcc.h"
++
++long long __lshrdi3(long long u, word_type b)
++{
++	DWunion uu, w;
++	word_type bm;
++
++	if (b == 0)
++		return u;
++
++	uu.ll = u;
++	bm = 32 - b;
++
++	if (bm <= 0) {
++		w.s.high = 0;
++		w.s.low = (unsigned int) uu.s.high >> -bm;
++	} else {
++		const unsigned int carries = (unsigned int) uu.s.high << bm;
++
++		w.s.high = (unsigned int) uu.s.high >> b;
++		w.s.low = ((unsigned int) uu.s.low >> b) | carries;
++	}
++
++	return w.ll;
++}
++
++EXPORT_SYMBOL(__lshrdi3);
+--- linux-2.6.12.6.org/fs/squashfs/.tmp_versions/squashfs.mod	1970-01-01 01:00:00.000000000 +0100
++++ linux-2.6.12.6/fs/squashfs/.tmp_versions/squashfs.mod	2010-08-03 13:49:46.214025683 +0200
+@@ -0,0 +1,2 @@
++/home/ghost/misc/dreambox/bitbake_7025_new/dm7025/build/tmp/work/dm7025-oe-linux/linux-dm7025-2.6.12.6-s7/linux-2.6.12.6/fs/squashfs/squashfs.ko
++/home/ghost/misc/dreambox/bitbake_7025_new/dm7025/build/tmp/work/dm7025-oe-linux/linux-dm7025-2.6.12.6-s7/linux-2.6.12.6/fs/squashfs/inode.o /home/ghost/misc/dreambox/bitbake_7025_new/dm7025/build/tmp/work/dm7025-oe-linux/linux-dm7025-2.6.12.6-s7/linux-2.6.12.6/fs/squashfs/squashfs2_0.o
+--- linux-2.6.12.6.org/include/asm-mips/compiler.h	2005-08-29 18:55:27.000000000 +0200
++++ linux-2.6.12.6/include/asm-mips/compiler.h	2010-08-03 13:44:08.106021617 +0200
+@@ -8,10 +8,21 @@
+ #ifndef _ASM_COMPILER_H
+ #define _ASM_COMPILER_H
+ 
++#include <asm/types.h>
++
+ #if __GNUC__ > 3 || (__GNUC__ == 3 && __GNUC_MINOR__ >= 4)
+ #define GCC_REG_ACCUM "$0"
+ #else
+ #define GCC_REG_ACCUM "accum"
+ #endif
+ 
++#if __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 4)
++#define GCC_NO_H_CONSTRAINT
++#ifdef CONFIG_64BIT
++typedef unsigned int uintx_t __attribute__((mode(TI)));
++#else
++typedef u64 uintx_t;
++#endif
++#endif
++
+ #endif /* _ASM_COMPILER_H */
+--- linux-2.6.12.6.org/include/asm-mips/delay.h	2005-08-29 18:55:27.000000000 +0200
++++ linux-2.6.12.6/include/asm-mips/delay.h	2010-08-03 13:44:17.914022072 +0200
+@@ -37,6 +37,37 @@
+ 		:"0" (loops));
+ }
+ 
++/*
++ * convert usecs to loops
++ *
++ * handle removal of 'h' constraint in GCC 4.4
++ */
++
++#ifndef GCC_NO_H_CONSTRAINT    /* gcc <= 4.3 */
++static inline unsigned long __usecs_to_loops(unsigned long usecs, unsigned long lpj)
++{
++	unsigned long lo;
++
++	if (sizeof(long) == 4)
++		__asm__("multu\t%2, %3"
++		: "=h" (usecs), "=l" (lo)
++		: "r" (usecs), "r" (lpj)
++		: GCC_REG_ACCUM);
++	else if (sizeof(long) == 8)
++		__asm__("dmultu\t%2, %3"
++		: "=h" (usecs), "=l" (lo)
++		: "r" (usecs), "r" (lpj)
++		: GCC_REG_ACCUM);
++
++	return usecs;
++}
++#else  /* GCC_NO_H_CONSTRAINT, gcc >= 4.4 */
++static inline unsigned long __usecs_to_loops(unsigned long usecs,
++               unsigned long lpj)
++{
++	return ((uintx_t)usecs * lpj) >> BITS_PER_LONG;
++}
++#endif
+ 
+ /*
+  * Division by multiplication: you don't have to worry about
+@@ -51,8 +82,6 @@
+ 
+ static inline void __udelay(unsigned long usecs, unsigned long lpj)
+ {
+-	unsigned long lo;
+-
+ 	/*
+ 	 * The common rates of 1000 and 128 are rounded wrongly by the
+ 	 * catchall case for 64-bit.  Excessive precission?  Probably ...
+@@ -67,19 +96,7 @@
+ 	usecs *= (unsigned long) (((0x8000000000000000ULL / (500000 / HZ)) +
+ 	                           0x80000000ULL) >> 32);
+ #endif
+-
+-	if (sizeof(long) == 4)
+-		__asm__("multu\t%2, %3"
+-		: "=h" (usecs), "=l" (lo)
+-		: "r" (usecs), "r" (lpj)
+-		: GCC_REG_ACCUM);
+-	else if (sizeof(long) == 8)
+-		__asm__("dmultu\t%2, %3"
+-		: "=h" (usecs), "=l" (lo)
+-		: "r" (usecs), "r" (lpj)
+-		: GCC_REG_ACCUM);
+-
+-	__delay(usecs);
++	__delay(__usecs_to_loops(usecs, lpj));
+ }
+ 
+ #ifdef CONFIG_SMP
+--- linux-2.6.12.6.org/include/asm-mips/div64.h	2005-08-29 18:55:27.000000000 +0200
++++ linux-2.6.12.6/include/asm-mips/div64.h	2010-08-03 13:44:26.090021496 +0200
+@@ -53,6 +53,23 @@
+ 	(res) = __quot; \
+ 	__mod; })
+ 
++/*
++ * __do_divu -- unsigned interger dividing
++ *
++ * handle removal of 'h' constraint in GCC 4.4
++ */
++#ifndef GCC_NO_H_CONSTRAINT /* gcc <= 4.3*/
++#define __do_divu() ({ \
++ __asm__("divu $0, %z2, %z3" \
++ : "=h" (__upper), "=l" (__high) \
++ : "Jr" (__high), "Jr" (__base) \
++ : GCC_REG_ACCUM); })
++#else /* gcc >= 4.4 */
++#define __do_divu() ({ \
++ __upper = (uintx_t)__high % __base; \
++ __high = (uintx_t)__high / __base; })
++#endif
++
+ #define do_div(n, base) ({ \
+ 	unsigned long long __quot; \
+ 	unsigned long __mod; \
+@@ -67,10 +84,7 @@
+ 	__upper = __high; \
+ 	\
+ 	if (__high) \
+-		__asm__("divu	$0, %z2, %z3" \
+-			: "=h" (__upper), "=l" (__high) \
+-			: "Jr" (__high), "Jr" (__base) \
+-			: GCC_REG_ACCUM); \
++		__do_divu(); \
+ 	\
+ 	__mod = do_div64_32(__low, __upper, __low, __base); \
+ 	\

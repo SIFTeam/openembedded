@@ -1,0 +1,27 @@
+--- linux-2.6.12.6-org/arch/mips/kernel/scall32-o32.S	2010-08-04 19:33:39.041649597 +0200
++++ linux-2.6.12.6/arch/mips/kernel/scall32-o32.S	2010-08-04 19:27:06.961547749 +0200
+@@ -594,7 +594,7 @@
+ 	sys	sys_remap_file_pages	5
+ 	sys	sys_set_tid_address	1
+ 	sys	sys_restart_syscall	0
+-	sys	mips_fadvise64		7
++	sys	sys_fadvise64_64	7
+ 	sys	sys_statfs64		3	/* 4255 */
+ 	sys	sys_fstatfs64		2
+ 	sys	sys_timer_create	3
+--- linux-2.6.12.6-org/arch/mips/kernel/syscall.c	2010-08-04 19:33:39.041649597 +0200
++++ linux-2.6.12.6/arch/mips/kernel/syscall.c	2010-08-04 19:27:06.961547749 +0200
+@@ -397,13 +397,6 @@
+ 	}
+ }
+ 
+-asmlinkage long mips_fadvise64(int fd,
+-		    unsigned int low_off, unsigned int high_off,
+-		    unsigned int len, int advice, unsigned int dummy)
+-{
+-	return sys_fadvise64_64(fd, (((u64)high_off) << 32) | low_off, (u64)len, advice);
+-}
+-
+ /*
+  * No implemented yet ...
+  */

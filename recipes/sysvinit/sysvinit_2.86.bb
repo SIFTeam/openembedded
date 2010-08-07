@@ -18,11 +18,14 @@ CONFFILES_${PN}-inittab = "${sysconfdir}/inittab"
 USE_VT ?= "1"
 SYSVINIT_ENABLED_GETTYS ?= "1"
 
+INITTAB_dm7025 = "${@base_contains('PREFERRED_VERSION_linux-dm7025', '2.6.12.6', 'inittab_old', 'inittab', d)}"
+INITTAB ?= "inittab"
+
 SRC_URI = "ftp://ftp.cistron.nl/pub/people/miquels/sysvinit/sysvinit-${PV}.tar.gz \
            file://install.patch \
            file://need \
            file://provide \
-           file://inittab \
+           file://${INITTAB} \
            file://rcS-default \
            file://rc \
            file://rcS \
@@ -62,7 +65,7 @@ do_install () {
 	install -d ${D}${sysconfdir}
 	install -d ${D}${sysconfdir}/default
 	install	-d ${D}${sysconfdir}/init.d
-	install -m 0644 ${WORKDIR}/inittab ${D}${sysconfdir}/inittab
+	install -m 0644 ${WORKDIR}/${INITTAB} ${D}${sysconfdir}/inittab
 	if [ ! -z "${SERIAL_CONSOLE}" ]; then
 		echo "S:2345:respawn:${base_sbindir}/getty ${SERIAL_CONSOLE}" >> ${D}${sysconfdir}/inittab
 	fi
