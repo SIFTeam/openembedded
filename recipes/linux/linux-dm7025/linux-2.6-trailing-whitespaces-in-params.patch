@@ -1,0 +1,58 @@
+From: Rusty Russell <rusty@rustcorp.com.au>
+Date: Wed, 28 Sep 2005 04:45:34 +0000 (-0700)
+Subject: [PATCH] Ignore trailing whitespace on kernel parameters correctly
+X-Git-Tag: v2.6.14-rc3~88
+X-Git-Url: http://git.kernel.org/?p=linux%2Fkernel%2Fgit%2Ftorvalds%2Flinux-2.6.git;a=commitdiff_plain;h=f36462f078403c1859a7e58177b28e01b3a179e4;hp=e3306dd5f7eb2e699f36a4a313fca4b48b18d5e1
+
+[PATCH] Ignore trailing whitespace on kernel parameters correctly
+
+Dave Jones says:
+
+... if the modprobe.conf has trailing whitespace, modules fail to load
+with the following helpful message..
+
+	snd_intel8x0: Unknown parameter `'
+
+Previous version truncated last argument.
+
+Signed-off-by: Rusty Russell <rusty@rustcorp.com.au>
+Cc: Dave Jones <davej@redhat.com>
+Signed-off-by: Andrew Morton <akpm@osdl.org>
+Signed-off-by: Linus Torvalds <torvalds@osdl.org>
+---
+
+diff --git a/kernel/params.c b/kernel/params.c
+index fbf1732..1a8614b 100644
+--- a/kernel/params.c
++++ b/kernel/params.c
+@@ -80,8 +80,6 @@ static char *next_arg(char *args, char **param, char **val)
+ 	int in_quote = 0, quoted = 0;
+ 	char *next;
+ 
+-	/* Chew any extra spaces */
+-	while (*args == ' ') args++;
+ 	if (*args == '"') {
+ 		args++;
+ 		in_quote = 1;
+@@ -121,6 +119,10 @@ static char *next_arg(char *args, char **param, char **val)
+ 		next = args + i + 1;
+ 	} else
+ 		next = args + i;
++
++	/* Chew up trailing spaces. */
++	while (*next == ' ')
++		next++;
+ 	return next;
+ }
+ 
+@@ -135,6 +137,10 @@ int parse_args(const char *name,
+ 
+ 	DEBUGP("Parsing ARGS: %s\n", args);
+ 
++	/* Chew leading spaces */
++	while (*args == ' ')
++		args++;
++
+ 	while (*args) {
+ 		int ret;
+ 

@@ -27,7 +27,7 @@ SRC_URI += "${KERNELORG_MIRROR}/pub/linux/kernel/v2.6/linux-${PV}.tar.bz2 \
 	http://dreamboxupdate.com/download/patches/fix_lzma_squashfs_makefiles_for_oe-r2.patch.bz2 \
 	${SOURCEFORGE_MIRROR}/squashfs/squashfs3.2-r2.tar.gz \
 	${SOURCEFORGE_MIRROR}/sevenzip/lzma443.tar.bz2 \
-	file://${WORKDIR}/squashfs-lzma/kernel-patches/linux-2.6.12/squashfs3.2-patch \
+	file://${WORKDIR}/squashfs-lzma/kernel-patches/linux-2.6.12/squashfs3.2-patch;apply=yes \
 	"
 
 S = "${WORKDIR}/linux-${PV}"
@@ -47,6 +47,11 @@ do_munge () {
 	if [ -d ${WORKDIR}/squashfs3.2-r2 ]; then
 		mv ${WORKDIR}/squashfs3.2-r2/* ${WORKDIR}
 		rm -R ${WORKDIR}/squashfs3.2-r2
+		for i in sqlzma1-443.patch sqlzma2u-3.2-r2.patch fix_lzma_squashfs_makefiles_for_oe-r2.patch; 
+		do
+	    		echo "Applying $i"
+			patch -d ${WORKDIR} -p1 < ${WORKDIR}/$i
+		done
 	fi
 	CUR=`pwd`
 	cd ${WORKDIR}
@@ -65,6 +70,7 @@ do_munge () {
 	done
 	cd $CUR
 }
+
 
 do_compile_prepend () {
 	if [ -f ${S}/.patched ];
