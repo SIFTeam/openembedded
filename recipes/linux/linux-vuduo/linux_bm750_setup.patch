@@ -1,0 +1,13 @@
+Index: arch/mips/kernel/setup.c
+===================================================================
+--- arch/mips/kernel/setup.c	(revision 1)
++++ arch/mips/kernel/setup.c	(working copy)
+@@ -653,6 +653,8 @@
+ 				usermem = 1;
+ 			}
+ 			mem_size = memparse(from + 4, &from);
++			//csh memory_size hack for duo
++			mem_size = 0x9000000;
+ #if defined (CONFIG_MIPS_BCM7440) || defined (CONFIG_MIPS_BCM7601) || defined (CONFIG_MIPS_BCM7635)
+ 
+ 			upper_mem_ram_size = 0;

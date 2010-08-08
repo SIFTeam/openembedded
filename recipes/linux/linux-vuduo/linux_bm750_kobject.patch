@@ -1,0 +1,12 @@
+Index: lib/kobject.c
+===================================================================
+--- lib/kobject.c	(revision 1)
++++ lib/kobject.c	(working copy)
+@@ -581,6 +581,7 @@
+ EXPORT_SYMBOL(kobject_init);
+ EXPORT_SYMBOL(kobject_register);
+ EXPORT_SYMBOL(kobject_unregister);
++EXPORT_SYMBOL(kobject_get_path);
+ EXPORT_SYMBOL(kobject_get);
+ EXPORT_SYMBOL(kobject_put);
+ EXPORT_SYMBOL(kobject_add);

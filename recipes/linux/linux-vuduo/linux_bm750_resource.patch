@@ -1,0 +1,15 @@
+Index: include/linux/resource.h
+===================================================================
+--- include/linux/resource.h	(revision 1)
++++ include/linux/resource.h	(working copy)
+@@ -62,7 +62,10 @@
+  * THT: 8MB is unreasonably high for embedded systems,
+  * for which, by default, only 32MB is allocated to the kernel
+  */
++/*
+ #define _STK_LIM	(1<<20)
++*/
++#define _STK_LIM	(4<<20)
+ 
+ #else
+ #define _STK_LIM	(8*1024*1024)

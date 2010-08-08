@@ -1,0 +1,58 @@
+Index: drivers/mtd/brcmnand/bcm7xxx-nand.c
+===================================================================
+--- drivers/mtd/brcmnand/bcm7xxx-nand.c	(revision 1)
++++ drivers/mtd/brcmnand/bcm7xxx-nand.c	(working copy)
+@@ -149,20 +149,33 @@
+ 
+ static struct mtd_partition bcm7XXX_no_xor_partition[] = 
+ {
+-	/* XOR disabled: Everything is shifted down 4MB */
+-	{ name: N_ROOTFS,	offset: 0x00400000,			size: DEFAULT_ROOTFS_SIZE - (DEFAULT_BBT0_SIZE_MB <<20) },	// Less 1MB for BBT
+-	{ name: N_ALL,		offset: 0,					size: DEFAULT_ROOTFS_SIZE - (DEFAULT_BBT0_SIZE_MB <<20) },
+-	{ name: N_KERNEL,	offset: 0x00b00000,			size: 4<<20 }, 
+-	/* BBT0 1MB not mountable by anyone */
+-
+-	/* Following partitions only present on flash with size > 512MB */
+-	{ name: N_DATA, 	offset: 0x20000000,			size: 0 },
+-	/* BBT1 4MB not mountable by anyone */
+-	{name: NULL, 		offset: 0, 					size: 0} 	/* End marker */
++	{ name: N_ROOTFS,	offset: 0,					size: DEFAULT_ROOTFS_SIZE },	
++#ifdef CONFIG_MTD_ECM_PARTITION
++	{ name: N_AVAIL1,	offset: DEFAULT_ROOTFS_SIZE,	size: DEFAULT_AVAIL1_SIZE },
++	{ name: N_OCAP,		offset: DEFAULT_ROOTFS_SIZE+DEFAULT_AVAIL1_SIZE,	size: DEFAULT_OCAP_SIZE },
++#endif
++#ifdef USE_SPLASH
++	{ name: N_KERNEL,	offset: 0x00200000,			size: 4<<20 },
++	{ name: "boot",		offset: 0x00600000,			size: 4<<20 },
++	{ name: "bootimg",	offset: 0x00A00000,			size: 2<<20 },
++#else
++	{ name: N_KERNEL,	offset: 0x00600000,			size: 2<<20 },
++	{ name: "boot",		offset: 0x07800000,			size: 4<<20 },
++#endif
++	{ name: N_CFE,		offset: 0x07C00000,			size: 1<<20 },
++	{ name: "mac",		offset: 0x07D00000,			size: 1<<19 },
++	{ name: "env",		offset: 0x07D80000,			size: 1<<19 },
++	{ name: N_NVM,		offset: 0x07E00000,			size: 1<<20 },
++	/* BBT 1MB not mountable by anyone */
++	{ name: N_DATA, 	offset: 0x20000000,		size: 0 },
++/* Add 1 extra place-holder partition for splash, and a safety guard element */
++	{name: NULL, offset: 0, size: 0},
++	{name: NULL, offset: 0, size: 0}
+ };
+ 
+ static struct mtd_partition bcm7XXX_new_partition[] = 
+ {
++
+ 	{ name: N_ROOTFS,	offset: 0,					size: DEFAULT_ROOTFS_SIZE },	
+ 	{ name: N_ALL,		offset: 0x0,					size: DEFAULT_ROOTFS_SIZE - (DEFAULT_BBT0_SIZE_MB <<20) },
+ 	{ name: N_KERNEL,	offset: 0x00800000,			size: 4<<20 },
+@@ -267,7 +280,8 @@
+ 		if (device_size(mtd) <= (512ULL <<20)) {
+ 			bcm7XXX_nand_parts[ALL_PART].size = 
+ 				device_size(mtd) - (uint64_t) (DEFAULT_BBT0_SIZE_MB<<20);
+-			*numParts = 3;
++//			*numParts = 3;
++			*numParts = 7;
+ 		} 
+ 		else {
+ 			bcm7XXX_nand_parts[ALL_PART].size = ((512-DEFAULT_BBT1_SIZE_MB)<<20);
