@@ -37,7 +37,7 @@ BINARY_VERSION_dm8000 = "6"
 
 SRC_URI += "${@base_contains("MACHINE_FEATURES", "dreambox", "http://sources.dreamboxupdate.com/download/7020/bootlogo-${MACHINE}-${BINARY_VERSION}.elf" , "", d)}"
 
-MVI = "bootlogo.mvi ${SWITCHOFFMVI}"
+MVI = "${SWITCHOFFMVI}"
 MVISYMLINKS = "bootlogo_wait backdrop"
 
 do_install() {
@@ -47,9 +47,8 @@ do_install() {
 		install -m 0755 ${S}/bootlogo-${MACHINE}-${BINARY_VERSION}.elf ${D}/boot/bootlogo.elf
 		install -m 0755 ${S}/bootlogo.jpg ${D}/boot/
 	fi
-	if [ "${BOOTLOGOMVI}" != "bootlogo.mvi" ]; then
-		mv ${S}/${BOOTLOGOMVI} ${S}/bootlogo.mvi
-	fi
+	install -m 0755 ${BOOTLOGOMVI} ${D}/usr/share/bootlogo.mvi
+	ln -sf /usr/share/bootlogo.mvi ${D}/boot/bootlogo.mvi
 	for i in ${MVI}; do
 		install -m 0755 ${S}/$i ${D}/usr/share/
 		ln -sf /usr/share/$i ${D}/boot/$i

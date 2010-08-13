@@ -63,6 +63,7 @@ do_install_mipsel() {
 	done
 	install -d ${D}/${sysconfdir}/modutils
 	for i in `ls | grep \\.ko | sed -e 's/.ko//g'`; do
+		echo $i >> ${D}/${sysconfdir}/modutils/dreambox
 	done
 }
 
