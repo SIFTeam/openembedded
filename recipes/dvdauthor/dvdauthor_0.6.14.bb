@@ -2,7 +2,7 @@ DESCRIPTION = "A set of tools to help you generate DVD files to be played back o
 MAINTAINER = "Felix Domke <tmbinc@elitedvb.net>"
 LICENSE = "GPL"
 SECTION = "optional"
-DEPENDS = "libdvdread libfribidi"
+DEPENDS = "libdvdread libfribidi freetype"
 
 SRC_URI = "${SOURCEFORGE_MIRROR}/dvdauthor/dvdauthor-${PV}.tar.gz \
 	file://dvdauthor-fix-fribidi.patch \
