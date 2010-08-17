@@ -1,5 +1,5 @@
 require busybox.inc
-PR = "${INC_PR}.3"
+PR = "${INC_PR}.4"
 
 # assume that busybox-mdev emulates every udev feature that might be
 # required by packages claiming to depend on 'udev'
