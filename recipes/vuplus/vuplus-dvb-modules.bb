@@ -12,7 +12,7 @@ def get_modules_extension(bb, d):
 KV = "2.6.18-7.3"
 PV = "${KV}"
 
-SRCDATE = "20100719"
+SRCDATE = "20100827"
 
 RDEPENDS = "initscripts-vuplus kernel (${KV}) kernel-module-firmware-class kernel-module-input kernel-module-evdev kernel-module-i2c-core kernel-module-snd kernel-module-snd-pcm"
 PR = "r19-${SRCDATE}"
@@ -20,7 +20,7 @@ PR = "r19-${SRCDATE}"
 DOWNLOADMACHINE = "${MACHINE}"
 DOWNLOADMACHINE_vuduo = "bm750"
 
-SRC_URI = "http://archive.vuplus.com/download/drivers/mbox-dvb-modules-${DOWNLOADMACHINE}-${KV}-${SRCDATE}.tar.gz "
+SRC_URI = "http://archive.vuplus.com/download/drivers/mbox-dvb-modules-${DOWNLOADMACHINE}-${KV}-${PREFERRED_VERSION_gcc}-${SRCDATE}.tar.gz"
 
 S = "${WORKDIR}"
 
