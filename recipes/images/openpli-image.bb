@@ -15,7 +15,8 @@ IMAGE_INSTALL = " \
 				tuxbox-links \
 				"
 
-DEPENDS += " \
+OPTIONAL_PACKAGES ?= ""
+OPTIONAL_PACKAGES += " \
 			openvpn \
 			gdb strace \
 			procps \

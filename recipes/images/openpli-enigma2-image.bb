@@ -47,7 +47,8 @@ IMAGE_INSTALL += " \
 				libavahi-client \
 				openpli-bootlogo \
 				"
-DEPENDS += " \
+
+OPTIONAL_PACKAGES += " \
 			${ENIGMA2_OPTIONAL} \
 			"
 
