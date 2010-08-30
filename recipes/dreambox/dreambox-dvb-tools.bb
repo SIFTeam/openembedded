@@ -8,7 +8,7 @@ PV = "1.0"
 PR = "r0"
 
 PROVIDES += "virtual/showiframe"
-RPROVIDES += "virtual/showiframe"
+RPROVIDES_${PN} += "virtual/showiframe"
 
 SRC_URI = "http://sources.dreamboxupdate.com/download/opendreambox/dreambox-dvb-tools-1.0.tar.gz"
 

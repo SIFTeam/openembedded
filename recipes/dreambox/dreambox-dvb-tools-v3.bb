@@ -5,7 +5,7 @@ MAINTAINER = "Felix Domke <tmbinc@elitedvb.net>"
 LICENSE = "GPL"
 
 PROVIDES += "virtual/showiframe"
-RPROVIDES += "virtual/showiframe"
+RPROVIDES_${PN} += "virtual/showiframe"
 
 PV = "1.7"
 PR = "r0"
