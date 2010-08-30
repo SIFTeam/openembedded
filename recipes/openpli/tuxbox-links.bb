@@ -1,9 +1,10 @@
 PN = "tuxbox-links"
 PV = "1.0"
-PR = "r9"
+PR = "r10"
 
 do_install () {
 	install -d ${D}/var
+	install -d ${D}/var/spool
 	install -d ${D}/usr/keys
 	install -d ${D}/usr/bin
 	install -d ${D}/etc/cron
@@ -11,7 +12,7 @@ do_install () {
 	ln -s /usr/keys ${D}/var/
 	ln -s /usr/bin ${D}/var/
 	ln -s /etc ${D}/var/
-	ln -s /etc/cron ${D}/var/spool
+	ln -s /etc/cron ${D}/var/spool/
 	ln -s /etc/tuxbox/scce ${D}/var/
 }
 
