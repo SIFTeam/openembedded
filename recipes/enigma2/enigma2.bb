@@ -19,6 +19,14 @@ RDEPENDS_${PN} = "python-codecs python-core python-lang python-re python-threadi
 
 RDEPENDS_${PN} += "${@base_contains("MACHINE_FEATURES", "blindscan", "virtual/blindscanutils" , "", d)}"
 
+# Magic is the default skin, so we should depend on it.
+DEPENDS += "enigma2-plugin-skins-magic"
+RDEPENDS_${PN} += "enigma2-plugin-skins-magic"
+
+# We depend on the font which we use for TXT subtitles (defined in skin_subtitles.xml)
+DEPENDS += "font-valis-enigma"
+RDEPENDS_${PN} += "font-valis-enigma"
+
 RDEPENDS_enigma2_append_dm7020 = " gst-plugin-ossaudio gst-plugin-ivorbisdec"
 RDEPENDS_enigma2_append_dm7025 = " gst-plugin-alsa alsa-conf gst-plugin-ivorbisdec"
 RDEPENDS_enigma2_append_dm8000 = " gst-plugin-alsa alsa-conf gst-plugin-avi gst-plugin-matroska \
@@ -26,14 +34,6 @@ RDEPENDS_enigma2_append_dm8000 = " gst-plugin-alsa alsa-conf gst-plugin-avi gst-
 RDEPENDS_enigma2_append_dm800 = " gst-plugin-alsa alsa-conf gst-plugin-matroska gst-plugin-qtdemux gst-plugin-ivorbisdec"
 RDEPENDS_enigma2_append_dm500hd = " gst-plugin-alsa alsa-conf gst-plugin-avi gst-plugin-matroska \
 	gst-plugin-qtdemux gst-plugin-cdxaparse gst-plugin-cdio gst-plugin-vcdsrc gst-plugin-vorbis"
-
-# Magic is the default skin, so we should depend on it.
-DEPENDS += "enigma2-plugin-skins-magic"
-RDEPENDS_enigma2 += "enigma2-plugin-skins-magic"
-
-# We depend on the font which we use for TXT subtitles (defined in skin_subtitles.xml)
-DEPENDS += "font-valis-enigma"
-RDEPENDS_enigma2 += "font-valis-enigma"
 
 RRECOMMENDS_enigma2 ?= ""
 # dm8000 and dm500hd should be able to downmix DTS (VU+ not yet, lacks alsa support?)
