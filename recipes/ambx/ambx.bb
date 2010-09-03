@@ -24,7 +24,11 @@ EXTRA_OECONF_dm7025 = "--with-machine=${MACHINE}"
 EXTRA_OECONF_dm8000 = "--with-machine=${MACHINE}"
 EXTRA_OECONF_dm800  = "--with-machine=${MACHINE}"
 EXTRA_OECONF_dm500hd= "--with-machine=${MACHINE}"
+EXTRA_OECONF_vuduo  = "--with-machine=${MACHINE}"
 inherit autotools
 
 FILES_${PN}-test = "/usr/bin/unittest /usr/bin/grabvid /usr/bin/testambx"
 FILES_${PN}-dbg += "/usr/lib/python2.5/site-packages/.debug"
+
+# link against local so's instead of the staged ones
+EXTRA_OEMAKE = 'LDFLAGS="-L${S} -L${STAGING_DIR}/${TARGET_SYS}/lib"'
