@@ -17,10 +17,11 @@ SRCDATE = "20100827"
 RDEPENDS = "initscripts-vuplus kernel (${KV}) kernel-module-firmware-class kernel-module-input kernel-module-evdev kernel-module-i2c-core kernel-module-snd kernel-module-snd-pcm"
 PR = "r19-${SRCDATE}"
 
+VUPLUS_KERNEL_GCC = "4.4.3"
 DOWNLOADMACHINE = "${MACHINE}"
 DOWNLOADMACHINE_vuduo = "bm750"
 
-SRC_URI = "http://archive.vuplus.com/download/drivers/mbox-dvb-modules-${DOWNLOADMACHINE}-${KV}-${PREFERRED_VERSION_gcc}-${SRCDATE}.tar.gz"
+SRC_URI = "http://archive.vuplus.com/download/drivers/mbox-dvb-modules-${DOWNLOADMACHINE}-${KV}-${VUPLUS_KERNEL_GCC}-${SRCDATE}.tar.gz"
 
 S = "${WORKDIR}"
 
