@@ -1,0 +1,288 @@
+diff --git a/arch/mips/kernel/asm-offsets.c b/arch/mips/kernel/asm-offsets.c
+index 7b4553d..c402c37 100644
+--- a/arch/mips/kernel/asm-offsets.c
++++ b/arch/mips/kernel/asm-offsets.c
+@@ -22,7 +22,7 @@
+ #define offset(string, ptr, member) \
+ 	__asm__("\n@@@" string "%0" : : "i" (_offset(ptr, member)))
+ #define constant(string, member) \
+-	__asm__("\n@@@" string "%X0" : : "ri" (member))
++	__asm__("\n@@@" string "%0" : : "ri" (member))
+ #define size(string, size) \
+ 	__asm__("\n@@@" string "%0" : : "i" (sizeof(size)))
+ #define linefeed text("")
+diff --git a/arch/mips/kernel/time.c b/arch/mips/kernel/time.c
+index ab3c3ea..c19c37f 100644
+--- a/arch/mips/kernel/time.c
++++ b/arch/mips/kernel/time.c
+@@ -281,10 +281,14 @@ static unsigned long fixed_rate_gettimeoffset(void)
+ 	/* .. relative to previous jiffy (32 bits is enough) */
+ 	count -= timerlo;
+ 
++#ifndef GCC_NO_H_CONSTRAINT
+ 	__asm__("multu	%1,%2"
+ 		: "=h" (res)
+ 		: "r" (count), "r" (sll32_usecs_per_cycle)
+ 		: "lo", GCC_REG_ACCUM);
++#else
++	res = ((uintx_t)count * sll32_usecs_per_cycle) >> BITS_PER_LONG;
++#endif
+ 
+ #if	0
+ 	/*
+@@ -337,10 +341,14 @@ static unsigned long calibrate_div32_gettimeoffset(void)
+ 	/* .. relative to previous jiffy (32 bits is enough) */
+ 	count -= timerlo;
+ 
++#ifndef GCC_NO_H_CONSTRAINT
+ 	__asm__("multu  %1,%2"
+ 		: "=h" (res)
+ 		: "r" (count), "r" (quotient)
+ 		: "lo", GCC_REG_ACCUM);
++#else
++	res = ((uintx_t)count * quotient) >> BITS_PER_LONG;
++#endif
+ 
+ 	/*
+ 	 * Due to possible jiffies inconsistencies, we need to check
+@@ -393,10 +401,14 @@ static unsigned long calibrate_div64_gettimeoffset(void)
+ 	/* .. relative to previous jiffy (32 bits is enough) */
+ 	count -= timerlo;
+ 
++#ifndef GCC_NO_H_CONSTRAINT
+ 	__asm__("multu	%1,%2"
+ 		: "=h" (res)
+ 		: "r" (count), "r" (quotient)
+ 		: "lo", GCC_REG_ACCUM);
++#else
++	res = ((uintx_t)count * quotient) >> BITS_PER_LONG;
++#endif
+ 
+ 	/*
+ 	 * Due to possible jiffies inconsistencies, we need to check
+@@ -440,7 +452,7 @@ EXPORT_SYMBOL(null_perf_irq);
+ EXPORT_SYMBOL(perf_irq);
+ 
+ extern int performance_enabled;
+-extern int test_all_counters();
++extern int test_all_counters(void);
+ 
+ /*
+  * High-level timer interrupt service routines.  This function
+diff --git a/arch/mips/lib/Makefile b/arch/mips/lib/Makefile
+index 44b76d3..46ebcb8 100644
+--- a/arch/mips/lib/Makefile
++++ b/arch/mips/lib/Makefile
+@@ -10,6 +10,6 @@ obj-$(CONFIG_PCI)	+= iomap-pci.o
+ 
+ # libgcc-style stuff needed in the kernel
+ # PR43073: changed from lib-y
+-obj-y += ashldi3.o ashrdi3.o lshrdi3.o
++obj-y += ashldi3.o ashrdi3.o lshrdi3.o ucmpdi2.o
+ 
+ EXTRA_AFLAGS := $(CFLAGS)
+diff --git a/arch/mips/lib/ucmpdi2.c b/arch/mips/lib/ucmpdi2.c
+index e69de29..bb4cb2f 100644
+--- a/arch/mips/lib/ucmpdi2.c
++++ b/arch/mips/lib/ucmpdi2.c
+@@ -0,0 +1,21 @@
++#include <linux/module.h>
++
++#include "libgcc.h"
++
++word_type __ucmpdi2(unsigned long long a, unsigned long long b)
++{
++	const DWunion au = {.ll = a};
++	const DWunion bu = {.ll = b};
++
++	if ((unsigned int) au.s.high < (unsigned int) bu.s.high)
++		return 0;
++	else if ((unsigned int) au.s.high > (unsigned int) bu.s.high)
++		return 2;
++	if ((unsigned int) au.s.low < (unsigned int) bu.s.low)
++		return 0;
++	else if ((unsigned int) au.s.low > (unsigned int) bu.s.low)
++		return 2;
++	return 1;
++}
++
++EXPORT_SYMBOL(__ucmpdi2);
+diff --git a/include/asm-mips/compiler.h b/include/asm-mips/compiler.h
+index 169ae26..4b56fe4 100644
+--- a/include/asm-mips/compiler.h
++++ b/include/asm-mips/compiler.h
+@@ -8,10 +8,21 @@
+ #ifndef _ASM_COMPILER_H
+ #define _ASM_COMPILER_H
+ 
++#include <asm/types.h>
++
+ #if __GNUC__ > 3 || (__GNUC__ == 3 && __GNUC_MINOR__ >= 4)
+ #define GCC_REG_ACCUM "$0"
+ #else
+ #define GCC_REG_ACCUM "accum"
+ #endif
+ 
++#if __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 4)
++#define GCC_NO_H_CONSTRAINT
++#ifdef CONFIG_64BIT
++typedef unsigned int uintx_t __attribute__((mode(TI)));
++#else
++typedef u64 uintx_t;
++#endif
++#endif
++
+ #endif /* _ASM_COMPILER_H */
+diff --git a/include/asm-mips/delay.h b/include/asm-mips/delay.h
+index 223d156..7c9dc07 100644
+--- a/include/asm-mips/delay.h
++++ b/include/asm-mips/delay.h
+@@ -36,6 +36,37 @@ static inline void __delay(unsigned long loops)
+ 		: "0" (loops));
+ }
+ 
++/*
++ * convert usecs to loops
++ *
++ * handle removal of 'h' constraint in GCC 4.4
++ */
++
++#ifndef GCC_NO_H_CONSTRAINT    /* gcc <= 4.3 */
++static inline unsigned long __usecs_to_loops(unsigned long usecs, unsigned long lpj)
++{
++	unsigned long lo;
++
++	if (sizeof(long) == 4)
++		__asm__("multu\t%2, %3"
++		: "=h" (usecs), "=l" (lo)
++		: "r" (usecs), "r" (lpj)
++		: GCC_REG_ACCUM);
++	else if (sizeof(long) == 8)
++		__asm__("dmultu\t%2, %3"
++		: "=h" (usecs), "=l" (lo)
++		: "r" (usecs), "r" (lpj)
++		: GCC_REG_ACCUM);
++
++	return usecs;
++}
++#else  /* GCC_NO_H_CONSTRAINT, gcc >= 4.4 */
++static inline unsigned long __usecs_to_loops(unsigned long usecs,
++               unsigned long lpj)
++{
++	return ((uintx_t)usecs * lpj) >> BITS_PER_LONG;
++}
++#endif
+ 
+ /*
+  * Division by multiplication: you don't have to worry about
+@@ -50,8 +81,6 @@ static inline void __delay(unsigned long loops)
+ 
+ static inline void __udelay(unsigned long usecs, unsigned long lpj)
+ {
+-	unsigned long lo;
+-
+ 	/*
+ 	 * The rates of 128 is rounded wrongly by the catchall case
+ 	 * for 64-bit.  Excessive precission?  Probably ...
+@@ -64,19 +93,7 @@ static inline void __udelay(unsigned long usecs, unsigned long lpj)
+ 	usecs *= (unsigned long) (((0x8000000000000000ULL / (500000 / HZ)) +
+ 	                           0x80000000ULL) >> 32);
+ #endif
+-
+-	if (sizeof(long) == 4)
+-		__asm__("multu\t%2, %3"
+-		: "=h" (usecs), "=l" (lo)
+-		: "r" (usecs), "r" (lpj)
+-		: GCC_REG_ACCUM);
+-	else if (sizeof(long) == 8)
+-		__asm__("dmultu\t%2, %3"
+-		: "=h" (usecs), "=l" (lo)
+-		: "r" (usecs), "r" (lpj)
+-		: GCC_REG_ACCUM);
+-
+-	__delay(usecs);
++	__delay(__usecs_to_loops(usecs, lpj));
+ }
+ 
+ #define __udelay_val cpu_data[raw_smp_processor_id()].udelay_val
+diff --git a/include/asm-mips/div64.h b/include/asm-mips/div64.h
+index 5f7dcf5..9325185 100644
+--- a/include/asm-mips/div64.h
++++ b/include/asm-mips/div64.h
+@@ -53,6 +53,23 @@
+ 	(res) = __quot; \
+ 	__mod; })
+ 
++/*
++ * __do_divu -- unsigned interger dividing
++ *
++ * handle removal of 'h' constraint in GCC 4.4
++ */
++#ifndef GCC_NO_H_CONSTRAINT /* gcc <= 4.3*/
++#define __do_divu() ({ \
++ __asm__("divu $0, %z2, %z3" \
++ : "=h" (__upper), "=l" (__high) \
++ : "Jr" (__high), "Jr" (__base) \
++ : GCC_REG_ACCUM); })
++#else /* gcc >= 4.4 */
++#define __do_divu() ({ \
++ __upper = (uintx_t)__high % __base; \
++ __high = (uintx_t)__high / __base; })
++#endif
++
+ #define do_div(n, base) ({ \
+ 	unsigned long long __quot; \
+ 	unsigned long __mod; \
+@@ -67,10 +84,7 @@
+ 	__upper = __high; \
+ 	\
+ 	if (__high) \
+-		__asm__("divu	$0, %z2, %z3" \
+-			: "=h" (__upper), "=l" (__high) \
+-			: "Jr" (__high), "Jr" (__base) \
+-			: GCC_REG_ACCUM); \
++		__do_divu(); \
+ 	\
+ 	__mod = do_div64_32(__low, __upper, __low, __base); \
+ 	\
+diff --git a/arch/mips/brcmstb/lib/udivdi3.c b/arch/mips/brcmstb/lib/udivdi3.c
+index 49599d6..4d094ab 100644
+--- a/arch/mips/brcmstb/lib/udivdi3.c
++++ b/arch/mips/brcmstb/lib/udivdi3.c
+@@ -198,6 +198,35 @@ __udivmoddi4 (UDItype n, UDItype d, UDItype *rp)
+               n0 = n0 << bm; 
+ 
+               udiv_qrnnd (q0, n1, n2, n1, d1);
++
++#undef umul_ppmm
++
++#if defined (__mips) && W_TYPE_SIZE == 32
++#if __GNUC__ > 2 || __GNUC_MINOR__ >= 7
++#define umul_ppmm(w1, w0, u, v) \
++do {                                                                   \
++UDItype __ll = (UDItype)(u) * (v);                                     \
++w1 = __ll >> 32;                                                       \
++w0 = __ll;                                                             \
++} while (0)
++#endif
++#endif
++
++
++#if (defined (__mips) && __mips >= 3) && W_TYPE_SIZE == 64
++#if __GNUC__ > 2 || __GNUC_MINOR__ >= 7
++#define umul_ppmm(w1, w0, u, v) \
++do {                                                                   \
++typedef unsigned int __ll_UTItype __attribute__((mode(TI)));   \
++__ll_UTItype __ll = (__ll_UTItype)(u) * (v);                   \
++w1 = __ll >> 64;                                                       \
++w0 = __ll;                                                             \
++} while (0)
++#endif
++#endif
++
++
++
+               umul_ppmm (m1, m0, q0, d0);
+ 
+               if (m1 > n1 || (m1 == n1 && m0 > n0))
+
