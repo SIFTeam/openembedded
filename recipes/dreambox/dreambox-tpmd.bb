@@ -3,14 +3,14 @@ SECTION = "base"
 PRIORITY = "optional"
 LICENSE = "proprietary"
 MAINTAINER = "Felix Domke <tmbinc@elitedvb.net>"
-DEPENDS = "dreambox-wdog"
-RDEPENDS_${PN} = "dreambox-wdog"
+DEPENDS = "dreambox-wdog dreambox-compat"
+RDEPENDS_${PN} = "dreambox-wdog dreambox-compat"
 
 PV = "1"
 PV_dm500hd = "4"
 PV_dm800 = "4"
 PV_dm8000 = "4"
-PR = "r2"
+PR = "r3"
 
 SRC_URI = "http://sources.dreamboxupdate.com/download/7020/tpmd-${MACHINE}-${PV} \
 	file://tpmd"
