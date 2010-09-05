@@ -84,6 +84,7 @@ S = "${WORKDIR}/git"
 FILES_${PN} += "${datadir}/fonts"
 FILES_${PN}-meta = "${datadir}/meta"
 PACKAGES += "${PN}-meta"
+PACKAGE_ARCH = "${MACHINE_ARCH}"
 
 inherit autotools pkgconfig
 
