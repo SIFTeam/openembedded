@@ -32,7 +32,7 @@ SRCDATE_tuxbox-plugins ?= "20090601"
 SRCDATE_dvbsnoop ?= "20081001"
 SRCDATE_libdvbsi++ ?= "20100126"
 SRCDATE_inadyn-mt ?= "20100519"
-SRCDATE_gst-plugin-dvbmediasink ?= "20100607"
+SRCDATE_gst-plugin-dvbmediasink ?= "20100729"
 
 # dm7025
 SRCDATE_squashfs-tools-native = "20100319"
