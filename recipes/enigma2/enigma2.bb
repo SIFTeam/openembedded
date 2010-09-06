@@ -81,7 +81,7 @@ SRC_URI = "git://openpli.git.sourceforge.net/gitroot/openpli/enigma2;protocol=gi
 
 S = "${WORKDIR}/git"
 
-FILES_${PN} += "${datadir}/fonts"
+FILES_${PN} += "${datadir}/fonts ${datadir}/keymaps"
 FILES_${PN}-meta = "${datadir}/meta"
 PACKAGES += "${PN}-meta"
 PACKAGE_ARCH = "${MACHINE_ARCH}"
