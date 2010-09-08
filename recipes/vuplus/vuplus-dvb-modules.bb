@@ -14,25 +14,33 @@ PV = "${KV}"
 
 SRCDATE = "20100827"
 
-RDEPENDS = "initscripts-vuplus kernel (${KV}) kernel-module-firmware-class kernel-module-input kernel-module-evdev kernel-module-i2c-core kernel-module-snd kernel-module-snd-pcm"
-PR = "r19-${SRCDATE}"
+RDEPENDS = "kernel (${KV}) kernel-module-firmware-class kernel-module-input kernel-module-evdev kernel-module-i2c-core kernel-module-snd kernel-module-snd-pcm"
+PR = "r20-${SRCDATE}"
 
 VUPLUS_KERNEL_GCC = "4.4.3"
 DOWNLOADMACHINE = "${MACHINE}"
 DOWNLOADMACHINE_vuduo = "bm750"
+
+inherit module
+
+do_compile() {
+}
 
 SRC_URI = "http://archive.vuplus.com/download/drivers/mbox-dvb-modules-${DOWNLOADMACHINE}-${KV}-${VUPLUS_KERNEL_GCC}-${SRCDATE}.tar.gz"
 
 S = "${WORKDIR}"
 
 do_install() {
-        install -d ${D}/lib/modules/${KV}/extra
-        for f in *.ko; do
-                install -m 0644 ${WORKDIR}/$f ${D}/lib/modules/${KV}/extra/$f;
-        done
+    install -d ${D}/lib/modules/${KV}/extra
+    for f in *.ko; do
+        install -m 0644 ${WORKDIR}/$f ${D}/lib/modules/${KV}/extra/$f;
+    done
+    install -d ${D}/${sysconfdir}/modutils
+    for i in `ls | grep \\.ko | sed -e 's/.ko//g'`; do
+        echo $i >> ${D}/${sysconfdir}/modutils/vuplus
+    done
+
 }
-
-
 
 PACKAGE_ARCH := "${MACHINE_ARCH}"
 FILES_${PN} = "/"
