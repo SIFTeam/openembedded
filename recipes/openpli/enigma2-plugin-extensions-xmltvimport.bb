@@ -2,10 +2,11 @@ DESCRIPTION = "Imports xmltv files into the EPG cache of enigma2"
 MAINTAINER = "MiLo, rytec @ pli-images.org"
 LICENSE = "GPLv2"
 
-PV = "1.0"
-PR = "r20"
+inherit gitpkgv
 
-inherit gitrev
+PV = "1.0+git${SRCPV}"
+PKGV = "1.0+git${GITPKGV}"
+PR = "r22"
 
 OPENPLI_GIT ?= "git://openpli.git.sourceforge.net/gitroot/openpli"
 SRC_URI = "${OPENPLI_GIT}/plugin-xmltvimport;protocol=git"
