@@ -13,6 +13,7 @@ IMAGE_INSTALL = " \
 				timezones-alternative \
 				${BOOTLOGO} \
 				tuxbox-links \
+				cifs \
 				"
 
 OPTIONAL_PACKAGES ?= ""
