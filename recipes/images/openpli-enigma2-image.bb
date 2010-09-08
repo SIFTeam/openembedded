@@ -1,5 +1,7 @@
 require openpli-image.bb
 
+DEPENDS += "samba"
+
 ENIGMA2_PLUGINS = " \
 				enigma2-plugin-pli-ppanel \
 				enigma2-plugin-pli-softcamsetup \
@@ -44,6 +46,8 @@ IMAGE_INSTALL += " \
 				aio-grab \
 				tuxbox-common \
 				libavahi-client \
+				cifs \
+				settings-autorestore \
 				"
 
 OPTIONAL_PACKAGES += " \
