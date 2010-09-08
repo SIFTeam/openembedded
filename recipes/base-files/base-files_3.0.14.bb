@@ -1,7 +1,7 @@
 DESCRIPTION = "Miscellaneous files for the base system."
 SECTION = "base"
 PRIORITY = "required"
-PR = "r94"
+PR = "r95"
 LICENSE = "GPL"
 
 FSTAB_dm7025 = "${@base_contains('PREFERRED_VERSION_linux-dm7025', '2.6.12.6', 'fstab_old', 'fstab', d)}"
@@ -165,6 +165,7 @@ do_install_append_openpli() {
 	rm -rf ${D}/hdd
 	ln -sf media/hdd ${D}/hdd
 	ln -sf media ${D}/mnt
+	rm -rf ${D}/media/ram
 }
 
 PACKAGES = "${PN}-dbg ${PN}-doc ${PN}"
