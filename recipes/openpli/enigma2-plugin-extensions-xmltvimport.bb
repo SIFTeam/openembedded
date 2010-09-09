@@ -30,11 +30,16 @@ FILES_dbg-${PN} = "/usr/lib/enigma2/python/Plugins/Extensions/${PLUGIN}/.debug"
 do_install_append() {
 	# silly hacky me, this could be done by distutils, but i can't figure it out...
 	install -d ${D}/usr/lib/enigma2/python/Plugins/Extensions
-	mv ${D}/usr/lib/python2.5/site-packages/${PLUGIN} ${D}/usr/lib/enigma2/python/Plugins/Extensions/${PLUGIN}
-	mv ${D}/usr/lib/python2.5/site-packages/*.so ${D}/usr/lib/enigma2/python/Plugins/Extensions/${PLUGIN}
-	rm -rf ${D}/usr/lib/python2.5/site-packages
+	mv ${D}/usr/lib/python*/site-packages/${PLUGIN} ${D}/usr/lib/enigma2/python/Plugins/Extensions/${PLUGIN}
+	mv ${D}/usr/lib/python*/site-packages/*.so ${D}/usr/lib/enigma2/python/Plugins/Extensions/${PLUGIN}
+	rm -rf ${D}/usr/lib/python*/site-packages
 	install -m 644 ${S}/EPGImport/plugin.png ${D}/usr/lib/enigma2/python/Plugins/Extensions/${PLUGIN}
 }
+
+# skip this!
+install_egg_info() {
+}
+
 
 pkg_postinst() {
 	if grep -q PLi $D/etc/image-version
