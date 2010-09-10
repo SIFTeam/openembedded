@@ -6,7 +6,7 @@ inherit gitpkgv
 
 PV = "1.0+git${SRCPV}"
 PKGV = "1.0+git${GITPKGV}"
-PR = "r22"
+PR = "r23"
 
 OPENPLI_GIT ?= "git://openpli.git.sourceforge.net/gitroot/openpli"
 SRC_URI = "${OPENPLI_GIT}/plugin-xmltvimport;protocol=git"
@@ -42,6 +42,12 @@ install_egg_info() {
 
 
 pkg_postinst() {
+	
+	if [ ! -f $D/etc/image-version ]
+	then
+		# when slipstreaming, don't patch enigma
+		exit 0
+	fi
 	if grep -q PLi $D/etc/image-version
 	then
 		# PLi needs no patch...
