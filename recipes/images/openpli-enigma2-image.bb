@@ -22,6 +22,8 @@ ENIGMA2_PLUGINS = " \
 				${@base_contains("MACHINE_FEATURES", "frontprocessor", "enigma2-plugin-systemplugins-frontprocessorupgrade" , "", d)} \
 				"
 
+DEPENDS += "enigma2 enigma2-plugins enigma2-pliplugins"
+
 ENIGMA2_OPTIONAL = " \
 				enigma2-skins \
 				enigma2-plugins \
