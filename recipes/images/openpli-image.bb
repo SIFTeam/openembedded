@@ -14,6 +14,7 @@ IMAGE_INSTALL = " \
 				${BOOTLOGO} \
 				tuxbox-links \
 				cifs \
+				samba \
 				"
 
 OPTIONAL_PACKAGES ?= ""

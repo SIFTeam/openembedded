@@ -8,7 +8,7 @@ EXTRA_OECONF += "\
         --without-ldap \
         --without-krb5"
 
-PACKAGES =+ "libsmbclient libsmbclient-dev cifs cifs-doc swat"
+PACKAGES =+ "libsmbclient libsmbclient-dev cifs cifs-doc swat samba-tools"
 
 RCONFLICTS_${PN} = "samba-ads"
 RCONFLICTS_libsmbclient = "libsmbclient-ads"
@@ -22,3 +22,5 @@ FILES_cifs-doc = "${mandir}/man8/mount.cifs.8 ${mandir}/man8/umount.cifs.8"
 FILES_libsmbclient = "${libdir}/libsmbclient.so.*"
 FILES_libsmbclient-dev = "${libdir}/libsmbclient.so ${includedir}"
 FILES_swat       = "${sbindir}/swat ${datadir}/swat ${libdir}/*.msg"
+FILES_samba-tools = "${bindir}/*"
+
