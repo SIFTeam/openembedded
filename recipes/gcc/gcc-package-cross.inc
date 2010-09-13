@@ -2,6 +2,8 @@ PACKAGE_STRIP ?= ""
 OLD_PACKAGE_STRIP := "${PACKAGE_STRIP}"
 PACKAGE_STRIP = "no"
 
+SHLIBSDIR = "${STAGING_DIR_TARGET}/shlibs"
+
 PACKAGES = "libgcc libssp libstdc++ libg2c libgfortran"
 
 # Called from within gcc-cross, so libdir is set wrong
@@ -38,12 +40,12 @@ do_install () {
      
 	# Link gfortran to g77 to satisfy not-so-smart configure or hard coded g77
 	# gfortran is fully backwards compatible. This is a safe and practical solution.
-	if [ -f ${D}${CROSS_DIR}/bin/${TARGET_PREFIX}gfortran ]; then
+	if [ -f ${D}${TOOLCHAIN_PATH}/bin/${TARGET_PREFIX}gfortran ]; then
 		currdir="$PWD"
-		cd ${D}${CROSS_DIR}/bin/
+		cd ${D}${TOOLCHAIN_PATH}/bin/
 		ln -sf ${TARGET_PREFIX}gfortran ${TARGET_PREFIX}g77 || true
-		if [ -d ${CROSS_DIR}/${TARGET_SYS}/bin/ ] ; then 
-			cd ${CROSS_DIR}/${TARGET_SYS}/bin/
+		if [ -d ${TOOLCHAIN_PATH}/${TARGET_SYS}/bin/ ] ; then 
+			cd ${TOOLCHAIN_PATH}/${TARGET_SYS}/bin/
 			ln -sf gfortran g77 || true
 		fi
 		cd $currdir

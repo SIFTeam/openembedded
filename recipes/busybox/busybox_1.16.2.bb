@@ -1,5 +1,5 @@
 require busybox.inc
-PR = "${INC_PR}.2"
+PR = "${INC_PR}.3"
 
 DEFAULT_PREFERENCE = "-1"
 DEFAULT_PREFERENCE_shr = "1"
@@ -14,13 +14,13 @@ SRC_URI = "\
   file://get_header_tar.patch \
   file://busybox-appletlib-dependency.patch \
 #  file://0000-wget-no-check-certificate.patch \
-  file://run-parts.in.usr-bin.patch \
   file://find-touchscreen.sh \
   file://busybox-cron \
   file://busybox-httpd \
   file://busybox-udhcpd \
   file://default.script file://simple.script \
   file://hwclock.sh \
+  file://hwclock-default \
   file://mount.busybox \
   file://mountall \
   file://syslog \

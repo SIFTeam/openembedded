@@ -56,11 +56,11 @@ case "$arch" in
 	"armv5teb")
 			machines="fsg3be ixp4xxbe nslu2be" ;;
 	"armv6")
-			machines="bug mx31ads mx31moboard nokia800 om-3d7k omap2420h4 omap2430sdp smartq5 smdk6410" ;;
+			machines="bug mx31ads mx31moboard mini6410 nokia800 om-3d7k omap2420h4 omap2430sdp smartq5 smdk6410" ;;
 	"armv6-novfp")
 			machines="htcblackstone htcdiamond htcdream htckaiser htcnike htcpolaris htcraphael htctitan htcvogue" ;;
 	"armv7a")
-			machines="am3517-evm archos5 archos5it beagleboard bug20 cm-t35 dm3730-am3715-evm htcleo igep0020 nokia900 omap3517-evm omap3evm omap3-pandora omap3-touchbook omap4430-sdp omapzoom omapzoom2 omapzoom36x overo palmpre omap4430-panda" ;;
+			machines="am3517-evm archos5 archos5it beagleboard bug20 cm-t35 dm37x-evm am37x-evm htcleo igep0020 nokia900 omap3517-evm omap3evm omap3-pandora omap3-touchbook omap4430-sdp omapzoom omapzoom2 omapzoom36x overo palmpre omap4430-panda" ;;
 	"avr32")
 			machines="at32stk1000 atngw100" ;;
 	"bfin")

@@ -9,10 +9,14 @@ INHIBIT_AUTOTOOLS_DEPS = "1"
 inherit autotools native
 
 PATCHTOOL = "patch"
-EXTRA_OECONF = "--disable-nls --without-date"
+EXTRA_OECONF = "--disable-nls"
 
 do_configure () {
 	oe_runconf
+}
+
+do_install () {
+	oe_runmake 'BUILD_ROOT=${D}' install
 }
 
 do_test() {

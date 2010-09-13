@@ -1,5 +1,5 @@
 require u-boot.inc
-PR ="r58"
+PR ="r64"
 
 FILESPATHPKG =. "u-boot-git:"
 
@@ -10,9 +10,10 @@ SRCREV_spitz = "9bf86baaa3b35b25baa2d664e2f7f6cafad689ee"
 SRCREV_c7x0 = "9bf86baaa3b35b25baa2d664e2f7f6cafad689ee"
 SRCREV_afeb9260 = "6b8edfde22acc574b5532e9f086e6a7287a9bc78"
 SRCREV_afeb9260-180 = "6b8edfde22acc574b5532e9f086e6a7287a9bc78"
-SRCREV_palmpre = "6b8edfde22acc574b5532e9f086e6a7287a9bc78"
+SRCREV_palmpre = "668a6b45915d10d75357f5b93f569bbf49ea2b06"
 SRCREV_cm-t35 = "3c014f1586d5bfe30dca7549396915c83f31cd30"
 SRCREV_mpc8641-hpcn = "f20393c5e787b3776c179d20f82a86bda124d651"
+SRCREV_p1020rdb = "f20393c5e787b3776c179d20f82a86bda124d651"
 SRCREV_p2020ds = "f20393c5e787b3776c179d20f82a86bda124d651"
 SRCREV_bug20 = "169a4c804dbaf11facb041b1333d394c6ceb8d68"
 SRC_URI_append_afeb9260 = " file://AFEB9260-network-fix.patch"
@@ -62,32 +63,75 @@ SRC_URI_beagleboard = "git://www.denx.de/git/u-boot.git;protocol=git \
                        file://0038-Added-configurations-for-xM-Rev-A-board.patch \
                        file://0039-OMAP3-beagle-setenv-beaglerev-for-AxBx-Cx-xMA-for-be.patch \
                        file://0001-OMAP-mmc-add-support-for-second-and-third-mmc-chan.patch \
-		       file://0001-OMAP3-Beagle-enable-support-for-second-and-third-m.patch \
-		       file://0038-BeagleBoard-Added-LED-driver.patch \
-		       file://0039-Add-led-command.patch \
-		       file://0041-BeagleBoard-Enabled-LEDs.patch \
-		       file://0043-BeagleBoard-Add-CONFIG_SYS_MEMTEST_SCRATCH.patch \
+                       file://0001-OMAP3-Beagle-enable-support-for-second-and-third-m.patch \
+                       file://0038-BeagleBoard-Added-LED-driver.patch \
+                       file://0039-Add-led-command.patch \
+                       file://0041-BeagleBoard-Enabled-LEDs.patch \
+                       file://0042-BeagleBoard-New-command-for-status-of-USER-button.patch \
+                       file://0043-BeagleBoard-Add-CONFIG_SYS_MEMTEST_SCRATCH.patch \
+                       file://0044-Beagleboard-Adjust-boot.patch \
+                       file://0045-BeagleBoard-Enable-pullups-on-i2c2.patch \
+                       file://0046-BeagleBoard-Add-camera-to-default-bootargs.patch \
+		       file://0001-BeagleBoard-move-ramdisk-parameters.patch \
                        file://fw_env.config \
 "
 SRCREV_beagleboard = "ca6e1c136ddb720c3bb2cc043b99f7f06bc46c55"
 PV_beagleboard = "2010.03+${PR}+gitr${SRCREV}"
 
-SRCREV_calamari = "533cf3a024947aaf74c16573a6d951cd0c3d0a7d"
+SRCREV_calamari = "b80d30546e88c70985094d81297d449b2bc59033"
 
-PV_calamari = "2009.11+${PR}+gitr${SRCREV}"
+PV_calamari = "2010.06+${PR}+gitr${SRCREV}"
 SRC_URI_calamari = " \
         git://git.denx.de/u-boot-mpc85xx.git;protocol=git \
-	file://0002-cmd_itest.c-fix-pointer-dereferencing.patch \
-	file://0001-cmd_i2c.c-reduced-subaddress-length-to-3-bytes.patch \
-	file://0002-cmd_bootm.c-made-subcommand-array-static.patch \
-	file://0003-cmd_i2c.c-reworked-subcommand-handling.patch \
-	file://0004-cmd_i2c.c-sorted-commands-alphabetically.patch \
-	file://0005-cmd_i2c.c-added-i2c-read-to-memory-function.patch \
-	file://0007-cmd_setexpr-allow-memory-addresses-and-env-vars-in-e.patch \
+	    file://fsl-esdhc.patch \
         "
 
-UBOOT_MACHINE_calamari = "MPC8536DS_config"
+# calamari has different u-boot versions for nor, nand, sdcard and spiflash
+# build them all
+do_compile_calamari () {
+        unset LDFLAGS
+        unset CFLAGS
+        unset CPPFLAGS
+        oe_runmake MPC8536DS_config
+        oe_runmake all
+        mv u-boot.bin u-boot-nor.bin
+        oe_runmake clean
+        oe_runmake MPC8536DS_NAND_config
+        oe_runmake all
+        mv u-boot.bin u-boot-nand.bin
+        oe_runmake clean
+        oe_runmake MPC8536DS_SDCARD_config
+        oe_runmake all
+        mv u-boot.bin u-boot-sdcard.bin
+        oe_runmake clean
+        oe_runmake MPC8536DS_SPIFLASH_config
+        oe_runmake all
+        mv u-boot.bin u-boot-spiflash.bin
+        oe_runmake tools env
+}
 
+do_deploy_calamari () {
+        install -d ${DEPLOY_DIR_IMAGE}
+        install -m 0644 ${S}/u-boot-nor.bin ${DEPLOY_DIR_IMAGE}/u-boot-nor.bin
+        install -m 0644 ${S}/u-boot-nand.bin ${DEPLOY_DIR_IMAGE}/u-boot-nand.bin
+        install -m 0644 ${S}/u-boot-sdcard.bin ${DEPLOY_DIR_IMAGE}/u-boot-sdcard.bin
+        install -m 0644 ${S}/u-boot-spiflash.bin ${DEPLOY_DIR_IMAGE}/u-boot-spiflash.bin
+        install -m 0755 tools/mkimage ${STAGING_BINDIR_NATIVE}/uboot-mkimage
+}
+
+do_install_calamari () {
+	install -d ${D}/boot
+	install ${S}/u-boot-nor.bin ${D}/boot/u-boot-nor.bin
+	install ${S}/u-boot-nand.bin ${D}/boot/u-boot-nand.bin
+	install ${S}/u-boot-sdcard.bin ${D}/boot/u-boot-sdcard.bin
+	install ${S}/u-boot-spiflash.bin ${D}/boot/u-boot-spiflash.bin
+	ln -sf ${UBOOT_IMAGE} ${D}/boot/${UBOOT_BINARY}
+
+	install -d ${D}${base_sbindir}
+	install -d ${D}${sysconfdir}
+	install -m 755 ${S}/tools/env/fw_printenv ${D}${base_sbindir}/fw_printenv
+	install -m 755 ${S}/tools/env/fw_printenv ${D}${base_sbindir}/fw_setenv
+}
 SRC_URI_omap3-touchbook = "git://gitorious.org/u-boot-omap3/mainline.git;branch=omap3-dev;protocol=git \
                  file://fw_env.config \
                  file://dss2.patch \
@@ -112,11 +156,18 @@ SRCREV_omap3evm = "c0a8fb217fdca7888d89f9a3dee74a4cec865620"
 PV_omap3evm = "2009.11+${PR}+gitr${SRCREV}"
 
 # ~ TI PSP v2009.11_OMAPPSP_03.00.01.06 (+ couple of commits)
-SRC_URI_dm3730-am3715-evm = "git://arago-project.org/git/projects/u-boot-omap3.git;protocol=git \
+SRC_URI_dm37x-evm = "git://arago-project.org/git/projects/u-boot-omap3.git;protocol=git \
 	file://0001-omap3evm-Change-default-console-serial-port-from.patch \
 "
-SRCREV_dm3730-am3715-evm = "c0a8fb217fdca7888d89f9a3dee74a4cec865620"
-PV_dm3730-am3715-evm = "2009.11+${PR}+gitr${SRCREV}"
+SRCREV_dm37x-evm = "c0a8fb217fdca7888d89f9a3dee74a4cec865620"
+PV_dm37x-evm = "2009.11+${PR}+gitr${SRCREV}"
+
+# ~ TI PSP v2009.11_OMAPPSP_03.00.01.06 (+ couple of commits)
+SRC_URI_am37x-evm = "git://arago-project.org/git/projects/u-boot-omap3.git;protocol=git \
+	file://0001-omap3evm-Change-default-console-serial-port-from.patch \
+"
+SRCREV_am37x-evm = "c0a8fb217fdca7888d89f9a3dee74a4cec865620"
+PV_am37x-evm = "2009.11+${PR}+gitr${SRCREV}"
 
 # ~ TI PSP v2009.11_OMAPPSP_03.00.01.06 (+ couple of commits)
 SRC_URI_am3517-evm = "git://arago-project.org/git/projects/u-boot-omap3.git;protocol=git"
@@ -128,7 +179,8 @@ SRCREV_omapzoom = "d691b424f1f5bf7eea3a4131dfc578d272e8f335"
 PV_omapzoom = "2009.01+${PR}+gitr${SRCREV}"
 
 SRC_URI_omapzoom2 = "git://dev.omapzoom.org/pub/scm/bootloader/u-boot.git;branch=master;protocol=git \
-                     file://0001-OMAP3-set-L1NEON-bit-in-aux-control-register.patch"
+                     file://0001-OMAP3-set-L1NEON-bit-in-aux-control-register.patch \
+                     file://inline-fix.patch"
 SRCREV_omapzoom2 = "78e778e0ea884306841c6499851a1e35177d81d0"
 PV_omapzoom2 = "1.1.4+${PR}+gitr${SRCREV}"
 PE_omapzoom2 = "1"
