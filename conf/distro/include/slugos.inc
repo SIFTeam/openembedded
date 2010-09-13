@@ -23,17 +23,26 @@ DISTRO_VERSION ?= "${SLUGOS_VERSION}${DISTRO_REVISION}-${DISTRO_TYPE}"
 # DISTRO_FEED ?= "${SLUGOS_VERSION}-${DISTRO_TYPE}"
 DISTRO_FEED ?= "unstable"
 
+THUMB_INTERWORK = "yes"
+# "yes" "no"
+#    Whether to compile with code to allow interworking between the two
+#    instruction sets.  This allows thumb code to be executed on a primarily
+#    arm system and vice versa.  It is strongly recommended that DISTROs not
+#    turn this off - the actual cost is very small.
 # We want images supporting the following features (for task-base)
 DISTRO_FEATURES = "nfs smbfs wifi ppp alsa bluetooth ext2 vfat irda pcmcia usbgadget usbhost pci"
 
-IMAGE_BASENAME = "${@['slugos${SITEINFO_ENDIANESS}', 'ucslugc'][bb.data.getVar('TARGET_OS', d, 1) == 'linux-uclibc']}"
+# Add thumb-interwork to feature list if selected machine supports it.
+DISTRO_FEATURES += ' ${@["", "thumb-interwork"][bb.data.getVar('THUMB_INTERWORK', d, 1) == "yes"]}'
+
+IMAGE_BASENAME = "${@['slugos${SITEINFO_ENDIANNESS}', 'ucslugc'][bb.data.getVar('TARGET_OS', d, 1) == 'linux-uclibc']}"
 
 # The following need not be set, the defaults should be adequate
 #USE_NLS = "no" or "yes"
 USE_NLS ?= "no"
 
 # To make errors easier to identify:
-DISTRO_NAME ?= "INVALID-${SITEINFO_ENDIANESS}-${ARM_INSTRUCTION_SET}-${TARGET_OS}"
+DISTRO_NAME ?= "INVALID-${SITEINFO_ENDIANNESS}-${ARM_INSTRUCTION_SET}-${TARGET_OS}"
 DISTRO_TYPE ?= "INVALID"
 
 # The following must not be changed.
@@ -44,7 +53,7 @@ USE_NLS_glib-2.0 = "yes"
 USE_NLS_glib-2.0-native = "yes"
 USE_NLS_gcc-cross = "no"
 
-INHERIT += "package_ipk debian testlab packaged-staging siteinfo"
+INHERIT += "package_ipk debian testlab siteinfo"
 
 # FULL_OPTIMIZATION
 #    Optimization settings.  Os works fine and is significantly better than O2.

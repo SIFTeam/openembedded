@@ -1,6 +1,5 @@
 inherit package
 
-BOOTSTRAP_EXTRA_RDEPENDS += "opkg-collateral opkg"
 IMAGE_PKGTYPE ?= "ipk"
 
 IPKGCONF_TARGET = "${STAGING_ETCDIR_NATIVE}/opkg.conf"
@@ -132,6 +131,9 @@ package_generate_ipkg_conf () {
 		        echo "src oe-${SDK_SYS}-sdk-$arch file:${DEPLOY_DIR_IPK}/${SDK_SYS}-sdk-$arch" >> ${IPKGCONF_CANSDK}
 		fi
 	done
+	echo "lists_dir ext /var/lib/opkg" >> ${IPKGCONF_TARGET}
+	echo "lists_dir ext /var/lib/opkg" >> ${IPKGCONF_SDK}
+	echo "lists_dir ext /var/lib/opkg" >> ${IPKGCONF_CANSDK}
 }
 
 python do_package_ipk () {

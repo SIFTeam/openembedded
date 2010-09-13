@@ -10,7 +10,7 @@ PR = "r6"
 
 PV = "0.8.6h+${PR}+gitr${SRCREV}"
 
-DEPENDS = "codec-engine dbus libxml2 gnutls tremor faad2 ffmpeg flac  \
+DEPENDS = "ti-codec-engine dbus libxml2 gnutls tremor faad2 ffmpeg flac  \
            ${@base_conditional('ENTERPRISE_DISTRO', '1', '', 'libmad libid3tag liba52 mpeg2dec', d)}"
 
 SRC_URI = "git://git.videolan.org/vlc.git;protocol=git;branch=0.8.6-neuros"
@@ -49,10 +49,6 @@ do_configure() {
 	oe_runconf
 	rm config.log
 	sed -i -e s:-L/usr/lib:-L${STAGING_LIBDIR}/:g vlc-config
-}
-
-do_stage() {
-	autotools_stage_all
 }
 
 RCONFLICTS_${PN} = "vlc"

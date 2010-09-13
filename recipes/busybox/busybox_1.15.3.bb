@@ -1,10 +1,5 @@
 require busybox.inc
-PR = "${INC_PR}.5"
-
-# assume that busybox-mdev emulates every udev feature that might be
-# required by packages claiming to depend on 'udev'
-PROVIDES += "udev"
-RPROVIDES_${PN}-mdev += "udev"
+PR = "${INC_PR}.4"
 
 SRC_URI = "\
   http://www.busybox.net/downloads/busybox-${PV}.tar.bz2;name=tarball \
@@ -16,13 +11,13 @@ SRC_URI = "\
   file://get_header_tar.patch \
   file://busybox-appletlib-dependency.patch \
   file://0000-wget-no-check-certificate.patch \
-  file://run-parts.in.usr-bin.patch \
   file://find-touchscreen.sh \
   file://busybox-cron \
   file://busybox-httpd \
   file://busybox-udhcpd \
   file://default.script file://simple.script \
   file://hwclock.sh \
+  file://hwclock-default \
   file://mount.busybox \
   file://mountall \
   file://syslog \

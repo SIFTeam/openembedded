@@ -1,6 +1,6 @@
 DESCRIPTION = "task mamona base"
 LICENSE = "MIT"
-PR = "r4"
+PR = "r5"
 ALLOW_EMPTY = "1"
 
 PACKAGES = "${PN}"
@@ -9,14 +9,15 @@ RDEPENDS_${PN} = "\
   apt \
   base-files \
   base-passwd \
-  bash | bash-noemu \
+  bash \
+  bash-noemu \
   busybox \
   bzip2 \
   coreutils \
   dpkg \
   e2fsprogs \
   e2fsprogs-badblocks \
-  e2fsprogs-uuidgen \
+  util-linux-ng \
   file \
   gawk \
   gawk-common \

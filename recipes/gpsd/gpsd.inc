@@ -4,7 +4,7 @@ PRIORITY = "optional"
 LICENSE = "GPL"
 DEPENDS = "dbus-glib ncurses python"
 PROVIDES = "virtual/gpsd"
-INC_PR = "r7"
+INC_PR = "r10"
 
 EXTRA_OECONF = "--x-includes=${STAGING_INCDIR}/X11 \
                 --x-libraries=${STAGING_LIBDIR} \
@@ -15,8 +15,8 @@ SRC_URI = "http://download.berlios.de/gpsd/gpsd-${PV}.tar.gz;name=gpsd \
            file://gpsd-default \
            file://gpsd \
            file://60-gpsd.rules"
-			   
-inherit autotools_stage update-rc.d python-dir
+
+inherit autotools update-rc.d python-dir
 
 INITSCRIPT_NAME = "gpsd"
 INITSCRIPT_PARAMS = "defaults 35"
@@ -49,14 +49,13 @@ do_install_append() {
     install -m 0644 ${WORKDIR}/60-gpsd.rules ${D}/${sysconfdir}/udev/rules.d
     install -d ${D}${base_libdir}/udev/
     install -m 0755 ${S}/gpsd.hotplug ${D}${base_libdir}/udev/
-    install -m 0755 ${S}/gpsd.hotplug.wrapper ${D}${base_libdir}/udev/
 }
 
 pkg_postinst_${PN}-conf() {
 	update-alternatives --install ${sysconfdir}/default/gpsd gpsd-defaults ${sysconfdir}/default/gpsd.default 10
 }
 
-pkg_postrm_${PN}-conf() {	
+pkg_postrm_${PN}-conf() {
 	update-alternatives --remove gpsd-defaults ${sysconfdir}/default/gpsd.default	
 }
 

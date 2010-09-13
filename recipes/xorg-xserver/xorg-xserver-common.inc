@@ -2,7 +2,7 @@ HOMEPAGE = "http://www.x.org"
 SECTION = "x11/base"
 LICENSE = "MIT-X"
 
-INC_PR = "r17"
+INC_PR = "r18"
 
 PROVIDES = "virtual/xserver"
 
@@ -105,10 +105,6 @@ FILES_${PN}-module-libxf4bpp = "${libdir}/xorg/modules/libxf4bpp.so"
 PACKAGES =+ "${PN}-multimedia-modules"
 
 FILES_${PN}-multimedia-modules = "${libdir}/xorg/modules/multimedia/*drv*"
-
-do_stage() {
-	autotools_stage_all
-}
 
 do_install_append () {
 	ln -sf ${datadir}/fonts/X11 ${D}/${libdir}/X11/fonts

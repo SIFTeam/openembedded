@@ -21,7 +21,7 @@ INHERIT += "src_distribute_local"
 SRC_DIST_LOCAL ?= "symlink"
 
 # Can be "glibc", "eglibc" or "uclibc"
-ANGSTROMLIBC ?= "glibc"
+ANGSTROMLIBC ?= "eglibc"
 LIBC ?= "${ANGSTROMLIBC}"
 PSTAGE_EXTRAPATH = "${LIBC}"
 
@@ -204,3 +204,6 @@ DISTRO_FEATURES = "largefile ipv4 ipv6 nfs smbfs wifi ppp alsa bluetooth ext2 vf
 
 # Use-like features
 DISTRO_FEATURES += "tk"
+
+# Add thumb-interwork to feature list if selected machine supports it.
+DISTRO_FEATURES += ' ${@["", "thumb-interwork"][bb.data.getVar('THUMB_INTERWORK', d, 1) == "yes"]}'
