@@ -10,7 +10,7 @@ PACKAGES_DYNAMIC = "enigma2-plugin-*"
 # if you want experimental, use:
 TAG = ""
 PV = "experimental-cvs${SRCDATE}"
-PR = "r2"
+PR = "r3"
 
 SRC_URI = "cvs://anonymous@cvs.schwerkraft.elitedvb.net/cvsroot/enigma2-plugins;module=enigma2-plugins;method=pserver${TAG};date=${SRCDATE}"
 
@@ -28,6 +28,7 @@ SRC_URI += " \
 	file://imdb_eventinfo.patch \
 	file://shoutcast_etc.patch \
 	file://networkbrowser-serial.patch \
+	file://networkbrowser-remount.patch \
 	"
 
 CONFFILES_${PN} += "${sysconfdir}/enigma2/movietags"
