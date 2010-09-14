@@ -15,6 +15,7 @@ IMAGE_INSTALL = " \
 				tuxbox-links \
 				cifs \
 				samba \
+				early-configure \
 				"
 
 OPTIONAL_PACKAGES ?= ""
