@@ -3,32 +3,33 @@ LICENSE = "GPL"
 PN = "linux-dm7025"
 KV = "2.6.12"
 PV = "2.6.12.6"
-PR = "s7"
+PR = "s8"
 
 DEPENDS = "zlib-native zlib"
 
 # note, the rX in the filename is *NOT* the packet revision - it's the patch revision.
 SRC_URI += "${KERNELORG_MIRROR}/pub/linux/kernel/v2.6/linux-${PV}.tar.bz2 \
 	file://dm7025_defconfig \
-	http://sources.dreamboxupdate.com/download/kernel-patches/linuxmips-${KV}-dream-r6.patch.bz2 \
-	http://sources.dreamboxupdate.com/download/kernel-patches/linux-${KV}-update_dvbapi-r1.patch.bz2 \
-	http://sources.dreamboxupdate.com/download/kernel-patches/linux-2.6.12-dvb-multipid-r4.patch.bz2 \
-	http://sources.dreamboxupdate.com/download/kernel-patches/linux-2.6.12-dvb-core-fix-several-locking-problems.patch.bz2 \
-	http://sources.dreamboxupdate.com/download/kernel-patches/linux-2.6.12-dvbapi-pilot-rolloff-extension-r0.patch.bz2 \
-	http://sources.dreamboxupdate.com/download/kernel-patches/linux-2.6.12-update-wireless.patch.bz2 \
-	file://linux-2.6-trailing-whitespaces-in-params.patch \
-	file://linuxmips-2.6.12-gcc433-compile-fix.patch \
-	file://linuxmips-2.6.12-gcc44-compile-fixes.patch \
-	file://linuxmips-2.6.12-revert-fadvise-fix.patch \
-	http://www.kernel.org/pub/linux/kernel/people/rml/inotify/v2.6/0.23/inotify-0.23-rml-2.6.12-15.patch \
+	http://sources.dreamboxupdate.com/download/kernel-patches/linuxmips-${KV}-dream-r6.patch.bz2;patch=1;pnum=1 \
+	http://sources.dreamboxupdate.com/download/kernel-patches/linux-${KV}-update_dvbapi-r1.patch.bz2;patch=1;pnum=1 \
+	http://sources.dreamboxupdate.com/download/kernel-patches/linux-2.6.12-dvb-multipid-r4.patch.bz2;patch=1;pnum=1 \
+	http://sources.dreamboxupdate.com/download/kernel-patches/linux-2.6.12-dvb-core-fix-several-locking-problems.patch.bz2;patch=1;pnum=1 \
+	http://sources.dreamboxupdate.com/download/kernel-patches/linux-2.6.12-dvbapi-pilot-rolloff-extension-r0.patch.bz2;patch=1;pnum=1 \
+	http://sources.dreamboxupdate.com/download/kernel-patches/linux-2.6.12-update-wireless.patch.bz2;patch=1;pnum=1 \
+	file://linux-2.6-trailing-whitespaces-in-params.patch;patch=1 \
+	file://linuxmips-2.6.12-gcc433-compile-fix.patch;patch=1;pnum=1 \
+	file://linuxmips-2.6.12-gcc44-compile-fixes.patch;patch=1;pnum=1 \
+	file://linuxmips-2.6.12-revert-fadvise-fix.patch;patch=1;pnum=1 \
+	file://linuxmips-2.6.12-add-cpu-feature-overrides.patch;patch=1;pnum=1 \
+	http://www.kernel.org/pub/linux/kernel/people/rml/inotify/v2.6/0.23/inotify-0.23-rml-2.6.12-15.patch;patch=1;pnum=1 \
 #squashfs-lzma stuff
-	http://squashfs-lzma.org/dl/sqlzma3.2-r2b.tar.bz2 \
-	http://dreamboxupdate.com/download/kernel-patches/sqlzma2k-3.2-r2-2.6.12.6.patch.bz2 \
-	http://dreamboxupdate.com/download/patches/fix_lzma_squashfs_makefiles_for_oe-r2.patch.bz2 \
+	http://squashfs-lzma.org/dl/sqlzma3.2-r2b.tar.bz2;apply=no \
+	http://dreamboxupdate.com/download/kernel-patches/sqlzma2k-3.2-r2-2.6.12.6.patch.bz2;apply=no \
+	http://dreamboxupdate.com/download/patches/fix_lzma_squashfs_makefiles_for_oe-r2.patch.bz2;apply=no \
 	${SOURCEFORGE_MIRROR}/squashfs/squashfs3.2-r2.tar.gz \
 	${SOURCEFORGE_MIRROR}/sevenzip/lzma443.tar.bz2 \
-	file://${WORKDIR}/squashfs-lzma/kernel-patches/linux-2.6.12/squashfs3.2-patch;apply=yes \
-	"
+	file://${WORKDIR}/squashfs-lzma/kernel-patches/linux-2.6.12/squashfs3.2-patch;pnum=1;patch=1 \
+"
 
 S = "${WORKDIR}/linux-${PV}"
 
@@ -70,7 +71,6 @@ do_munge () {
 	done
 	cd $CUR
 }
-
 
 do_compile_prepend () {
 	if [ -f ${S}/.patched ];

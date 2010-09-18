@@ -1,0 +1,58 @@
+diff -Naur linux-2.6.12.6-org/arch/mips/Makefile linux-2.6.12.6/arch/mips/Makefile
+--- linux-2.6.12.6-org/arch/mips/Makefile	2010-08-16 12:53:30.145331626 +0200
++++ linux-2.6.12.6/arch/mips/Makefile	2010-08-16 12:45:52.013330331 +0200
+@@ -311,6 +311,7 @@
+ # ATI Xilleon
+ #
+ core-$(CONFIG_ATI_XILLEON)	+= arch/mips/ati/xilleon/
++cflags-$(CONFIG_ATI_XILLEON)	+= -Iinclude/asm-mips/mach-xilleon
+ load-$(CONFIG_ATI_XILLEON)	+= 0xffffffff80100000
+ 
+ #
+diff -Naur linux-2.6.12.6-org/include/asm-mips/mach-xilleon/cpu-feature-overrides.h linux-2.6.12.6/include/asm-mips/mach-xilleon/cpu-feature-overrides.h
+--- linux-2.6.12.6-org/include/asm-mips/mach-xilleon/cpu-feature-overrides.h	1970-01-01 01:00:00.000000000 +0100
++++ linux-2.6.12.6/include/asm-mips/mach-xilleon/cpu-feature-overrides.h	2010-08-16 12:46:38.801457141 +0200
+@@ -0,0 +1,43 @@
++/*
++ * This file is subject to the terms and conditions of the GNU General Public
++ * License.  See the file "COPYING" in the main directory of this archive
++ * for more details.
++ *
++ * Copyright (C) 2003, 04, 07 Ralf Baechle (ralf@linux-mips.org)
++ */
++#ifndef __ASM_MACH_XILLEOM_CPU_FEATURE_OVERRIDES_H
++#define __ASM_MACH_XILLEON_CPU_FEATURE_OVERRIDES_H
++
++#define cpu_has_tlb		1
++#define cpu_has_4kex		1
++#define cpu_has_4ktlb		1
++#define cpu_has_fpu		0
++#define cpu_has_32fpr		0
++#define cpu_has_counter		1
++#define cpu_has_watch		1
++#define cpu_has_mips16		0
++#define cpu_has_divec		1
++#define cpu_has_vce		0
++#define cpu_has_cache_cdex_p	0
++#define cpu_has_cache_cdex_s	0
++#define cpu_has_prefetch	0
++#define cpu_has_mcheck		1
++#define cpu_has_ejtag		1
++#define cpu_has_llsc		1
++#define cpu_has_vtag_icache	0
++#define cpu_has_dc_aliases	0
++#define cpu_has_ic_fills_f_dc	0
++
++#define cpu_has_nofpuex		0
++#define cpu_has_64bits		0
++#define cpu_has_64bit_zero_reg	0
++#define cpu_has_64bit_gp_regs	0
++#define cpu_has_64bit_addresses	0
++
++#define cpu_has_subset_pcaches	0
++
++#define cpu_dcache_line_size()	16
++#define cpu_icache_line_size()	16
++#define cpu_scache_line_size()	0
++
++#endif /* __ASM_MACH_XILLEON_CPU_FEATURE_OVERRIDES_H */
