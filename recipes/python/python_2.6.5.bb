@@ -3,7 +3,7 @@ DEPENDS = "python-native db gdbm openssl readline sqlite3 tcl zlib\
            ${@base_contains('DISTRO_FEATURES', 'tk', 'tk', '', d)}"
 DEPENDS_sharprom = "python-native db readline zlib gdbm openssl"
 # set to .0 on every increase of INC_PR
-PR = "${INC_PR}.0"
+PR = "${INC_PR}.1"
 
 SRC_URI = "\
   http://www.python.org/ftp/python/${PV}/Python-${PV}.tar.bz2 \
@@ -89,13 +89,18 @@ do_install() {
 
 require python-${PYTHON_MAJMIN}-manifest.inc
 
+# No need to put source code into the image
+PACKAGES =+ "python-sourcecode"
+DESCRIPTION_python-sourcecode = "Python source code, separated to save a lot of space"
+FILES_python-sourcecode = "${libdir}/python${PYTHON_MAJMIN}/*.py ${libdir}/python${PYTHON_MAJMIN}/*/*.py ${libdir}/python${PYTHON_MAJMIN}/*/*/*.py ${libdir}/python${PYTHON_MAJMIN}/*/*/*/*.py"
+
 # manual dependency additions
 RPROVIDES_python-core = "python"
 RRECOMMENDS_python-core = "python-readline"
 RRECOMMENDS_python-crypt = "openssl"
 
 # add sitecustomize
-FILES_python-core += "${libdir}/python${PYTHON_MAJMIN}/sitecustomize.py"
+FILES_python-core += "${libdir}/python${PYTHON_MAJMIN}/sitecustomize.py*"
 # ship 2to3
 FILES_python-core += "${bindir}/2to3"
 
