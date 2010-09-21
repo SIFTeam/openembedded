@@ -1,5 +1,6 @@
+require linux-opendreambox.inc
+
 DESCRIPTION = "Linux kernel for Dreambox DM7025"
-LICENSE = "GPL"
 PN = "linux-dm7025"
 KV = "2.6.12"
 PV = "2.6.12.6"
@@ -8,43 +9,37 @@ PR = "s8"
 DEPENDS = "zlib-native zlib"
 
 # note, the rX in the filename is *NOT* the packet revision - it's the patch revision.
-SRC_URI += "${KERNELORG_MIRROR}/pub/linux/kernel/v2.6/linux-${PV}.tar.bz2 \
-	file://dm7025_defconfig \
-	http://sources.dreamboxupdate.com/download/kernel-patches/linuxmips-${KV}-dream-r6.patch.bz2;patch=1;pnum=1 \
-	http://sources.dreamboxupdate.com/download/kernel-patches/linux-${KV}-update_dvbapi-r1.patch.bz2;patch=1;pnum=1 \
-	http://sources.dreamboxupdate.com/download/kernel-patches/linux-2.6.12-dvb-multipid-r4.patch.bz2;patch=1;pnum=1 \
-	http://sources.dreamboxupdate.com/download/kernel-patches/linux-2.6.12-dvb-core-fix-several-locking-problems.patch.bz2;patch=1;pnum=1 \
-	http://sources.dreamboxupdate.com/download/kernel-patches/linux-2.6.12-dvbapi-pilot-rolloff-extension-r0.patch.bz2;patch=1;pnum=1 \
-	http://sources.dreamboxupdate.com/download/kernel-patches/linux-2.6.12-update-wireless.patch.bz2;patch=1;pnum=1 \
-	file://linux-2.6-trailing-whitespaces-in-params.patch;patch=1 \
-	file://linuxmips-2.6.12-gcc433-compile-fix.patch;patch=1;pnum=1 \
-	file://linuxmips-2.6.12-gcc44-compile-fixes.patch;patch=1;pnum=1 \
-	file://linuxmips-2.6.12-revert-fadvise-fix.patch;patch=1;pnum=1 \
-	file://linuxmips-2.6.12-add-cpu-feature-overrides.patch;patch=1;pnum=1 \
-	http://www.kernel.org/pub/linux/kernel/people/rml/inotify/v2.6/0.23/inotify-0.23-rml-2.6.12-15.patch;patch=1;pnum=1 \
+SRC_URI = "${KERNELORG_MIRROR}/pub/linux/kernel/v2.6/linux-${PV}${PATCHLEVEL}.tar.bz2 \
+        file://defconfig \
+	http://sources.dreamboxupdate.com/download/kernel-patches/linuxmips-${KV}-dream-r6.patch.bz2;pnum=1 \
+	http://sources.dreamboxupdate.com/download/kernel-patches/linux-${KV}-update_dvbapi-r1.patch.bz2;pnum=1 \
+	http://sources.dreamboxupdate.com/download/kernel-patches/linux-2.6.12-dvb-multipid-r4.patch.bz2;pnum=1 \
+	http://sources.dreamboxupdate.com/download/kernel-patches/linux-2.6.12-dvb-core-fix-several-locking-problems.patch.bz2;pnum=1 \
+	http://sources.dreamboxupdate.com/download/kernel-patches/linux-2.6.12-dvbapi-pilot-rolloff-extension-r0.patch.bz2;pnum=1 \
+	http://sources.dreamboxupdate.com/download/kernel-patches/linux-2.6.12-update-wireless.patch.bz2;pnum=1 \
+	file://linux-2.6-trailing-whitespaces-in-params.patch \
+	file://linuxmips-2.6.12-gcc433-compile-fix.patch;pnum=1 \
+	file://linuxmips-2.6.12-gcc44-compile-fixes.patch;pnum=1 \
+	file://linuxmips-2.6.12-revert-fadvise-fix.patch;pnum=1 \
+	file://linuxmips-2.6.12-add-cpu-feature-overrides.patch;pnum=1 \
+	http://www.kernel.org/pub/linux/kernel/people/rml/inotify/v2.6/0.23/inotify-0.23-rml-2.6.12-15.patch;pnum=1 \
 #squashfs-lzma stuff
 	http://squashfs-lzma.org/dl/sqlzma3.2-r2b.tar.bz2;apply=no \
 	http://dreamboxupdate.com/download/kernel-patches/sqlzma2k-3.2-r2-2.6.12.6.patch.bz2;apply=no \
 	http://dreamboxupdate.com/download/patches/fix_lzma_squashfs_makefiles_for_oe-r2.patch.bz2;apply=no \
 	${SOURCEFORGE_MIRROR}/squashfs/squashfs3.2-r2.tar.gz \
 	${SOURCEFORGE_MIRROR}/sevenzip/lzma443.tar.bz2 \
-	file://${WORKDIR}/squashfs-lzma/kernel-patches/linux-2.6.12/squashfs3.2-patch;pnum=1;patch=1 \
+	file://${WORKDIR}/squashfs-lzma/kernel-patches/linux-2.6.12/squashfs3.2-patch;pnum=1;apply=yes \
 "
 
-S = "${WORKDIR}/linux-${PV}"
 
 inherit kernel
 
-FILES_kernel-image = "/boot/vmlinux.gz /boot/autoexec.bat"
-
-export OS = "Linux"
-KERNEL_IMAGETYPE = "vmlinux"
-KERNEL_OUTPUT = "vmlinux"
 KERNEL_OBJECT_SUFFIX = "ko"
 
-addtask munge after do_unpack before do_patch
+addtask mungesquash after do_unpack before do_patch
 
-do_munge () {
+do_mungesquash () {
 	if [ -d ${WORKDIR}/squashfs3.2-r2 ]; then
 		mv ${WORKDIR}/squashfs3.2-r2/* ${WORKDIR}
 		rm -R ${WORKDIR}/squashfs3.2-r2
@@ -65,7 +60,7 @@ do_munge () {
 			"./temp");;
 			"./image");;
 			"./install");;
-			"./dm7025_defconfig");;
+			"./defconfig");;
 			*)mv $i ${WORKDIR}/squashfs-lzma;;
 		esac
 	done
@@ -94,23 +89,8 @@ do_compile_append () {
 	rm ${S}/.patched
 }
 
-do_configure_prepend () {
-	if [ "${@bb.data.getVar('DISTRO_VERSION', d, 1)}" == "1.4.0" ];
-	then
-		cat ${WORKDIR}/dm7025_defconfig | grep -v "CONFIG_CMDLINE" > ${S}/.config
-		echo "CONFIG_CMDLINE=\"console=null root=/dev/mtdblock3 rootfstype=jffs2 rw\"" >> ${S}/.config
-	else
-		oe_machinstall -m 0644 ${WORKDIR}/dm7025_defconfig ${S}/.config
-	fi;
-	oe_runmake oldconfig
-}
-
-do_install_append () {
-	install -d ${D}/boot
-	install -m 0755 vmlinux ${D}/boot/vmlinux
-	echo "/flash/bootlogo.elf" > ${D}/boot/autoexec.bat
-	gzip ${D}/boot/vmlinux
-	echo "/flash/vmlinux.gz" >> ${D}/boot/autoexec.bat
+addtask installsquash after do_install before do_stage do_package
+do_installsquash () {
 	for i in sqlzma.ko unlzma.ko; 
 	do 
 		install -m 0644 ${WORKDIR}/squashfs-lzma/C/7zip/Compress/LZMA_C/kmod/$i ${D}/lib/modules/2.6.12.6/kernel/fs/squashfs
@@ -122,33 +102,14 @@ do_install_append () {
 	done;
 }
 
-PACKAGES_append = " unsquashfs mksquashfs"
-FILES_mksquashfs = "/usr/bin/mksquashfs"
-FILES_unsquashfs = "/usr/bin/unsquashfs"
-
-do_stage() {
+do_stage () {
 	install ${WORKDIR}/squashfs-lzma/C/7zip/Compress/LZMA_Alone/lzma ${STAGING_BINDIR_NATIVE}
 	install ${WORKDIR}/squashfs-lzma/C/7zip/Compress/LZMA_C/lzmadec ${STAGING_BINDIR_NATIVE}
 	install ${WORKDIR}/squashfs-lzma/squashfs-tools/mksquashfs ${STAGING_BINDIR_NATIVE}
 	install ${WORKDIR}/squashfs-lzma/squashfs-tools/unsquashfs ${STAGING_BINDIR_NATIVE}
 }
 
-pkg_preinst_kernel-image () {
-	[ -d /proc/stb ] && mount -o rw,remount /boot
-	true
-}
+PACKAGES_append = " unsquashfs mksquashfs"
+FILES_mksquashfs = "/usr/bin/mksquashfs"
+FILES_unsquashfs = "/usr/bin/unsquashfs"
 
-pkg_postinst_kernel-image () {
-	[ -d /proc/stb ] && mount -o ro,remount /boot
-	true
-}
-
-pkg_prerm_kernel-image () {
-	[ -d /proc/stb ] && mount -o rw,remount /boot
-	true
-}
-
-pkg_postrm_kernel-image () {
-	[ -d /proc/stb ] && mount -o ro,remount /boot
-	true
-}
