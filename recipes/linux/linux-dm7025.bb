@@ -4,7 +4,9 @@ DESCRIPTION = "Linux kernel for Dreambox DM7025"
 PN = "linux-dm7025"
 KV = "2.6.12"
 PV = "2.6.12.6"
-PR = "s8"
+
+#Don't use PR here, use MACHINE_KERNEL_PR in machine.conf instead
+#PR = "r0"
 
 DEPENDS = "zlib-native zlib"
 
