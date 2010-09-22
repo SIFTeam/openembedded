@@ -11,25 +11,25 @@ DEPENDS = "zlib-native zlib"
 # note, the rX in the filename is *NOT* the packet revision - it's the patch revision.
 SRC_URI = "${KERNELORG_MIRROR}/pub/linux/kernel/v2.6/linux-${PV}${PATCHLEVEL}.tar.bz2 \
         file://defconfig \
-	http://sources.dreamboxupdate.com/download/kernel-patches/linuxmips-${KV}-dream-r6.patch.bz2;pnum=1 \
-	http://sources.dreamboxupdate.com/download/kernel-patches/linux-${KV}-update_dvbapi-r1.patch.bz2;pnum=1 \
-	http://sources.dreamboxupdate.com/download/kernel-patches/linux-2.6.12-dvb-multipid-r4.patch.bz2;pnum=1 \
-	http://sources.dreamboxupdate.com/download/kernel-patches/linux-2.6.12-dvb-core-fix-several-locking-problems.patch.bz2;pnum=1 \
-	http://sources.dreamboxupdate.com/download/kernel-patches/linux-2.6.12-dvbapi-pilot-rolloff-extension-r0.patch.bz2;pnum=1 \
-	http://sources.dreamboxupdate.com/download/kernel-patches/linux-2.6.12-update-wireless.patch.bz2;pnum=1 \
+	http://sources.dreamboxupdate.com/download/kernel-patches/linuxmips-${KV}-dream-r6.patch.bz2;striplevel=1 \
+	http://sources.dreamboxupdate.com/download/kernel-patches/linux-${KV}-update_dvbapi-r1.patch.bz2;striplevel=1 \
+	http://sources.dreamboxupdate.com/download/kernel-patches/linux-2.6.12-dvb-multipid-r4.patch.bz2;striplevel=1 \
+	http://sources.dreamboxupdate.com/download/kernel-patches/linux-2.6.12-dvb-core-fix-several-locking-problems.patch.bz2;striplevel=1 \
+	http://sources.dreamboxupdate.com/download/kernel-patches/linux-2.6.12-dvbapi-pilot-rolloff-extension-r0.patch.bz2;striplevel=1 \
+	http://sources.dreamboxupdate.com/download/kernel-patches/linux-2.6.12-update-wireless.patch.bz2;striplevel=1 \
 	file://linux-2.6-trailing-whitespaces-in-params.patch \
-	file://linuxmips-2.6.12-gcc433-compile-fix.patch;pnum=1 \
-	file://linuxmips-2.6.12-gcc44-compile-fixes.patch;pnum=1 \
-	file://linuxmips-2.6.12-revert-fadvise-fix.patch;pnum=1 \
-	file://linuxmips-2.6.12-add-cpu-feature-overrides.patch;pnum=1 \
-	http://www.kernel.org/pub/linux/kernel/people/rml/inotify/v2.6/0.23/inotify-0.23-rml-2.6.12-15.patch;pnum=1 \
+	file://linuxmips-2.6.12-gcc433-compile-fix.patch;striplevel=1 \
+	file://linuxmips-2.6.12-gcc44-compile-fixes.patch;striplevel=1 \
+	file://linuxmips-2.6.12-revert-fadvise-fix.patch;striplevel=1 \
+	file://linuxmips-2.6.12-add-cpu-feature-overrides.patch;striplevel=1 \
+	http://www.kernel.org/pub/linux/kernel/people/rml/inotify/v2.6/0.23/inotify-0.23-rml-2.6.12-15.patch;striplevel=1 \
 #squashfs-lzma stuff
 	http://squashfs-lzma.org/dl/sqlzma3.2-r2b.tar.bz2;apply=no \
 	http://dreamboxupdate.com/download/kernel-patches/sqlzma2k-3.2-r2-2.6.12.6.patch.bz2;apply=no \
 	http://dreamboxupdate.com/download/patches/fix_lzma_squashfs_makefiles_for_oe-r2.patch.bz2;apply=no \
 	${SOURCEFORGE_MIRROR}/squashfs/squashfs3.2-r2.tar.gz \
 	${SOURCEFORGE_MIRROR}/sevenzip/lzma443.tar.bz2 \
-	file://${WORKDIR}/squashfs-lzma/kernel-patches/linux-2.6.12/squashfs3.2-patch;pnum=1;apply=yes \
+	file://${WORKDIR}/squashfs-lzma/kernel-patches/linux-2.6.12/squashfs3.2-patch;striplevel=1 \
 "
 
 
@@ -89,8 +89,7 @@ do_compile_append () {
 	rm ${S}/.patched
 }
 
-addtask installsquash after do_install before do_stage do_package
-do_installsquash () {
+do_install_append () {
 	for i in sqlzma.ko unlzma.ko; 
 	do 
 		install -m 0644 ${WORKDIR}/squashfs-lzma/C/7zip/Compress/LZMA_C/kmod/$i ${D}/lib/modules/2.6.12.6/kernel/fs/squashfs
@@ -100,9 +99,6 @@ do_installsquash () {
 	do
 		install ${WORKDIR}/squashfs-lzma/squashfs-tools/$i-${ARCH} ${D}/usr/bin/$i
 	done;
-}
-
-do_stage () {
 	install ${WORKDIR}/squashfs-lzma/C/7zip/Compress/LZMA_Alone/lzma ${STAGING_BINDIR_NATIVE}
 	install ${WORKDIR}/squashfs-lzma/C/7zip/Compress/LZMA_C/lzmadec ${STAGING_BINDIR_NATIVE}
 	install ${WORKDIR}/squashfs-lzma/squashfs-tools/mksquashfs ${STAGING_BINDIR_NATIVE}
