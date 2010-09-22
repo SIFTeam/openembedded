@@ -31,7 +31,7 @@ SRC_URI = "${KERNELORG_MIRROR}/pub/linux/kernel/v2.6/linux-${PV}${PATCHLEVEL}.ta
 	http://dreamboxupdate.com/download/patches/fix_lzma_squashfs_makefiles_for_oe-r2.patch.bz2;apply=no \
 	${SOURCEFORGE_MIRROR}/squashfs/squashfs3.2-r2.tar.gz \
 	${SOURCEFORGE_MIRROR}/sevenzip/lzma443.tar.bz2 \
-	file://${WORKDIR}/squashfs-lzma/kernel-patches/linux-2.6.12/squashfs3.2-patch;striplevel=1 \
+	file://${WORKDIR}/squashfs-lzma/kernel-patches/linux-2.6.12/squashfs3.2-patch;striplevel=1;apply=yes \
 "
 
 
