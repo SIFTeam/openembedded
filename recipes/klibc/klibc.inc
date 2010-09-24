@@ -40,6 +40,10 @@ SRC_URI += "file://fstype-sane-vfat-and-jffs2-for-1.5.patch \
             file://getrusage.patch \
             file://klcc_prefix.patch \
             "
+SRC_URI_append_dm7025 = "\
+	file://klibc_kexecsyscall_r.patch \
+	file://no_acl_mount.patch \
+	"
 
 S = "${WORKDIR}/klibc-${PV}"
 
