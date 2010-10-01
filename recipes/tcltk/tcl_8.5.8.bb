@@ -26,12 +26,15 @@ inherit autotools binconfig
 
 EXTRA_OECONF = "--enable-threads"
 
-do_compile_prepend() {
-	echo > ../compat/fixstrtod.c
-	sed -i -e 's:./tclsh :tclsh :g' Makefile
+BINCONFIG_GLOB = "*Config.sh"
+
+do_configure_append() {
+        echo > ../compat/fixstrtod.c
 }
 
-BINCONFIG_GLOB = "*Config.sh"
+do_compile_prepend_pn-tcl () {
+        sed -i -e 's:./tclsh :tclsh :g' Makefile
+}
 
 do_install() {
 	autotools_do_install
