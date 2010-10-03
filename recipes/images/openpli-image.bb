@@ -16,6 +16,8 @@ IMAGE_INSTALL = " \
 				cifs \
 				samba \
 				early-configure \
+				e2fsprogs-mke2fs \
+				util-linux-sfdisk \
 				"
 
 OPTIONAL_PACKAGES ?= ""
