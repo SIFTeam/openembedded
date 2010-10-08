@@ -95,8 +95,10 @@ EXTRA_OECONF = "--enable-maintainer-mode --with-target=native --with-libsdl=no -
 
 EXTRA_OECONF += "${@base_contains("MACHINE_FEATURES", "textlcd", "--with-textlcd" , "", d)}"
 
-# Swig generated 200k enigma.py file has no purpose for end users.
-FILES_${PN}-dbg += "usr/lib/enigma2/python/enigma.py"
+# Swig generated 200k enigma.py file has no purpose for end users, nor the unused .pyc files.
+FILES_${PN}-dbg += "/usr/lib/enigma2/python/enigma.py /usr/lib/enigma2/python/*.pyc /usr/lib/enigma2/python/*/*.pyc /usr/lib/enigma2/python/*/*/*.pyc /usr/lib/enigma2/python/*/*/*/*.pyc"
+# Save some space on the 7025
+FILE_${PN}-dbg_append_dm7025 = "/usr/lib/enigma2/python/*/*.py /usr/lib/enigma2/python/*/*/*.py /usr/lib/enigma2/python/*/*/*/*.py"
 
 RADIOMVI = "${@base_contains("MACHINE_FEATURES", "hdtv", "radio-hd.mvi" , "radio.mvi", d)}"
 
