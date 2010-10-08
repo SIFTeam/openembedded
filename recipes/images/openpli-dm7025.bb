@@ -15,11 +15,13 @@ IMAGE_INSTALL = " \
 
 # Just enough to get enigma2 running
 IMAGE_INSTALL += " \
+	mdev-static-devices \
 	enigma2 \
         enigma2-streamproxy \
         tuxbox-common \
         libavahi-client \
         settings-autorestore \
+	enigma2-plugin-softcams-cccam \
 	"
 
 # Build script for the 7025 so I don't keep on having to change this
