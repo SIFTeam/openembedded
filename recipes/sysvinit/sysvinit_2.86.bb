@@ -18,7 +18,6 @@ CONFFILES_${PN}-inittab = "${sysconfdir}/inittab"
 USE_VT ?= "1"
 SYSVINIT_ENABLED_GETTYS ?= "1"
 
-INITTAB_dm7025 = "${@base_contains('PREFERRED_VERSION_linux-dm7025', '2.6.12.6', 'inittab_old', 'inittab', d)}"
 INITTAB ?= "inittab"
 
 SRC_URI = "ftp://ftp.cistron.nl/pub/people/miquels/sysvinit/sysvinit-${PV}.tar.gz \
