@@ -1,4 +1,4 @@
-PV = "20100914"
+PV = "20101009"
 PR = "r0"
 DESCRIPTION = "Run some scripts earlier than others"
 PACKAGES = "${PN}"

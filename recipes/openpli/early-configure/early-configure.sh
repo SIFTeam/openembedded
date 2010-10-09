@@ -2,4 +2,4 @@
 opkg configure update-modules
 
 # suicide
-rm -f /etc/rcS.d/S*early-configure
+rm -f /etc/rcS.d/S*early-configure.sh
