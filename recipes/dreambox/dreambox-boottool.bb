@@ -18,7 +18,7 @@ do_install_append() {
 }
 
 do_compile_append() {
-	${STAGING_BINDIR_CROSS}/${HOST_PREFIX}klcc ${S}/boottool-${MACHINE}.c -o ${S}/boottool
+	${STAGING_BINDIR_CROSS}/klcc ${S}/boottool-${MACHINE}.c -o ${S}/boottool
 }
 
 PACKAGE_ARCH := "${MACHINE_ARCH}"

@@ -27,7 +27,7 @@ SRC_URI = "${KERNELORG_MIRROR}/pub/linux/kernel/v2.6/linux-${PV}${PATCHLEVEL}.ta
 	http://www.kernel.org/pub/linux/kernel/people/rml/inotify/v2.6/0.23/inotify-0.23-rml-2.6.12-15.patch;striplevel=1 \
 	file://sysctlwrite.patch \
 #squashfs-lzma stuff
-	http://squashfs-lzma.org/dl/sqlzma3.2-r2b.tar.bz2;apply=no \
+	ftp://ftp.slax.org/source/slax/sqlzma/old-versions-unsupported/sqlzma443/sqlzma3.2-r2b.tar.bz2;apply=no \
 	http://dreamboxupdate.com/download/kernel-patches/sqlzma2k-3.2-r2-2.6.12.6.patch.bz2;apply=no \
 	http://dreamboxupdate.com/download/patches/fix_lzma_squashfs_makefiles_for_oe-r2.patch.bz2;apply=no \
 	${SOURCEFORGE_MIRROR}/squashfs/squashfs3.2-r2.tar.gz \

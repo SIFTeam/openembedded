@@ -11,9 +11,9 @@ export KLCC_INST=${STAGING_DIR_TARGET}/lib/klibc
 inherit cross
 
 do_install() {
-         install -d ${D}${TOOLCHAIN_PATH}/bin/
-         install -m 0755 klcc/klcc ${D}${TOOLCHAIN_PATH}/bin/${TARGET_PREFIX}klcc
+         install -d ${STAGING_BINDIR_CROSS}/
+         install -m 0755 klcc/klcc ${STAGING_BINDIR_CROSS}/klcc
 }
 
 PACKAGES = "${PN}"
-FILES_${PN} = "${D}${TOOLCHAIN_PATH}/bin/${TARGET_PREFIX}klcc"
+FILES_${PN} = "${STAGING_BINDIR_CROSS}/klcc"
