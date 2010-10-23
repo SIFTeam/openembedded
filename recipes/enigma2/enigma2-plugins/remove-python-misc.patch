@@ -1,0 +1,11 @@
+Index: enigma2-plugins/youtubeplayer/CONTROL/control
+===================================================================
+--- enigma2-plugins.orig/youtubeplayer/CONTROL/control	2010-06-05 20:24:31.000000000 +0200
++++ enigma2-plugins/youtubeplayer/CONTROL/control	2010-08-29 13:39:48.392147411 +0200
+@@ -6,5 +6,5 @@
+ Maintainer: Volker Christian <volker.christian@fh-hagenberg.at>
+ Architecture: mipsel
+ Homepage: http://www.i-have-a-dreambox.com/wbb2/board.php?boardid=240
+-Depends: enigma2, enigma2-plugin-extensions-vlcplayer, twisted-web, python-gdata, python-misc, python-textutils
++Depends: enigma2, enigma2-plugin-extensions-vlcplayer, twisted-web, python-gdata, python-textutils
+ Source: Just localy at my harddrive

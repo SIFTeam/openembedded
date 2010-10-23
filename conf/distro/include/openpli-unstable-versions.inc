@@ -20,8 +20,8 @@ SRCREV_pn-enigma2-plugin-extensions-tuxcom ?= "${AUTOREV}"
 SRCREV_pn-enigma2-plugin-extensions-tuxterm ?= "${AUTOREV}"
 
 # cvs
-SRCDATE_enigma2-plugins ?= "20100629"
-SRCDATE_enigma2-skins ?= "20100629"
+SRCDATE_enigma2-plugins ?= "20101023"
+SRCDATE_enigma2-skins ?= "20101023"
 SRCDATE_enigma2-streamproxy ?= "20080728"
 SRCDATE_tuxbox-common ?= "20090305"
 SRCDATE_tuxbox-libs ?= "20040928"
@@ -38,9 +38,9 @@ SRCDATE_gst-plugin-dvbmediasink ?= "20100729"
 SRCDATE_squashfs-tools-native = "20100319"
 
 # others
-SRCDATE_enigma2-plugin-extensions-xmltvimport-rytec ?= "20100601"
+SRCDATE_enigma2-plugin-extensions-xmltvimport-rytec ?= "20101020"
 SRCDATE_enigma2-plugin-picons-sat ?= "20100628"
 SRCDATE_enigma2-plugin-picons-ziggo.casema ?= "20100519"
 SRCDATE_enigma2-plugin-picons-ziggo.tvhome ?= "20100519"
-SRCDATE_enigma2-plugin-settings-rytec-13e19e23e28e = "20100602"
-SRCDATE_enigma2-plugin-settings-rytec-motor = "20100602"
+SRCDATE_enigma2-plugin-settings-rytec-13e19e23e28e = "20101013"
+SRCDATE_enigma2-plugin-settings-rytec-motor = "20101013"

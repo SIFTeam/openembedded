@@ -3,11 +3,6 @@ MAINTAINER = "Felix Domke <tmbinc@elitedvb.net>"
 
 PACKAGES_DYNAMIC = "enigma2-plugin-*"
 
-# if you want the 2.7.0 release, use
-#TAG = ";tag=enigma2-plugins_rel27"
-#PV = "2.7cvs${SRCDATE}"
-
-# if you want experimental, use:
 TAG = ""
 PV = "experimental-cvs${SRCDATE}"
 PR = "r3"
@@ -29,6 +24,7 @@ SRC_URI += " \
 	file://shoutcast_etc.patch \
 	file://networkbrowser-serial.patch \
 	file://networkbrowser-remount.patch \
+	file://mytube-default.patch \
 	"
 
 CONFFILES_${PN} += "${sysconfdir}/enigma2/movietags"

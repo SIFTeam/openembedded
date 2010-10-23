@@ -8,23 +8,23 @@ Index: enigma2-plugins/mytube/src/plugin.py
  from Screens.InfoBarGenerics import InfoBarShowHide, InfoBarSeek, InfoBarNotifications, InfoBarServiceNotifications
 -from enigma import eTPM
  from __init__ import bin2long, long2bin, rsa_pub1024, decrypt_block
-+try:
-+	from enigma import eTPM
-+except:
-+	class eTPM:
-+		TPMD_DT_LEVEL3_CERT = 3
-+		TPMD_DT_LEVEL2_CERT = 2
++
++
++
++class eTPM:
++		TPMD_DT_LEVEL3_CERT = 5
++		TPMD_DT_LEVEL2_CERT = 4
 +		def __init__(self):
 +			self.TPM = self
 +		def getCert(self, *args):
 +			return "12345678"
 +		def challenge(self, r):
 +			return r
-+	def decrypt_block(a,b):
++def decrypt_block(a,b):
 +		return 80*"-" + a
-+	def get_rnd():
++def get_rnd():
 +		return "12345678"
-+	def validate_cert(*args):
++def validate_cert(*args):
 +		return "12345678"
 +
  etpm = eTPM()
