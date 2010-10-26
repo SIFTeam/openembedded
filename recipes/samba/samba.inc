@@ -28,6 +28,7 @@ EXTRA_OECONF='--disable-cups \
               --with-readline=${STAGING_LIBDIR}/.. \
               --with-libiconv=${STAGING_LIBDIR}/.. \
               --without-automount \
+	      --without-ads \
               --with-configdir=${sysconfdir}/samba \
               --with-privatedir=${sysconfdir}/samba/private \
               --with-lockdir=${localstatedir}/lock \
