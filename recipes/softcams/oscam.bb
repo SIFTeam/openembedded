@@ -1,26 +1,26 @@
-# EXAMPLE for oscam, does not work yet...
-CSNAME = "oscam"
-DESCRIPTION = "{CSNAME} ${PV} cardserver"
-PN = "enigma2-plugin-softcams-${CSNAME}"
-PV = "0.0"
-PR = "r0"
+CAMNAME = "oscam"
+DESCRIPTION = "{CAMNAME} ${PV} Open Source Softcam"
+RDEPENDS = "oscam-bin"
+PACKAGE_ARCH = "all"
+PN = "enigma2-plugin-softcams-${CAMNAME}"
+PV = "1.0"
+PR = "r1"
 
-SRC_URI = "http://downloads.pli-images.org/softcams/${CSNAME}-${PV}.zip"
+SRC_URI = "\
+        file://config/oscam.* \
+	"
 
-S = "${WORKDIR}/${CSNAME}"
+S = "${WORKDIR}/${CAMNAME}"
 
 INHIBIT_PACKAGE_STRIP = "1"
 
-CSSTART = "exec start-stop-daemon -S -b -x /usr/bin/${CSNAME}"
+CAMSTART = "exec start-stop-daemon -S -x /usr/bin/${CAMNAME} -- -b -c /etc/tuxbox/config"
 
-require cardserver.inc
+require softcam.inc
+
+CONFFILES = "/etc/tuxbox/config/oscam.conf /etc/tuxbox/config/oscam.server /etc/tuxbox/config/oscam.srvid /etc/tuxbox/config/oscam.user"
 
 do_install() {
-	install -d ${D}/usr/bin
-	install -m 0755 ${S}/bin/${CSNAME}.mips ${D}/usr/bin/${CSNAME}
-	install -d ${D}/etc/${CSNAME}
+	install -d ${D}/etc/tuxbox/config
+	install -m 0644 ${WORKDIR}/config/* ${D}/etc/tuxbox/config/
 }
-
-pkg_postinst() {
-}
-

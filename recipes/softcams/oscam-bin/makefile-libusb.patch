@@ -1,0 +1,13 @@
+Index: trunk/CMakeLists.txt
+===================================================================
+--- trunk.orig/CMakeLists.txt	2010-10-26 19:29:31.000000000 +0200
++++ trunk/CMakeLists.txt	2010-10-26 20:09:41.840013698 +0200
+@@ -409,7 +409,7 @@
+     target_link_libraries (${exe_name} ${csoscam} ${csmodules} ${csreaders} csctapi cscrypt)
+ endif(CS_WITH_GBOX)
+ if(HAVE_LIBRT AND HAVE_LIBUSB)
+-    target_link_libraries (${exe_name} imp_libusb)
++    target_link_libraries (${exe_name} usb)
+     if (NOT OSCamOperatingSystem MATCHES "Mac OS X")
+         target_link_libraries (${exe_name} rt)
+     endif (NOT OSCamOperatingSystem MATCHES "Mac OS X")
