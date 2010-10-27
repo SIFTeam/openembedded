@@ -1,0 +1,11 @@
+--- gst-plugins-bad-0.10.19-org/gst/audioparsers/plugin.c	2010-02-15 13:47:47.000000000 +0100
++++ gst-plugins-bad-0.10.19/gst/audioparsers/plugin.c	2010-07-28 14:05:26.081223613 +0200
+@@ -32,7 +32,7 @@
+   gboolean ret;
+ 
+   ret = gst_element_register (plugin, "aacparse",
+-      GST_RANK_NONE, GST_TYPE_AACPARSE);
++      GST_RANK_MARGINAL, GST_TYPE_AACPARSE);
+   ret &= gst_element_register (plugin, "amrparse",
+       GST_RANK_PRIMARY + 1, GST_TYPE_AMRPARSE);
+   ret &= gst_element_register (plugin, "ac3parse",
