@@ -7,7 +7,7 @@ do_configure_prepend() {
     sed -i -e s:docs::g Makefile.am
 }
 
-DEPENDS += "gst-plugins-base"
+DEPENDS += "gst-plugins-base>=0.10.30"
 
 EXTRA_OECONF_openpli += "--disable-apexsink --disable-dvdnav --disable-cdaudio --disable-mpeg2enc --disable-mplex"
 
