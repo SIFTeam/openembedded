@@ -34,12 +34,15 @@ RDEPENDS_enigma2_append_dm8000 = " gst-plugin-alsa alsa-conf gst-plugin-avi gst-
 RDEPENDS_enigma2_append_dm800 = " gst-plugin-alsa alsa-conf gst-plugin-matroska gst-plugin-qtdemux gst-plugin-ivorbisdec"
 RDEPENDS_enigma2_append_dm500hd = " gst-plugin-alsa alsa-conf gst-plugin-avi gst-plugin-matroska \
 	gst-plugin-qtdemux gst-plugin-cdxaparse gst-plugin-cdio gst-plugin-vcdsrc gst-plugin-vorbis"
+RDEPENDS_enigma2_append_vuduo = " gst-plugin-alsa alsa-conf gst-plugin-avi gst-plugin-matroska \
+	gst-plugin-qtdemux gst-plugin-cdxaparse gst-plugin-cdio gst-plugin-vcdsrc gst-plugin-vorbis"
 
 RRECOMMENDS_enigma2 ?= ""
-# dm8000 and dm500hd should be able to downmix DTS (VU+ not yet, lacks alsa support?)
+# These should be able to downmix DTS
 # Put in recommends it's not required but should be added on update
 RRECOMMENDS_enigma2_append_dm8000 = " gst-plugin-dtsdec"
 RRECOMMENDS_enigma2_append_dm500hd = " gst-plugin-dtsdec"
+RRECOMMENDS_enigma2_append_vuduo = " gst-plugin-dtsdec"
 
 # 'forward depends' - no two providers can have the same PACKAGES_DYNAMIC, however both
 # enigma2 and enigma2-plugins produce enigma2-plugin-*.
