@@ -1,11 +1,10 @@
 DESCRIPTION = "Oscam binary, freshly compiled"
-SVNREV = "3508"
+SVNREV = "3665"
 PV = "svn${SVNREV}"
 PR = "r0"
 DEPENDS = "libusb openssl"
 
-SRC_URI = "svn://streamboard.gmc.to/svn/oscam;module=trunk;proto=http;rev=${SVNREV} \
-	file://makefile-libusb.patch"
+SRC_URI = "svn://streamboard.gmc.to/svn/oscam;module=trunk;proto=http;rev=${SVNREV}"
 
 S = "${WORKDIR}/trunk"
 
