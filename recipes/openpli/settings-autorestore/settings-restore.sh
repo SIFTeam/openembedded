@@ -28,6 +28,7 @@ then
 fi
 
 echo "Restoring from: ${BACKUPDIR}"
+echo ${BACKUPDIR} > /tmp/restoredfrom
 
 [ -d ${BACKUPDIR}/backup/enigma2 ] && {
   mkdir -p /etc/enigma2
@@ -64,6 +65,7 @@ fi
 
 [ -d ${BACKUPDIR}/backup/network ] &&  cp -rp ${BACKUPDIR}/backup/network/* /etc/network/
 [ -d ${BACKUPDIR}/backup/default ] &&  cp -rp ${BACKUPDIR}/default/* /etc/default/
+[ -d ${BACKUPDIR}/backup/tuxbox ] &&  cp -rp ${BACKUPDIR}/tuxbox/* /etc/tuxbox/
 
 mergerootpwd()
 {

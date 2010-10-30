@@ -1,13 +1,28 @@
 #! /bin/sh
 # This script is run once when your box boots for the first time.
 # It installs the things from /hdd/backup/autoinstall
+# or from wherever the settings were restored
 
-if [ -f /hdd/backup/autoinstall ]
+BACKUPDIR=/hdd/backup
+if [ -f /tmp/restoredfrom ]
 then
-	ipkg-cl update  
-	for package in `cat /hdd/backup/autoinstall`
+	BD=`cat /tmp/restoredfrom`
+	[ -f ${BD}/autoinstall ] && BACKUPDIR=${BD}
+fi
+
+if [ -x /usr/bin/opkg ]
+then
+	IPKG=/usr/bin/opkg
+else
+	IPKG=ipkg
+fi
+
+if [ -f ${BACKUPDIR}/autoinstall ]
+then
+	${IPKG} update  
+	for package in `cat ${BACKUPDIR}/autoinstall`
 	do
-		ipkg-cl install -force-defaults $package
+		${IPKG} install -force-defaults $package
 	done
 fi
 
