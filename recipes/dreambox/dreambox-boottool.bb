@@ -6,7 +6,7 @@ MAINTAINER = "Felix Domke <tmbinc@elitedvb.net>"
 
 PV = "1.0"
 PR = "r1"
-DEPENDS = "klibc"
+DEPENDS = "klcc-cross"
 
 SRC_URI = "file://boottool-${MACHINE}.c"
 
