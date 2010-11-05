@@ -8,6 +8,7 @@ do_configure_prepend() {
 }
 
 DEPENDS += "gst-plugins-base"
+DEPENDS_openpli += "gst-plugins-base"
 
 EXTRA_OECONF_openpli += "--disable-apexsink --disable-dvdnav --disable-cdaudio --disable-mpeg2enc --disable-mplex"
 

@@ -10,6 +10,7 @@ PROVIDES += "gst-plugins"
 # if alsa has been built and is present.  You will
 # not get an error if this is not present, just 
 # a missing alsa plugin
-DEPENDS += "${@base_contains('DISTRO', 'openpli', 'alsa-lib', 'cdparanoia pango libtheora alsa-lib libsm virtual/libx11 freetype gnome-vfs libxv', d)}"
+DEPENDS += "cdparanoia pango libtheora alsa-lib libsm virtual/libx11 freetype gnome-vfs libxv"
+DEPENDS_openpli += "alsa-lib"
 EXTRA_OECONF_openpli += "--disable-theora --disable-pango --with-audioresample-format=int"
 

@@ -6,6 +6,7 @@ INC_PR = "r0"
 PR = "${INC_PR}.0"
 
 DEPENDS += "gst-plugins-base libsidplay"
+DEPENDS_openpli += "gst-plugins-base libsidplay"
 
 python() {
 	# Don't build, if we are building an ENTERPRISE distro

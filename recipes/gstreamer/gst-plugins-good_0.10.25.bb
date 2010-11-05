@@ -5,6 +5,7 @@ INC_PR = "r0"
 PR = "${INC_PR}.0"
 
 DEPENDS += "gst-plugins-base"
+DEPENDS_openpli += "gst-plugins-base"
 
 #inherit gconf
 #DEPENDS += "hal pulseaudio speex libsoup-2.4 flac gst-plugins-base openssl popt esound"
