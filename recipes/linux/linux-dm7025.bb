@@ -25,6 +25,7 @@ SRC_URI = "${KERNELORG_MIRROR}/pub/linux/kernel/v2.6/linux-${PV}${PATCHLEVEL}.ta
 	file://linuxmips-2.6.12-revert-fadvise-fix.patch;striplevel=1 \
 	file://linuxmips-2.6.12-add-cpu-feature-overrides.patch;striplevel=1 \
 	http://www.kernel.org/pub/linux/kernel/people/rml/inotify/v2.6/0.23/inotify-0.23-rml-2.6.12-15.patch;striplevel=1 \
+	file://sysctlwrite.patch \
 #squashfs-lzma stuff
 	http://squashfs-lzma.org/dl/sqlzma3.2-r2b.tar.bz2;apply=no \
 	http://dreamboxupdate.com/download/kernel-patches/sqlzma2k-3.2-r2-2.6.12.6.patch.bz2;apply=no \

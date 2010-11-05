@@ -1,0 +1,19 @@
+--- ~/kernel/sysctl.c~	2005-08-29 18:55:27.000000000 +0200
++++ ~/kernel/sysctl.c	2010-11-05 20:18:14.475391193 +0100
+@@ -1402,15 +1402,7 @@
+ 	}
+ 	
+ 	if (write) {
+-		len = 0;
+-		p = buffer;
+-		while (len < *lenp) {
+-			if (get_user(c, p++))
+-				return -EFAULT;
+-			if (c == 0 || c == '\n')
+-				break;
+-			len++;
+-		}
++		len = *lenp - 1;
+ 		if (len >= table->maxlen)
+ 			len = table->maxlen-1;
+ 		if(copy_from_user(table->data, buffer, len))
