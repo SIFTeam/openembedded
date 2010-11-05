@@ -8,7 +8,6 @@ do_configure_prepend() {
 }
 
 DEPENDS += "gst-plugins-base>=0.10.30"
-do_configure[depends] += "gst-plugins-base:do_populate_sysroot"
 
 EXTRA_OECONF_openpli += "--disable-apexsink --disable-dvdnav --disable-cdaudio --disable-mpeg2enc --disable-mplex"
 
