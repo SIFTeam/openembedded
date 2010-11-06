@@ -3,7 +3,7 @@ DEPENDS = "python-native db gdbm openssl readline sqlite3 tcl zlib\
            ${@base_contains('DISTRO_FEATURES', 'tk', 'tk', '', d)}"
 DEPENDS_sharprom = "python-native db readline zlib gdbm openssl"
 # set to .0 on every increase of INC_PR
-PR = "${INC_PR}.1"
+PR = "${INC_PR}.2"
 
 SRC_URI = "\
   http://www.python.org/ftp/python/${PV}/Python-${PV}.tar.bz2 \
@@ -93,6 +93,10 @@ require python-${PYTHON_MAJMIN}-manifest.inc
 PACKAGES =+ "python-sourcecode"
 DESCRIPTION_python-sourcecode = "Python source code, separated to save a lot of space"
 FILES_python-sourcecode = "${libdir}/python${PYTHON_MAJMIN}/*.py ${libdir}/python${PYTHON_MAJMIN}/*/*.py ${libdir}/python${PYTHON_MAJMIN}/*/*/*.py ${libdir}/python${PYTHON_MAJMIN}/*/*/*/*.py"
+# No need for tests either
+PACKAGES =+ "python-selftests"
+DESCRIPTION_python-tests = "Python test code, separated to save space"
+FILES_python-tests = "${libdir}/python${PYTHON_MAJMIN}/*/tests ${libdir}/python${PYTHON_MAJMIN}/*/test"
 
 # manual dependency additions
 RPROVIDES_python-core = "python"
