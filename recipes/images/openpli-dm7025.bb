@@ -11,6 +11,7 @@ IMAGE_INSTALL = " \
 	${BOOTLOGO} \
 	tuxbox-links \
 	early-configure \
+	samba \
 	"
 
 # Just enough to get enigma2 running
