@@ -5,22 +5,34 @@ inherit gitpkgv
 
 PV = "1.0+git${SRCPV}"
 PKGV = "1.0+git${GITPKGV}"
-PR = "r0"
+PR = "r1"
 
-PACKAGES = "${PN} ${PN}-hd ${PN}-ehd font-valis-enigma font-valis-hd"
-PROVIDES += "font-valis-enigma font-valis-hd"
+PV_font-valis-enigma = "20091112"
+PV_font-valis-hd = "20100514"
+PR_font-valis-enigma = "r0"
+PR_font-valis-hd = "r0"
 
-SRC_URI = "git://openpli.git.sourceforge.net/gitroot/openpli/skin-magic;protocol=git"
+PACKAGES = "${PN} skin-magic-hd-common ${PN}-hd ${PN}-ehd ${PN}-hd-lite ${PN}-ehd-lite font-valis-enigma font-valis-hd"
+PROVIDES += "font-valis-enigma font-valis-hd skin-magic-hd-common"
+
+OPENPLI_GIT ?= "git://openpli.git.sourceforge.net/gitroot/openpli"
+SRC_URI = "${OPENPLI_GIT}/skin-magic;protocol=git"
 
 FILES_${PN} = "/usr/share/enigma2/Magic"
-FILES_${PN}-hd = "/usr/share/enigma2/Magic-HD"
-FILES_${PN}-ehd = "/usr/share/enigma2/Magic-EHD"
+FILES_skin-magic-hd-common = "/usr/share/enigma2/Magic-HD-Common/"
+FILES_${PN}-hd = "/usr/share/enigma2/Magic-HD/"
+FILES_${PN}-hd-lite = "/usr/share/enigma2/Magic-HD-Light/"
+FILES_${PN}-ehd = "/usr/share/enigma2/Magic-EHD/"
+FILES_${PN}-ehd-lite = "/usr/share/enigma2/Magic-EHD-Light/"
 FILES_font-valis-enigma = "/usr/share/fonts/valis_enigma.ttf"
 FILES_font-valis-hd = "/usr/share/fonts/hd.ttf /usr/share/fonts/hdi.ttf"
 
 RDEPENDS_${PN} = "font-valis-enigma"
-RDEPENDS_${PN}-hd = "font-valis-hd"
-RDEPENDS_${PN}-ehd = "font-valis-hd"
+RDEPHD = "font-valis-hd skin-magic-hd-common"
+RDEPENDS_${PN}-hd = "${RDEPHD}"
+RDEPENDS_${PN}-hd-lite = "${RDEPHD}"
+RDEPENDS_${PN}-ehd = "${RDEPHD}"
+RDEPENDS_${PN}-ehd-lite = "${RDEPHD}"
 S = "${WORKDIR}/git"
 
 do_install() {
