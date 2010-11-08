@@ -1,6 +1,6 @@
 --- klibc-1.5.20/scripts/Kbuild.install	2010-09-26 14:35:23.000000000 +0200
 +++ klibc-1.5.20/scripts/Kbuild.install.no_headers_install	2010-09-26 14:37:22.000000000 +0200
-@@ -92,7 +92,17 @@
+@@ -92,7 +92,16 @@
  	$(Q)-rm -rf $(INSTALLROOT)$(INSTALLDIR)/$(KCROSS)include
  	$(Q)mkdir -p $(INSTALLROOT)$(INSTALLDIR)/$(KCROSS)include
  	$(Q)mkdir -p $(INSTALLROOT)$(INSTALLDIR)/$(KCROSS)lib
@@ -15,7 +15,6 @@
 +	          $(INSTALLROOT)$(INSTALLDIR)/$(KCROSS)include/$$d/. ; \
 +	  done ; \
 +	done
-+	$(Q)cd $(INSTALLROOT)$(INSTALLDIR)/$(KCROSS)include && ln -sf asm-$(KLIBCARCH) asm
  	$(Q)cp -rf usr/include/. $(INSTALLROOT)$(INSTALLDIR)/$(KCROSS)include/.
  	$(Q)$(install-bin) $(objtree)/klcc/$(KCROSS)klcc $(INSTALLROOT)$(bindir)
  
