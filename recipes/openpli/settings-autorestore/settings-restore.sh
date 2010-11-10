@@ -64,8 +64,8 @@ fi
 }
 
 [ -d ${BACKUPDIR}/backup/network ] &&  cp -rp ${BACKUPDIR}/backup/network/* /etc/network/
-[ -d ${BACKUPDIR}/backup/default ] &&  cp -rp ${BACKUPDIR}/default/* /etc/default/
-[ -d ${BACKUPDIR}/backup/tuxbox ] &&  cp -rp ${BACKUPDIR}/tuxbox/* /etc/tuxbox/
+[ -d ${BACKUPDIR}/backup/default ] &&  cp -rp ${BACKUPDIR}/backup/default/* /etc/default/
+[ -d ${BACKUPDIR}/backup/tuxbox ] &&  cp -rp ${BACKUPDIR}/backup/tuxbox/* /etc/tuxbox/
 
 mergerootpwd()
 {
