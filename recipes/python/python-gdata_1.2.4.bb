@@ -2,13 +2,14 @@ DESCRIPTION = "Google Data APIs Python Client Library"
 SECTION = "devel/python"
 LICENSE = "Apache"
 HOMEPAGE = "http://code.google.com/p/gdata-python-client/"
-PR = "r1"
+PR = "r3"
 
 inherit distutils
 
 SRC_URI = "http://gdata-python-client.googlecode.com/files/gdata.py-${PV}.tar.gz"
 S = "${WORKDIR}/gdata.py-${PV}"
 
+FILES_${PN}-dbg += "${libdir}/${PYTHON_DIR}/site-packages/gdata/*/*.py ${libdir}/${PYTHON_DIR}/site-packages/gdata/*/*/*.py"
 FILES_${PN} += "${datadir}"
 
 RDEPENDS_${PN} = "python-elementtree"
