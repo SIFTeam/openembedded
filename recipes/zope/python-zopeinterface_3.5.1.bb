@@ -3,21 +3,26 @@ SECTION = "console/network"
 PRIORITY = "optional"
 LICENSE = "ZPL"
 
-PACKAGES =+ "${PN}-tests"
-RDEPENDS_${PN}-tests = "${PN}"
-
 RPROVIDES_${PN} += " zope-interfaces"
 
 inherit setuptools
+
+PACKAGES =+ "${PN}-src"
+PACKAGES =+ "${PN}-tests"
+RDEPENDS_${PN}-tests = "${PN}"
 
 PR = "r3"
 
 SRC_URI = "http://pypi.python.org/packages/source/z/zope.interface/zope.interface-${PV}.tar.gz"
 S = "${WORKDIR}/zope.interface-${PV}"
 
-FILES_${PN}-dev += "${PYTHON_SITEPACKAGES_DIR}/zope/interface/*.c ${PYTHON_SITEPACKAGES_DIR}/zope/interface/*.py ${PYTHON_SITEPACKAGES_DIR}/zope/interface/common/*.py"
+FILES_${PN}-dev += "${PYTHON_SITEPACKAGES_DIR}/zope/interface/*.c"
 FILES_${PN}-doc += "${PYTHON_SITEPACKAGES_DIR}/*.egg-info/"
 FILES_${PN}-doc += "${PYTHON_SITEPACKAGES_DIR}/zope/interface/*.txt"
+FILED_${PN}-src = "\
+	${PYTHON_SITEPACKAGES_DIR}/zope/interface/*.py \
+	${PYTHON_SITEPACKAGES_DIR}/zope/interface/common/*.py \
+	"
 FILES_${PN}-tests = " \
 	${PYTHON_SITEPACKAGES_DIR}/zope/interface/tests \
 	${PYTHON_SITEPACKAGES_DIR}/zope/interface/common/tests \
