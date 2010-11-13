@@ -10,12 +10,12 @@ RPROVIDES_${PN} += " zope-interfaces"
 
 inherit setuptools
 
-PR = "r2"
+PR = "r3"
 
 SRC_URI = "http://pypi.python.org/packages/source/z/zope.interface/zope.interface-${PV}.tar.gz"
 S = "${WORKDIR}/zope.interface-${PV}"
 
-FILES_${PN}-dev += "${PYTHON_SITEPACKAGES_DIR}/zope/interface/*.c"
+FILES_${PN}-dev += "${PYTHON_SITEPACKAGES_DIR}/zope/interface/*.c ${PYTHON_SITEPACKAGES_DIR}/zope/interface/*.py ${PYTHON_SITEPACKAGES_DIR}/zope/interface/common/*.py"
 FILES_${PN}-doc += "${PYTHON_SITEPACKAGES_DIR}/*.egg-info/"
 FILES_${PN}-doc += "${PYTHON_SITEPACKAGES_DIR}/zope/interface/*.txt"
 FILES_${PN}-tests = " \
