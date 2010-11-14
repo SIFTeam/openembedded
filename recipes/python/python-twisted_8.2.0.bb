@@ -5,7 +5,7 @@ HOMEPAGE = "http://www.twistedmatrix.com"
 SECTION = "console/network"
 PRIORITY = "optional"
 LICENSE = "LGPL"
-PR = "r3"
+PR = "r4"
 
 SRC_URI = "http://tmrc.mit.edu/mirror/twisted/Twisted/8.2/Twisted-${PV}.tar.bz2 "
 S = "${WORKDIR}/Twisted-${PV}"
@@ -15,6 +15,7 @@ inherit setuptools
 PACKAGES =+ "${PN}-src"
 RDEPENDS_{PN}-src = "${PN}"
 FILES_${PN}-src = " \
+	${libdir}/${PYTHON_DIR}/site-packages/twisted/*.py \
 	${libdir}/${PYTHON_DIR}/site-packages/twisted/*/*.py \
 	${libdir}/${PYTHON_DIR}/site-packages/twisted/*/*/*.py \
 	"
