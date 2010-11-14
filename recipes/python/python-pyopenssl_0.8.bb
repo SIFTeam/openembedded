@@ -4,7 +4,7 @@ PRIORITY = "optional"
 LICENSE = "LGPL"
 SRCNAME = "pyOpenSSL"
 DEPENDS = "openssl"
-PR = "ml1.1"
+PR = "ml1.2"
 
 SRC_URI = "${SOURCEFORGE_MIRROR}/pyopenssl/${SRCNAME}-${PV}.tar.gz"
 S = "${WORKDIR}/${SRCNAME}-${PV}"
@@ -16,7 +16,7 @@ RDEPENDS_${PN} = "python-threading"
 PACKAGES =+ "${PN}-test"
 
 FILES_${PN}-test = "${libdir}/${PYTHON_DIR}/site-packages/OpenSSL/test"
-FILED_${PN}-dbg += "${libdir}/${PYTHON_DIR}/site-packages/OpenSSL/*.py"
+FILES_${PN}-dbg += "${libdir}/${PYTHON_DIR}/site-packages/OpenSSL/*.py"
 
 SRC_URI[md5sum] = "00377690f224d9e59c833fb0459603f4"
 SRC_URI[sha256sum] = "2284411d21f1031f08f23c4f49dc0a341e38b07833495d0fe21a87eb25f3ffe3"
