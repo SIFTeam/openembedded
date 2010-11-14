@@ -77,7 +77,7 @@ inherit gitpkgv
 
 PV = "2.7+git${SRCPV}"
 PKGV = "2.7+git${GITPKGV}"
-PR = "r22"
+PR = "r23"
 
 SRC_URI = "git://openpli.git.sourceforge.net/gitroot/openpli/enigma2;protocol=git \
            file://enigma2.sh"
@@ -86,6 +86,7 @@ S = "${WORKDIR}/git"
 
 FILES_${PN} += "${datadir}/fonts ${datadir}/keymaps"
 FILES_${PN}-meta = "${datadir}/meta"
+PACKAGES =+ "${PN}-src"
 PACKAGES += "${PN}-meta"
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 
@@ -99,10 +100,30 @@ EXTRA_OECONF = "--enable-maintainer-mode --with-target=native --with-libsdl=no -
 EXTRA_OECONF += "${@base_contains("MACHINE_FEATURES", "textlcd", "--with-textlcd" , "", d)}"
 
 # Swig generated 200k enigma.py file has no purpose for end users, nor the unused .pyc files.
-FILES_${PN}-dbg += "/usr/lib/enigma2/python/enigma.py /usr/lib/enigma2/python/*.pyc /usr/lib/enigma2/python/*/*.pyc /usr/lib/enigma2/python/*/*/*.pyc /usr/lib/enigma2/python/*/*/*/*.pyc"
-# Save some space on the 7025
-FILE_${PN}-dbg_append_dm7025 = "/usr/lib/enigma2/python/*/*.py /usr/lib/enigma2/python/*/*/*.py /usr/lib/enigma2/python/*/*/*/*.py"
-
+FILES_${PN}-dbg += "\
+	/usr/lib/enigma2/python/enigma.py \
+	/usr/lib/enigma2/python/*.pyc \
+	/usr/lib/enigma2/python/*/*.pyc \
+	/usr/lib/enigma2/python/*/*/*.pyc \
+	/usr/lib/enigma2/python/*/*/*/*.pyc \
+	"
+# Save some space by not installing sources (mytest.py must remain)
+FILES_${PN}-src = "\
+	/usr/lib/enigma2/python/GlobalActions.py \
+	/usr/lib/enigma2/python/Navigation.py \
+	/usr/lib/enigma2/python/NavigationInstance.py \
+	/usr/lib/enigma2/python/RecordTimer.py \
+	/usr/lib/enigma2/python/ServiceReference.py \
+	/usr/lib/enigma2/python/SleepTimer.py \
+	/usr/lib/enigma2/python/e2reactor.py \
+	/usr/lib/enigma2/python/keyids.py \
+	/usr/lib/enigma2/python/keymapparser.py \
+	/usr/lib/enigma2/python/skin.py \
+	/usr/lib/enigma2/python/timer.py \
+	/usr/lib/enigma2/python/*/*.py \
+	/usr/lib/enigma2/python/*/*/*.py \
+	/usr/lib/enigma2/python/*/*/*/*.py \
+	"
 RADIOMVI = "${@base_contains("MACHINE_FEATURES", "hdtv", "radio-hd.mvi" , "radio.mvi", d)}"
 
 SRC_URI += " \
