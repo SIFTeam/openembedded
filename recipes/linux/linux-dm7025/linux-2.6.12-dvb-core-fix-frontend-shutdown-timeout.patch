@@ -1,0 +1,12 @@
+diff -Naur linux-2.6.12.6-org/drivers/media/dvb/dvb-core/dvb_frontend.c linux-2.6.12.6/drivers/media/dvb/dvb-core/dvb_frontend.c
+--- linux-2.6.12.6-org/drivers/media/dvb/dvb-core/dvb_frontend.c	2010-10-10 22:11:12.000000000 +0200
++++ linux-2.6.12.6/drivers/media/dvb/dvb-core/dvb_frontend.c	2010-11-08 23:24:13.995609002 +0100
+@@ -43,7 +43,7 @@
+ #include "dvbdev.h"
+ 
+ static int dvb_frontend_debug;
+-static int dvb_shutdown_timeout = 5;
++static int dvb_shutdown_timeout;
+ static int dvb_force_auto_inversion;
+ static int dvb_override_tune_delay;
+ static int dvb_powerdown_on_sleep = 1;
