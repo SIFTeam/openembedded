@@ -15,6 +15,7 @@ RDEPENDS_${PN} = "python-codecs python-core python-lang python-re python-threadi
 	gst-plugin-neonhttpsrc gst-plugin-mpegaudioparse gst-plugin-subparse \
 	gst-plugin-apetag gst-plugin-icydemux gst-plugin-autodetect \
 	python-twisted-core python-elementtree \
+	enigma2-fonts \
 	glibc-gconv-iso8859-15 ethtool"
 
 RDEPENDS_${PN} += "${@base_contains("MACHINE_FEATURES", "blindscan", "virtual/blindscanutils" , "", d)}"
@@ -84,13 +85,21 @@ SRC_URI = "git://openpli.git.sourceforge.net/gitroot/openpli/enigma2;protocol=gi
 
 S = "${WORKDIR}/git"
 
-FILES_${PN} += "${datadir}/fonts ${datadir}/keymaps"
+FILES_${PN} += "${datadir}/keymaps"
 FILES_${PN}-meta = "${datadir}/meta"
 PACKAGES =+ "${PN}-src"
 PACKAGES += "${PN}-meta"
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 
 inherit autotools pkgconfig
+
+# fonts: Rarely changed, but updated everytime. Put in separate package,
+# so the dm7025 can keep them in squashfs. Also saves bandwidth...
+PACKAGES =+ "enigma2-fonts"
+PV_enigma2-fonts = "2010.11.14"
+PR_enigma2-fonts = "r0"
+PKGV_enigma2-fonts = "${PV_enigma2-fonts}"
+FILES_enigma2-fonts = "${datadir}/fonts"
 
 bindir = "/usr/bin"
 sbindir = "/usr/sbin"
