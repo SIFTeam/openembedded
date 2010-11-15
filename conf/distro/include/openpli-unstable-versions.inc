@@ -38,7 +38,7 @@ SRCDATE_gst-plugin-dvbmediasink ?= "20100729"
 SRCDATE_squashfs-tools-native = "20100319"
 
 # others
-SRCDATE_enigma2-plugin-extensions-xmltvimport-rytec ?= "20101020"
+SRCDATE_enigma2-plugin-extensions-xmltvimport-rytec ?= "20101115"
 SRCDATE_enigma2-plugin-picons-sat ?= "20100628"
 SRCDATE_enigma2-plugin-picons-ziggo.casema ?= "20101113"
 SRCDATE_enigma2-plugin-picons-ziggo.tvhome ?= "20101113"
