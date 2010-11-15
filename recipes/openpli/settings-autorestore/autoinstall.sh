@@ -13,16 +13,19 @@ fi
 if [ -x /usr/bin/opkg ]
 then
 	IPKG=/usr/bin/opkg
+	OPTS=
 else
 	IPKG=ipkg
+	OPTS=-force-defaults
 fi
 
 if [ -f ${BACKUPDIR}/autoinstall ]
 then
+	echo "autoinstall from: ${BACKUPDIR}"
 	${IPKG} update  
 	for package in `cat ${BACKUPDIR}/autoinstall`
 	do
-		${IPKG} install -force-defaults $package
+		${IPKG} install ${OPTS} $package
 	done
 fi
 
