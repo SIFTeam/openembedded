@@ -1,5 +1,5 @@
 DESCRIPTION = "Oscam binary, freshly compiled"
-SVNREV = "3665"
+SVNREV = "3908"
 PV = "svn${SVNREV}"
 PR = "r0"
 DEPENDS = "libusb openssl"
