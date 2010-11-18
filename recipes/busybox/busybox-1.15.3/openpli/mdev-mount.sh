@@ -20,11 +20,19 @@ case "$ACTION" in
 			else
 				if [ "$MODEL" == "USB CF Reader   " ]; then
 					DEVICETYPE="cf"
+				elif [ "$MODEL" == "Compact Flash   " ]; then
+					DEVICETYPE="cf"
 				elif [ "$MODEL" == "USB SD Reader   " ]; then
+					DEVICETYPE="mmc1"
+				elif [ "$MODEL" == "SD/MMC          " ]; then
 					DEVICETYPE="mmc1"
 				elif [ "$MODEL" == "USB MS Reader   " ]; then
 					DEVICETYPE="mmc1"
+				elif [ "$MODEL" == "SM/xD-Picture   " ]; then
+					DEVICETYPE="mmc1"
 				elif [ "$MODEL" == "USB SM Reader   " ]; then
+					DEVICETYPE="mmc1"
+				elif [ "$MODEL" == "MS/MS-Pro       " ]; then
 					DEVICETYPE="mmc1"
 				else
 					DEVICETYPE="usb"
