@@ -7,9 +7,13 @@ MAINTAINER = "Felix Domke <tmbinc@elitedvb.net>"
 IMAGES_VERSION = "1"
 BINARY_VERSION = "1"
 IMAGES_VERSION_dm500hd = "2"
-BINARY_VERSION_dm500hd = "3"
+BINARY_VERSION_dm500hd = "4"
 BINARY_VERSION_dm7025 = "2"
 BINARY_VERSION_dm800 = "2"
+BINARY_VERSION_dm800se = "4"
+IMAGES_VERSION_dm800se = "2"
+BINARY_VERSION_dm7020hd = "4"
+IMAGES_VERSION_dm7020hd= "1"
 BINARY_VERSION_dm8000 = "6"
 IMAGES_VERSION_dm8000 = "2"
 
@@ -22,10 +26,9 @@ SRC_URI = "http://sources.dreamboxupdate.com/download/7020/bootlogo-${MACHINE}-$
 	http://sources.dreamboxupdate.com/download/7020/backdrop-${MACHINE}-${IMAGES_VERSION}.mvi"
 
 SRC_URI_append_dm8000 = " http://sources.dreamboxupdate.com/download/7020/bootlogo-${MACHINE}-${IMAGES_VERSION}.jpg"
-
 SRC_URI_append_dm500hd = " http://sources.dreamboxupdate.com/download/7020/bootlogo-${MACHINE}-${IMAGES_VERSION}.jpg"
-
 SRC_URI_append_dm800se = " http://sources.dreamboxupdate.com/download/7020/bootlogo-${MACHINE}-${IMAGES_VERSION}.jpg"
+SRC_URI_append_dm7020hd = " http://sources.dreamboxupdate.com/download/7020/bootlogo-${MACHINE}-${IMAGES_VERSION}.jpg"
 SRC_URI_append_dm800 = " http://sources.dreamboxupdate.com/download/7020/bootlogo-${MACHINE}-${IMAGES_VERSION}.jpg \
 	http://sources.dreamboxupdate.com/download/7020/switchoff-${MACHINE}-${IMAGES_VERSION}.mvi"
 

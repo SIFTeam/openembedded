@@ -6,7 +6,7 @@ LICENSE = "GPL"
 RDEPENDS_${PN} = "ncurses"
 PV = "1.0"
 PV_dm600pvr = "1.1"
-PV_mipsel = "1.1"
+PV_mipsel = "1.4"
 PR = "r0"
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 
