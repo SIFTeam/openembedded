@@ -7,7 +7,7 @@ MAINTAINER = "PLi team"
 RDEPENDS_${PN} += "virtual/showiframe"
 
 PV = "1.0"
-PR = "r0"
+PR = "r1"
 
 S = "${WORKDIR}/"
 
@@ -27,12 +27,12 @@ SRC_URI = " \
 	file://bootlogo.sh \
 	"
 
-IMAGES_VERSION = "1"
 BINARY_VERSION = "1"
-IMAGES_VERSION_dm500hd = "2"
-BINARY_VERSION_dm500hd = "3"
+BINARY_VERSION_dm500hd = "4"
 BINARY_VERSION_dm7025 = "2"
 BINARY_VERSION_dm800 = "2"
+BINARY_VERSION_dm800se = "4"
+BINARY_VERSION_dm7020hd = "4"
 BINARY_VERSION_dm8000 = "6"
 
 SRC_URI += "${@base_contains("MACHINE_FEATURES", "dreambox", "http://sources.dreamboxupdate.com/download/7020/bootlogo-${MACHINE}-${BINARY_VERSION}.elf" , "", d)}"
@@ -43,10 +43,7 @@ MVISYMLINKS = "bootlogo_wait backdrop"
 do_install() {
 	install -d ${D}/boot
 	install -d ${D}/usr/share
-	if [ -e ${S}/bootlogo-${MACHINE}-${BINARY_VERSION}.elf ]; then
-		install -m 0755 ${S}/bootlogo-${MACHINE}-${BINARY_VERSION}.elf ${D}/boot/bootlogo.elf
-		install -m 0755 ${S}/bootlogo.jpg ${D}/boot/
-	fi
+	${@base_contains("MACHINE_FEATURES", "dreambox", "install -m 0755 ${S}/bootlogo-${MACHINE}-${BINARY_VERSION}.elf ${D}/boot/bootlogo.elf; install -m 0755 ${S}/bootlogo.jpg ${D}/boot/", "", d)}
 	install -m 0755 ${BOOTLOGOMVI} ${D}/usr/share/bootlogo.mvi
 	ln -sf /usr/share/bootlogo.mvi ${D}/boot/bootlogo.mvi
 	for i in ${MVI}; do
