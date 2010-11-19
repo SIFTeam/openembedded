@@ -12,10 +12,10 @@ DEPENDS_openpli += "gst-plugins-base"
 
 EXTRA_OECONF_openpli += "--disable-apexsink --disable-dvdnav --disable-cdaudio --disable-mpeg2enc --disable-mplex"
 
-SRC_URI_append_openpli += " file://mpegpsdemux_speedup.diff;patch=1;pnum=0 \
-				 file://mpegtsdemux_fix_ac3_detection.diff;patch=1;pnum=0 \
-				 file://aacparse-fix-rank.diff;patch=1;pnum=1 \
-				 file://ac3parse-fix-rank.diff;patch=1;pnum=1"
+SRC_URI_append_openpli += " file://mpegpsdemux_speedup.diff;striplevel=0 \
+				 file://mpegtsdemux_fix_ac3_detection.diff;striplevel=0 \
+				 file://aacparse-fix-rank.diff \
+				 file://ac3parse-fix-rank.diff"
 
 RCONFLICTS_gst-plugin-mpegdemux = "gst-plugin-fluendo-mpegdemux"
 RREPLACES_gst-plugin-mpegdemux = "gst-plugin-fluendo-mpegdemux"

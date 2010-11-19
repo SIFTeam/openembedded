@@ -1,6 +1,6 @@
 require gst-plugins.inc
 
-SRC_URI_append_openpli = " file://samihack.patch;patch=1"
+SRC_URI_append_openpli = " file://samihack.patch"
 
 PR = "${INC_PR}.0"
 

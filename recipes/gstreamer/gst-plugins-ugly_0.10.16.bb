@@ -1,6 +1,6 @@
 require gst-plugins.inc
 
-SRC_URI_append_openpli = " file://dvdsubdec-addproperty-singlebuffer.patch;patch=1"
+SRC_URI_append_openpli = " file://dvdsubdec-addproperty-singlebuffer.patch"
 
 INC_PR = "r0"
 PR = "${INC_PR}.0"
