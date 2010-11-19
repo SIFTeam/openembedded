@@ -14,3 +14,8 @@ DEPENDS = "\
 	enigma2-plugin-softcams-scam \
 	enigma2-plugin-softcams-customcam \
 	"
+# Some alternatives
+DEPENDS += "\
+	oscam-stable \
+	oscam-experimental \
+	"

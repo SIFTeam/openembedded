@@ -1,8 +1,10 @@
 DESCRIPTION = "Oscam binary, freshly compiled"
-SVNREV = "3908"
 PV = "svn${SVNREV}"
 PR = "r0"
-DEPENDS = "libusb openssl"
+DEPENDS = "openssl"
+RREPLACES_${PN} = "oscam-bin"
+RCONFLICTS_${PN} = "oscam-bin"
+RPROVIDES_${PN} = "oscam"
 
 SRC_URI = "svn://streamboard.gmc.to/svn/oscam;module=trunk;proto=http;rev=${SVNREV}"
 
@@ -16,5 +18,12 @@ EXTRA_OECMAKE = "\
 	-DHAVE_LIBUSB=0 \
 	"
 
-inherit cmake
+inherit cmake update-alternatives
+
+do_install_append() {
+	mv "${D}${bindir}/oscam" "${D}${bindir}/${PN}"
+}
+
+ALTERNATIVE_NAME = "oscam"
+ALTERNATIVE_PATH = "${bindir}/${PN}"
 

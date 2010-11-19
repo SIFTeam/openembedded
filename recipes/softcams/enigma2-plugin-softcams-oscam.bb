@@ -1,10 +1,10 @@
 CAMNAME = "oscam"
 DESCRIPTION = "${CAMNAME} ${PV} Open Source Softcam"
-RDEPENDS = "oscam-bin"
+RDEPENDS = "oscam"
 PACKAGE_ARCH = "all"
 PN = "enigma2-plugin-softcams-${CAMNAME}"
 PV = "1.0"
-PR = "r2"
+PR = "r3"
 
 SRC_URI = "\
         file://config/oscam.* \
