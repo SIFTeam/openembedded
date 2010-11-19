@@ -20,7 +20,6 @@ SRC_URI_append_openpli = " \
 	file://driver-ralink.patch \
 	"
 
-DEPENDS_dm8000_append = "madwifi-ng"
 TARGET_CFLAGS_dm8000_append = " -I${STAGING_INCDIR}/madwifi-ng"
 
 S = "${WORKDIR}/wpa_supplicant-${PV}"
