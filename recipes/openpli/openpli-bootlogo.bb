@@ -59,22 +59,22 @@ do_install() {
 }
 
 pkg_preinst() {
-	[ -d /proc/stb ] && mount -o rw,remount /boot
+	[ -d /proc/stb ] && mount -t jffs2 mtd:'boot partition' /boot
 	true
 }
 
 pkg_postinst() {
-	[ -d /proc/stb ] && mount -o ro,remount /boot
+	[ -d /proc/stb ] && umount /boot
 	true
 }
 
 pkg_prerm() {
-	[ -d /proc/stb ] && mount -o rw,remount /boot
+	[ -d /proc/stb ] && mount -t jffs2 mtd:'boot partition' /boot
 	true
 }
 
 pkg_postrm() {
-	[ -d /proc/stb ] && mount -o ro,remount /boot
+	[ -d /proc/stb ] && umount /boot
 	true
 }
 

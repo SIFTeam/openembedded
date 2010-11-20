@@ -46,21 +46,21 @@ do_install_append () {
 }
 
 pkg_preinst_kernel-image () {
-	[ -d /proc/stb ] && mount -o rw,remount /boot
+	[ -d /proc/stb ] && mount -t jffs2 mtd:'boot partition' /boot
 	true
 }
 
 pkg_postinst_kernel-image () {
-	[ -d /proc/stb ] && mount -o ro,remount /boot
+	[ -d /proc/stb ] && umount /boot
 	true
 }
 
 pkg_prerm_kernel-image () {
-	[ -d /proc/stb ] && mount -o rw,remount /boot
+	[ -d /proc/stb ] && mount -t jffs2 mtd:'boot partition' /boot
 	true
 }
 
 pkg_postrm_kernel-image () {
-	[ -d /proc/stb ] && mount -o ro,remount /boot
+	[ -d /proc/stb ] && umount /boot
 	true
 }
