@@ -1,6 +1,6 @@
 # dreambox-mipsel.inc
 
-MACHINE_FEATURES += "alsa pci"
+MACHINE_FEATURES += "alsa"
 
 MACHINE_KERNEL_PR = "r6"
 
