@@ -27,9 +27,9 @@ PROVIDES += "kernel-${KERNEL_VERSION} kernel-image-${KERNEL_VERSION} kernel-base
 addtask munge after before do_patch after do_unpack
 
 do_munge () {
-        if [ ${PATCHLEVEL} != "" ]; then
-                mv ${S}${PATCHLEVEL} ${S};
-        fi;
+	if [ ${PATCHLEVEL} != "" ]; then
+		mv ${S}${PATCHLEVEL} ${S};
+	fi;
 }
 
 do_configure_prepend () {

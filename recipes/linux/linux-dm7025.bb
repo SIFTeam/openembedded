@@ -12,7 +12,7 @@ DEPENDS = "zlib-native zlib"
 
 # note, the rX in the filename is *NOT* the packet revision - it's the patch revision.
 SRC_URI = "${KERNELORG_MIRROR}/pub/linux/kernel/v2.6/linux-${PV}${PATCHLEVEL}.tar.bz2 \
-        file://defconfig \
+	file://defconfig \
 	http://sources.dreamboxupdate.com/download/kernel-patches/linuxmips-${KV}-dream-r6.patch.bz2;striplevel=1 \
 	http://sources.dreamboxupdate.com/download/kernel-patches/linux-${KV}-update_dvbapi-r1.patch.bz2;striplevel=1 \
 	http://sources.dreamboxupdate.com/download/kernel-patches/linux-2.6.12-dvb-multipid-r4.patch.bz2;striplevel=1 \
@@ -35,7 +35,6 @@ SRC_URI = "${KERNELORG_MIRROR}/pub/linux/kernel/v2.6/linux-${PV}${PATCHLEVEL}.ta
 	file://${WORKDIR}/squashfs-lzma/kernel-patches/linux-2.6.12/squashfs3.2-patch;striplevel=1;apply=yes \
 	file://linux-2.6.12-dvb-core-fix-frontend-shutdown-timeout.patch \
 "
-
 
 inherit kernel
 
