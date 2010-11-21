@@ -336,6 +336,6 @@ if test "x$D" != "x"; then
 else
 	OPT="-s"
 fi
-	update-rc.d $OPT mdev start 06 S .
+	update-rc.d $OPT mdev start 04 S .
 }
 
