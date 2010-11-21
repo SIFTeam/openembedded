@@ -30,7 +30,7 @@ case $ret in
 		/sbin/reboot
 		;;
 	42)
-		ipkg -force-defaults upgrade 2>&1 > /home/root/ipkgupgrade.log
+		opkg upgrade 2>&1 > /home/root/ipkgupgrade.log
 		/sbin/reboot
 		;;
 	*)
