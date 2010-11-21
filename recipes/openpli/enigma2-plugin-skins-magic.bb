@@ -1,20 +1,21 @@
 DESCRIPTION = "Magic skin for Enigma2"
 MAINTAINER = "Mike Looijmans"
-DESCRIPTION_font-valis-hd = "Valis hd fonts"
-DESCRIPTION_font-valis-enigma = "Valis enigma font"
 
 inherit gitpkgv
 
 PV = "1.0+git${SRCPV}"
 PKGV = "1.0+git${GITPKGV}"
-PR = "r1"
+PR = "r2"
 
 PV_font-valis-enigma = "2009.11.12"
+PR_font-valis-enigma = "r1"
 PKGV_font-valis-enigma = "${PV_font-valis-enigma}"
+DESCRIPTION_font-valis-enigma = "Valis enigma font"
+
 PV_font-valis-hd = "2010.05.14"
+PR_font-valis-hd = "r1"
 PKGV_font-valis-hd = "${PV_font-valis-hd}"
-PR_font-valis-enigma = "r0"
-PR_font-valis-hd = "r0"
+DESCRIPTION_font-valis-hd = "Valis hd fonts"
 
 PACKAGES = "${PN} skin-magic-hd-common ${PN}-hd ${PN}-ehd ${PN}-hd-lite ${PN}-ehd-lite font-valis-enigma font-valis-hd"
 PROVIDES += "font-valis-enigma font-valis-hd skin-magic-hd-common"
