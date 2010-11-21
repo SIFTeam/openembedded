@@ -1421,7 +1421,7 @@ CONFIG_DEVFS_FS=y
 CONFIG_TMPFS=y
 # CONFIG_TMPFS_XATTR is not set
 # CONFIG_HUGETLB_PAGE is not set
-CONFIG_RAMFS=m
+CONFIG_RAMFS=y
 
 #
 # Miscellaneous filesystems
