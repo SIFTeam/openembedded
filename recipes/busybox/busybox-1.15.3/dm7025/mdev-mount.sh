@@ -15,7 +15,7 @@ case "$ACTION" in
 			REMOVABLE=`cat /sys/block/$DEVBASE/removable`
 			MODEL=`cat /sys/block/$DEVBASE/device/model`
 			ADAPTER=`expr substr $DEVBASE 1 2`
-			if [ "$ADAPTER" == "hd" -a "$DEVBASE" == "$MDEV" ] ; then
+			if [ "$ADAPTER" == "hd" ] ; then
 				# 7025 needs to set this on internal disks
 				hdparm -d1 -X66 /dev/$MDEV
 			fi
