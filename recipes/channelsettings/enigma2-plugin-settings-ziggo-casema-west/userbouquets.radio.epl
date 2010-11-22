@@ -1,0 +1,19 @@
+#NAME User - bouquets (Radio)
+#SERVICE: 4097:7:0:4bb4e:0:0:0:0:0:0:/var/tuxbox/config/enigma/userbouquet.4bb4e.radio
+#TYPE 16385
+/var/tuxbox/config/enigma/userbouquet.4bb4e.radio
+#SERVICE: 4097:7:0:73192:0:0:0:0:0:0:/var/tuxbox/config/enigma/userbouquet.73192.radio
+#TYPE 16385
+/var/tuxbox/config/enigma/userbouquet.73192.radio
+#SERVICE: 4097:7:0:651dd:0:0:0:0:0:0:/var/tuxbox/config/enigma/userbouquet.651dd.radio
+#TYPE 16385
+/var/tuxbox/config/enigma/userbouquet.651dd.radio
+#SERVICE: 4097:7:0:7c755:0:0:0:0:0:0:/var/tuxbox/config/enigma/userbouquet.7c755.radio
+#TYPE 16385
+/var/tuxbox/config/enigma/userbouquet.7c755.radio
+#SERVICE: 4097:7:0:4977e:0:0:0:0:0:0:/var/tuxbox/config/enigma/userbouquet.4977e.radio
+#TYPE 16385
+/var/tuxbox/config/enigma/userbouquet.4977e.radio
+#SERVICE: 4097:7:0:b0be4:0:0:0:0:0:0:/var/tuxbox/config/enigma/userbouquet.b0be4.radio
+#TYPE 16385
+/var/tuxbox/config/enigma/userbouquet.b0be4.radio

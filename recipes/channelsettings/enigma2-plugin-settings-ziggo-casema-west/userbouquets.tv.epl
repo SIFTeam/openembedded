@@ -1,0 +1,67 @@
+#NAME User - bouquets (TV)
+#SERVICE: 4097:7:0:8ae27:0:0:0:0:0:0:/var/tuxbox/config/enigma/userbouquet.8ae27.tv
+#TYPE 16385
+/var/tuxbox/config/enigma/userbouquet.8ae27.tv
+#SERVICE: 4097:7:0:e6a8c:0:0:0:0:0:0:/var/tuxbox/config/enigma/userbouquet.e6a8c.tv
+#TYPE 16385
+/var/tuxbox/config/enigma/userbouquet.e6a8c.tv
+#SERVICE: 4097:7:0:dba3c:0:0:0:0:0:0:/var/tuxbox/config/enigma/userbouquet.dba3c.tv
+#TYPE 16385
+/var/tuxbox/config/enigma/userbouquet.dba3c.tv
+#SERVICE: 4097:7:0:6b183:0:0:0:0:0:0:/var/tuxbox/config/enigma/userbouquet.6b183.tv
+#TYPE 16385
+/var/tuxbox/config/enigma/userbouquet.6b183.tv
+#SERVICE: 4097:7:0:0d10e:0:0:0:0:0:0:/var/tuxbox/config/enigma/userbouquet.0d10e.tv
+#TYPE 16385
+/var/tuxbox/config/enigma/userbouquet.0d10e.tv
+#SERVICE: 4097:7:0:19c59:0:0:0:0:0:0:/var/tuxbox/config/enigma/userbouquet.19c59.tv
+#TYPE 16385
+/var/tuxbox/config/enigma/userbouquet.19c59.tv
+#SERVICE: 4097:7:0:73812:0:0:0:0:0:0:/var/tuxbox/config/enigma/userbouquet.73812.tv
+#TYPE 16385
+/var/tuxbox/config/enigma/userbouquet.73812.tv
+#SERVICE: 4097:7:0:4156e:0:0:0:0:0:0:/var/tuxbox/config/enigma/userbouquet.4156e.tv
+#TYPE 16385
+/var/tuxbox/config/enigma/userbouquet.4156e.tv
+#SERVICE: 4097:7:0:02206:0:0:0:0:0:0:/var/tuxbox/config/enigma/userbouquet.02206.tv
+#TYPE 16385
+/var/tuxbox/config/enigma/userbouquet.02206.tv
+#SERVICE: 4097:7:0:288c8:0:0:0:0:0:0:/var/tuxbox/config/enigma/userbouquet.288c8.tv
+#TYPE 16385
+/var/tuxbox/config/enigma/userbouquet.288c8.tv
+#SERVICE: 4097:7:0:57cac:0:0:0:0:0:0:/var/tuxbox/config/enigma/userbouquet.57cac.tv
+#TYPE 16385
+/var/tuxbox/config/enigma/userbouquet.57cac.tv
+#SERVICE: 4097:7:0:3145c:0:0:0:0:0:0:/var/tuxbox/config/enigma/userbouquet.3145c.tv
+#TYPE 16385
+/var/tuxbox/config/enigma/userbouquet.3145c.tv
+#SERVICE: 4097:7:0:960d8:0:0:0:0:0:0:/var/tuxbox/config/enigma/userbouquet.960d8.tv
+#TYPE 16385
+/var/tuxbox/config/enigma/userbouquet.960d8.tv
+#SERVICE: 4097:7:0:aa40d:0:0:0:0:0:0:/var/tuxbox/config/enigma/userbouquet.aa40d.tv
+#TYPE 16385
+/var/tuxbox/config/enigma/userbouquet.aa40d.tv
+#SERVICE: 4097:7:0:0dcf6:0:0:0:0:0:0:/var/tuxbox/config/enigma/userbouquet.0dcf6.tv
+#TYPE 16385
+/var/tuxbox/config/enigma/userbouquet.0dcf6.tv
+#SERVICE: 4097:7:0:ac6bb:0:0:0:0:0:0:/var/tuxbox/config/enigma/userbouquet.ac6bb.tv
+#TYPE 16385
+/var/tuxbox/config/enigma/userbouquet.ac6bb.tv
+#SERVICE: 4097:7:0:a9efa:0:0:0:0:0:0:/var/tuxbox/config/enigma/userbouquet.a9efa.tv
+#TYPE 16385
+/var/tuxbox/config/enigma/userbouquet.a9efa.tv
+#SERVICE: 4097:7:0:e2a49:0:0:0:0:0:0:/var/tuxbox/config/enigma/userbouquet.e2a49.tv
+#TYPE 16385
+/var/tuxbox/config/enigma/userbouquet.e2a49.tv
+#SERVICE: 4097:7:0:07557:0:0:0:0:0:0:/var/tuxbox/config/enigma/userbouquet.07557.tv
+#TYPE 16385
+/var/tuxbox/config/enigma/userbouquet.07557.tv
+#SERVICE: 4097:7:0:97cd5:0:0:0:0:0:0:/var/tuxbox/config/enigma/userbouquet.97cd5.tv
+#TYPE 16385
+/var/tuxbox/config/enigma/userbouquet.97cd5.tv
+#SERVICE: 4097:7:0:ad89c:0:0:0:0:0:0:/var/tuxbox/config/enigma/userbouquet.ad89c.tv
+#TYPE 16385
+/var/tuxbox/config/enigma/userbouquet.ad89c.tv
+#SERVICE: 4097:7:0:64c73:0:0:0:0:0:0:/var/tuxbox/config/enigma/userbouquet.64c73.tv
+#TYPE 16385
+/var/tuxbox/config/enigma/userbouquet.64c73.tv

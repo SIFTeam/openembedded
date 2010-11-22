@@ -1,5 +1,3 @@
-SRCDATE = "20100504"
-
 PV = "${SRCDATE}"
 PR = "r0"
 
