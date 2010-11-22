@@ -1,7 +1,7 @@
 DESCRIPTION = "CCcam ${PV} softcam"
 
 PN = "enigma2-plugin-softcams-cccam"
-PV = "2.2.0"
+PV = "2.2.1"
 PR = "r0"
 
 SRC_URI = "http://downloads.pli-images.org/softcams/CCcam-${PV}.zip \
