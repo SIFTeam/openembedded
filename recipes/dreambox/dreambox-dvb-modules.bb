@@ -24,7 +24,7 @@ KV_dm800 = "${@base_contains('PREFERRED_VERSION_linux-dm800', '2.6.18', '2.6.18-
 PV_dm800 = "${KV}-${@base_contains('PREFERRED_VERSION_linux-dm800', '2.6.18', '20101111', '20090723', d)}"
 
 KV_dm800se = "2.6.18-7.4-dm800se"
-PV_dm800se = "${KV}-20101111"
+PV_dm800se = "${KV}-20101125"
 
 KV_dm7020hd = "2.6.18-7.4-dm7020hd"
 PV_dm7020hd = "${KV}-20101111"
