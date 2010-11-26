@@ -107,6 +107,7 @@ sbindir = "/usr/sbin"
 EXTRA_OECONF = "--enable-maintainer-mode --with-target=native --with-libsdl=no --with-boxtype=${MACHINE}"
 
 EXTRA_OECONF += "${@base_contains("MACHINE_FEATURES", "textlcd", "--with-textlcd" , "", d)}"
+EXTRA_OECONF += "${@base_contains("MACHINE_FEATURES", "colorlcd", "--with-colorlcd" , "", d)}"
 
 # Swig generated 200k enigma.py file has no purpose for end users, nor the unused .pyc files.
 FILES_${PN}-dbg += "\
