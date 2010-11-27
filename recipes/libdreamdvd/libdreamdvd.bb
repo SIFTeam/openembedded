@@ -18,7 +18,3 @@ CFLAGS_append = "${@base_contains('MACHINE_FEATURES', 'lpcm', ' -DHARDWARE_SUPPO
 S = "${WORKDIR}/git"
 
 inherit autotools pkgconfig
-
-do_stage() {
-	autotools_stage_all
-}
