@@ -7,16 +7,16 @@ PACKAGE_ARCH = "all"
 S = "${WORKDIR}/picons"
 
 do_install() {
+	install -d ${D}/picon
 }
 
 python populate_packages_prepend() {
 	import os
 	import shutil
-	dir = bb.data.getVar('D', d, 1)
-	os.makedirs(dir + "/picon")
-	sdir = bb.data.getVar('S', d, 1)
-	satnames = bb.data.getVar('PICON_SATNAMES', d, 1)
-	packages = []
+	dir = bb.data.getVar('D', d, True)
+	sdir = bb.data.getVar('S', d, True)
+	satnames = bb.data.getVar('PICON_SATNAMES', d, True)
+	piconpackages = []
 	for sat in os.listdir(sdir):
 		def createPackageName(type, sat):
 			if sat[-3] == '.':
@@ -34,24 +34,25 @@ python populate_packages_prepend() {
 		packagename = createPackageName('tv', sat)
 		files = []
 		for file in os.listdir(sdir + "/" + sat + "/tv"):
-			if file[-4:] == ".png":
+			if file.endswith(".png"):
 				os.system("cp -a \"" + sdir + "/" + sat + "/tv/" + file + "\" " + dir + "/picon/")
 				files.append("/picon/" + file)
 		bb.data.setVar('FILES_' + packagename, " ".join(files), d)
 		bb.data.setVar('DESCRIPTION_' + packagename, "TV picon set", d)
-		packages.append(packagename)
+		piconpackages.append(packagename)
 		try:
 			packagename = createPackageName('radio', sat)
 			files = []
 			for file in os.listdir(sdir + "/" + sat + "/radio"):
-				if file[-4:] == ".png":
+				if file.endswith(".png"):
 					os.system("cp -a \"" + sdir + "/" + sat + "/radio/" + file + "\" " + dir + "/picon/")
 					files.append("/picon/" + file)
 			bb.data.setVar('FILES_' + packagename, " ".join(files), d)
 			bb.data.setVar('DESCRIPTION_' + packagename, "Radio picon set", d)
-			packages.append(packagename)
+			piconpackages.append(packagename)
 		except:
 			pass
 
-	bb.data.setVar('PACKAGES', ' '.join(packages), d)
+	bb.data.setVar('PACKAGES', ' '.join(piconpackages), d)
+	bb.data.setVar('PKGD', dir, d)
 }
