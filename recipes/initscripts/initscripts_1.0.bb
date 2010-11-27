@@ -4,7 +4,7 @@ PRIORITY = "required"
 DEPENDS = "makedevs"
 RDEPENDS_${PN} = "makedevs"
 LICENSE = "GPL"
-PR = "r123"
+PR = "r123.1"
 
 SRC_URI = "file://functions \
            file://halt \
@@ -88,13 +88,14 @@ do_install () {
 #
 # Create runlevel links
 #
+	# umountnfs should run before network stops (which is at K40)
+	ln -sf		../init.d/umountnfs.sh	${D}${sysconfdir}/rc6.d/K31umountnfs.sh
 	ln -sf		../init.d/rmnologin	${D}${sysconfdir}/rc2.d/S99rmnologin
 	ln -sf		../init.d/rmnologin	${D}${sysconfdir}/rc3.d/S99rmnologin
 	ln -sf		../init.d/rmnologin	${D}${sysconfdir}/rc4.d/S99rmnologin
 	ln -sf		../init.d/rmnologin	${D}${sysconfdir}/rc5.d/S99rmnologin
 	ln -sf		../init.d/sendsigs	${D}${sysconfdir}/rc6.d/S20sendsigs
 #	ln -sf		../init.d/urandom	${D}${sysconfdir}/rc6.d/S30urandom
-	ln -sf		../init.d/umountnfs.sh	${D}${sysconfdir}/rc6.d/S31umountnfs.sh
 	ln -sf		../init.d/umountfs	${D}${sysconfdir}/rc6.d/S40umountfs
 	# udev will run at S55 if installed
 	ln -sf          ../init.d/ramdisk       ${D}${sysconfdir}/rcS.d/S30ramdisk
