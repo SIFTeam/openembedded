@@ -41,6 +41,3 @@ do_install() {
     done
 
 }
-
-PACKAGE_ARCH := "${MACHINE_ARCH}"
-FILES_${PN} = "/"
