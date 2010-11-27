@@ -73,6 +73,3 @@ do_install_mipsel() {
 	done
 	${@base_contains("MACHINE_FEATURES", "frontprocessor", "install -d ${D}${sbindir}; install -m 0755 ${WORKDIR}/fpupgrade-${MACHINE}-v7 ${D}${sbindir}/fpupgrade", "", d)}
 }
-
-PACKAGE_ARCH := "${MACHINE_ARCH}"
-FILES_${PN} = "/"
