@@ -38,6 +38,7 @@ ENIGMA2_OPTIONAL = " \
 				enigma2-plugin-extensions-ambx \
 				channelsettings-enigma2-meta \
 				picons-enigma2-meta \
+				softcams-enigma2-meta \
 				"
 
 IMAGE_INSTALL += " \

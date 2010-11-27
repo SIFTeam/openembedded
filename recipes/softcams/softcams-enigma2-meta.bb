@@ -1,4 +1,4 @@
-DESCRIPTION = "meta file for softcams"
+DESCRIPTION = "meta file for enigma2 softcam packages"
 
 PROVIDES = "softcams"
 
