@@ -5,7 +5,7 @@ PV = "1.0cvs${SRCDATE}"
 PR = "r1"
 
 SRC_URI = "cvs://anonymous@cvs.schwerkraft.elitedvb.net/cvsroot/streamproxy;module=enigma2-streamproxy;method=pserver \
-	file://streampatch.diff;striplevel=0"
+	file://streampatch.diff"
 
 inherit autotools
 

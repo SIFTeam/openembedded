@@ -23,7 +23,7 @@ SRCREV_pn-enigma2-plugin-extensions-tuxterm ?= "${AUTOREV}"
 # cvs
 SRCDATE_enigma2-plugins ?= "20101023"
 SRCDATE_enigma2-skins ?= "20101023"
-SRCDATE_enigma2-streamproxy ?= "20080728"
+SRCDATE_enigma2-streamproxy ?= "20101014"
 SRCDATE_tuxbox-common ?= "20090305"
 SRCDATE_tuxbox-libs ?= "20040928"
 SRCDATE_libtuxbox ?= "20040928"
