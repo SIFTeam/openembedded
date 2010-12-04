@@ -28,22 +28,18 @@ RDEPENDS_${PN} += "enigma2-plugin-skins-magic"
 DEPENDS += "font-valis-enigma"
 RDEPENDS_${PN} += "font-valis-enigma"
 
-RDEPENDS_enigma2_append_dm7020 = " gst-plugin-ossaudio gst-plugin-ivorbisdec"
-RDEPENDS_enigma2_append_dm7025 = " gst-plugin-alsa alsa-conf gst-plugin-ivorbisdec"
-RDEPENDS_enigma2_append_dm8000 = " gst-plugin-alsa alsa-conf gst-plugin-avi gst-plugin-matroska \
-	gst-plugin-qtdemux gst-plugin-cdxaparse gst-plugin-cdio gst-plugin-vcdsrc gst-plugin-vorbis"
-RDEPENDS_enigma2_append_dm800 = " gst-plugin-alsa alsa-conf gst-plugin-matroska gst-plugin-qtdemux gst-plugin-ivorbisdec"
-RDEPENDS_enigma2_append_dm500hd = " gst-plugin-alsa alsa-conf gst-plugin-avi gst-plugin-matroska \
-	gst-plugin-qtdemux gst-plugin-cdxaparse gst-plugin-cdio gst-plugin-vcdsrc gst-plugin-vorbis"
-RDEPENDS_enigma2_append_vuduo = " gst-plugin-alsa alsa-conf gst-plugin-avi gst-plugin-matroska \
-	gst-plugin-qtdemux gst-plugin-cdxaparse gst-plugin-cdio gst-plugin-vcdsrc gst-plugin-vorbis"
+RDEPENDS_${PN} += "${@base_contains("MACHINE_FEATURES", "alsa", "gst-plugin-alsa alsa-conf", "", d)}"
 
-RRECOMMENDS_enigma2 ?= ""
-# These should be able to downmix DTS
-# Put in recommends it's not required but should be added on update
-RRECOMMENDS_enigma2_append_dm8000 = " gst-plugin-dtsdec"
-RRECOMMENDS_enigma2_append_dm500hd = " gst-plugin-dtsdec"
-RRECOMMENDS_enigma2_append_vuduo = " gst-plugin-dtsdec"
+# proper hdtv hardware should be able to playback these codecs
+RDEPENDS_${PN} += "${@base_contains("MACHINE_FEATURES", "hdtv", "gst-plugin-avi gst-plugin-matroska \
+										gst-plugin-qtdemux gst-plugin-cdxaparse gst-plugin-cdio gst-plugin-vcdsrc gst-plugin-vorbis", "", d)}"
+
+RDEPENDS_enigma2_append_dm7020 = " gst-plugin-ossaudio gst-plugin-ivorbisdec"
+RDEPENDS_enigma2_append_dm7025 = " gst-plugin-ivorbisdec"
+RDEPENDS_enigma2_append_dm800 = " gst-plugin-ivorbisdec"
+
+# FPU hardware should be able to downmix DTS
+RRECOMMENDS_${PN} = "${@["","gst-plugin-dtsdec"][bb.data.getVar("TARGET_FPU",d,1) == 'hard']}"
 
 # 'forward depends' - no two providers can have the same PACKAGES_DYNAMIC, however both
 # enigma2 and enigma2-plugins produce enigma2-plugin-*.
@@ -78,7 +74,7 @@ inherit gitpkgv
 
 PV = "2.7+git${SRCPV}"
 PKGV = "2.7+git${GITPKGV}"
-PR = "r23"
+PR = "r24"
 
 SRC_URI = "git://openpli.git.sourceforge.net/gitroot/openpli/enigma2;protocol=git \
            file://enigma2.sh"
