@@ -1,4 +1,4 @@
-DEPENDS = "libusb"
+DEPENDS = "virtual/libusb0"
 DESCIPTION = "For 7025/8000 only. Connect amBX kit to USB and run ambxd to get some effects."
 MAINTAINER = "PLi team"
 PACKAGE_ARCH = "${MACHINE}"
