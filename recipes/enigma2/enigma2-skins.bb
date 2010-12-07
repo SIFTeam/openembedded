@@ -1,6 +1,7 @@
 DESCRIPTION = "Skins for Enigma2"
 MAINTAINER = "Felix Domke <tmbinc@elitedvb.net>"
-
+RDEPENDS = ""
+PACKAGES = "${PN}-meta ${PN}"
 PACKAGES_DYNAMIC = "enigma2-plugin-skins-*"
 
 # if you want the 2.7 release, use
@@ -10,7 +11,7 @@ PACKAGES_DYNAMIC = "enigma2-plugin-skins-*"
 # if you want experimental, use:
 TAG = ""
 PV = "experimental-cvs${SRCDATE}"
-PR = "r1"
+PR = "r2"
 
 SRC_URI = "cvs://anonymous@cvs.schwerkraft.elitedvb.net/cvsroot/enigma2-skins;module=enigma2-skins;method=pserver${TAG};date=${SRCDATE}"
 
@@ -21,9 +22,11 @@ SRC_URI_append = " \
 	file://blackbox.diff \
 	"
 
-FILES_${PN} += " /usr/share/enigma2 /usr/share/fonts "
+# note that enigma2-skins is just an empty package to satisfy silly dependencies.
+ALLOW_EMPTY = "1"
+FILES_${PN} = "/usr/share/enigma2 /usr/share/fonts"
 FILES_${PN}-meta = "${datadir}/meta"
-PACKAGES += "${PN}-meta"
+RDEPENDS_${PN}-meta = ""
 
 inherit autotools
 
