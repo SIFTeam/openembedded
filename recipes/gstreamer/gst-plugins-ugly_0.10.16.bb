@@ -2,7 +2,6 @@ require gst-plugins.inc
 
 SRC_URI_append_openpli = " file://dvdsubdec-addproperty-singlebuffer.patch"
 
-INC_PR = "r0"
 PR = "${INC_PR}.0"
 
 DEPENDS += "gst-plugins-base libsidplay"

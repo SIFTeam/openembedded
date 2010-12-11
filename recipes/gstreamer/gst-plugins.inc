@@ -6,7 +6,7 @@ DEPENDS = "gstreamer jack virtual/libsdl libvpx x264 libmms libmusicbrainz schro
 DEPENDS += "${@base_conditional('ENTERPRISE_DISTRO', '1', '', 'libmad libid3tag', d)}"
 DEPENDS_openpli = "gstreamer libmikmod liboil libogg tremor libvorbis neon flac libmatroska libcdio libmad libid3tag libdca liba52"
 
-INC_PR = "r9"
+INC_PR = "r1"
 
 PACKAGES_DYNAMIC = "gst-plugin-*"
 

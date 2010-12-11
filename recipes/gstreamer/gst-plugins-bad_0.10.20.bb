@@ -1,6 +1,5 @@
 require gst-plugins.inc
 
-INC_PR = "r0"
 PR = "${INC_PR}.0"
 
 do_configure_prepend() {
