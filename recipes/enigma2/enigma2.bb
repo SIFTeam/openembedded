@@ -100,10 +100,15 @@ FILES_enigma2-fonts = "${datadir}/fonts"
 bindir = "/usr/bin"
 sbindir = "/usr/sbin"
 
-EXTRA_OECONF = "--enable-maintainer-mode --with-target=native --with-libsdl=no --with-boxtype=${MACHINE}"
-
-EXTRA_OECONF += "${@base_contains("MACHINE_FEATURES", "textlcd", "--with-textlcd" , "", d)}"
-EXTRA_OECONF += "${@base_contains("MACHINE_FEATURES", "colorlcd", "--with-colorlcd" , "", d)}"
+EXTRA_OECONF = "\
+	--enable-maintainer-mode --with-target=native --with-libsdl=no --with-boxtype=${MACHINE} \
+	${@base_contains("MACHINE_FEATURES", "textlcd", "--with-textlcd" , "", d)} \
+	${@base_contains("MACHINE_FEATURES", "colorlcd", "--with-colorlcd" , "", d)} \
+	BUILD_SYS=${BUILD_SYS} \
+	HOST_SYS=${HOST_SYS} \
+	STAGING_INCDIR=${STAGING_INCDIR} \
+	STAGING_LIBDIR=${STAGING_LIBDIR} \
+	"
 
 # Swig generated 200k enigma.py file has no purpose for end users, nor the unused .pyc files.
 FILES_${PN}-dbg += "\
