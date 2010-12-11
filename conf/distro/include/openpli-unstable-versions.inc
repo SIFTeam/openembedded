@@ -9,6 +9,7 @@ SRCREV_pn-enigma2-pliplugins ?= "${AUTOREV}"
 SRCREV_pn-enigma2-plugin-extensions-xmltvimport ?= "${AUTOREV}"
 SRCREV_pn-hotplug-e2-helper ?= "${AUTOREV}"
 SRCREV_pn-libdreamdvd ?= "${AUTOREV}"
+SRCREV_pn-usbtunerhelper ?= "${AUTOREV}"
 
 # svn
 SRCREV_pn-tuxbox-common ?= "${AUTOREV}"
