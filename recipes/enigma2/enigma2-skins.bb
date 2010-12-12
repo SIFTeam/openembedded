@@ -4,16 +4,14 @@ RDEPENDS = ""
 PACKAGES = "${PN}-meta ${PN}"
 PACKAGES_DYNAMIC = "enigma2-plugin-skins-*"
 
-# if you want the 2.7 release, use
-#TAG = ";tag=enigma2-skins_rel27"
-#PV = "2.7cvs${SRCDATE}"
+inherit gitpkgv
 
-# if you want experimental, use:
-TAG = ""
-PV = "experimental-cvs${SRCDATE}"
-PR = "r2"
+PV = "experimental-git${SRCPV}"
+PKGV = "experimental-git${GITPKGV}"
+PR = "r1"
+BRANCH = "master"
 
-SRC_URI = "cvs://anonymous@cvs.schwerkraft.elitedvb.net/cvsroot/enigma2-skins;module=enigma2-skins;method=pserver${TAG};date=${SRCDATE}"
+SRC_URI = "git://schwerkraft.elitedvb.net/enigma2-skins/enigma2-skins.git;protocol=git;branch=${BRANCH}"
 
 #include examples of openpli widgets
 SRC_URI_append = " \
@@ -30,7 +28,7 @@ RDEPENDS_${PN}-meta = ""
 
 inherit autotools
 
-S = "${WORKDIR}/enigma2-skins"
+S = "${WORKDIR}/git"
 
 python populate_packages_prepend () {
 	if bb.data.expand('${REL_MINOR}', d) != "4":
