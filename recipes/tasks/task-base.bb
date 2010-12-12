@@ -1,5 +1,5 @@
 DESCRIPTION = "Merge machine and distro options to create a basic machine task/package"
-PR = "r91"
+PR = "r92"
 
 inherit task
 
@@ -214,6 +214,8 @@ RRECOMMENDS_task-base-vfat = "\
 RDEPENDS_task-base-alsa = "\
     alsa-utils-alsactl \
     alsa-utils-alsamixer"
+# alsa-mixer device does not work, so don't install mixer tools
+RDEPENDS_task-base-alsa_openpli = ""
 
 #
 # alsa-states are machine related so can be missing in feed, OSS support is optional
