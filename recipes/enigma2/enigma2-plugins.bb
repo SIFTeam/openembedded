@@ -3,11 +3,14 @@ MAINTAINER = "Felix Domke <tmbinc@elitedvb.net>"
 
 PACKAGES_DYNAMIC = "enigma2-plugin-*"
 
-TAG = ""
-PV = "experimental-cvs${SRCDATE}"
-PR = "r3"
+inherit gitpkgv
 
-SRC_URI = "cvs://anonymous@cvs.schwerkraft.elitedvb.net/cvsroot/enigma2-plugins;module=enigma2-plugins;method=pserver${TAG};date=${SRCDATE}"
+PV = "experimental-git${SRCPV}"
+PKGV = "experimental-git${GITPKGV}"
+PR = "r1"
+BRANCH = "master"
+
+SRC_URI="git://schwerkraft.elitedvb.net/enigma2-plugins/enigma2-plugins.git;protocol=git;branch=${BRANCH}"
 
 SRC_URI += " \
 	file://autotimer-nl.patch \
@@ -35,10 +38,9 @@ PACKAGE_ARCH = "${MACHINE_ARCH}"
 
 inherit autotools
 
-S = "${WORKDIR}/enigma2-plugins"
+S = "${WORKDIR}/git"
 
-DEPENDS = "python-pyopenssl python-gdata streamripper python-mutagen python-twisted python-daap"
-DEPENDS += "enigma2"
+DEPENDS = "enigma2 python-pyopenssl python-gdata streamripper python-mutagen python-twisted python-daap"
 
 python populate_packages_prepend () {
 	enigma2_plugindir = bb.data.expand('${libdir}/enigma2/python/Plugins', d)
@@ -65,6 +67,8 @@ python populate_packages_prepend () {
 				for depend in depends:
 					if depend.startswith('twisted-'):
 						rdepends += ' ' + depend.replace('twisted-', 'python-twisted-')
+					elif depend in ('enigma2', 'enigma2-plugins'):
+						pass # ignore silly depends
 					else:
 						rdepends += ' ' + depend
 				bb.data.setVar('RDEPENDS_' + full_package, rdepends, d)
@@ -78,7 +82,12 @@ python populate_packages_prepend () {
 				bb.data.setVar('MAINTAINER_' + full_package, line[12:], d)
 
 
-	mydir = bb.data.getVar('D', d, 1) + "/../enigma2-plugins/"
+	mydir = bb.data.getVar('D', d, 1) + "/../git/"
 	for package in bb.data.getVar('PACKAGES', d, 1).split():
 		getControlLines(mydir, d, package.split('-')[-1])
+}
+
+# remove unused .pyc files
+do_install_append() {
+        find ${D}/usr/lib/enigma2/python/ -name '*.pyc' -exec rm {} \;
 }

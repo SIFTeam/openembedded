@@ -2,14 +2,6 @@ Index: enigma2-plugins/networkbrowser/src/AutoMount.py
 ===================================================================
 --- enigma2-plugins.orig/networkbrowser/src/AutoMount.py	2010-03-07 21:27:45.000000000 +0100
 +++ enigma2-plugins/networkbrowser/src/AutoMount.py	2010-06-07 19:50:30.864283363 +0200
-@@ -60,7 +60,6 @@
- 					data['sharedir'] = getValue(mount.findall("sharedir"), "/exports/").encode("UTF-8")
- 					data['sharename'] = getValue(mount.findall("sharename"), "MEDIA").encode("UTF-8")
- 					data['options'] = getValue(mount.findall("options"), "rw,nolock").encode("UTF-8")
--					print "NFSMOUNT",data
- 					self.automounts[data['sharename']] = data
- 				except Exception, e:
- 					print "[MountManager] Error reading Mounts:", e
 @@ -81,22 +80,22 @@
  					data['options'] = getValue(mount.findall("options"), "rw,nolock").encode("UTF-8")
  					data['username'] = getValue(mount.findall("username"), "guest").encode("UTF-8")
