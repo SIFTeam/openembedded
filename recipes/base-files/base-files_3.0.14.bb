@@ -165,6 +165,8 @@ do_install_append_openpli() {
 	ln -sf media/hdd ${D}/hdd
 	ln -sf media ${D}/mnt
 	rm -rf ${D}/media/ram
+	rmdir ${D}/tmp
+	ln -s var/volatile/tmp ${D}/tmp
 }
 
 PACKAGES = "${PN}-dbg ${PN}-doc ${PN}"
