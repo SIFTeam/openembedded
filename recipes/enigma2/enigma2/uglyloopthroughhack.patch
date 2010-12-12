@@ -1,0 +1,39 @@
+--- ~/lib/dvb/frontend.cpp.orig	2010-01-05 23:49:21.000000000 +0100
++++ ~/lib/dvb/frontend.cpp	2010-01-05 23:49:25.000000000 +0100
+@@ -2595,6 +2595,36 @@
+ 
+ RESULT eDVBFrontend::setData(int num, long val)
+ {
++	if (num == LINKED_PREV_PTR)
++	{
++		char filename[128];
++		int result;
++		int fd;
++		int onoff = (val != -1);
++		if (m_fd < 0)
++		{
++			sprintf(filename, "/dev/dvb/adapter0/frontend%d", m_slotid);
++			fd = ::open(filename, O_RDWR|O_NONBLOCK);
++		}
++		else
++		{
++			fd = m_fd;
++		}
++		if (fd > 0)
++		{
++#define SW_LOOP_THROUGH _IOW('o', 103, int)
++			result = ::ioctl(fd, SW_LOOP_THROUGH, &onoff);
++			eDebug("\nslot %d Loopthrough %d ->", m_slotid, onoff);
++			if (result < 0)
++				eDebugNoNewLine(" %d = %m", result);
++			else
++				eDebugNoNewLine("ok");
++			if (m_fd < 0)
++				::close(fd);
++		}
++		else
++			eDebug("eDVBFrontend::setLoopthrough %d open error", m_slotid);
++	}
+ 	if ( num < NUM_DATA_ENTRIES )
+ 	{
+ 		m_data[num] = val;
