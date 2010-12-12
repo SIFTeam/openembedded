@@ -28,7 +28,7 @@ inherit gitpkgv
 
 PV = "1.0+git${SRCPV}"
 PKGV = "1.0+git${GITPKGV}"
-PR = "r0"
+PR = "r1"
 
 SRC_URI = "git://openpli.git.sourceforge.net/gitroot/openpli/enigma2-plugins;protocol=git"
 
@@ -54,6 +54,7 @@ python populate_packages_prepend () {
 
 	files_append('enigma2-plugin-pli-newsreader', '/etc/feeds.xml.default')
 	files_append('enigma2-plugin-pli-bitrate', '/usr/bin/bitrate')
+	files_append('enigma2-plugin-pli-ppanel', '/etc/ppanels')
 }
 
 do_install_append() {
