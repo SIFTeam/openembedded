@@ -11,13 +11,15 @@ RDEPENDS_kernel-image = "mtd-minimal-nand-utils"
 
 SRC_URI = "http://archive.vuplus.com/download/stblinux-${KV}.tar.bz2 \
 	file://linux_bm750_nand.patch;striplevel=0 \
-        file://linux_bm750_proc.patch;striplevel=0 \
-        file://linux_bm750_resource.patch;striplevel=0 \
-        file://linux_bm750_serial.patch;striplevel=0 \
-        file://linux_bm750_setup.patch;striplevel=0 \
-        file://linux_bm750_arch_makefile.patch;striplevel=0 \
-        file://linux_bm750_kobject.patch;striplevel=0 \
-        file://linux_bm750_dvb-core_fe.patch;striplevel=0 \
+	file://linux_bm750_proc.patch;striplevel=0 \
+	file://linux_bm750_resource.patch;striplevel=0 \
+	file://linux_bm750_serial.patch;striplevel=0 \
+	file://linux_bm750_setup.patch;striplevel=0 \
+	file://linux_bm750_arch_makefile.patch;striplevel=0 \
+	file://linux_bm750_kobject.patch;striplevel=0 \
+	file://linux-2.6.18-dvb-frontends.patch;striplevel=0 \
+	file://linux-2.6.18-dvb-core.patch;striplevel=0 \
+	file://dvb-include-2.6.18-5.3.patch;striplevel=0 \
 	file://bm750_defconfig \
 	"
 
@@ -45,8 +47,8 @@ do_configure_prepend() {
 }
 
 kernel_do_install_append() {
-        install -d ${D}/${KERNEL_IMAGEDEST}
-        install -m 0755 ${KERNEL_OUTPUT} ${D}/${KERNEL_IMAGEDEST}
+	install -d ${D}/${KERNEL_IMAGEDEST}
+	install -m 0755 ${KERNEL_OUTPUT} ${D}/${KERNEL_IMAGEDEST}
 	gzip ${D}/${KERNEL_IMAGEDEST}/${KERNEL_IMAGETYPE}
 }
 
