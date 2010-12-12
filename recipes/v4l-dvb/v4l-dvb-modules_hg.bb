@@ -14,6 +14,7 @@ SRC_URI = "http://linuxtv.org/hg/v4l-dvb/archive/${SRCREV}.tar.gz \
            file://localversion.patch \
            file://fix-strip.patch \
            file://build-fix.patch \
+           ${@base_contains("MACHINE_FEATURES", "uglyloopthroughhack", "file://uglyloopthroughhack.patch", "", d)} \
 "
 
 S = "${WORKDIR}/v4l-dvb-${SRCREV}"
