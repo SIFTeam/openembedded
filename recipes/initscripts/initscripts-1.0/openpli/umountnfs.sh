@@ -10,4 +10,4 @@ halt -w
 
 echo "Unmounting remote filesystems..."
 
-umount -a -f -t nfs,smbfs,cifs,ncpfs
+umount -a -f -n -t nfs,smbfs,cifs,ncpfs
