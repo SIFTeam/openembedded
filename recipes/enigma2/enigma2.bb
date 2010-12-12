@@ -110,13 +110,9 @@ EXTRA_OECONF = "\
 	STAGING_LIBDIR=${STAGING_LIBDIR} \
 	"
 
-# Swig generated 200k enigma.py file has no purpose for end users, nor the unused .pyc files.
+# Swig generated 200k enigma.py file has no purpose for end users
 FILES_${PN}-dbg += "\
 	/usr/lib/enigma2/python/enigma.py \
-	/usr/lib/enigma2/python/*.pyc \
-	/usr/lib/enigma2/python/*/*.pyc \
-	/usr/lib/enigma2/python/*/*/*.pyc \
-	/usr/lib/enigma2/python/*/*/*/*.pyc \
 	"
 # Save some space by not installing sources (mytest.py must remain)
 FILES_${PN}-src = "\
@@ -152,6 +148,7 @@ do_install_append() {
 	install -d ${D}/usr/share/keymaps
 	install -d ${D}/usr/bin
 	install -m 0755 ${WORKDIR}/enigma2.sh ${D}/usr/bin/enigma.sh
+	find ${D}/usr/lib/enigma2/python/ -name '*.pyc' -exec rm {} \;
 }
 
 python populate_packages_prepend () {
