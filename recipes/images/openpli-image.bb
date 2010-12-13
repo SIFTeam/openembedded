@@ -18,7 +18,7 @@ IMAGE_INSTALL = " \
 				early-configure \
 				e2fsprogs-mke2fs \
 				e2fsprogs-e2fsck \
-				util-linux-sfdisk \
+				nfs-utils-client \
 				"
 
 OPTIONAL_PACKAGES ?= ""
