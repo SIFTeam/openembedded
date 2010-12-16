@@ -30,6 +30,13 @@ SRC_URI += " \
 	file://mytube-default.patch \
 	"
 
+EXTRA_OECONF = " \
+	BUILD_SYS=${BUILD_SYS} \
+	HOST_SYS=${HOST_SYS} \
+	STAGING_INCDIR=${STAGING_INCDIR} \
+	STAGING_LIBDIR=${STAGING_LIBDIR} \
+"
+
 CONFFILES_${PN} += "${sysconfdir}/enigma2/movietags"
 FILES_${PN} += " /usr/share/enigma2 /usr/share/fonts "
 FILES_${PN}-meta = "${datadir}/meta"
