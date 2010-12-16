@@ -6,6 +6,8 @@ PV = "2.6.18-7.3"
 #Don't use PR here, use MACHINE_KERNEL_PR in machine.conf instead
 #PR = "r6"
 
+MACHINE_KERNEL_PR_append = ".1"
+
 DEPENDS = "mtd-minimal-nand-utils"
 RDEPENDS_kernel-image = "mtd-minimal-nand-utils"
 
