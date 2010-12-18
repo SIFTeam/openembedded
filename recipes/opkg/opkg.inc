@@ -4,10 +4,11 @@ SECTION = "base"
 LICENSE = "GPLv2"
 SRCREV = ${OPKG_SRCREV}
 PV = "0.1.8+svnr${SRCPV}"
-INC_PR = "r1"
+INC_PR = "r2"
 
 SRC_URI = "svn://opkg.googlecode.com/svn;module=trunk;proto=http \
-	   file://configure \
+	file://opkg_depmod_force_update.patch \
+	file://configure \
 "
 
 S = "${WORKDIR}/trunk"
