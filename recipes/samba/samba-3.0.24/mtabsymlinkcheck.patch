@@ -1,0 +1,19 @@
+--- source/client/umount.cifs.c.orig	2010-12-18 14:58:17.506831813 +0100
++++ source/client/umount.cifs.c	2010-12-18 14:58:17.522832116 +0100
+@@ -257,6 +257,7 @@
+ 	int retry_remount = 0;
+ 	struct statfs statbuf;
+ 	char * mountpoint;
++	struct stat mtab_stat;
+ 
+ 	if(argc && argv) {
+ 		thisprogram = argv[0];
+@@ -273,6 +274,8 @@
+ 	if(thisprogram == NULL)
+ 		thisprogram = "umount.cifs";
+ 
++	if (!lstat(MOUNTED, &mtab_stat) && S_ISLNK(mtab_stat.st_mode)) ++nomtab;
++
+ 	/* add sharename in opts string as unc= parm */
+ 
+ 	while ((c = getopt_long (argc, argv, "afhilnrvV",
