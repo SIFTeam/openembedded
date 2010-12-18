@@ -1,0 +1,19 @@
+--- ~/utils/mount/mount.c.orig	2010-12-18 17:40:08.373483003 +0100
++++ ~/utils/mount/mount.c	2010-12-18 17:40:08.397483002 +0100
+@@ -421,6 +421,7 @@
+ 	int c, flags = 0, mnt_err = 1, fake = 0;
+ 	char *spec, *mount_point, *fs_type = "nfs";
+ 	char *extra_opts = NULL, *mount_opts = NULL;
++	struct stat mtab_stat;
+ 	uid_t uid = getuid();
+ 
+ 	progname = basename(argv[0]);
+@@ -443,6 +444,8 @@
+ 		exit(EX_USAGE);
+ 	}
+ 
++	if (!lstat(MOUNTED, &mtab_stat) && S_ISLNK(mtab_stat.st_mode)) ++nomtab;
++
+ 	spec = argv[1];
+ 	mount_point = argv[2];
+ 

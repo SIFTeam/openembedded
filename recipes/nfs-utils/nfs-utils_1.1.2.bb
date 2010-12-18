@@ -3,7 +3,7 @@ PRIORITY = "optional"
 SECTION = "console/network"
 LICENSE = "GPL"
 
-PR = "r9"
+PR = "r10"
 
 DEPENDS = "util-linux-ng tcp-wrappers libevent"
 
@@ -11,6 +11,7 @@ SRC_URI = "${SOURCEFORGE_MIRROR}/nfs/nfs-utils-${PV}.tar.gz \
 	file://nfs-utils-tools-unset-cflags.patch \
 	file://nfs-utils-uclibc-compile.patch \
 	file://nfs-utils-S_ISREG-missing-include.patch \
+	file://mtabsymlinkcheck.patch \
 	file://nfsserver \
    "
 
