@@ -9,5 +9,5 @@
 
 echo "Mounting remote filesystems..."
 
-mount -a -n -t nfs,smbfs,cifs,ncpfs
+mount -a -t nfs,smbfs,cifs,ncpfs
 
