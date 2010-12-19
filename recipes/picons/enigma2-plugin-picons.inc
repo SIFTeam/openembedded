@@ -16,6 +16,9 @@ python populate_packages_prepend() {
 	dir = bb.data.getVar('D', d, True)
 	sdir = bb.data.getVar('S', d, True)
 	satnames = bb.data.getVar('PICON_SATNAMES', d, True)
+	pnsuffix = bb.data.getVar('PN_SUFFIX', d, True)
+	if not pnsuffix:
+		pnsuffix = ''
 	piconpackages = []
 	for sat in os.listdir(sdir):
 		def createPackageName(type, sat):
@@ -26,7 +29,7 @@ python populate_packages_prepend() {
 					return "enigma2-plugin-picons-" + type + "-east-" + pos
 				elif sat[-1] == 'w':
 					return "enigma2-plugin-picons-" + type + "-west-" + pos
-			return "enigma2-plugin-picons-" + type + "-" + sat
+			return "enigma2-plugin-picons-" + type + "-" + sat + pnsuffix
 		if sat == "patches":
 			continue
 		if sat not in satnames:
