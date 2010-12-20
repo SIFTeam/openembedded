@@ -12,7 +12,7 @@ PV_dm800 = "4"
 PV_dm800se = "4"
 PV_dm7020hd = "4"
 PV_dm8000 = "4"
-PR = "r3"
+PR = "r4"
 
 SRC_URI = "http://sources.dreamboxupdate.com/download/7020/tpmd-${MACHINE}-${PV} \
 	file://tpmd"
@@ -29,7 +29,7 @@ do_install() {
 	install -m 0755 ${WORKDIR}/tpmd-${MACHINE}-${PV} ${D}/usr/bin/tpmd
 	install -m 0755 ${WORKDIR}/tpmd ${D}${sysconfdir}/init.d
 
-	ln -sf ../init.d/tpmd ${D}${sysconfdir}/rcS.d/S10tpmd
+	ln -sf ../init.d/tpmd ${D}${sysconfdir}/rcS.d/S22tpmd
 }
 
 PACKAGE_ARCH := "${MACHINE_ARCH}"
