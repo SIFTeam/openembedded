@@ -74,11 +74,10 @@ inherit gitpkgv
 
 PV = "2.7+git${SRCPV}"
 PKGV = "2.7+git${GITPKGV}"
-PR = "r25"
+PR = "r26"
 
 SRC_URI = "git://openpli.git.sourceforge.net/gitroot/openpli/enigma2;protocol=git \
            file://enigma2.sh \
-           ${@base_contains("MACHINE_FEATURES", "uglyloopthroughhack", "file://uglyloopthroughhack.patch", "", d)} \
            "
 
 S = "${WORKDIR}/git"
