@@ -7,7 +7,7 @@ inherit gitpkgv
 
 PV = "experimental-git${SRCPV}"
 PKGV = "experimental-git${GITPKGV}"
-PR = "r1"
+PR = "r2"
 BRANCH = "master"
 
 SRC_URI="git://schwerkraft.elitedvb.net/enigma2-plugins/enigma2-plugins.git;protocol=git;branch=${BRANCH}"

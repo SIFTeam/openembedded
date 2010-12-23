@@ -1,8 +1,16 @@
-Index: enigma2-plugins/Makefile.am
+Index: git/Makefile.am
 ===================================================================
---- enigma2-plugins.orig/Makefile.am
-+++ enigma2-plugins/Makefile.am
-@@ -13,7 +13,6 @@ SUBDIRS = \
+--- git.orig/Makefile.am	2010-12-17 19:41:52.000000000 +0100
++++ git/Makefile.am	2010-12-23 17:13:39.532997964 +0100
+@@ -3,7 +3,6 @@
+ 	ac3lipsync \
+ 	aihdcontrol \
+ 	antiscrollbar \
+-	automatictimerlistcleanup \
+ 	automaticvolumeadjustment \
+ 	autoresolution \
+ 	autotimer \
+@@ -23,7 +22,6 @@
  	filebrowser \
  	fritzcall \
  	ftpbrowser \
@@ -10,3 +18,11 @@ Index: enigma2-plugins/Makefile.am
  	googlemaps \
  	growlee \
  	httpproxy \
+@@ -63,7 +61,6 @@
+ 	setpasswd \
+ 	shoutcast \
+ 	simplerss \
+-	startupservice \
+ 	startuptostandby \
+ 	tageditor \
+ 	trafficinfo \
