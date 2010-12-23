@@ -15,7 +15,7 @@ PV = "${KV}"
 SRCDATE = "20101221"
 
 RDEPENDS = "kernel (${KV}) kernel-module-firmware-class kernel-module-input kernel-module-evdev kernel-module-i2c-core kernel-module-snd kernel-module-snd-pcm"
-PR = "r20-${SRCDATE}"
+MACHINE_KERNEL_PR_append = ".${SRCDATE}"
 
 VUPLUS_KERNEL_GCC = "4.4.3"
 DOWNLOADMACHINE = "${MACHINE}"
