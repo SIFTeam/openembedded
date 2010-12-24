@@ -1,0 +1,12 @@
+--- gst-plugins-bad-0.10.20-org/gst/audioparsers/gstac3parse.c	2010-12-23 23:32:30.801806246 +0100
++++ gst-plugins-bad-0.10.20/gst/audioparsers/gstac3parse.c	2010-12-23 23:31:45.014315278 +0100
+@@ -272,7 +272,8 @@
+   /* FIXME: are other bsids ok as well? check spec */
+   if (bsid != 8 && bsid != 6) {
+     GST_DEBUG_OBJECT (ac3parse, "unexpected bsid=%d", bsid);
+-    return FALSE;
++    if (bsid > 8) // warn .. but don't abort when the bsid is lower or equal to 8
++      return FALSE;
+   }
+ 
+   if ((acmod & 0x1) && (acmod != 0x1))  /* 3 front channels */
