@@ -7,9 +7,9 @@ SRCDATE = "20101216"
 
 KV = "2.6.18-7.4"
 PV = "2.6.18-7.4+${SRCDATE}"
-MACHINE_KERNEL_PR_append = ".0"
+MACHINE_KERNEL_PR_append = ".1"
 
-RDEPENDS = "kernel (${KV})"
+RDEPENDS = "kernel (${KV}) et9000-fpupdate"
 
 SRC_URI = "http://www.et-view.com/download/drivers/${MACHINE}-drivers-gcc44-${SRCDATE}.zip"
 
