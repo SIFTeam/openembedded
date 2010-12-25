@@ -3,7 +3,8 @@ require v4l-dvb-modules.inc
 SRCDATE = "20100904"
 SRCREV = "6e0befab696a"
 PV = "0.0+hg${SRCDATE}"
-PR = "r2"
+
+MACHINE_KERNEL_PR_append = ".1"
 
 SRC_URI = "http://linuxtv.org/hg/v4l-dvb/archive/${SRCREV}.tar.gz \
            file://defconfig \
