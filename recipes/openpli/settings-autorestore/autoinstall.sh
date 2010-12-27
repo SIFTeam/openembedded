@@ -3,29 +3,46 @@
 # It installs the things from /hdd/backup/autoinstall
 # or from wherever the settings were restored
 
-BACKUPDIR=/hdd/backup
-if [ -f /tmp/restoredfrom ]
-then
-	BD=`cat /tmp/restoredfrom`
-	[ -f ${BD}/autoinstall ] && BACKUPDIR=${BD}
-fi
+BACKUPDIR=/media/hdd
+INSTALLED=/etc/installed
+
+for candidate in /media/cf /media/usb /media/mmc1
+do
+   if [ -d ${candidate}/backup ]
+   then
+     if [ ! -f ${BACKUPDIR}/backup/.timestamp ]
+     then
+     	BACKUPDIR=${candidate}
+     elif [ ${candidate}/backup/.timestamp -nt ${BACKUPDIR}/backup/.timestamp ]
+     then
+     	BACKUPDIR=${candidate}
+     fi
+   fi    
+done
 
 if [ -x /usr/bin/opkg ]
 then
 	IPKG=/usr/bin/opkg
-	OPTS=
 else
 	IPKG=ipkg
-	OPTS=-force-defaults
 fi
 
-if [ -f ${BACKUPDIR}/autoinstall ]
+${IPKG} list_installed | cut -d ' ' -f 1 > ${INSTALLED}
+chmod 444 ${INSTALLED}
+
+if [ -f ${BACKUPDIR}/backup/autoinstall ]
 then
-	echo "autoinstall from: ${BACKUPDIR}"
 	${IPKG} update  
-	for package in `cat ${BACKUPDIR}/autoinstall`
+	for package in `cat ${BACKUPDIR}/backup/autoinstall`
 	do
-		${IPKG} install ${OPTS} $package
+		packagefile=`echo ${package} | sed 's/,/ /g' | awk '{print $1}'`
+		packageoption=`echo ${package} | sed 's/,/ /g' | awk '{print $2" "$3" "$4}'`
+		if [ "$packageoption" == "" ] 
+		then
+			${IPKG} install --force-defaults ${packagefile}
+		else
+			${IPKG} install ${packageoption} ${packagefile}
+		fi
 	done
 fi
 

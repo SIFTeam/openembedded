@@ -1,4 +1,4 @@
-PV = "20101115"
+PV = "20101227"
 PR = "r0"
 SRC_URI = "file://*"
 DESCRIPTION = "Autorecover settings and install packages at first boot from /media/*/backup"
@@ -18,6 +18,7 @@ do_install() {
 	install -d ${D}/etc/rcS.d
 	# run-once initialization script
 	install -m 755 ${S}/settings-restore.sh ${D}/etc/init.d/settings-restore.sh
+	install -m 755 ${S}/settings-restore.old.sh ${D}/etc/init.d/settings-restore.old.sh
 	install -m 755 ${S}/autoinstall.sh ${D}/etc/init.d/autoinstall.sh
 }
 

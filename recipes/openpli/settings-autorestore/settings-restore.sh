@@ -3,7 +3,9 @@
 # it again later, but that may destroy settings that you did.
 
 # Restore files from backup dir with the most recent timestamp
+
 BACKUPDIR=/media/hdd
+
 for candidate in /media/cf /media/usb /media/mmc1
 do
    if [ -d ${candidate}/backup ]
@@ -27,60 +29,37 @@ then
     exit 0
 fi
 
-echo "Restoring from: ${BACKUPDIR}"
-echo ${BACKUPDIR} > /tmp/restoredfrom
-
-[ -d ${BACKUPDIR}/backup/enigma2 ] && {
-  mkdir -p /etc/enigma2
-  cp -a ${BACKUPDIR}/backup/enigma2/* /etc/enigma2/
-  touch /tmp/.set_restored
-}
-
-[ -d ${BACKUPDIR}/backup/.ssh ] && cp -r ${BACKUPDIR}/backup/.ssh /home/root
-[ -f ${BACKUPDIR}/backup/dropbear_rsa_host_key ] && cp ${BACKUPDIR}/backup/dropbear_rsa_host_key /etc/dropbear
-for file in CCcam.cfg CCcam.prio CCcam.channelinfo CCcam.providers radegast.cfg newsreader.conf NETcaster.conf resolv.conf
-do
-	[ -f ${BACKUPDIR}/backup/$file ] && cp ${BACKUPDIR}/backup/$file /etc/
-done
-[ -f ${BACKUPDIR}/backup/peer.cfg ] && cp ${BACKUPDIR}/backup/peer.cfg /etc/keys
-[ -f ${BACKUPDIR}/backup/mg_cfg ] && cp ${BACKUPDIR}/backup/mg_cfg /etc/keys
-[ -f ${BACKUPDIR}/backup/ignore.list ] && cp ${BACKUPDIR}/backup/ignore.list /etc/keys
-[ -f ${BACKUPDIR}/backup/priority.list ] && cp ${BACKUPDIR}/backup/priority.list /etc/keys
-[ -f ${BACKUPDIR}/backup/replace.list ] && cp ${BACKUPDIR}/backup/replace.list /etc/keys
-[ -f ${BACKUPDIR}/backup/newcamd.conf ] && cp ${BACKUPDIR}/backup/newcamd.conf /etc/tuxbox/config
-[ -f ${BACKUPDIR}/backup/smb.conf ] && cp ${BACKUPDIR}/backup/smb.conf /etc/samba
-
-[ -d ${BACKUPDIR}/backup/keys ] && cp ${BACKUPDIR}/backup/keys/* /etc/keys/
-if [ -f ${BACKUPDIR}/backup/fstab ]
+if [ ! -f ${BACKUPDIR}/backup/PLi-AutoBackup.tar.gz ]
 then
-  for fstype in cifs nfs swap
-  do
-    grep -q " ${fstype} " /etc/fstab || grep " ${fstype} " ${BACKUPDIR}/backup/fstab >>/etc/fstab
-  done
+    echo "PLi-AutoBackup.tar.gz not found, attempting old backup"
+    exec /etc/init.d/settings-restore.old.sh ${BACKUPDIR}
+    exit 1
 fi
 
-[ -f ${BACKUPDIR}/backup/crontab ] && {
-  crontab ${BACKUPDIR}/backup/crontab
-}
+echo "Restoring from: ${BACKUPDIR}/backup/"
+tar -xzf ${BACKUPDIR}/backup/PLi-AutoBackup.tar.gz -C /
 
-[ -d ${BACKUPDIR}/backup/network ] &&  cp -rp ${BACKUPDIR}/backup/network/* /etc/network/
-[ -d ${BACKUPDIR}/backup/default ] &&  cp -rp ${BACKUPDIR}/backup/default/* /etc/default/
-[ -d ${BACKUPDIR}/backup/tuxbox ] &&  cp -rp ${BACKUPDIR}/backup/tuxbox/* /etc/tuxbox/
+[ -f /tmp/fstab ] && echo /tmp/fstab >> /etc/fstab
+
+[ -f /tmp/crontab ] && crontab /tmp/crontab
 
 mergerootpwd()
 {
-	grep "^root:" ${BACKUPDIR}/backup/passwd
+	grep "^root:" /tmp/passwd
 	grep -v "^root:" /etc/passwd
 }
 
-if [ -f ${BACKUPDIR}/backup/passwd ]
+if [ -f ${BACKUPDIR}/tmp/passwd ]
 then
-	mergerootpwd > /tmp/passwd
+	mergerootpwd > /tmp/passwds
 	# QA check - we don't want a passwd file without root entry
-	if grep -q "^root:" /tmp/passwd
+	if grep -q "^root:" /tmp/passwds
 	then
-		cp /tmp/passwd /etc/passwd
+		cp /tmp/passwds /etc/passwd
 	fi
-	rm -f /tmp/passwd
+	rm -f /tmp/passwds
 fi
 
+rm -f /tmp/crontab
+rm -f /tmp/passwd
+rm -f /tmp/fstab
