@@ -22,7 +22,7 @@ DESCRIPTION_enigma2-plugin-pli-screenposition = "Adjust the screen position"
 PACKAGE_ARCH_enigma2-plugin-pli-screenposition = "${MACHINE_ARCH}"
 
 DESCRIPTION_enigma2-plugin-pli-streaminterface = "Stream webinterface on port 40080"
-RDEPENDS_enigma2-plugin-pli-streaminterface = "twisted-web"
+RDEPENDS_enigma2-plugin-pli-streaminterface = "python-twisted-web"
 
 inherit gitpkgv
 
