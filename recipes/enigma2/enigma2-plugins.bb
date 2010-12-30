@@ -7,7 +7,7 @@ inherit gitpkgv
 
 PV = "experimental-git${SRCPV}"
 PKGV = "experimental-git${GITPKGV}"
-PR = "r3"
+PR = "r4"
 BRANCH = "master"
 
 SRC_URI="git://schwerkraft.elitedvb.net/enigma2-plugins/enigma2-plugins.git;protocol=git;branch=${BRANCH}"
@@ -29,6 +29,7 @@ SRC_URI += " \
 	file://networkbrowser-remount.patch \
 	file://mytube-default.patch \
 	file://shoutcast-api-tmp.patch \
+	file://shoutcast-skin.patch \
 	"
 
 EXTRA_OECONF = " \
