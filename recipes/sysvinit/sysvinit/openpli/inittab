@@ -29,4 +29,4 @@ l6:6:wait:/etc/init.d/rc 6
 # Normally not reached, but fallthrough in case of emergency.
 z6:6:respawn:/sbin/sulogin
 
-gui:3:respawn:/usr/bin/enigma.sh
+gui:3:respawn:/usr/bin/enigma2.sh

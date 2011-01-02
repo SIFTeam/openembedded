@@ -78,9 +78,8 @@ PV = "2.7+git${SRCPV}"
 PKGV = "2.7+git${GITPKGV}"
 PR = "r26"
 
-SRC_URI = "git://openpli.git.sourceforge.net/gitroot/openpli/enigma2;protocol=git \
-           file://enigma2.sh \
-           "
+SRC_URI = "git://openpli.git.sourceforge.net/gitroot/openpli/enigma2;protocol=git"
+# SRC_URI = "git://${HOME}/pli/enigma2;protocol=file"
 
 S = "${WORKDIR}/git"
 
@@ -140,6 +139,9 @@ SRC_URI += " \
 	file://${RADIOMVI} \
 	"
 
+RCONFLICTS_${PN} = "dreambox-keymaps"
+RREPLACES_${PN} = "dreambox-keymaps"
+
 do_openpli_preinstall() {
 	install -m 0644 ${WORKDIR}/${RADIOMVI} ${S}/data/radio.mvi
 	install -d ${D}${sysconfdir}/enigma2
@@ -149,22 +151,11 @@ addtask openpli_preinstall after do_compile before do_install
 
 do_install_append() {
 	install -d ${D}/usr/share/keymaps
-	install -d ${D}/usr/bin
-	install -m 0755 ${WORKDIR}/enigma2.sh ${D}/usr/bin/enigma.sh
 	find ${D}/usr/lib/enigma2/python/ -name '*.pyc' -exec rm {} \;
 }
 
 python populate_packages_prepend () {
 	enigma2_plugindir = bb.data.expand('${libdir}/enigma2/python/Plugins', d)
-
 	do_split_packages(d, enigma2_plugindir, '(.*?/.*?)/.*', 'enigma2-plugin-%s', '%s ', recursive=True, match_path=True, prepend=True, extra_depends="enigma2")
 }
 
-do_stage() {
-	install -d ${STAGING_INCDIR}/enigma2
-	install -m 0644 ${S}/include/*.h ${STAGING_INCDIR}/enigma2
-	for dir in actions base components driver dvb dvb/lowlevel dvb_ci gdi gui mmi nav python service network; do
-		install -d ${STAGING_INCDIR}/enigma2/lib/$dir;
-		install -m 0644 ${S}/lib/$dir/*.h ${STAGING_INCDIR}/enigma2/lib/$dir;
-	done
-}
