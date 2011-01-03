@@ -14,7 +14,7 @@ RDEPENDS_${PN} = "python-codecs python-core python-lang python-re python-threadi
 	gst-plugin-typefindfunctions gst-plugin-audioconvert gst-plugin-audioresample \
 	gst-plugin-wavparse python-netclient gst-plugin-mpegstream gst-plugin-selector \
 	gst-plugin-flac gst-plugin-mpegdemux gst-plugin-dvdsub \
-	gst-plugin-neonhttpsrc gst-plugin-mpegaudioparse gst-plugin-subparse \
+	gst-plugin-souphttpsrc gst-plugin-mpegaudioparse gst-plugin-subparse \
 	gst-plugin-apetag gst-plugin-icydemux gst-plugin-autodetect \
 	python-twisted-core python-elementtree \
 	enigma2-fonts \
@@ -32,16 +32,20 @@ RDEPENDS_${PN} += "font-valis-enigma"
 
 RDEPENDS_${PN} += "${@base_contains("MACHINE_FEATURES", "alsa", "gst-plugin-alsa alsa-conf", "", d)}"
 
-# proper hdtv hardware should be able to playback these codecs
-RDEPENDS_${PN} += "${@base_contains("MACHINE_FEATURES", "hdtv", "gst-plugin-avi gst-plugin-matroska \
-										gst-plugin-qtdemux gst-plugin-cdxaparse gst-plugin-cdio gst-plugin-vcdsrc gst-plugin-vorbis", "", d)}"
+# proper hdtv hardware should be able to playback these codecs (hmm, what about DVD/CD?)
+RDEPENDS_${PN} += "${@base_contains("MACHINE_FEATURES", "hdtv", "\
+	gst-plugin-avi gst-plugin-matroska gst-plugin-qtdemux \
+	gst-plugin-cdxaparse gst-plugin-cdio gst-plugin-vcdsrc", "", d)}"
 
-RDEPENDS_enigma2_append_dm7020 = " gst-plugin-ossaudio gst-plugin-ivorbisdec"
-RDEPENDS_enigma2_append_dm7025 = " gst-plugin-ivorbisdec"
-RDEPENDS_enigma2_append_dm800 = " gst-plugin-ivorbisdec"
+# pick the vorbis decoder based on FPU capability
+RDEPENDS_${PN} += "${@["gst-plugin-ivorbisdec","gst-plugin-vorbis"][bb.data.getVar("TARGET_FPU",d,1) == 'hard']}"
+
+RDEPENDS_enigma2_append_dm7020 = " gst-plugin-ossaudio"
 
 # FPU hardware should be able to downmix DTS
 RRECOMMENDS_${PN} = "${@["","gst-plugin-dtsdec"][bb.data.getVar("TARGET_FPU",d,1) == 'hard']}"
+# rtsp support
+RRECOMMENDS_${PN} += "gst-plugin-udp gst-plugin-rtsp gst-plugin-rtp gst-plugin-rtpmanager gst-plugin-audioparsersbad"
 
 # 'forward depends' - no two providers can have the same PACKAGES_DYNAMIC, however both
 # enigma2 and enigma2-plugins produce enigma2-plugin-*.

@@ -2,10 +2,10 @@ require gst-plugins.inc
 
 SRC_URI += "file://flvdemux-ecma.diff"
 INC_PR = "r0"
-PR = "${INC_PR}.0"
+PR = "${INC_PR}.1"
 
 DEPENDS += "gst-plugins-base"
-DEPENDS_openpli += "gst-plugins-base"
+DEPENDS_openpli += "libsoup-2.4 flac gst-plugins-base"
 
 #inherit gconf
 #DEPENDS += "hal pulseaudio speex libsoup-2.4 flac gst-plugins-base openssl popt esound"
