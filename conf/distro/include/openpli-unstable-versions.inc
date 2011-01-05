@@ -60,7 +60,7 @@ SRCDATE_enigma2-plugin-settings-henksat-19e-23e-28e ?= "${HENKSAT_SRCDATE}"
 SRCDATE_enigma2-plugin-settings-henksat-13e-19e-23e-28e ?= "${HENKSAT_SRCDATE}"
 SRCDATE_enigma2-plugin-settings-henksat-wavefrontier ?= "${HENKSAT_SRCDATE}"
 SRCDATE_enigma2-plugin-settings-henksat-rotating ?= "${HENKSAT_SRCDATE}"
-SRCDATE_enigma2-plugin-settings-henksat-7e-13e-19e-23e-28e-42e ?= "${HENKSAT_SRCDATE}"
+SRCDATE_enigma2-plugin-settings-henksat-7e-13e-19e-23e-28e-42e ?= "20100917"
 SRCDATE_enigma2-plugin-settings-henksat-13e-19e-23e-28e-4.8e-0.8w ?= "${HENKSAT_SRCDATE}"
 
 HANS_SRCDATE ?= "20101219"
