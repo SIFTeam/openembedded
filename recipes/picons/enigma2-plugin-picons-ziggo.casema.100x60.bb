@@ -1,6 +1,6 @@
 PICON_SATNAMES = "ziggo.casema"
 
-SRCDATE = "20101204"
+SRCDATE = "20110107"
 PN_SUFFIX = ".100x60"
 PV = "${SRCDATE}"
 PR = "r0"
