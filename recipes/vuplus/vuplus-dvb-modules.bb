@@ -15,7 +15,7 @@ PV = "${KV}"
 SRCDATE = "20101221"
 
 RDEPENDS = "kernel (${KV}) kernel-module-firmware-class kernel-module-input kernel-module-evdev kernel-module-i2c-core kernel-module-snd kernel-module-snd-pcm"
-MACHINE_KERNEL_PR_append = ".${SRCDATE}"
+MACHINE_KERNEL_PR_append = ".${SRCDATE}.1"
 
 VUPLUS_KERNEL_GCC = "4.4.3"
 DOWNLOADMACHINE = "${MACHINE}"
@@ -37,7 +37,7 @@ do_install() {
     done
     install -d ${D}/${sysconfdir}/modutils
     for i in `ls | grep \\.ko | sed -e 's/.ko//g'`; do
-        echo $i >> ${D}/${sysconfdir}/modutils/vuplus
+        echo $i >> ${D}/${sysconfdir}/modutils/dvb_vuplus
     done
 
 }
