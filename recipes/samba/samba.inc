@@ -1,6 +1,6 @@
 SECTION = "console/network"
 LICENSE = "GPL"
-DEPENDS = "readline virtual/libiconv talloc"
+DEPENDS = "readline virtual/libiconv"
 
 SRC_URI = "http://samba.org/samba/ftp/stable/samba-${PV}.tar.gz \
            file://volatiles.03_samba \
@@ -38,7 +38,6 @@ EXTRA_OECONF='--disable-cups \
               --with-mandir=${mandir} \
               --with-swatdir=${datadir}/swat \
               --with-aio-support \
-              --without-libtalloc \
               samba_cv_struct_timespec=yes \
               libreplace_cv_HAVE_MMAP=${SAMBAMMAP}'
 
