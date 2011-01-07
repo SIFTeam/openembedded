@@ -147,12 +147,16 @@ python populate_packages_prepend () {
 
 		# If autoloading is requested, output /etc/modutils/<name> and append
 		# appropriate modprobe commands to the postinst
-		autoload = bb.data.getVar('module_autoload_%s' % basename, d, 1)
-		if not autoload:
-		    # Also, try canonical name with dashes
-		    autoload = bb.data.getVar('module_autoload_%s' % basename.replace('_', '-'), d, 1)
+		if basename.startswith('dvb-usb-'):
+			# force autoload for all usb modules
+			autoload = basename
+		else:
+			autoload = bb.data.getVar('module_autoload_%s' % basename, d, 1)
+			if not autoload:
+				# Also, try canonical name with dashes
+				autoload = bb.data.getVar('module_autoload_%s' % basename.replace('_', '-'), d, 1)
 		if autoload:
-			name = '%s/etc/modutils/%s' % (dvar, basename)
+			name = '%s/etc/modutils/v4l-%s' % (dvar, basename)
 			f = open(name, 'w')
 			for m in autoload.split():
 				f.write('%s\n' % m)
@@ -175,7 +179,7 @@ python populate_packages_prepend () {
 			f.close()
 
 		files = bb.data.getVar('FILES_%s' % pkg, d, 1)
-		files = "%s /etc/modutils/%s /etc/modutils/%s.conf /etc/modprobe.d/%s.conf" % (files, basename, basename, basename)
+		files = "%s /etc/modutils/v4l-%s /etc/modutils/%s.conf /etc/modprobe.d/%s.conf" % (files, basename, basename, basename)
 		bb.data.setVar('FILES_%s' % pkg, files, d)
 
 		if vals.has_key("description"):
