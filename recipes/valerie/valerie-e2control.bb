@@ -12,3 +12,4 @@ do_install() {
 	install -m 755 e2control ${D}${PLUGINDIR}/
 }
 
+FILES_${PN}-dbg += "${PLUGINDIR}/.debug"

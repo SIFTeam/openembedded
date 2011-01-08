@@ -14,3 +14,4 @@ do_install() {
 	ln -s libshowiframe.so.0.0.0 ${D}${PLUGINDIR}/libshowiframe.so.0
 }
 
+FILES_${PN}-dbg += "${PLUGINDIR}/.debug"

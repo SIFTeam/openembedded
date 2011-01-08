@@ -1,5 +1,3 @@
-# we cannot use PACKAGES_DYNAMIC = "enigma2-plugin-*"  here, because enigma2-plugins already has it,
-# so we only publish enigma2-plugin-pli-* here (as a result, only those can occur in any RDEPENDS)
 DESCRIPTION = "Project Valerie - Media Center"
 DEPENDS = "python-native"
 PACKAGES = "${PN}"
