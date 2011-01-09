@@ -30,6 +30,7 @@ OPTIONAL_PACKAGES += " \
 			ntp \
 			openssh \
 			ctorrent nzbget \
+			sabnzbd \
 			wakelan \
 			inadyn-mt \
 			cups \
