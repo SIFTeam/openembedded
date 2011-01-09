@@ -3,9 +3,9 @@ HOMEPAGE = "http://www.rarlab.com/"
 PR = "r0"
 
 SRC_URI = "http://www.rarlab.com/rar/unrarsrc-${PV}.tar.gz;name=unrar \
-		file://makefile.unix.patch"
-SRC_URI[unrar.md5sum] = "4271fc8710d299341c969666492b305c"
-SRC_URI[unrar.sha256sum] = "460d4c014f5aaaa9b1c810dca180f07e155678b322169e20f4e51c616fa0e7ff"
+		file://makefile-nostrip.patch"
+SRC_URI[unrar.md5sum] = "203bc1e43935124db9635262cfd00b3f"
+SRC_URI[unrar.sha256sum] = "7f61b0ef2a173f5a16daab53eaa838cc8fd6ec8cc72ce5f5b8cebe8e33c6e403"
 
 S = "${WORKDIR}/unrar"
 
