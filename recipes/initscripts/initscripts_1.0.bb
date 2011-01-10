@@ -4,7 +4,7 @@ PRIORITY = "required"
 DEPENDS = "makedevs"
 RDEPENDS_${PN} = "makedevs"
 LICENSE = "GPL"
-PR = "r123.5"
+PR = "r123.6"
 
 SRC_URI = "file://functions \
            file://halt \
@@ -125,8 +125,6 @@ do_install () {
 	if [ "${TARGET_ARCH}" = "arm" ]; then
 		ln -sf	../init.d/alignment.sh	${D}${sysconfdir}/rcS.d/S06alignment
 	fi
-
-	install -m 0755		${WORKDIR}/device_table.txt		${D}${sysconfdir}/device_table
 }
 
 # Angstrom doesn't support devfs
