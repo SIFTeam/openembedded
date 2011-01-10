@@ -35,8 +35,6 @@ SRC_URI = "file://functions \
 
 SRC_URI_append_arm = " file://alignment.sh"
 
-CONFFILES_${PN} += "${sysconfdir}/device_table"
-
 KERNEL_VERSION = ""
 
 do_install () {
