@@ -32,9 +32,14 @@ PV_dm7020hd = "${KV}-20101111"
 KV_dm8000 = "${@base_contains('PREFERRED_VERSION_linux-dm8000', '2.6.18', '2.6.18-7.4-dm8000', '2.6.30-dm8000', d)}"
 PV_dm8000 = "${KV}-${@base_contains('PREFERRED_VERSION_linux-dm8000', '2.6.18', '20101215', '20090820', d)}"
 
-RDEPENDS_${PN} = "kernel (${KV}) dreambox-secondstage module-sleep"
+RDEPENDS_${PN} = "kernel (${KV})"
 
-MACHINE_KERNEL_PR_append = ".1"
+RDEPENDS_dm8000 = "dreambox-secondstage"
+RDEPENDS_dm800 = "dreambox-secondstage"
+RDEPENDS_dm500hd = "dreambox-secondstage"
+RDEPENDS_dm800se = "dreambox-secondstage"
+
+MACHINE_KERNEL_PR_append = ".2"
 GCC ?= ""
 
 inherit module
@@ -66,6 +71,5 @@ do_install_mipsel() {
 	for i in `ls | grep \\.ko | sed -e 's/.ko//g'`; do
 		echo $i >> ${D}/${sysconfdir}/modutils/dreambox
 	done
-	echo "module-sleep msdelay=1000" >> ${D}/${sysconfdir}/modutils/dreambox
 	${@base_contains("MACHINE_FEATURES", "frontprocessor", "install -d ${D}${sbindir}; install -m 0755 ${WORKDIR}/fpupgrade-${MACHINE}-v7 ${D}${sbindir}/fpupgrade", "", d)}
 }
