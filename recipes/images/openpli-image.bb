@@ -19,6 +19,7 @@ IMAGE_INSTALL = " \
 				e2fsprogs-mke2fs \
 				e2fsprogs-e2fsck \
 				nfs-utils-client \
+				kernel-params \
 				"
 
 OPTIONAL_PACKAGES ?= ""

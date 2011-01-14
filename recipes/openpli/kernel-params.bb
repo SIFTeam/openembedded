@@ -1,16 +1,14 @@
-PV = "20100514"
+PV = "20110114"
 PR = "r0"
-DESCRIPTION = "Tune kernel parameters on startup"
+DESCRIPTION = "Tune kernel parameters in /etc/sysconf"
 PACKAGES = "${PN}"
 
-SRC_URI = "file://${PN}.sh"
+SRC_URI = "file://sysctl.conf"
 
-INITSCRIPT_NAME = "${PN}"
-INITSCRIPT_PARAMS = "start 92 S ."
-
-inherit update-rc.d
+# Users may chose to edit or create their own
+CONFFILES_${PN} = "/etc/sysctl.conf"
 
 do_install() {
-	install -d ${D}/etc/init.d
-	install -m 0755 ${WORKDIR}/${PN}.sh ${D}/etc/init.d/${PN}
+	install -d ${D}/etc
+	install -m 0755 ${WORKDIR}/sysctl.conf ${D}/etc/sysctl.conf
 }
