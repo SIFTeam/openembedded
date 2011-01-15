@@ -6,7 +6,7 @@
 
 BACKUPDIR=/media/hdd
 
-for candidate in /media/cf /media/usb /media/mmc1
+for candidate in `cat /proc/mounts | cut -d ' ' -f 2 | grep '^/media'`
 do
    if [ -d ${candidate}/backup ]
    then
@@ -39,9 +39,8 @@ fi
 echo "Restoring from: ${BACKUPDIR}/backup/"
 tar -xzf ${BACKUPDIR}/backup/PLi-AutoBackup.tar.gz -C /
 
-[ -f /tmp/fstab ] && echo /tmp/fstab >> /etc/fstab
-
-[ -f /tmp/crontab ] && crontab /tmp/crontab
+[ -s /tmp/fstab ] && cat /tmp/fstab >> /etc/fstab
+[ -s /tmp/crontab ] && crontab /tmp/crontab
 
 mergerootpwd()
 {
