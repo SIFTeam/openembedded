@@ -20,6 +20,10 @@ RDEPENDS_${PN} = "python-codecs python-core python-lang python-re python-threadi
 	enigma2-fonts \
 	glibc-gconv-iso8859-15 ethtool"
 
+# DVD playback is integrated, we need the libraries
+RDEPENDS_${PN} += "libdreamdvd"
+RRECOMMENDS_${PN} = "libdvdcss"
+
 RDEPENDS_${PN} += "${@base_contains("MACHINE_FEATURES", "blindscan", "virtual/blindscanutils" , "", d)}"
 
 # Magic is the default skin, so we should depend on it.
@@ -45,7 +49,7 @@ RDEPENDS_${PN} += "${@["gst-plugin-ivorbisdec","gst-plugin-vorbis"][bb.data.getV
 RDEPENDS_enigma2_append_dm7020 = " gst-plugin-ossaudio"
 
 # FPU hardware should be able to downmix DTS
-RRECOMMENDS_${PN} = "${@["","gst-plugin-dtsdec"][bb.data.getVar("TARGET_FPU",d,1) == 'hard']}"
+RRECOMMENDS_${PN} += "${@["","gst-plugin-dtsdec"][bb.data.getVar("TARGET_FPU",d,1) == 'hard']}"
 
 # 'forward depends' - no two providers can have the same PACKAGES_DYNAMIC, however both
 # enigma2 and enigma2-plugins produce enigma2-plugin-*.
@@ -62,8 +66,6 @@ DESCRIPTION_append_enigma2-plugin-systemplugins-satelliteequipmentcontrol = "all
 DESCRIPTION_append_enigma2-plugin-systemplugins-satfinder = "helps you to align your dish."
 DESCRIPTION_append_enigma2-plugin-systemplugins-skinselector = "shows a menu with selectable skins."
 DESCRIPTION_append_enigma2-plugin-systemplugins-videomode = "selects advanced video modes"
-RDEPENDS_enigma2-plugin-extensions-dvdplayer = "libdreamdvd"
-RRECOMMENDS_enigma2-plugin-extensions-dvdplayer = "libdvdcss"
 RDEPENDS_enigma2-plugin-systemplugins-nfiflash = "python-twisted-web"
 RDEPENDS_enigma2-plugin-systemplugins-softwaremanager = "python-twisted-web"
 DESCRIPTION_append_enigma2-plugin-systemplugins-crashlogautosubmit = "automatically send crashlogs to Dream Multimedia"
@@ -107,7 +109,7 @@ bindir = "/usr/bin"
 sbindir = "/usr/sbin"
 
 EXTRA_OECONF = "\
-	--enable-maintainer-mode --with-target=native --with-libsdl=no --with-boxtype=${MACHINE} \
+	--with-libsdl=no --with-boxtype=${MACHINE} \
 	${@base_contains("MACHINE_FEATURES", "textlcd", "--with-textlcd" , "", d)} \
 	${@base_contains("MACHINE_FEATURES", "colorlcd", "--with-colorlcd" , "", d)} \
 	BUILD_SYS=${BUILD_SYS} \
