@@ -11,8 +11,7 @@ SRC_URI += " \
 	http://sources.dreamboxupdate.com/download/snapshots/ath_hal-20080815.tgz \
 	file://40-fix-warnings.patch"
 
-# PR set after the include, to override what's set in the included file.
-PR = "r9"
+MACHINE_KERNEL_PR_append = ".1"
 
 SRC_URI[md5sum] = "2c7352cbbdac995de8c3bce5b80db5f2"
 SRC_URI[sha256sum] = "0599c75b95ba63bdc554cb8124192e62c75fbeb71b9e8a5a7bc351c8e0666758"

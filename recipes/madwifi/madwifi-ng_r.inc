@@ -4,7 +4,6 @@ PRIORITY = "optional"
 LICENSE = "GPL"
 RDEPENDS_${PN} = "kernel (${KERNEL_VERSION})"
 DEPENDS = "virtual/kernel"
-PR = "r7"
 
 WACKELF_SRC_URI = ""
 WACKELF_SRC_URI_ixp4xx = " file://20-xscale-VFP-wackelf.patch"
@@ -49,17 +48,25 @@ do_install() {
 	install -d ${D}${sbindir}
 	unset LDFLAGS
 	oe_runmake DESTDIR=${D} BINDIR=${sbindir} install
+	install -d ${D}/${sysconfdir}/modutils
+	echo ath_pci > ${D}/${sysconfdir}/modutils/madwifi
 }
 
-pkg_postinst() {
-if test "x$D" != "x"; then
-       exit 1
+pkg_postinst_{PN}-modules() {
+if [ -n "$D" ]; then
+	exit 1
 else
-	depmod -ae
+	depmod -a ${KERNEL_VERSION}
+	update-modules || true
 fi
 }
 
-PACKAGES += "${PN}-modules ${PN}-tools"
-FILES_${PN}-modules = "/lib/modules/"
-FILES_${PN}-tools = "/usr/"
+pkg_postrm_{PN}-modules() {
+	update-modules || true
+}
+
+PACKAGES =+ "${PN}-modules ${PN}-tools"
+FILES_${PN}-modules = "/lib/modules /etc/modutils"
+FILES_${PN}-tools = "/usr/sbin"
+FILES_${PN}-doc = "/usr/local/man"
 
