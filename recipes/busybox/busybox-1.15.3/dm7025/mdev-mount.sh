@@ -12,30 +12,17 @@ case "$ACTION" in
 		if [ $? -ne 0 ] ; then
 			# no fstab entry, use automatic mountpoint
 			DEVBASE=`expr substr $MDEV 1 3`
-			REMOVABLE=`cat /sys/block/$DEVBASE/removable`
-			MODEL=`cat /sys/block/$DEVBASE/device/model`
 			ADAPTER=`expr substr $DEVBASE 1 2`
 			if [ "$ADAPTER" == "hd" ] ; then
 				# 7025 needs to set this on internal disks
 				hdparm -d1 -X66 /dev/$MDEV
 			fi
-			if [ $REMOVABLE -eq "0" ]; then
-				# mount the first non-removable device on /media/hdd
+			if [ "$DEVBASE" == "hda" ]; then
 				DEVICETYPE="hdd"
+			elif [ "$DEVBASE" == "hdc" ]; then
+				DEVICETYPE="cf"
 			else
-				if [ "$DEVBASE" == "hdc" ]; then
-					DEVICETYPE="cf"
-				elif [ "$MODEL" == "USB CF Reader   " ]; then
-					DEVICETYPE="cf"
-				elif [ "$MODEL" == "USB SD Reader   " ]; then
-					DEVICETYPE="mmc1"
-				elif [ "$MODEL" == "USB MS Reader   " ]; then
-					DEVICETYPE="mmc1"
-				elif [ "$MODEL" == "USB SM Reader   " ]; then
-					DEVICETYPE="mmc1"
-				else
-					DEVICETYPE="usb"
-				fi
+				DEVICETYPE="usb"
 			fi
 			touch /dev/mdev.$DEVICETYPE
 			DEVSTATE=`cat /dev/mdev.$DEVICETYPE`
