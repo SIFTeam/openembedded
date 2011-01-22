@@ -2,8 +2,9 @@ DESCRIPTION = "Transmission is a BitTorrent client w/ a built-in Ajax-Powered We
 SECTION = "network"
 HOMEPAGE = "www.transmissionbt.com/"
 DEPENDS = "gtk+ gnutls openssl gettext libtool intltool-native curl glib-2.0-native"
+DEPENDS_openpli = "gnutls openssl libtool curl glib-2.0-native libevent"
 LICENSE = "GPLv2"
-PR = "r4"
+PR = "r5"
 SRC_URI = "http://mirrors.m0k.org/transmission/files/transmission-${PV}.tar.bz2;name=archive \
            file://init \
            file://config"
@@ -12,6 +13,8 @@ INITSCRIPT_NAME = "transmission"
 INITSCRIPT_PARAMS = "defaults 60 "
 
 inherit autotools update-rc.d
+
+OE_EXTRACONF_openpli = "--disable-gtk --disable-nls"
 
 do_install_append() {
 	install -d ${D}${sysconfdir}/init.d
