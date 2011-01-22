@@ -31,6 +31,7 @@ OPTIONAL_PACKAGES += " \
 			ntp \
 			openssh \
 			ctorrent nzbget \
+			transmission \
 			sabnzbd \
 			wakelan \
 			inadyn-mt \
