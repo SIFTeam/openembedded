@@ -18,7 +18,7 @@ fi
 # Exit if the package is not installed
 test -f /usr/bin/transmission-daemon || exit 0
 
-SSDOPTIONS="--chuid $DAEMON_USER:$DAEMON_GROUP"
+[ -z "$DAEMON_USER" ] || SSDOPTIONS="--chuid $DAEMON_USER:$DAEMON_GROUP"
 TRANSOPTIONS="-g $CONFIG_DIR -w $DOWNLOAD_DIR"
 
 case "$1" in
