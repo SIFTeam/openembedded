@@ -28,7 +28,7 @@ inherit gitpkgv
 
 PV = "1.0+git${SRCPV}"
 PKGV = "1.0+git${GITPKGV}"
-PR = "r1"
+PR = "r2"
 
 SRC_URI = "git://openpli.git.sourceforge.net/gitroot/openpli/enigma2-plugins;protocol=git"
 
@@ -59,6 +59,7 @@ python populate_packages_prepend () {
 
 do_install_append() {
 	rm ${D}/usr/lib/enigma2/python/Plugins/PLi/PPanel/url.py
+	find ${D}/usr/lib/enigma2/python/ -name '*.pyc' -exec rm {} \;
 }
 
 pkg_postinst_enigma2-plugin-pli-newsreader() {
