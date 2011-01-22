@@ -2,7 +2,7 @@ DESCRIPTION = "Flash extender - Use CF card as extra flash space on DM7025"
 MAINTAINER = "Mike Looijmans <dream@milosoftware>"
 PACKAGE_ARCH = "dm7025"
 
-PV = "1.07"
+PV = "1.08"
 PR = "r0"
 
 SRC_URI = 'file://*'

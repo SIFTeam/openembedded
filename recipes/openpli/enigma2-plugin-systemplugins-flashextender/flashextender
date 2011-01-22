@@ -21,7 +21,7 @@ IMAGEVERSION=`cat /etc/version`
 NEWDELTA=/media/cf/delta.${IMAGEVERSION}
 
 do_start() {
-    if unionctl --list / | grep "${NEWDELTA}"
+    if unionctl / --list | grep "${NEWDELTA}"
     then
         echo "Flash extender is already active on this image, aborted"
 	exit 0
@@ -43,7 +43,7 @@ do_start() {
 }
 
 do_stop() {
-    if ! unionctl --list / | grep "${NEWDELTA}"
+    if ! unionctl / --list | grep "${NEWDELTA}"
     then
         echo "Flash extender is not active on this image, cannot stop"
 	exit 0
@@ -90,7 +90,7 @@ do_uninstall() {
     fi
     
     # stop the union if still running
-    if unionctl --list / | grep "${NEWDELTA}"
+    if unionctl / --list | grep "${NEWDELTA}"
     then
         unionctl / --mode /boot/mnt/flash/delta rw
         if unionctl / --remove ${NEWDELTA}
