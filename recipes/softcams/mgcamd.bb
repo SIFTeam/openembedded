@@ -1,8 +1,9 @@
 DESCRIPTION = "mgcamd ${PV} softcam"
 CAMNAME = "mgcamd"
+RDEPENDS = "libcrypto-compat"
 PN = "enigma2-plugin-softcams-mgcamd"
 PV = "1.30d"
-PR = "r4"
+PR = "r5"
 
 SRC_URI = "http://downloads.pli-images.org/softcams/mgcamd${PV}.zip \
 	http://downloads.pli-images.org/softcams/newcamd.conf"

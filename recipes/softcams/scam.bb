@@ -1,9 +1,10 @@
 CAMNAME = "scam"
 DESCRIPTION = "${CAMNAME} ${PV} softcam"
+RDEPENDS = "libcrypto-compat"
 
 PN = "enigma2-plugin-softcams-${CAMNAME}"
 PV = "3.53"
-PR = "r1"
+PR = "r2"
 
 SRC_URI = "http://downloads.pli-images.org/softcams/scam_v${PV}.zip"
 
