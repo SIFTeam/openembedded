@@ -5,7 +5,7 @@ MAINTAINER = "Felix Domke <tmbinc@elitedvb.net>"
 LICENSE = "GPL"
 
 PV = "2008i"
-PR = "r0"
+PR = "r1"
 
 SRC_URI = "file://zoneinfo.tar.bz2"
 S = "${WORKDIR}/zoneinfo"
