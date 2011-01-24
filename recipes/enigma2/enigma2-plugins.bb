@@ -8,29 +8,8 @@ inherit gitpkgv
 PV = "experimental-git${SRCPV}"
 PKGV = "experimental-git${GITPKGV}"
 PR = "r4"
-BRANCH = "master"
 
-SRC_URI="git://schwerkraft.elitedvb.net/enigma2-plugins/enigma2-plugins.git;protocol=git;branch=${BRANCH}"
-
-SRC_URI += " \
-	file://autotimer-nl.patch \
-	file://netcaster.patch \
-	file://networkbrowser-nl.diff;striplevel=0 \
-	file://networkbrowser.diff;striplevel=0 \
-	file://webif-datetime.patch \
-	file://webif-moviefolder.patch \
-	file://webif-grabrefresh.patch \
-	file://webif-https-disable.patch \
-	file://removeunwanted.patch \
-	file://dosomething.patch \
-	file://imdb_eventinfo.patch \
-	file://shoutcast_etc.patch \
-	file://networkbrowser-serial.patch \
-	file://networkbrowser-remount.patch \
-	file://mytube-default.patch \
-	file://shoutcast-api-tmp.patch \
-	file://shoutcast-skin.patch \
-	"
+SRC_URI="git://openpli.git.sourceforge.net/gitroot/openpli/plugins-enigma2;protocol=git"
 
 EXTRA_OECONF = " \
 	BUILD_SYS=${BUILD_SYS} \
