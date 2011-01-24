@@ -1,11 +1,11 @@
-DESCRIPTION = "Compatibility for packages that link to libcrypto 0.9.7"
+DESCRIPTION = "Compatibility for packages that link to libcrypto or libssl 0.9.7"
 HOMEPAGE = "http://www.openssl.org/"
 LICENSE = "openssl"
 SECTION = "libs/network"
 PACKAGES = "${PN}"
 PACKAGE_ARCH = "all"
 RDEPENDS = "libcrypto"
-
+PR = "r1"
 SRC_URI = ""
 S = "${WORKDIR}"
 
@@ -19,5 +19,6 @@ do_compile () {
 
 do_install () {
 	install -d ${D}/usr/lib
-	ln -s libcrypto.so ${D}/usr/lib/libcrypto.so.0.9.7
+	ln -s libcrypto.so ${D}/usr/lib/libcrypto.so.${PV}
+	ln -s libssl.so ${D}/usr/lib/libssl.so.${PV}
 }
