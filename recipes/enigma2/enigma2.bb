@@ -6,7 +6,7 @@ DEPENDS = "jpeg libungif libmad libpng libsigc++-1.2 gettext-native \
 	dvd+rw-tools dvdauthor mjpegtools cdrkit python-imaging ${DEMUXTOOL} \
 	libfribidi libxmlccwrap libdreamdvd libdvdcss tuxtxt-enigma2 ethtool \
 	gstreamer gst-plugins-bad gst-plugins-good gst-plugins-ugly \
-	python-wifi"
+	python-wifi hotplug-e2-helper"
 RDEPENDS_${PN} = "python-codecs python-core python-lang python-re python-threading \
 	python-xml python-fcntl gst-plugin-decodebin gst-plugin-decodebin2 python-stringold \
 	python-pickle gst-plugin-app \
