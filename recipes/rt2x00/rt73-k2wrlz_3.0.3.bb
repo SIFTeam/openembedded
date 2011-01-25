@@ -3,6 +3,8 @@ HOMEPAGE = "http://homepages.tu-darmstadt.de/~p_larbig/wlan"
 SECTION = "kernel/modules"
 LICENSE = "GPL"
 
+MACHINE_KERNEL_PR_append = ".1"
+
 SRC_URI="http://homepages.tu-darmstadt.de/~p_larbig/wlan/${PN}-${PV}.tar.bz2"
 
 inherit module
@@ -17,7 +19,7 @@ do_install() {
 	install -d ${D}${base_libdir}/firmware
 	install -m 0644 rt73.bin ${D}${base_libdir}/firmware
 	install -d ${D}/etc/modutils
-	echo rt73 > ${D}/etc/modutils/rt73
+	echo "rt73 ifname=wlan%d" > ${D}/etc/modutils/rt73
 }
 
 FILES_${PN} += "${base_libdir}/firmware/"
