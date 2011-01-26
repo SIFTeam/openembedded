@@ -15,10 +15,10 @@ ENIGMA2_PLUGINS = " \
 				enigma2-plugin-systemplugins-skinselector \
 				enigma2-plugin-extensions-pictureplayer \
 				enigma2-plugin-extensions-mediaplayer \
-				enigma2-plugin-systemplugins-hotplug \
 				enigma2-plugin-systemplugins-networkbrowser \
 				enigma2-plugin-systemplugins-fastscan \
 				enigma2-plugin-systemplugins-osdpositionsetup \
+				${@base_contains("MACHINE_FEATURES", "nohotplug", "", "enigma2-plugin-systemplugins-hotplug", d)} \
 				${@base_contains("MACHINE_FEATURES", "dvb-c", "enigma2-plugin-systemplugins-cablescan" , "", d)} \
 				${@base_contains("MACHINE_FEATURES", "frontprocessor", "enigma2-plugin-systemplugins-frontprocessorupgrade" , "", d)} \
 				${@base_contains("MACHINE_FEATURES", "hdtv", "enigma2-plugin-systemplugins-videomode" , "", d)} \
