@@ -34,12 +34,15 @@ PV_dm8000 = "${KV}-${@base_contains('PREFERRED_VERSION_linux-dm8000', '2.6.18', 
 
 RDEPENDS_${PN} = "kernel (${KV})"
 
-RDEPENDS_dm8000 = "dreambox-secondstage"
-RDEPENDS_dm800 = "dreambox-secondstage"
-RDEPENDS_dm500hd = "dreambox-secondstage"
-RDEPENDS_dm800se = "dreambox-secondstage"
+RDEPENDS_dm8000 = "dreambox-secondstage module-sleep"
+RDEPENDS_dm800 = "dreambox-secondstage module-sleep"
+RDEPENDS_dm500hd = "dreambox-secondstage module-sleep"
+RDEPENDS_dm800se = "dreambox-secondstage module-sleep"
+# the dm7025 probably doesn't need the module-sleep workaround,
+# but this allows us to use a shared do_install_mipsel
+RDEPENDS_dm7025 = "module-sleep"
 
-MACHINE_KERNEL_PR_append = ".2"
+MACHINE_KERNEL_PR_append = ".3"
 GCC ?= ""
 
 inherit module
@@ -68,6 +71,7 @@ do_install_mipsel() {
 		install -m 0644 ${WORKDIR}/$f ${D}/lib/modules/${KV}/extra/$f;
 	done
 	install -d ${D}/${sysconfdir}/modutils
+	echo "module-sleep msdelay=3000" >> ${D}/${sysconfdir}/modutils/dreambox
 	for i in `ls | grep \\.ko | sed -e 's/.ko//g'`; do
 		echo $i >> ${D}/${sysconfdir}/modutils/dreambox
 	done
