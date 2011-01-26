@@ -5,11 +5,11 @@ PACKAGES = "${PN}"
 #ALLOW_EMPTY_${PN} = "1"
 
 PV = "1"
-PR = "r0"
+PR = "r1"
 # SRC_URI = 'file://*'
 
 INITSCRIPT_NAME = "softcam"
-INITSCRIPT_PARAMS = "start 50 S ."
+INITSCRIPT_PARAMS = "defaults 50"
 inherit update-rc.d
 
 FILES_${PN} = "/etc"
