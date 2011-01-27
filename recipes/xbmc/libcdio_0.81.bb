@@ -1,7 +1,12 @@
 DESCRIPTION = "The GNU Compact Disc Input and Control library (libcdio) contains a library for CD-ROM and CD image access."
 LICENSE = "GPLv3+"
 
+PR = "r1"
+
+DEPENDS_openpli = "libcddb"
+
 SRC_URI = "http://ftp.gnu.org/gnu/libcdio/libcdio-${PV}.tar.gz"
+SRC_URI_append_openpli = " file://${PN}-${PV}-add-cdtextinfo.patch"
 
 inherit autotools
 
