@@ -12,7 +12,7 @@ DEFAULT_PREFERENCE = "-1"
 SRC_URI += "file://config-h.patch \
             file://tdbheaderfix.patch;apply=no"
 
-PR = "r1"
+PR = "r2"
 
 EXTRA_OECONF += "\
 	SMB_BUILD_CC_NEGATIVE_ENUM_VALUES=yes \
