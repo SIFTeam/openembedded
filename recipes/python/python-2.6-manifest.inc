@@ -119,7 +119,7 @@ FILES_python-hotshot="${libdir}/python2.6/hotshot ${libdir}/python2.6/lib-dynloa
 
 DESCRIPTION_python-unixadmin="Python Unix Administration Support"
 RDEPENDS_python-unixadmin="python-core"
-FILES_python-unixadmin="${libdir}/python2.6/lib-dynload/nis.so ${libdir}/python2.6/lib-dynload/grp.so ${libdir}/python2.6/lib-dynload/pwd.so ${libdir}/python2.6/getpass.* "
+FILES_python-unixadmin="${libdir}/python2.6/lib-dynload/nis.so ${libdir}/python2.6/lib-dynload/grp.so ${libdir}/python2.6/lib-dynload/pwd.so ${libdir}/python2.6/getpass.* ${libdir}/python2.6/lib-dynload/spwd.so"
 
 DESCRIPTION_python-textutils="Python Option Parsing, Text Wrapping and Comma-Separated-Value Support"
 RDEPENDS_python-textutils="python-core python-io python-re python-stringold"
