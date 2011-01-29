@@ -30,7 +30,7 @@ EXTRA_OECONF='--disable-cups \
               --without-automount \
 	      --without-ads \
               --with-configdir=${sysconfdir}/samba \
-              --with-privatedir=${sysconfdir}/samba/private \
+              --with-privatedir=${localstatedir}/volatile/samba \
               --with-lockdir=${localstatedir}/lock \
               --with-piddir=${localstatedir}/run \
               --with-logfilebase=${localstatedir}/log \
@@ -84,5 +84,12 @@ do_install_append() {
 	install -D -m 644 ${WORKDIR}/volatiles.03_samba ${D}${sysconfdir}/default/volatiles/volatiles.03_samba
 	install -d ${D}/var/log/samba
 	install -d ${D}/var/spool/samba
+}
+
+# When upgrading, update volatiles. No need to fail when installing on host, hence the $D check
+pkg_postinst_${PN}() {
+	if test "x$D" == "x"; then
+        	${sysconfdir}/init.d/populate-volatile.sh update
+	fi
 }
 
