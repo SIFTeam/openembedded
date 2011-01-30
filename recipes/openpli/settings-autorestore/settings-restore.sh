@@ -48,7 +48,7 @@ mergerootpwd()
 	grep -v "^root:" /etc/passwd
 }
 
-if [ -f ${BACKUPDIR}/tmp/passwd ]
+if [ -f /tmp/passwd ]
 then
 	mergerootpwd > /tmp/passwds
 	# QA check - we don't want a passwd file without root entry
@@ -59,6 +59,4 @@ then
 	rm -f /tmp/passwds
 fi
 
-rm -f /tmp/crontab
-rm -f /tmp/passwd
-rm -f /tmp/fstab
+rm -f /tmp/crontab /tmp/passwd /tmp/fstab
