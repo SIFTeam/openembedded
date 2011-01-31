@@ -123,6 +123,12 @@ EXTRA_OECONF = "\
 FILES_${PN}-dbg += "\
 	/usr/lib/enigma2/python/enigma.py \
 	"
+
+# some plugins contain so's, their stripped symbols should not end up in the enigma2 package
+FILES_${PN}-dbg += "\
+	/usr/lib/enigma2/python/Plugins/*/*/.debug \
+	"
+
 # Save some space by not installing sources (mytest.py must remain)
 FILES_${PN}-src = "\
 	/usr/lib/enigma2/python/GlobalActions.py \
