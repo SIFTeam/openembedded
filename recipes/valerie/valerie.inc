@@ -1,4 +1,4 @@
-SRCREV = "466"
+SRCREV = "479"
 PV = "1.0+svnr${SRCPV}"
 PR = "r0"
 
