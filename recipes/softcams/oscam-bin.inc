@@ -1,12 +1,13 @@
 DESCRIPTION = "Oscam binary, freshly compiled"
-PV = "svn${SVNREV}"
+PV = "svn${SRCPV}"
 PR = "r0"
 DEPENDS = "openssl"
 RREPLACES_${PN} = "oscam-bin"
 RCONFLICTS_${PN} = "oscam-bin"
 RPROVIDES_${PN} = "oscam"
 
-SRC_URI = "svn://streamboard.gmc.to/svn/oscam;module=trunk;proto=http;rev=${SVNREV}"
+# SRC_URI = "svn://streamboard.gmc.to/svn/oscam;module=trunk;proto=http;rev=${SRCREV}"
+SRC_URI = "svn://oscam.ump2002.net/svn/oscam;module=trunk;proto=http;rev=${SRCREV}"
 
 S = "${WORKDIR}/trunk"
 
