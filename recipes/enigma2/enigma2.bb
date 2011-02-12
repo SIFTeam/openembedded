@@ -12,7 +12,7 @@ RDEPENDS_${PN} = "python-codecs python-core python-lang python-re python-threadi
 	python-pickle gst-plugin-app \
 	gst-plugin-id3demux gst-plugin-mad gst-plugin-ogg gst-plugin-playbin \
 	gst-plugin-typefindfunctions gst-plugin-audioconvert gst-plugin-audioresample \
-	gst-plugin-wavparse python-netclient gst-plugin-mpegstream gst-plugin-selector \
+	gst-plugin-wavparse python-netclient gst-plugin-mpegstream \
 	gst-plugin-flac gst-plugin-mpegdemux gst-plugin-dvdsub \
 	gst-plugin-souphttpsrc gst-plugin-mpegaudioparse gst-plugin-subparse \
 	gst-plugin-apetag gst-plugin-icydemux gst-plugin-autodetect gst-plugin-audioparsersbad \
