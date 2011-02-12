@@ -6,5 +6,5 @@ do_configure_prepend() {
 	sed -i -e s:docs::g Makefile.am
 }
 
-RREPLACES_gstreamer = "gst-plugin-queue2"
-RCONFLICTS_gstreamer = "gst-plugin-queue2"
+RREPLACES_gstreamer = "gst-plugin-queue2 gst-plugin-selector"
+RCONFLICTS_gstreamer = "gst-plugin-queue2 gst-plugin-selector"
