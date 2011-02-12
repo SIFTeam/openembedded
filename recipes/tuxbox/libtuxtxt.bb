@@ -1,43 +1,23 @@
 DESCRIPTION = "tuxbox libtuxtxt"
-DEPENDS = "dreambox-dvbincludes libpng freetype"
-MAINTAINER = "Felix Domke <tmbinc@elitdvb.net>"
+DEPENDS = "libpng freetype"
 
-SRC_URI = "cvs://anoncvs@cvs.tuxbox.org/cvs/tuxbox;module=apps/tuxbox/libs;method=ext \
-	file://acinclude.m4 \
-	file://ignorelibs.patch \
-	file://nolibtuxbox.diff"
+inherit gitpkgv
 
-PR = "r6"
+SRC_URI = "git://openpli.git.sourceforge.net/gitroot/openpli/tuxtxt;protocol=git"
 
-PV = "0.0+cvs${SRCDATE}"
-S = "${WORKDIR}/libs"
-EXTRA_OECONF = "--with-target=native"
+S = "${WORKDIR}/git/libtuxtxt"
 
-CFLAGS_append = " -DHAVE_DREAMBOX_HARDWARE -DDREAMBOX"
+PV = "2.0+git${SRCPV}"
+PKGV = "2.0+git${GITPKGV}"
+PR = "r0"
+
+PROVIDES += "libtuxtxt-enigma2"
+RPROVIDES_${PN} += "libtuxtxt-enigma2"
+
+EXTRA_OECONF = "--with-boxtype=generic"
 
 inherit autotools pkgconfig
 
 FILES_libtuxtxt_append = " /usr/lib/libtuxtxt.so"
 
 FILES_${PN}-dev = "/usr/lib/libtuxtxt.la /usr/lib/pkgconfig/tuxbox-tuxtxt.pc"
-
-python populate_packages_prepend () {
-	tuxbox_libdir = bb.data.expand('${libdir}', d)
-}
-
-do_configure_prepend() {
-	install ${WORKDIR}/acinclude.m4 ${S}/acinclude.m4
-}
-
-do_stage() {
-	install -m 0644 ${S}/libtuxtxt/tuxtxt_*.h ${STAGING_INCDIR}
-	install -d ${STAGING_INCDIR}/tuxtxt
-	install -m 0644 ${S}/libtuxtxt/tuxtxt_*.h ${STAGING_INCDIR}/tuxtxt
-	cd libtuxtxt
-	oe_libinstall -so libtuxtxt ${STAGING_LIBDIR}
-	cd ..
-}
-
-do_install_prepend() {
-	cd libtuxtxt
-}
