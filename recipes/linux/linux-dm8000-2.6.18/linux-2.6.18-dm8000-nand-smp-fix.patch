@@ -1,0 +1,42 @@
+--- linux-2.6.18-org/drivers/mtd/nand/dm8000_nand.c	2010-10-18 22:40:58.000000000 +0200
++++ linux-2.6.18/drivers/mtd/nand/dm8000_nand.c	2011-02-09 19:23:15.808489533 +0100
+@@ -16,6 +16,7 @@
+  *
+  */
+ 
++#include <linux/delay.h>
+ #include <linux/jiffies.h>
+ #include <linux/slab.h>
+ #include <linux/module.h>
+@@ -61,16 +62,24 @@
+ };
+ #define NUM_PARTITIONS 7
+ 
++static int dm8000_nand_dev_ready(struct mtd_info *mtd);
++
+ static void dm8000_nand_cmd_ctrl(struct mtd_info *mtd, int cmd, unsigned int ctrl)
+ {
+-	if (ctrl & NAND_CTRL_CHANGE) {
+-		if (!(ctrl & NAND_NCE))
+-			writeb(0, (void __iomem *)0xBF030003);
+-		//else
+-		//	readb((void __iomem *)0xBF030002);
+-	}
+-	if (cmd == NAND_CMD_NONE)
++	if (ctrl & NAND_CTRL_CHANGE && !(ctrl & NAND_NCE))
++		writeb(0, (void __iomem *)0xBF030003);
++
++	if (cmd == NAND_CMD_NONE) {
++#ifdef CONFIG_SMP
++		struct nand_chip *this = (struct nand_chip *)(dm8000_mtd+1);
++		int cnt=0;
++		while (cnt < this->chip_delay && !dm8000_nand_dev_ready(mtd)) {
++			++cnt;
++			udelay(1);
++		}
++#endif
+ 		return;
++	}
+ 
+ 	if (ctrl & NAND_CLE)
+ 		writeb(cmd, (void __iomem *)0xBF030000);

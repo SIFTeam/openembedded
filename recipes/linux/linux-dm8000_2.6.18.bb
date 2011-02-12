@@ -5,4 +5,5 @@ require linux-opendreambox-2.6.18.inc
 
 SRC_URI += "\
 	file://linux-2.6.18-disable-unneeded-uarts.patch \
+	file://linux-2.6.18-dm8000-nand-smp-fix.patch \
 "
