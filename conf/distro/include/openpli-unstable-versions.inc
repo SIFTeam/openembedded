@@ -12,6 +12,7 @@ SRCREV_pn-enigma2-skins ?= "${AUTOREV}"
 SRCREV_pn-hotplug-e2-helper ?= "${AUTOREV}"
 SRCREV_pn-libdreamdvd ?= "${AUTOREV}"
 SRCREV_pn-usbtunerhelper ?= "${AUTOREV}"
+SRCREV_pn-gst-plugin-dvbmediasink ?= "1c557cf393fcee2801c838b13bf06d8c03c2be09"
 
 # svn
 SRCREV_pn-tuxbox-common ?= "${AUTOREV}"
