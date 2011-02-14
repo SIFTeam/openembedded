@@ -3,9 +3,9 @@ SECTION = "base"
 PRIORITY = "optional"
 
 PV = "1.0"
-PR = "r0"
+PR = "r1"
 
-FPVERSION = "7"
+FPVERSION = "10"
 
 SRC_URI = " \
 	http://www.et-view.com/download/fpupdate-${PV}.zip \
