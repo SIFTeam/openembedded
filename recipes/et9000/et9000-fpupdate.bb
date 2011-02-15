@@ -3,7 +3,7 @@ SECTION = "base"
 PRIORITY = "optional"
 
 PV = "1.0"
-PR = "r1"
+PR = "r2"
 
 FPVERSION = "10"
 
@@ -16,7 +16,7 @@ S = "${WORKDIR}"
 inherit update-rc.d
 
 INITSCRIPT_NAME = "fpupdate"
-INITSCRIPT_PARAMS = "start 9 S ."
+INITSCRIPT_PARAMS = "start 22 S ."
 
 FILES_${PN} = "/${bindir} /lib/firmware /etc/init.d"
 
@@ -37,6 +37,16 @@ do_install() {
 
 	install -d ${D}/etc/init.d
 	install -m 0755 ${S}/fpupdate.sh ${D}/etc/init.d/fpupdate
+}
+
+pkg_postinst_${PN}_append() {
+	if test -z "$D"
+	then
+		# force update without requiring reboot
+		# (update-rc.d does not restart the script, when it was already installed)
+		/etc/init.d/fpupdate
+	fi
+	true
 }
 
 PACKAGE_ARCH := "${MACHINE_ARCH}"
