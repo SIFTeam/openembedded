@@ -7,7 +7,7 @@ LICENSE = "GPL"
 PROVIDES += "virtual/showiframe"
 RPROVIDES_${PN} += "virtual/showiframe"
 
-PV = "1.7"
+PV = "1.8"
 PR = "r0"
 
 SRC_URI = "http://sources.dreamboxupdate.com/download/opendreambox/dreambox-dvb-tools-v3-${PV}.tar.gz"
