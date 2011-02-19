@@ -119,6 +119,10 @@ EXTRA_OECONF = "\
 	STAGING_LIBDIR=${STAGING_LIBDIR} \
 	"
 
+EXTRA_OECONF_append_dm7025 = " --with-oldpvr"
+EXTRA_OECONF_append_vuduo = " --with-oldpvr"
+EXTRA_OECONF_append_et9000 = " --with-oldpvr"
+
 # Swig generated 200k enigma.py file has no purpose for end users
 FILES_${PN}-dbg += "\
 	/usr/lib/enigma2/python/enigma.py \
