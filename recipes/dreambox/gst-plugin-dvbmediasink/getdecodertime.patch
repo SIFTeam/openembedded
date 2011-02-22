@@ -1,0 +1,28 @@
+diff --git a/src/gstdvbaudiosink.c b/src/gstdvbaudiosink.c
+index df50a17..20174be 100644
+--- a/src/gstdvbaudiosink.c
++++ b/src/gstdvbaudiosink.c
+@@ -418,17 +418,13 @@ gst_dvbaudiosink_get_decoder_time (GstDVBAudioSink *self)
+ {
+ 	if (self->bypass != -1) {
+ 		gint64 cur = 0;
+-		static gint64 last_pos = 0;
+ 
+-		ioctl(self->fd, AUDIO_GET_PTS, &cur);
+-
+-		/* workaround until driver fixed */
+-		if (cur)
+-			last_pos = cur;
+-		else
+-			cur = last_pos;
+-
+-		cur *= 11111;
++		// Only ask pts from the driver when we've written data to the driver
++		if (self->timestamp > 0)
++		{
++			ioctl(self->fd, AUDIO_GET_PTS, &cur);
++			cur *= 11111;
++		}
+ 
+ 		return cur;
+ 	}

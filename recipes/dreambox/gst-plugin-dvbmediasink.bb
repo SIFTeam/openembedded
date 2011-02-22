@@ -5,11 +5,12 @@ MAINTAINER = "Felix Domke <tmbinc@openembedded.org>"
 DEPENDS = "gstreamer gst-plugins-base"
 PV = "0.10+git${SRCPV}"
 PKGV = "0.10+git${GITPKGV}"
-PR = "r1"
+PR = "r2"
 
 inherit autotools pkgconfig
 
-SRC_URI = "git://schwerkraft.elitedvb.net/dvbmediasink/dvbmediasink.git;protocol=git"
+SRC_URI = "git://schwerkraft.elitedvb.net/dvbmediasink/dvbmediasink.git;protocol=git \
+		   file://getdecodertime.patch"
 
 S = "${WORKDIR}/git"
 
