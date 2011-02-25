@@ -3,9 +3,12 @@ SECTION = "multimedia"
 PRIORITY = "optional"
 MAINTAINER = "Felix Domke <tmbinc@openembedded.org>"
 DEPENDS = "gstreamer gst-plugins-base"
-PV = "0.10+git${SRCPV}"
-PKGV = "0.10+git${GITPKGV}"
-PR = "r2"
+
+inherit gitpkgv
+
+PV = "0.10.0+git${SRCPV}"
+PKGV = "0.10.0+git${GITPKGV}"
+PR = "r1"
 
 inherit autotools pkgconfig
 
