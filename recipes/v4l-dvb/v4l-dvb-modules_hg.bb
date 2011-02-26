@@ -4,7 +4,7 @@ SRCDATE = "20100904"
 SRCREV = "6e0befab696a"
 PV = "0.0+hg${SRCDATE}"
 
-MACHINE_KERNEL_PR_append = ".3"
+MACHINE_KERNEL_PR_append = ".4"
 
 SRC_URI = "http://linuxtv.org/hg/v4l-dvb/archive/${SRCREV}.tar.gz \
            file://defconfig \
@@ -15,6 +15,20 @@ SRC_URI = "http://linuxtv.org/hg/v4l-dvb/archive/${SRCREV}.tar.gz \
            file://localversion.patch \
            file://fix-strip.patch \
            file://build-fix.patch \
+           file://v4l-dvb-as102.patch \
+           file://v4l-dvb-a867.patch \
+           file://v4l-dvb-tua9001.patch \
+           file://v4l-dvb-af9033.patch \
+           file://v4l-dvb-mxl5007_fix_for_af9035.patch \
+           file://v4l-dvb-af9035.patch \
+           file://v4l-dvb-tda18218.patch \
+           file://v4l-dvb-af9013_fix_for_tda18218_tuner.patch \
+           file://v4l-dvb-af9015_fix_for_tda18218_tuner.patch \
+           file://v4l-dvb-af9013_add_firmware5.1.patch \
+           file://v4l-dvb-af9015_fix_for_A815M.patch \
+           file://v4l-dvb-em28xx_fix.patch \
+           file://v4l-dvb-af9015_add_a850red.patch \
+           file://v4l-dvb-smsdvb_fix_frontend.patch \
 "
 
 S = "${WORKDIR}/v4l-dvb-${SRCREV}"

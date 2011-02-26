@@ -1,0 +1,71 @@
+diff -ruN v4l-dvb.orig4/linux/drivers/media/common/tuners/mxl5007t.c v4l-dvb/linux/drivers/media/common/tuners/mxl5007t.c
+--- v4l-dvb.orig4/linux/drivers/media/common/tuners/mxl5007t.c	2010-11-13 00:04:44.817767000 +0100
++++ v4l-dvb/linux/drivers/media/common/tuners/mxl5007t.c	2010-11-13 00:04:20.616808000 +0100
+@@ -375,7 +375,6 @@
+ 	mxl5007t_set_if_freq_bits(state, cfg->if_freq_hz, cfg->invert_if);
+ 	mxl5007t_set_xtal_freq_bits(state, cfg->xtal_freq_hz);
+ 
+-	set_reg_bits(state->tab_init, 0x04, 0x01, cfg->loop_thru_enable);
+ 	set_reg_bits(state->tab_init, 0x03, 0x08, cfg->clk_out_enable << 3);
+ 	set_reg_bits(state->tab_init, 0x03, 0x07, cfg->clk_out_amp);
+ 
+@@ -480,15 +479,22 @@
+ static int mxl5007t_write_regs(struct mxl5007t_state *state,
+ 			       struct reg_pair_t *reg_pair)
+ {
+-	unsigned int i = 0;
+-	int ret = 0;
++	struct i2c_msg msg = { .addr = state->i2c_props.addr, .flags = 0,
++			       .buf = (u8 *)reg_pair, .len = 0 };
++	int ret;
++	int i = 0;
++
+ 
+-	while ((ret == 0) && (reg_pair[i].reg || reg_pair[i].val)) {
+-		ret = mxl5007t_write_reg(state,
+-					 reg_pair[i].reg, reg_pair[i].val);
++	while (reg_pair[i].reg || reg_pair[i].val) {
+ 		i++;
++		msg.len += 2;
+ 	}
+-	return ret;
++	ret = i2c_transfer(state->i2c_props.adap, &msg, 1);
++	if (ret != 1) {
++		mxl_err("failed!");
++		return -EREMOTEIO;
++	}
++	return 0;
+ }
+ 
+ static int mxl5007t_read_reg(struct mxl5007t_state *state, u8 reg, u8 *val)
+@@ -865,6 +871,18 @@
+ 		/* check return value of mxl5007t_get_chip_id */
+ 		if (mxl_fail(ret))
+ 			goto fail;
++			
++		if (fe->ops.i2c_gate_ctrl)
++			fe->ops.i2c_gate_ctrl(fe, 1);
++
++		ret = mxl5007t_write_reg(state, 0x04, state->config->loop_thru_enable);
++
++		if (fe->ops.i2c_gate_ctrl)
++			fe->ops.i2c_gate_ctrl(fe, 0);
++
++		/* check return value of mxl5007t_get_chip_id */
++		if (mxl_fail(ret))
++			goto fail;
+ 		break;
+ 	default:
+ 		/* existing tuner instance */
+diff -ruN v4l-dvb.orig4/linux/drivers/media/common/tuners/mxl5007t.h v4l-dvb/linux/drivers/media/common/tuners/mxl5007t.h
+--- v4l-dvb.orig4/linux/drivers/media/common/tuners/mxl5007t.h	2010-11-13 00:04:48.745747000 +0100
++++ v4l-dvb/linux/drivers/media/common/tuners/mxl5007t.h	2010-11-13 00:00:39.241566000 +0100
+@@ -73,7 +73,7 @@
+ 	enum mxl5007t_xtal_freq xtal_freq_hz;
+ 	enum mxl5007t_if_freq if_freq_hz;
+ 	unsigned int invert_if:1;
+-	unsigned int loop_thru_enable:1;
++	unsigned int loop_thru_enable:2;
+ 	unsigned int clk_out_enable:1;
+ };
+ 
