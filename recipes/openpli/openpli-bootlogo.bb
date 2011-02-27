@@ -7,7 +7,7 @@ MAINTAINER = "PLi team"
 RDEPENDS_${PN} += "virtual/showiframe"
 
 PV = "1.0"
-PR = "r1"
+PR = "r2"
 
 S = "${WORKDIR}/"
 
@@ -28,12 +28,9 @@ SRC_URI = " \
 	"
 
 BINARY_VERSION = "1"
-BINARY_VERSION_dm500hd = "4"
-BINARY_VERSION_dm7025 = "2"
-BINARY_VERSION_dm800 = "2"
-BINARY_VERSION_dm800se = "4"
-BINARY_VERSION_dm7020hd = "4"
-BINARY_VERSION_dm8000 = "6"
+BINARY_VERSION_mipsel = "7"
+
+IMAGES_VERSION = "1"
 
 SRC_URI += "${@base_contains("MACHINE_FEATURES", "dreambox", "http://sources.dreamboxupdate.com/download/7020/bootlogo-${MACHINE}-${BINARY_VERSION}.elf" , "", d)}"
 
