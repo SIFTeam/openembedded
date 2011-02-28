@@ -1,7 +1,7 @@
 DESCRIPTION = "v4l dvb firmware files"
 
 PV = "1.0"
-PR = "r1"
+PR = "r2"
 
 SRC_URI = "file://firmware.tar.gz"
 
