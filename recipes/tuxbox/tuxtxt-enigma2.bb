@@ -17,4 +17,7 @@ FILES_${PN} = "/usr/lib/libtuxtxt32bpp.so* /usr/share/fonts /usr/lib/enigma2/pyt
 
 inherit autotools pkgconfig
 
-EXTRA_OECONF = "--with-boxtype=generic --with-configdir=/etc"
+EXTRA_OECONF = "--with-boxtype=generic --with-configdir=/etc \
+        ${@base_contains("MACHINE_FEATURES", "textlcd", "--with-textlcd" , "", d)} \
+	"
+
