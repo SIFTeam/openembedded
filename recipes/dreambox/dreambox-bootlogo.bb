@@ -5,7 +5,7 @@ LICENSE = "proprietary"
 MAINTAINER = "Felix Domke <tmbinc@elitedvb.net>"
 
 BINARY_VERSION = "1"
-BINARY_VERSION_mipsel = "7"
+BINARY_VERSION_mipsel = "8"
 
 IMAGES_VERSION = "1"
 
