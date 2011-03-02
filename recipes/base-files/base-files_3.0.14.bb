@@ -1,7 +1,7 @@
 DESCRIPTION = "Miscellaneous files for the base system."
 SECTION = "base"
 PRIORITY = "required"
-PR = "r99"
+PR = "r100"
 LICENSE = "GPL"
 
 FSTAB = "fstab"
@@ -164,7 +164,12 @@ do_install_append_openpli() {
 	rm -rf ${D}/hdd
 	ln -sf media/hdd ${D}/hdd
 	ln -sf media ${D}/mnt
+	rm -rf ${D}/media/card
+	rm -rf ${D}/media/cf
+	rm -rf ${D}/media/mmc1
 	rm -rf ${D}/media/ram
+	rm -rf ${D}/media/realroot
+	rm -rf ${D}/media/union
 	rmdir ${D}/tmp
 	ln -s var/volatile/tmp ${D}/tmp
 }
