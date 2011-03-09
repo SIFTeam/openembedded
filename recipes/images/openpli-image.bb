@@ -40,6 +40,7 @@ OPTIONAL_PACKAGES += " \
 			mc \
 			libdca \
 			dvd+rw-tools dvdauthor cdrkit \
+			smartmontools \
 			"
 
 export IMAGE_BASENAME = "openpli"
