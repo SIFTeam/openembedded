@@ -1,0 +1,29 @@
+Index: ValerieMediaCenter/DMC_MainMenu.py
+===================================================================
+--- ValerieMediaCenter.orig/DMC_MainMenu.py	2011-03-10 09:28:21.000000000 +0100
++++ ValerieMediaCenter/DMC_MainMenu.py	2011-03-10 10:03:42.435543961 +0100
+@@ -111,7 +111,6 @@
+ 			self.list = []
+ 			self.list.append(getConfigListEntry(_("Show wizard on next start"), config.plugins.pvmc.showwizard))
+ 			self.list.append(getConfigListEntry(_("Start Valerie on e2 start"), config.plugins.pvmc.autostart))
+-			self.list.append(getConfigListEntry(_("Check for updates on Valerie start"), config.plugins.pvmc.checkforupdate))
+ 			self.list.append(getConfigListEntry(_("Backdrop quality"), config.plugins.pvmc.backdropquality))
+ 			self.list.append(getConfigListEntry(_("Skin"), config.plugins.pvmc.skin))
+ 			self.list.append(getConfigListEntry(_("On Power press"), config.plugins.pvmc.onpowerpress))
+@@ -329,8 +328,6 @@
+ 		# Executes a start script
+ 		self.onFirstExecBegin.append(self.onExecStartScript)
+ 		
+-		if config.plugins.pvmc.checkforupdate.value == True:
+-			self.onFirstExecBegin.append(self.checkForUpdate)
+ 		printl("<-", self)
+ 
+ 
+@@ -368,6 +365,7 @@
+ 			self.session.open(Screens.Standby.TryQuitMainloop, 1)
+ 
+ 	def checkForUpdate(self):
++		return
+ 		box = getBoxtype()
+ 		printl("box=" + str(box), self)
+ 		self.url = config.plugins.pvmc.url.value + config.plugins.pvmc.updatexml.value

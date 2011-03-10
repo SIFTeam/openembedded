@@ -4,7 +4,8 @@ PACKAGES = "${PN}"
 PACKAGE_ARCH = "all"
 MODULE = "ValerieMediaCenter"
 require valerie.inc
-PR = "r1"
+PR = "r2"
+SRC_URI += "file://remove-update.patch"
 
 RDEPENDS_${PN} = "python-ctypes valerie-libshowiframe valerie-sync valerie-e2control"
 RREPLACES_${PN} = "project-valerie"
