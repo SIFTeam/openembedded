@@ -7,7 +7,7 @@ PR = "r1"
 
 PV = "1.0+svn${SRCREV}"
 
-SRC_URI = "cvs://anoncvs@cvs.tuxbox.org/cvs/tuxbox/;module=cdk/root/share/tuxbox;method=ext;tag=dreambox;date=${SRCDATE} \
+SRC_URI = "cvs://anoncvs@cvs.tuxbox.org/cvs/tuxbox/;module=cdk/root/share/tuxbox;method=ext;rsh=ssh;tag=dreambox;date=${SRCDATE} \
 	http://dreamboxupdate.com/download/opendreambox/tuxbox-common-r11.tar.gz"
 
 ###

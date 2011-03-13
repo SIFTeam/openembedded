@@ -2,7 +2,7 @@ DESCRIPTION = "libdvbsi++ by obi@saftware.de"
 DEPENDS = "dreambox-dvbincludes"
 MAINTAINER = "Felix Domke <tmbinc@elitdvb.net>"
 
-SRC_URI = "cvs://anoncvs@cvs.tuxbox.org/cvs/tuxbox;module=apps/dvb/libdvbsi++;method=ext"
+SRC_URI = "cvs://anoncvs@cvs.tuxbox.org/cvs/tuxbox;module=apps/dvb/libdvbsi++;method=ext;rsh=ssh"
 
 PR = "r0"
 PV = "0.0+cvs${SRCDATE}"
