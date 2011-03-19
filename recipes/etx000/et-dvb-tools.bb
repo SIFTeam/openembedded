@@ -3,6 +3,9 @@ SECTION = "base"
 PRIORITY = "optional"
 LICENSE = "GPL"
 
+PROVIDES += "virtual/showiframe"
+RPROVIDES_${PN} += "virtual/showiframe"
+
 PV = "1.0"
 PR = "r0"
 
