@@ -7,11 +7,6 @@ case "$ACTION" in
 	add|"")
 		# Set device parameters
 		DEVBASE=`expr substr $MDEV 1 3`
-		ADAPTER=`expr substr $DEVBASE 1 2`
-		if [ "$ADAPTER" == "hd" ] ; then
-			# 7025 needs to set this on internal disks
-			hdparm -d1 -X66 /dev/$DEVBASE
-		fi
 		# remove old mountpoint symlinks we might have for this device
 		rm -f $MOUNTPOINT
 		# first allow fstab to determine the mountpoint

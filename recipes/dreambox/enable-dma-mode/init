@@ -1,0 +1,5 @@
+#!/bin/sh
+for d in /dev/hd?
+do
+	hdparm -d1 -X66 $d
+done
