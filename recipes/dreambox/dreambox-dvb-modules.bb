@@ -48,6 +48,9 @@ inherit module
 do_compile() {
 }
 
+do_strip_modules() {
+}
+
 SRC_URI = "http://sources.dreamboxupdate.com/snapshots/dreambox-dvb-modules-${MACHINE}-${PV}${GCC}.tar.bz2 \
 			${@base_contains("MACHINE_FEATURES", "frontprocessor", "http://sources.dreamboxupdate.com/download/7020/fpupgrade-${MACHINE}-v7", "", d)} \
 			"
