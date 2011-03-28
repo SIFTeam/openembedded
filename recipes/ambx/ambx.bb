@@ -19,8 +19,7 @@ S = "${WORKDIR}/git"
 # Dunno why, but it won't build in parallel
 PARALLEL_MAKE = ""
 
-# All machine types are supported now
-EXTRA_OECONF = "--with-machine=${MACHINE}"
+EXTRA_OECONF = "--with-chipset=${CHIPSET}"
 inherit autotools
 
 FILES_${PN}-test = "/usr/bin/unittest /usr/bin/grabvid /usr/bin/testambx"
