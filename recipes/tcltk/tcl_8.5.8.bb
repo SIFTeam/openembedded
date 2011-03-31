@@ -14,7 +14,7 @@ SRC_URI = "\
   file://tcllibrary.diff;striplevel=2 \
   file://tclpackagepath.diff;striplevel=2 \
   file://tclprivate.diff;striplevel=2 \
-  file://mips-tclstrtod.patch;apply=false \
+  file://mips-tclstrtod.patch;patchdir=..;striplevel=0 \
 "
 
 SRC_URI[md5sum] = "7f123e53b3daaaba2478d3af5a0752e3"
@@ -30,7 +30,6 @@ BINCONFIG_GLOB = "*Config.sh"
 
 do_configure_append() {
         echo > ../compat/fixstrtod.c
-        (cd .. ; patch -p0 -i ${WORKDIR}/mips-tclstrtod.patch)
 }
 
 do_compile_prepend_pn-tcl () {
