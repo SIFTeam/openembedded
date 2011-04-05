@@ -6,14 +6,15 @@ inherit gitpkgv
 
 PV = "1.0+git${SRCPV}"
 PKGV = "1.0+git${GITPKGV}"
-PR = "r23"
+PR = "r24"
 
 OPENPLI_GIT ?= "git://openpli.git.sourceforge.net/gitroot/openpli"
 SRC_URI = "${OPENPLI_GIT}/plugin-xmltvimport;protocol=git"
 
-FILES_${PN} = "/usr/bin /usr/lib/enigma2/python"
 
 S = "${WORKDIR}/git/src"
+
+inherit distutils
 
 DEPENDS = ""
 RDEPENDS = "python-compression python-shell"
@@ -22,10 +23,9 @@ PACKAGES = "dbg-${PN} ${PN}"
 
 PLUGIN = "EPGImport"
 
-inherit distutils
-
-FILES_${PN} = "/usr/lib/enigma2"
+FILES_${PN} = "/usr/bin /usr/lib/enigma2/python"
 FILES_dbg-${PN} = "/usr/lib/enigma2/python/Plugins/Extensions/${PLUGIN}/.debug"
+
 
 do_install_append() {
 	# silly hacky me, this could be done by distutils, but i can't figure it out...
