@@ -41,6 +41,8 @@ OPTIONAL_PACKAGES += " \
 			libdca \
 			dvd+rw-tools dvdauthor cdrkit \
 			smartmontools \
+			hdparm \
+			rsync \
 			"
 
 export IMAGE_BASENAME = "openpli"
