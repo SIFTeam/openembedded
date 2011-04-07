@@ -8,8 +8,6 @@ DEPENDS_openpli = "gstreamer libmikmod liboil libogg tremor libvorbis neon flac 
 
 INC_PR = "r11"
 
-PACKAGES_DYNAMIC = "gst-plugin-*"
-
 SRC_URI = "http://gstreamer.freedesktop.org/src/${PN}/${PN}-${PV}.tar.bz2;name=archive"
 
 EXTRA_OECONF += "--enable-introspection=no --disable-aalib --disable-shout2 --x-includes=${STAGING_INCDIR} --x-libraries=${STAGING_LIBDIR} "
