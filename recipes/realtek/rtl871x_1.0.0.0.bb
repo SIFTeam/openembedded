@@ -3,7 +3,7 @@ HOMEPAGE = "http://www.realtek.com.tw"
 SECTION = "kernel/modules"
 LICENSE = "GPL"
 
-MACHINE_KERNEL_PR_append = ".1"
+MACHINE_KERNEL_PR_append = ".2"
 
 SRC_URI = "http://downloads.pli-images.org/misc/rtl871x.tgz \
            file://mipsel-compatibility.patch"
@@ -33,5 +33,5 @@ do_install() {
 	install -d ${D}${base_libdir}/modules/${KERNEL_VERSION}/kernel/drivers/net/
 	install -m 0644 8712u${KERNEL_OBJECT_SUFFIX} ${D}${base_libdir}/modules/${KERNEL_VERSION}/kernel/drivers/net/
 	install -d ${D}/etc/modutils
-	echo 8712u > ${D}/etc/modutils/8712u
+	echo 8712u > ${D}/etc/modutils/wlan8712u
 }
