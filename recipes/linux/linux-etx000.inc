@@ -6,7 +6,7 @@ PV = "2.6.18-7.4"
 #PR = "r6"
 #or use MACHINE_KERNEL_PR_append, when a rebuild of external modules is not required
 
-MACHINE_KERNEL_PR_append = ".4"
+MACHINE_KERNEL_PR_append = ".5"
 
 DEPENDS = "mtd-minimal-nand-utils"
 RDEPENDS_kernel-image = "mtd-minimal-nand-utils"
@@ -33,9 +33,9 @@ FILES_kernel-image = "/${KERNEL_IMAGEDEST}/${KERNEL_IMAGETYPE}.gz"
 
 do_configure_prepend() {
 	oe_machinstall -m 0644 ${WORKDIR}/${MACHINE}_defconfig ${S}/.config
-	if [ -d ${WORKDIR}/cdfs-${PV} ]; then
-		mv ${WORKDIR}/cdfs-${PV} ${S}/fs/cdfs
-		cd ${S} & patch -p0 < ${S}/fs/cdfs/patch.cdfs
+	if [ -d ${WORKDIR}/cdfs-2.6.18 ]; then
+		mv ${WORKDIR}/cdfs-2.6.18 ${S}/fs/cdfs
+		cd ${S} & patch -p1 < ${WORKDIR}/stblinux-2.6.18-cdfs.patch
 	fi;
 	oe_runmake oldconfig
 }
