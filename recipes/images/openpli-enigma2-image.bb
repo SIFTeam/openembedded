@@ -38,7 +38,7 @@ ENIGMA2_OPTIONAL = " \
 				enigma2-plugin-extensions-tuxterm \
 				${@base_contains("MACHINE_FEATURES", "usbhost", "enigma2-plugin-drivers-usbserial" , "", d)} \
 				${@base_contains("MACHINE_FEATURES", "dvbapi5", "enigma2-plugin-drivers-dvb-usb-dib0700" , "", d)} \
-				${@base_contains("MACHINE_FEATURES", "wifi", "rtl871x", "", d)} \
+				${@base_contains("MACHINE_FEATURES", "wifi", "rtl871x rt3070", "", d)} \
 				enigma2-plugin-security-firewall \
 				enigma2-plugin-extensions-xmltvimport \
 				enigma2-plugin-extensions-ambx \
