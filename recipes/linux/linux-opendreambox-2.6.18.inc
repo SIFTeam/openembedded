@@ -20,6 +20,6 @@ SRC_URI += " http://trappist.elis.ugent.be/~mronsse/cdfs/download/cdfs-2.6.18.ta
 do_configure_prepend() {
 	if [ -d ${WORKDIR}/cdfs-${PV} ]; then
 		mv ${WORKDIR}/cdfs-${PV} ${S}/fs/cdfs
-		cd ${S} & patch -p1 < ${WORKDIR}/stblinux-2.6.18-cdfs.patch
+		cd ${S} ; patch -p1 < ${WORKDIR}/stblinux-2.6.18-cdfs.patch
 	fi;
 }
