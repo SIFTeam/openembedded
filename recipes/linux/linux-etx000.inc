@@ -35,7 +35,7 @@ do_configure_prepend() {
 	oe_machinstall -m 0644 ${WORKDIR}/${MACHINE}_defconfig ${S}/.config
 	if [ -d ${WORKDIR}/cdfs-2.6.18 ]; then
 		mv ${WORKDIR}/cdfs-2.6.18 ${S}/fs/cdfs
-		cd ${S} & patch -p1 < ${WORKDIR}/stblinux-2.6.18-cdfs.patch
+		cd ${S}; patch -p1 < ${WORKDIR}/stblinux-2.6.18-cdfs.patch
 	fi;
 	oe_runmake oldconfig
 }
