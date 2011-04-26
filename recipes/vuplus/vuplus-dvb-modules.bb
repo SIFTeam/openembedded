@@ -12,7 +12,7 @@ def get_modules_extension(bb, d):
 KV = "2.6.18-7.3"
 PV = "${KV}"
 
-SRCDATE = "20110321"
+SRCDATE = "20110426"
 
 RDEPENDS = "kernel (${KV}) kernel-module-firmware-class kernel-module-input kernel-module-evdev kernel-module-i2c-core kernel-module-snd kernel-module-snd-pcm"
 MACHINE_KERNEL_PR_append = ".${SRCDATE}.1"
@@ -29,7 +29,7 @@ do_compile() {
 do_strip_modules() {
 }
 
-SRC_URI = "http://archive.vuplus.com/download/drivers/mbox-dvb-modules-${DOWNLOADMACHINE}-${KV}-${VUPLUS_KERNEL_GCC}-${SRCDATE}.tar.gz"
+SRC_URI = "http://archive.vuplus.com/download/drivers/vuplus-dvb-modules-${DOWNLOADMACHINE}-${KV}-${VUPLUS_KERNEL_GCC}-${SRCDATE}.tar.gz"
 
 S = "${WORKDIR}"
 
