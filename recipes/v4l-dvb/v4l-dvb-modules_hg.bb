@@ -4,7 +4,7 @@ SRCDATE = "20100904"
 SRCREV = "6e0befab696a"
 PV = "0.0+hg${SRCDATE}"
 
-MACHINE_KERNEL_PR_append = ".6"
+MACHINE_KERNEL_PR_append = ".7"
 
 SRC_URI = "http://linuxtv.org/hg/v4l-dvb/archive/${SRCREV}.tar.gz \
            file://defconfig \
@@ -15,6 +15,7 @@ SRC_URI = "http://linuxtv.org/hg/v4l-dvb/archive/${SRCREV}.tar.gz \
            file://localversion.patch \
            file://fix-strip.patch \
            file://build-fix.patch \
+           file://fix-get-property.patch \
            file://technisat_airstar_telestick_2.patch \
            file://v4l-dvb-as102.patch \
            file://v4l-dvb-a867.patch \

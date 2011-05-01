@@ -1,0 +1,31 @@
+--- v4l-dvb-org/linux/drivers/media/dvb/dvb-core/dvb_frontend.c	2010-11-05 18:00:34.000000000 +0100
++++ v4l-dvb/linux/drivers/media/dvb/dvb-core/dvb_frontend.c	2011-04-04 14:32:50.867986700 +0200
+@@ -1218,13 +1218,6 @@
+ {
+ 	int r = 0;
+ 
+-	/* Allow the frontend to validate incoming properties */
+-	if (fe->ops.get_property)
+-		r = fe->ops.get_property(fe, tvp);
+-
+-	if (r < 0)
+-		return r;
+-
+ 	switch(tvp->cmd) {
+ 	case DTV_FREQUENCY:
+ 		tvp->u.data = fe->dtv_property_cache.frequency;
+@@ -1340,6 +1333,14 @@
+ 		r = -1;
+ 	}
+ 
++	/* Allow the frontend to override outgoing properties */
++	if (!r && fe->ops.get_property) {
++		r = fe->ops.get_property(fe, tvp);
++
++		if (r < 0)
++			return r;
++	}
++
+ 	dtv_property_dump(tvp);
+ 
+ 	return r;
