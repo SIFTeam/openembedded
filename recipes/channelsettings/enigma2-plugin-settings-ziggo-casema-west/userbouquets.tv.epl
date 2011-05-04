@@ -1,67 +1,67 @@
 #NAME User - bouquets (TV)
-#SERVICE: 4097:7:0:8ae27:0:0:0:0:0:0:/var/tuxbox/config/enigma/userbouquet.8ae27.tv
+#SERVICE: 4097:7:0:dbe00:0:0:0:0:0:0:/var/tuxbox/config/enigma/userbouquet.dbe00.tv
 #TYPE 16385
-/var/tuxbox/config/enigma/userbouquet.8ae27.tv
-#SERVICE: 4097:7:0:e6a8c:0:0:0:0:0:0:/var/tuxbox/config/enigma/userbouquet.e6a8c.tv
+/var/tuxbox/config/enigma/userbouquet.dbe00.tv
+#SERVICE: 4097:7:0:dbe01:0:0:0:0:0:0:/var/tuxbox/config/enigma/userbouquet.dbe01.tv
 #TYPE 16385
-/var/tuxbox/config/enigma/userbouquet.e6a8c.tv
-#SERVICE: 4097:7:0:dba3c:0:0:0:0:0:0:/var/tuxbox/config/enigma/userbouquet.dba3c.tv
+/var/tuxbox/config/enigma/userbouquet.dbe01.tv
+#SERVICE: 4097:7:0:dbe02:0:0:0:0:0:0:/var/tuxbox/config/enigma/userbouquet.dbe02.tv
 #TYPE 16385
-/var/tuxbox/config/enigma/userbouquet.dba3c.tv
-#SERVICE: 4097:7:0:6b183:0:0:0:0:0:0:/var/tuxbox/config/enigma/userbouquet.6b183.tv
+/var/tuxbox/config/enigma/userbouquet.dbe02.tv
+#SERVICE: 4097:7:0:dbe03:0:0:0:0:0:0:/var/tuxbox/config/enigma/userbouquet.dbe03.tv
 #TYPE 16385
-/var/tuxbox/config/enigma/userbouquet.6b183.tv
-#SERVICE: 4097:7:0:0d10e:0:0:0:0:0:0:/var/tuxbox/config/enigma/userbouquet.0d10e.tv
+/var/tuxbox/config/enigma/userbouquet.dbe03.tv
+#SERVICE: 4097:7:0:dbe04:0:0:0:0:0:0:/var/tuxbox/config/enigma/userbouquet.dbe04.tv
 #TYPE 16385
-/var/tuxbox/config/enigma/userbouquet.0d10e.tv
-#SERVICE: 4097:7:0:19c59:0:0:0:0:0:0:/var/tuxbox/config/enigma/userbouquet.19c59.tv
+/var/tuxbox/config/enigma/userbouquet.dbe04.tv
+#SERVICE: 4097:7:0:dbe05:0:0:0:0:0:0:/var/tuxbox/config/enigma/userbouquet.dbe05.tv
 #TYPE 16385
-/var/tuxbox/config/enigma/userbouquet.19c59.tv
-#SERVICE: 4097:7:0:73812:0:0:0:0:0:0:/var/tuxbox/config/enigma/userbouquet.73812.tv
+/var/tuxbox/config/enigma/userbouquet.dbe05.tv
+#SERVICE: 4097:7:0:dbe06:0:0:0:0:0:0:/var/tuxbox/config/enigma/userbouquet.dbe06.tv
 #TYPE 16385
-/var/tuxbox/config/enigma/userbouquet.73812.tv
-#SERVICE: 4097:7:0:4156e:0:0:0:0:0:0:/var/tuxbox/config/enigma/userbouquet.4156e.tv
+/var/tuxbox/config/enigma/userbouquet.dbe06.tv
+#SERVICE: 4097:7:0:dbe07:0:0:0:0:0:0:/var/tuxbox/config/enigma/userbouquet.dbe07.tv
 #TYPE 16385
-/var/tuxbox/config/enigma/userbouquet.4156e.tv
-#SERVICE: 4097:7:0:02206:0:0:0:0:0:0:/var/tuxbox/config/enigma/userbouquet.02206.tv
+/var/tuxbox/config/enigma/userbouquet.dbe07.tv
+#SERVICE: 4097:7:0:dbe08:0:0:0:0:0:0:/var/tuxbox/config/enigma/userbouquet.dbe08.tv
 #TYPE 16385
-/var/tuxbox/config/enigma/userbouquet.02206.tv
-#SERVICE: 4097:7:0:288c8:0:0:0:0:0:0:/var/tuxbox/config/enigma/userbouquet.288c8.tv
+/var/tuxbox/config/enigma/userbouquet.dbe08.tv
+#SERVICE: 4097:7:0:dbe09:0:0:0:0:0:0:/var/tuxbox/config/enigma/userbouquet.dbe09.tv
 #TYPE 16385
-/var/tuxbox/config/enigma/userbouquet.288c8.tv
-#SERVICE: 4097:7:0:57cac:0:0:0:0:0:0:/var/tuxbox/config/enigma/userbouquet.57cac.tv
+/var/tuxbox/config/enigma/userbouquet.dbe09.tv
+#SERVICE: 4097:7:0:dbe10:0:0:0:0:0:0:/var/tuxbox/config/enigma/userbouquet.dbe10.tv
 #TYPE 16385
-/var/tuxbox/config/enigma/userbouquet.57cac.tv
-#SERVICE: 4097:7:0:3145c:0:0:0:0:0:0:/var/tuxbox/config/enigma/userbouquet.3145c.tv
+/var/tuxbox/config/enigma/userbouquet.dbe10.tv
+#SERVICE: 4097:7:0:dbe11:0:0:0:0:0:0:/var/tuxbox/config/enigma/userbouquet.dbe11.tv
 #TYPE 16385
-/var/tuxbox/config/enigma/userbouquet.3145c.tv
-#SERVICE: 4097:7:0:960d8:0:0:0:0:0:0:/var/tuxbox/config/enigma/userbouquet.960d8.tv
+/var/tuxbox/config/enigma/userbouquet.dbe11.tv
+#SERVICE: 4097:7:0:dbe12:0:0:0:0:0:0:/var/tuxbox/config/enigma/userbouquet.dbe12.tv
 #TYPE 16385
-/var/tuxbox/config/enigma/userbouquet.960d8.tv
-#SERVICE: 4097:7:0:aa40d:0:0:0:0:0:0:/var/tuxbox/config/enigma/userbouquet.aa40d.tv
+/var/tuxbox/config/enigma/userbouquet.dbe12.tv
+#SERVICE: 4097:7:0:dbe13:0:0:0:0:0:0:/var/tuxbox/config/enigma/userbouquet.dbe13.tv
 #TYPE 16385
-/var/tuxbox/config/enigma/userbouquet.aa40d.tv
-#SERVICE: 4097:7:0:0dcf6:0:0:0:0:0:0:/var/tuxbox/config/enigma/userbouquet.0dcf6.tv
+/var/tuxbox/config/enigma/userbouquet.dbe13.tv
+#SERVICE: 4097:7:0:dbe14:0:0:0:0:0:0:/var/tuxbox/config/enigma/userbouquet.dbe14.tv
 #TYPE 16385
-/var/tuxbox/config/enigma/userbouquet.0dcf6.tv
-#SERVICE: 4097:7:0:ac6bb:0:0:0:0:0:0:/var/tuxbox/config/enigma/userbouquet.ac6bb.tv
+/var/tuxbox/config/enigma/userbouquet.dbe14.tv
+#SERVICE: 4097:7:0:dbe15:0:0:0:0:0:0:/var/tuxbox/config/enigma/userbouquet.dbe15.tv
 #TYPE 16385
-/var/tuxbox/config/enigma/userbouquet.ac6bb.tv
-#SERVICE: 4097:7:0:a9efa:0:0:0:0:0:0:/var/tuxbox/config/enigma/userbouquet.a9efa.tv
+/var/tuxbox/config/enigma/userbouquet.dbe15.tv
+#SERVICE: 4097:7:0:dbe16:0:0:0:0:0:0:/var/tuxbox/config/enigma/userbouquet.dbe16.tv
 #TYPE 16385
-/var/tuxbox/config/enigma/userbouquet.a9efa.tv
-#SERVICE: 4097:7:0:e2a49:0:0:0:0:0:0:/var/tuxbox/config/enigma/userbouquet.e2a49.tv
+/var/tuxbox/config/enigma/userbouquet.dbe16.tv
+#SERVICE: 4097:7:0:dbe17:0:0:0:0:0:0:/var/tuxbox/config/enigma/userbouquet.dbe17.tv
 #TYPE 16385
-/var/tuxbox/config/enigma/userbouquet.e2a49.tv
-#SERVICE: 4097:7:0:07557:0:0:0:0:0:0:/var/tuxbox/config/enigma/userbouquet.07557.tv
+/var/tuxbox/config/enigma/userbouquet.dbe17.tv
+#SERVICE: 4097:7:0:dbe18:0:0:0:0:0:0:/var/tuxbox/config/enigma/userbouquet.dbe18.tv
 #TYPE 16385
-/var/tuxbox/config/enigma/userbouquet.07557.tv
-#SERVICE: 4097:7:0:97cd5:0:0:0:0:0:0:/var/tuxbox/config/enigma/userbouquet.97cd5.tv
+/var/tuxbox/config/enigma/userbouquet.dbe18.tv
+#SERVICE: 4097:7:0:dbe19:0:0:0:0:0:0:/var/tuxbox/config/enigma/userbouquet.dbe19.tv
 #TYPE 16385
-/var/tuxbox/config/enigma/userbouquet.97cd5.tv
-#SERVICE: 4097:7:0:ad89c:0:0:0:0:0:0:/var/tuxbox/config/enigma/userbouquet.ad89c.tv
+/var/tuxbox/config/enigma/userbouquet.dbe19.tv
+#SERVICE: 4097:7:0:dbe20:0:0:0:0:0:0:/var/tuxbox/config/enigma/userbouquet.dbe20.tv
 #TYPE 16385
-/var/tuxbox/config/enigma/userbouquet.ad89c.tv
-#SERVICE: 4097:7:0:64c73:0:0:0:0:0:0:/var/tuxbox/config/enigma/userbouquet.64c73.tv
+/var/tuxbox/config/enigma/userbouquet.dbe20.tv
+#SERVICE: 4097:7:0:dbe21:0:0:0:0:0:0:/var/tuxbox/config/enigma/userbouquet.dbe21.tv
 #TYPE 16385
-/var/tuxbox/config/enigma/userbouquet.64c73.tv
+/var/tuxbox/config/enigma/userbouquet.dbe21.tv

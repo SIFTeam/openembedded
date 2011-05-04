@@ -6,7 +6,7 @@ MAINTAINER ?= "Mike Looijmans"
 PACKAGE_ARCH = "all"
 
 #keep SRCDATE here rather than in the distro file, as the setting files reside in a local subdirectory
-SRCDATE = "20100729"
+SRCDATE = "20110326"
 PV = "${SRCDATE}"
 PR = "r0"
 PN = "enigma2-plugin-settings-ziggo-casema-west"
