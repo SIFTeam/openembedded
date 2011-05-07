@@ -1,5 +1,5 @@
 DESCRIPTION = "tuxbox libtuxtxt"
-DEPENDS = "libpng freetype"
+DEPENDS = "dreambox-dvbincludes libpng freetype"
 
 inherit gitpkgv
 
