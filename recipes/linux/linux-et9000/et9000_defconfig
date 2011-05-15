@@ -1682,7 +1682,7 @@ CONFIG_LOG_BUF_SHIFT=15
 # CONFIG_DEBUG_FS is not set
 # CONFIG_WANT_EXTRA_DEBUG_INFORMATION is not set
 # CONFIG_CROSSCOMPILE is not set
-CONFIG_CMDLINE="mem=128M root=/dev/mtdblock3 rootfstype=jffs2 rw console=ttyS0,115200"
+CONFIG_CMDLINE="mem=64M root=/dev/mtdblock3 rootfstype=jffs2 rw console=ttyS0,115200"
 CONFIG_SYS_SUPPORTS_KGDB=y
 # CONFIG_MIPS_BRCM_SIM is not set
 
