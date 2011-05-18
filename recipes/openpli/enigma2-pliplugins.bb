@@ -30,13 +30,17 @@ PV = "1.0+git${SRCPV}"
 PKGV = "1.0+git${GITPKGV}"
 PR = "r2"
 
-SRC_URI = "git://openpli.git.sourceforge.net/gitroot/openpli/enigma2-plugins;protocol=git"
+SRC_URI = "git://openpli.git.sourceforge.net/gitroot/openpli/enigma2-plugins;protocol=git \
+		   file://pythonpaths.patch"
+
 
 S = "${WORKDIR}/git"
 
 inherit autotools
 
-EXTRA_OECONF = "--with-boxtype=${MACHINE}"
+EXTRA_OECONF = "--with-boxtype=${MACHINE} \
+    STAGING_INCDIR=${STAGING_INCDIR} \
+    STAGING_LIBDIR=${STAGING_LIBDIR}"
 
 python populate_packages_prepend () {
 
