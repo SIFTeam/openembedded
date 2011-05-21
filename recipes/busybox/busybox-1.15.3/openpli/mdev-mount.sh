@@ -12,6 +12,13 @@ case "$ACTION" in
 		if [ $? -ne 0 ] ; then
 			# no fstab entry, use automatic mountpoint
 			DEVBASE=`expr substr $MDEV 1 3`
+			# check for full-disk partition
+			if [ "${DEVBASE}" == "${MDEV}" ] ; then
+				if [ -d /sys/block/${DEVBASE}/${DEVBASE}1 ] ; then
+					# Partition detected, bail out!
+					exit 0
+				fi
+			fi
 			REMOVABLE=`cat /sys/block/$DEVBASE/removable`
 			MODEL=`cat /sys/block/$DEVBASE/device/model`
 			if [ $REMOVABLE -eq "0" ]; then

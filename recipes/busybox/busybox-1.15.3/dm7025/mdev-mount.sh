@@ -12,6 +12,13 @@ case "$ACTION" in
 		# first allow fstab to determine the mountpoint
 		grep -q "/dev/$MDEV" /etc/fstab && mount /dev/$MDEV
 		if [ $? -ne 0 ] ; then
+			# check for full-disk partition
+			if [ "${DEVBASE}" == "${MDEV}" ] ; then
+				if [ -d /sys/block/${DEVBASE}/${DEVBASE}1 ] ; then
+					# Partition detected, bail out!
+					exit 0
+				fi
+			fi
 			# no fstab entry, use automatic mountpoint
 			if [ "$DEVBASE" == "hda" ]; then
 				DEVICETYPE="hdd"
