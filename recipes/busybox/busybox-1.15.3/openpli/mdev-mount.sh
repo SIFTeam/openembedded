@@ -8,7 +8,7 @@ case "$ACTION" in
 		# remove old mountpoint symlinks we might have for this device
 		rm -f $MOUNTPOINT
 		# first allow fstab to determine the mountpoint
-		mount /dev/$MDEV
+		grep -q "/dev/$MDEV" /etc/fstab && mount /dev/$MDEV
 		if [ $? -ne 0 ] ; then
 			# no fstab entry, use automatic mountpoint
 			DEVBASE=`expr substr $MDEV 1 3`
@@ -16,6 +16,13 @@ case "$ACTION" in
 			if [ "${DEVBASE}" == "${MDEV}" ] ; then
 				if [ -d /sys/block/${DEVBASE}/${DEVBASE}1 ] ; then
 					# Partition detected, bail out!
+					exit 0
+				fi
+				if [ ! -f /sys/block/${DEVBASE}/size ] ; then
+					exit 0
+				fi
+				if [ `cat /sys/block/${DEVBASE}/size` == 0 ] ; then
+					# empty device, bail out
 					exit 0
 				fi
 			fi
