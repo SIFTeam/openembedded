@@ -99,8 +99,8 @@ int main(int argc, char *argv[], char *envp[])
 	int res, x;
 
 		/* first, load some needed kernel modules located in the root of our boot partition */
-	const char *modules_new[] = { "lib/decompress_unlzma.ko", "fs/squashfs/squashfs.ko", "fs/unionfs/unionfs.ko", "drivers/block/loop.ko", 0 };
-	const char *modules_old[] = { "fs/squashfs/unlzma.ko", "fs/squashfs/sqlzma.ko", "fs/squashfs/squashfs.ko", "fs/unionfs.ko", "drivers/block/loop.ko", 0 };
+	const char *modules_new[] = { "lib/decompress_unlzma.ko", "fs/squashfs/squashfs.ko", "fs/unionfs/unionfs.ko", 0 };
+	const char *modules_old[] = { "fs/squashfs/unlzma.ko", "fs/squashfs/sqlzma.ko", "fs/squashfs/squashfs.ko", "fs/unionfs.ko", 0 };
 	const char **modules;
 	char path[255];
 	struct utsname uts;

@@ -5,7 +5,7 @@ LICENSE = "proprietary"
 MAINTAINER = "Felix Domke <tmbinc@elitedvb.net>"
 
 PV = "1.0"
-PR = "r1"
+PR = "r1.1"
 DEPENDS = "klcc-cross"
 
 SRC_URI = "file://boottool-${MACHINE}.c"
