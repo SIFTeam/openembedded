@@ -3,7 +3,7 @@ SECTION = "base"
 PRIORITY = "optional"
 DEPENDS = ""
 LICENSE = "GPL"
-PV = "1.0"
+PV = "1.1"
 PR = "r0"
 
 SRC_URI = "file://progress"
@@ -18,7 +18,7 @@ do_install () {
 #
 # Create runlevel links
 #
-	ln -sf ../init.d/progress ${D}${sysconfdir}/rcS.d/S01progress
+	ln -sf ../init.d/progress ${D}${sysconfdir}/rcS.d/S06progress
 	ln -sf ../init.d/progress ${D}${sysconfdir}/rcS.d/S10progress
 	ln -sf ../init.d/progress ${D}${sysconfdir}/rcS.d/S20progress
 	ln -sf ../init.d/progress ${D}${sysconfdir}/rcS.d/S30progress
