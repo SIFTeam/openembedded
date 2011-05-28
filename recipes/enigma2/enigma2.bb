@@ -170,6 +170,14 @@ do_install_append() {
 	find ${D}/usr/lib/enigma2/python/ -name '*.pyc' -exec rm {} \;
 }
 
+# On the 7025, put the enigma files into a zip archive
+do_install_append_dm7025() {
+	install -d ${D}/usr/share/keymaps
+	find ${D}/usr/lib/enigma2/python/ -name '*.pyc' -exec rm {} \;
+	cd ${D}/usr/lib/enigma2/python/
+	zip -m -r -9 enigma.zip *.pyo Screens/*.pyo Tools/*.pyo Components/*.pyo Components/*/*.pyo
+}
+
 python populate_packages_prepend () {
 	enigma2_plugindir = bb.data.expand('${libdir}/enigma2/python/Plugins', d)
 	do_split_packages(d, enigma2_plugindir, '(.*?/.*?)/.*', 'enigma2-plugin-%s', '%s ', recursive=True, match_path=True, prepend=True, extra_depends="enigma2")
