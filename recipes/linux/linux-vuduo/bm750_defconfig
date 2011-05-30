@@ -1081,7 +1081,7 @@ CONFIG_USB_BRCM=y
 #
 # USB Device Class drivers
 #
-# CONFIG_USB_ACM is not set
+CONFIG_USB_ACM=m
 # CONFIG_USB_PRINTER is not set
 
 #
