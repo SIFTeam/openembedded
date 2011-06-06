@@ -55,8 +55,6 @@ python populate_packages_prepend () {
 				for depend in depends:
 					if depend.startswith('twisted-'):
 						rdepends += ' ' + depend.replace('twisted-', 'python-twisted-')
-					elif depend in ('enigma2', 'enigma2-plugins'):
-						pass # ignore silly depends
 					else:
 						rdepends += ' ' + depend
 				bb.data.setVar('RDEPENDS_' + full_package, rdepends, d)
