@@ -3,7 +3,7 @@ SECTION = "base"
 PRIORITY = "optional"
 DEPENDS = ""
 LICENSE = "GPL"
-PV = "1.0"
+PV = "2.0"
 PR = "r0"
 
 SRC_URI = "file://init"
