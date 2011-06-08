@@ -26,6 +26,7 @@ RREPLACES_${PN} = "wpa-supplicant-cli"
 RRECOMMENDS_${PN} = "wpa-supplicant-passphrase"
 
 export HAS_MADWIFI = "${@base_contains('COMBINED_FEATURES', 'madwifi', 1, 0,d)}"
+export HAS_NL80211 = "${@base_contains('COMBINED_FEATURES', 'nl80211', 1, 0, d)}"
 
 do_configure () {
         install -m 0755 ${WORKDIR}/defconfig-0.6.0-gnutls  .config
@@ -33,6 +34,10 @@ do_configure () {
         if [ "x$HAS_MADWIFI" == "x1" ] ; then
                 echo "CONFIG_DRIVER_MADWIFI=y" >> .config
                 echo "CFLAGS += -I${STAGING_INCDIR}/madwifi-ng" >> .config
+        fi
+        
+        if [ "x$HAS_NL80211" == "x1" ] ; then
+                echo "CONFIG_DRIVER_NL80211=y" >> .config
         fi
 }
 
