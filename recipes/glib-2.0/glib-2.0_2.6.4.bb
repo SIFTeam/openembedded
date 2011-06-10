@@ -3,13 +3,13 @@ which provides many useful data types, macros, \
 type conversions, string utilities, file utilities, a main \
 loop abstraction, and so on. It works on many \
 UNIX-like platforms, Windows, OS/2 and BeOS."
-LICENSE = "LGPL"
+LICENSE = "LGPLv2+"
 SECTION = "libs"
 PRIORITY = "optional"
 DEPENDS += "glib-2.0-native gtk-doc"
 DEPENDS += "virtual/libiconv virtual/libintl"
 PACKAGES =+ "glib-2.0-utils "
-PR = "r1"
+PR = "r2"
 
 LEAD_SONAME = "libglib-2.0.*"
 FILES_glib-2.0-utils = "${bindir}/*"
@@ -24,7 +24,10 @@ EXTRA_OECONF = "--disable-debug"
 SRC_URI = "ftp://ftp.gtk.org/pub/gtk/v2.6/glib-${PV}.tar.bz2 \
            file://glibinclude.patch;striplevel=2 \
            file://glibconfig-sysdefs.h \
-           file://configure-libtool.patch"
+           file://configure-libtool.patch \
+           file://glib-2.6.4-fix-autotools-fiac.patch \
+           file://glib-mkenums-interpreter.patch \
+"
 
 S = "${WORKDIR}/glib-${PV}"
 

@@ -5,7 +5,7 @@ RPROVIDES_${PN} = "hotplug"
 
 require udev.inc
 
-PR = "${INC_PR}.1"
+PR = "${INC_PR}.2"
 
 LD = "${CC}"
 
@@ -28,6 +28,10 @@ FILES_${PN} += "${base_libdir}/udev/*"
 FILES_${PN}-dbg += "${base_libdir}/udev/.debug"
 UDEV_EXTRAS = "extras/firmware/ extras/scsi_id/ extras/volume_id/"
 EXTRA_OEMAKE += "libudevdir=/lib/udev libdir=${base_libdir} prefix="
+
+do_configure_prepend_libc-uclibc() {
+	eval "${@base_contains('DISTRO_FEATURES', 'largefile', '', 'sed -i -e "s/-D_FILE_OFFSET_BITS=64//" ${S}/Makefile', d)}"
+}
 
 do_install () {
 	install -d ${D}${usrsbindir} \

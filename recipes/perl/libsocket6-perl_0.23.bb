@@ -1,7 +1,7 @@
 DESCRIPTION = "Perl extensions for IPv6"
 SECTION = "libs"
-LICENSE = "BSD"
-PR = "r0"
+LICENSE = "unknown"
+PR = "r1"
 
 BBCLASSEXTEND = "native"
 

@@ -1,23 +1,22 @@
 require eglibc.inc
 
 DEPENDS += "gperf-native"
-SRCREV = "11461"
+SRCREV = "12322"
 DEFAULT_PREFERENCE = "-1"
 FILESPATHPKG =. "eglibc-svn:"
 PV = "2.12+svnr${SRCPV}"
-PR = "${INC_PR}.0"
+PR = "${INC_PR}.2"
 EGLIBC_BRANCH="trunk"
 SRC_URI = "svn://svn.eglibc.org;module=${EGLIBC_BRANCH} \
            file://eglibc-svn-arm-lowlevellock-include-tls.patch \
-	   file://IO-acquire-lock-fix.patch \
+           file://IO-acquire-lock-fix.patch \
+           file://sh4_set_fpscr_2.12.patch \
+           file://sh4_local-fpscr_values.patch \
+           file://armv4-eabi-compile-fix.patch \
            file://etc/ld.so.conf \
            file://generate-supported.mk"
 S = "${WORKDIR}/${EGLIBC_BRANCH}/libc"
 B = "${WORKDIR}/build-${TARGET_SYS}"
-
-PACKAGES_DYNAMIC = "libc6*"
-RPROVIDES_${PN}-dev = "libc6-dev virtual-libc-dev"
-PROVIDES_${PN}-dbg = "glibc-dbg"
 
 # the -isystem in bitbake.conf screws up glibc do_stage
 BUILD_CPPFLAGS = "-I${STAGING_INCDIR_NATIVE}"
@@ -46,23 +45,10 @@ python __anonymous () {
 EXTRA_OECONF = "--enable-kernel=${OLDEST_KERNEL} \
                 --without-cvs --disable-profile --disable-debug --without-gd \
                 --enable-clocale=gnu \
-                --enable-add-ons=${GLIBC_ADDONS},ports \
+                --enable-add-ons=${GLIBC_ADDONS} \
                 --with-headers=${STAGING_INCDIR} \
                 --without-selinux \
                 ${GLIBC_EXTRA_OECONF}"
-
-EXTRA_OECONF += "${@get_eglibc_fpu_setting(bb, d)}"
-
-do_unpack_append() {
-	bb.build.exec_func('do_move_ports', d)
-}
-
-do_move_ports() {
-        if test -d ${WORKDIR}/${EGLIBC_BRANCH}/ports ; then
-	    rm -rf ${S}/ports
-	    mv ${WORKDIR}/${EGLIBC_BRANCH}/ports ${S}/
-	fi
-}
 
 do_configure () {
 # override this function to avoid the autoconf/automake/aclocal/autoheader
@@ -95,4 +81,4 @@ do_compile () {
 	)
 }
 
-require eglibc-package.bbclass
+require eglibc-package.inc

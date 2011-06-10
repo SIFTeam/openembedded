@@ -1,6 +1,6 @@
 require avahi.inc
 
-PR = "r8"
+PR = "${INC_PR}.0"
 
 # FIXME: without --enable-gtk, avahi-discover (pygtk) won't be built
 FILES_avahi-discover = ""
@@ -12,7 +12,7 @@ SRC_URI += "file://dbus-pre-1.1.1-support.patch \
             file://configure-check-pymod.patch"
 S = "${WORKDIR}/avahi-${PV}"
 
-RDEPENDS_avahi-discover = "python-avahi python-pygtk"
+RDEPENDS_avahi-discover = "python-avahi"
 RDEPENDS_python-avahi = "python-dbus"
 PACKAGES =+ "python-avahi"
 

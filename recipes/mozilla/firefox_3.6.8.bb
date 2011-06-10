@@ -1,5 +1,5 @@
 DEPENDS += "cairo sqlite3 libnotify"
-PR = "r1"
+PR = "r3"
 
 # The .pc files below have "3.6" hardcoded, fix that before using them in a newer FF version!
 SRC_URI = "ftp://ftp.mozilla.org/pub/mozilla.org/firefox/releases/${PV}/source/firefox-${PV}.source.tar.bz2;name=archive \
@@ -12,10 +12,17 @@ SRC_URI = "ftp://ftp.mozilla.org/pub/mozilla.org/firefox/releases/${PV}/source/f
 	file://0001-Remove-Werror-from-build.patch \
 	file://0002-Fix-security-cross-compile-cpu-detection-error.patch \
 	file://plugins-dir.patch \
+	file://Add-nanojit-support-for-ARMv4T.patch \
 	file://firefox-plugin.pc \
 	file://firefox-xpcom.pc \
 	file://nspr.pc \
+	file://xulrunner-chromium-mips.patch \
+	file://xulrunner-1.9.2.8-mips-bus-error.patch \
+	file://Fix-xptinvoke-and-xptstubs-on-mips-o32-big-endian.patch \
+	file://Increase-stability-and-performance-on-mips.patch \
 "
+
+SRC_URI_append_mipsel = " file://mips-disable-TLS.patch "
 
 SRC_URI[archive.md5sum] = "0ee5f14fd8be07513d16131027ebcb61"
 SRC_URI[archive.sha256sum] = "fc609cc6a0ddaa2a9ebd8511ec39ae4a404e1107a12e07b233e2afca51d9a10e"
@@ -26,7 +33,6 @@ inherit mozilla
 require firefox.inc
 
 EXTRA_OECONF += " --enable-official-branding --disable-crashreporter"
-
 
 FULL_OPTIMIZATION = "-fexpensive-optimizations -fomit-frame-pointer -frename-registers -O2"
 

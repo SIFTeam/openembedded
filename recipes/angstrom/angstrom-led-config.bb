@@ -1,7 +1,8 @@
 DESCRIPTION = "Configuration files for runtime LED configuration" 
+LICENSE = "MIT"
 
 #PV = "${DISTRO_VERSION}"
-PR = "r8"
+PR = "r9"
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 
 inherit update-rc.d

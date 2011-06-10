@@ -12,7 +12,8 @@ require ti-staging.inc
 
 PROVIDES += "ti-codec-engine-examples"
 
-PR = "r5"
+PR = "${MACHINE_KERNEL_PR}"
+PR_append = "a"
 
 S = "${WORKDIR}/codec_engine_${PV}"
 
@@ -85,7 +86,11 @@ do_prepsources() {
                      CGTOOLS_V5T="${TOOLCHAIN_PATH}" \
                      CGTOOLS_C64P="${CODEGEN_INSTALL_DIR}" \
                      CGTOOLS_C674="${CODEGEN_INSTALL_DIR}" \
-                     .make clean
+                     clean
+		     # '.make' target was used in CE < 2.26, but its no longer
+		     # supported in CE >= 2.26. Now we are moved to >=2.26 
+		     # hence commenting out the .make target.
+                     # .make clean
         done
 }
 
@@ -152,9 +157,9 @@ do_install() {
 		{
 		pwd
 		cd ${D}/${installdir}/ti-codec-engine-examples/$i
-		if [ $(basename $i) == "audio1_ires" ] ; then 
+		if [ $(basename $i) = "audio1_ires" ] ; then 
 			ln -s ../servers/audio1_ires/audio1_ires.${DSPSUFFIX}
-		elif [ $(basename $i) == "server_api_example" ] ; then
+		elif [ $(basename $i) = "server_api_example" ] ; then
 			ln -s ../servers/server_api_example/audio_copy.${DSPSUFFIX}
                 elif [ $(basename $i) != "." ] ; then
 			ln -s ../servers/all_codecs/all.${DSPSUFFIX}

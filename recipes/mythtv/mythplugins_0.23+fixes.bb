@@ -1,28 +1,35 @@
-DEPENDS = "flac taglib mythtv libvorbis libexif libvisual libsdl-x11 libcdaudio cdparanoia"
+DESCRIPTION = "plugins for mythtv: A full featured personal video recorder system."
+HOMEPAGE = "http://www.mythtv.org"
+LICENSE = "GPLv2"
+
+DEPENDS = "flac taglib mythtv libvorbis libexif libvisual virtual/libsdl libcdaudio cdparanoia"
 RDEPENDS_${PN} = "mytharchive mythbrowser mythgallery mythgame mythmovies  \
                   mythmusic mythnetvision mythnews mythvideo mythweather mythzoneminder"
-RRECOMMENDS_${PN} = "mythweb_lighttpd"
+RRECOMMENDS_${PN} = "mythweb-lighttpd"
 
 # the apache variant does not work yet, too many issues with apache+php+mysql"
-DEPENDS_mythweb_apache = "mythweb"
-RDEPENDS_mythweb_apache = "apache2"
+#DEPENDS_mythweb-apache = "mythweb"
+#RDEPENDS_mythweb-apache = "apache2"
 
-DEPENDS_mythweb_lighttpd = "mythweb"
-RDEPENDS_mythweb_lighttpd = "lighttpd lighttpd-module-cgi lighttpd-module-fastcgi \
-        lighttpd-module-rewrite php-cgi lighttpd-module-auth"
+DEPENDS_mythweb-lighttpd = "mythweb"
+RDEPENDS_mythweb-lighttpd = "lighttpd lighttpd-module-cgi lighttpd-module-fastcgi \
+        lighttpd-module-rewrite php-cgi lighttpd-module-auth sed"
 
 RDEPENDS_mythnetvision += " python python-mysqldb "
 
+DEPENDS += " fftw fftwf "
+RDEPENDS_mythmusic += " libfftw libfftwf "
+
 # for mythweather:
-DEPENDS_mythweather += " libxml-xpath-perl-native libxml-simple-perl-native libdatetime-format-iso8601-perl-native \
+DEPENDS += " libxml-xpath-perl-native libxml-simple-perl-native libdatetime-format-iso8601-perl-native \
 	libsoap-lite-perl-native libimage-size-perl-native libdate-manip-perl-native "
 RDEPENDS_mythweather += " libxml-xpath-perl libxml-simple-perl libdatetime-format-iso8601-perl \
 	libsoap-lite-perl libimage-size-perl libdate-manip-perl "
 
-PR = "svnr${SRCPV}+r1"
+PR = "svnr${SRCPV}+r0"
 PV = "0.23"
 
-SRCREV = "25609"
+SRCREV = "27202"
 SRC_URI = "svn://svn.mythtv.org/svn/branches/release-0-23-fixes;module=mythplugins;proto=http \
         file://sysroot.patch \
         file://mythplugins_wo_qtopengl.diff \
@@ -54,44 +61,45 @@ do_configure() {
 
 do_install () {
         oe_runmake install INSTALL_ROOT="${D}"
-}
-
-do_install_mythweb_apache () {
-        oe_runmake install INSTALL_ROOT="${D}"
-        install -d  ${D}${datadir}/apache2
-        install -d  ${D}${datadir}/apache2/htdocs
-        install -d  ${D}/etc/apache2
-        install -d  ${D}/etc/apache2/extra
-        cp -r ${S}/mythweb/* ${D}${datadir}/apache2/htdocs/
-        cp -r ${S}/mythweb/mythweb.conf.apache ${D}/etc/apache2/extra/mythweb.conf
-        sed -i -e s:/var/www/html:/usr/share/apache2/htdocs:g ${D}/etc/apache2/extra/mythweb.conf
-}
-
-do_install_mythweb_lighttpd () {
-        oe_runmake install INSTALL_ROOT="${D}"
+	rm -rf `find ${S}/mythweb -type d -name .svn`
+#        install -d  ${D}${datadir}/
+#        install -d  ${D}${datadir}/apache2
+#        install -d  ${D}${datadir}/apache2/htdocs
+        install -d  ${D}${sysconfdir}/
+#        install -d  ${D}${sysconfdir}/apache2
+#        install -d  ${D}${sysconfdir}/apache2/extra
+#        cp -R ${S}/mythweb/* ${D}/${datadir}/apache2/htdocs/
+#        mv ${S}/mythweb/mythweb.conf.apache ${D}${sysconfdir}/apache2/extra/mythweb.conf
+#        sed -i -e s:/var/www/html:/usr/share/apache2/htdocs:g ${D}${sysconfdir}/apache2/extra/mythweb.conf
         install -d  ${D}/www
         install -d  ${D}/www/pages
-        cp -r ${S}/mythweb/* ${D}www/pages/
-        cp -r ${S}/mythweb/mythweb.conf.lighttpd ${D}/etc/mythweb.conf
-        sed -i -e s:/var/www/html:/www/pages:g ${D}/etc/mythweb.conf
+        cp -R ${S}/mythweb/* ${D}/www/pages/
+        mv ${S}/mythweb/mythweb.conf.lighttpd ${D}${sysconfdir}/mythweb.conf
+        sed -i -e s:/var/www/html:/www/pages:g ${D}${sysconfdir}/mythweb.conf
 }
 
-pkg_postinst_mythweb_apache () {
-        chgrp -R apache /usr/share/apache2/htdocs/data
-        chmod g+rw /usr/share/apache2/htdocs/data
-        grep mythweb.conf /etc/apache2/httpd.conf || \
-              echo "Include /etc/apache2/extra/mythweb.conf" >>/etc/apache2/httpd.conf
-}
+#pkg_postinst_mythweb-apache () {
+#        chgrp -R apache /usr/share/apache2/htdocs/data
+#        chmod g+rw /usr/share/apache2/htdocs/data
+#        grep mythweb.conf /etc/apache2/httpd.conf || \
+#              echo "Include /etc/apache2/extra/mythweb.conf" >>/etc/apache2/httpd.conf
+#}
 
-pkg_postinst_mythweb_lighttpd () {
-        chgrp -R www-data /usr/share/apache2/htdocs/data
+pkg_postinst_mythweb-lighttpd () {
+        chgrp -R www-data /var/www/pages
         chmod g+rw /var/www/pages
         grep mythweb.conf /etc/lighttpd.conf || \
-                echo "Include /etc/mythweb.conf" >>/etc/lighttpd.conf
+                echo "include \"mythweb.conf\"" >>/etc/lighttpd.conf
+	sed -i 's:#\( *mod_cgi\):\1:' /etc/lighttpd.conf
+	sed -i 's:#\( *mod_fastcgi\):\1:' /etc/lighttpd.conf
+	sed -i 's:#\( *mod_rewrite\):\1:' /etc/lighttpd.conf
+	sed -i 's:#\( *mod_auth\):\1:' /etc/lighttpd.conf
+	sed -i 's:/var/run/lighttpd/mythtv-php-fcgi.socket:/var/run/mythtv-php-fcgi.socket:' /etc/mythweb.conf
 }
 
 PACKAGES =+ " \
-        mythweb_apache mythweb_lighttpd \
+#        mythweb-apache \
+	mythweb-lighttpd \
         mytharchive mytharchive-dbg \
         mythbrowser mythbrowser-dbg \
         mythgallery mythgallery-dbg \
@@ -105,10 +113,20 @@ PACKAGES =+ " \
         mythweather mythweather-dbg \
         mythzoneminder mythzoneminder-dbg"
 
-FILES_mythweb_apache = "${datadir}/apache2/htdocs \
-        /etc/apache2/extra/mythweb.conf"
+#FILES_mythweb-apache = " \
+#	${datadir}/apache2/htdocs/mythweb.* \
+#	${datadir}/apache2/htdocs/*/ \
+#	${datadir}/apache2/htdocs/*/*/ \
+#	${datadir}/apache2/htdocs/*/*/* \
+#	${datadir}/apache2/htdocs/*/*/*/* \
+#        /etc/apache2/extra/mythweb.conf"
 
-FILES_mythweb_lighttpd = "${datadir}/www/pages \
+FILES_mythweb-lighttpd = " \
+	/www/pages/mythweb.* \
+	/www/pages/* \
+	/www/pages/*/* \
+	/www/pages/*/*/* \
+	/www/pages/*/*/*/* \
         /etc/mythweb.conf"
 
 FILES_mytharchive = "${libdir}/mythtv/plugins/libmytharchive.so \
@@ -248,10 +266,11 @@ FILES_mythnetvision = "${libdir}/mythtv/plugins/libmythnetvision.so \
         ${datadir}/mythtv/mythnetvision/* \
         ${datadir}/mythtv/i18n/mythnetvision* \
         ${datadir}/mythtv/mythnetvision.xml\
+        ${datadir}/mythtv/netvisionmenu.xml\
         ${datadir}/mythtv/themes/default/netvision-ui.xml \
-        ${datadir}/mythtv/themes/default-wide/nenetvision-ui.xml \
+        ${datadir}/mythtv/themes/default-wide/netvision-ui.xml \
         "
-#FILES_mythnetvision-dbg = "${libdir}/mythtv/plugins/.debug/libmythnetvision.so"
+FILES_mythnetvision-dbg = "${libdir}/mythtv/plugins/.debug/libmythnetvision.so"
 
 FILES_mythvideo = "${libdir}/mythtv/plugins/libmythvideo.so \
         ${bindir}/mtd \

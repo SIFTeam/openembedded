@@ -8,12 +8,12 @@ RDEPENDS_${PN} = "\
   embryo \
   edje \
   emotion \
-  esmart \
   edbus \
   efreet \
-  ewl \
   epdf \
+  ethumb \
+  elementary \
 "
-PR = "r2"
+PR = "r4"
 
 ALLOW_EMPTY = "1"

@@ -2,7 +2,7 @@ DESCRIPTION = "Linux driver for 802.11a/b/g universal NIC cards using Atheros ch
 SECTION = "base"
 PRIORITY = "optional"
 LICENSE = "GPL"
-RDEPENDS_${PN} = "kernel (${KERNEL_VERSION})"
+RDEPENDS_${PN} = "kernel-${KERNEL_VERSION}"
 DEPENDS = "virtual/kernel"
 
 WACKELF_SRC_URI = ""
@@ -34,14 +34,9 @@ EXTRA_OEMAKE_prepend_ixp4xxle = "TARGET=xscale-le-elf "
 EXTRA_OEMAKE_prepend_ixp4xxbe = "TARGET=xscale-be-elf "
 
 do_compile() {
-	oe_runmake all
-}
-
-do_stage() {
-	install -d ${STAGING_INCDIR}/${PN}/include
-	install -d ${STAGING_INCDIR}/${PN}/net80211
-	cp --dereference include/compat.h ${STAGING_INCDIR}/${PN}/include/
-	cp --dereference net80211/*.h ${STAGING_INCDIR}/${PN}/net80211/
+	oe_runmake tools
+	unset CFLAGS CPPFLAGS CXXFLAGS LDFLAGS
+	oe_runmake modules
 }
 
 do_install() {

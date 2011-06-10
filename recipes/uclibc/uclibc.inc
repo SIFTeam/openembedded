@@ -2,7 +2,7 @@ DESCRIPTION = "C library for embedded systems"
 LICENSE = "LGPL"
 SECTION = "libs"
 PRIORITY = "required"
-INC_PR = "r34"
+INC_PR = "r35"
 require uclibc-config.inc
 #
 # For now, we will skip building of a gcc package if it is a uclibc one
@@ -52,6 +52,7 @@ FILES_uclibc-dev_append = "\
         ${libdir}/lib*.so \
         ${libdir}/*_nonshared.a \
         ${libdir}/[S]*crt[1in].o \
+        ${libdir}/crtreloc*.o \
         ${libdir}/lib*.a \
         ${includedir}/*.h ${includedir}/*/*.h \
        "
@@ -60,6 +61,10 @@ FILES_uclibc-utils-dbg += "${bindir}/.debug ${sbindir}/.debug"
 FILES_uclibc-gconv = "${libdir}/gconv"
 FILES_uclibc-thread-db = "/lib/libthread_db*"
 RPROVIDES_uclibc-dev += "libc-dev virtual-libc-dev"
+# uclibc does not really have libsegfault but then using the one from glibc is also not
+# going to work. So we pretend that we have it to make bitbake not pull other recipes
+# to satisfy this dependency for the images/tasks
+RPROVIDES_${PN} += "libsegfault"
 
 SRC_URI = "\
         file://uClibc.config \
@@ -97,7 +102,7 @@ configmangle = '/^KERNEL_HEADERS/d; \
                 /^UCLIBC_EXTRA_CFLAGS/d; \
                 s,.*UCLIBC_HAS_WCHAR.*,UCLIBC_HAS_WCHAR=y,g; \
                 ${@["","s,.*UCLIBC_HAS_LOCALE.*,UCLIBC_HAS_LOCALE=y,;"][bb.data.getVar("USE_NLS", d, 1) == "yes"]} \
-                ${@["","s,.*LDSO_GNU_HASH_SUPPORT.*,# LDSO_GNU_HASH_SUPPORT is not set,;"][bb.data.getVar("TARGET_ARCH", d, 1) in ['mips', 'mipsel', 'avr32']]} \
+                ${@["","s,.*LDSO_GNU_HASH_SUPPORT.*,# LDSO_GNU_HASH_SUPPORT is not set,;"][bb.data.getVar("TARGET_ARCH", d, 1) in ['mips', 'mipsel', 'mips64', 'mips64el', 'avr32']]} \
                 /^CROSS/d; \
                 /^TARGET_ARCH=/d; \
                 /^TARGET_/s,^\([^=]*\).*,# \1 is not set,g; \

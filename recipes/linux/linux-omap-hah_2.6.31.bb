@@ -5,15 +5,13 @@ KERNEL_IMAGETYPE = "uImage"
 
 COMPATIBLE_MACHINE = "bug20"
 
-MACHINE_KERNEL_PR = "r93"
+MACHINE_KERNEL_PR = "r95"
 
-SRCREV = "070d5214ded7ae675fe0d3e715e40decdfcfc00d"
+SRCREV = "37974263d42fe943dd347d27f4ed711a61a560da"
 
 SRC_URI = "git://github.com/buglabs/bug20-2.6.31-omap.git;branch=master;protocol=git"
 
 S = "${WORKDIR}/git"
-
-CVS_TARBALL_STASH = ""
 
 do_configure_prepend() {
 	cp arch/arm/configs/omap3_bug_defconfig ${WORKDIR}/defconfig

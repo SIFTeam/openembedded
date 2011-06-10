@@ -3,15 +3,15 @@ SECTION = "x11/applications"
 PRIORITY = "optional"
 LICENSE = "GPL"
 
-RRECOMMENDS="${PN}-filter-html"
+RRECOMMENDS_${PN} = "${PN}-filter-html"
 
 SRCDATE = "20070601"
 PV = "1.2.2opie+cvs${SRCDATE}"
-PR = "r3"
+PR = "r4"
 
-SRC_URI = "${HANDHELDS_CVS};module=opie/noncore/apps/opie-reader \
-           ${HANDHELDS_CVS};module=opie/pics \
-           ${HANDHELDS_CVS};module=opie/apps \
+SRC_URI = "${OPIE_GIT};protocol=git;subpath=noncore/apps/opie-reader \
+           ${OPIE_GIT};protocol=git;subpath=pics \
+           ${OPIE_GIT};protocol=git;subpath=apps \
 	   file://qt4.patch"
 S = "${WORKDIR}/opie-reader"
 

@@ -16,7 +16,7 @@
 #TARGET_OS "linux" or "linux-uclibc"
 
 # The following may be overridden to make sub-versions
-SLUGOS_VERSION = "5.5"
+SLUGOS_VERSION = "6.0"
 DISTRO_REVISION ?= ""
 DISTRO_VERSION ?= "${SLUGOS_VERSION}${DISTRO_REVISION}-${DISTRO_TYPE}"
 # For release (only):
@@ -30,12 +30,17 @@ THUMB_INTERWORK = "yes"
 #    arm system and vice versa.  It is strongly recommended that DISTROs not
 #    turn this off - the actual cost is very small.
 # We want images supporting the following features (for task-base)
-DISTRO_FEATURES = "nfs smbfs wifi ppp alsa bluetooth ext2 vfat irda pcmcia usbgadget usbhost pci"
+DISTRO_FEATURES = "largefile ipv4 ipv6 nfs smbfs wifi ppp alsa bluetooth ext2 vfat irda pcmcia usbhost pci eabi xattr"
+# We may also wish to enable raid support at some point (space permitting)
+#DISTRO_FEATURES += " raid"
 
-# Add thumb-interwork to feature list if selected machine supports it.
-DISTRO_FEATURES += ' ${@["", "thumb-interwork"][bb.data.getVar('THUMB_INTERWORK', d, 1) == "yes"]}'
+IMAGE_BASENAME = "${@['slugos${SITEINFO_ENDIANNESS}', 'ucslugc'][bb.data.getVar('TARGET_OS', d, 1) == 'linux-uclibceabi']}"
 
-IMAGE_BASENAME = "${@['slugos${SITEINFO_ENDIANNESS}', 'ucslugc'][bb.data.getVar('TARGET_OS', d, 1) == 'linux-uclibc']}"
+# Define CACHE and DEPLOY_DIR so we could do multi-distro/multi-machine builds
+
+CACHE = "${TMPDIR}/cache/${LIBC}/${MACHINE}"
+DEPLOY_DIR = "${TMPDIR}/deploy/${LIBC}"
+IMAGE_ROOTFS = "${TMPDIR}/rootfs/${MACHINE}-${LIBC}-${PN}"
 
 # The following need not be set, the defaults should be adequate
 #USE_NLS = "no" or "yes"
@@ -53,7 +58,7 @@ USE_NLS_glib-2.0 = "yes"
 USE_NLS_glib-2.0-native = "yes"
 USE_NLS_gcc-cross = "no"
 
-INHERIT += "package_ipk debian testlab siteinfo"
+INHERIT += "package_ipk debian testlab siteinfo devshell"
 
 # FULL_OPTIMIZATION
 #    Optimization settings.  Os works fine and is significantly better than O2.
@@ -79,7 +84,7 @@ BUILD_OPTIMIZATION_pn-perl = "-O1"
 #----------------------------------------------------------------------------------
 #
 FEED_URIS_append += "cross##http://ipkg.nslu2-linux.org/feeds/${IMAGE_BASENAME}/cross/${DISTRO_FEED}"
-FEED_URIS_append += "native##http://ipkg.nslu2-linux.org/feeds/${IMAGE_BASENAME}/native/${DISTRO_FEED}"
+#FEED_URIS_append += "native##http://ipkg.nslu2-linux.org/feeds/${IMAGE_BASENAME}/native/${DISTRO_FEED}"
 
 #----------------------------------------------------------------------------------
 # FIRMWARE CONFIGURATION
@@ -109,8 +114,8 @@ DISTRO_EXTRA_DEPENDS ?= ""
 DISTRO_EXTRA_RDEPENDS ?= ""
 DISTRO_EXTRA_RRECOMMENDS ?= ""
 
-CVS_TARBALL_STASH = "http://sources.nslu2-linux.org/sources/"
-INHERIT += "nslu2-mirrors"
+SOURCE_MIRROR_URL ?= "http://sources.nslu2-linux.org/sources/"
+INHERIT += "own-mirrors"
 
 #FIXME: HACK: REMOVE THIS
 IGNORE_STRIP_ERRORS = ""
@@ -124,17 +129,6 @@ IGNORE_STRIP_ERRORS = ""
 # kernel, so there has to be a non-libc gcc to build the kernel!)
 
 # Virtuals:
-PREFERRED_PROVIDER_virtual/${TARGET_PREFIX}gcc-initial	    = "gcc-cross-initial"
-PREFERRED_PROVIDER_virtual/${TARGET_PREFIX}gcc-intermediate = "gcc-cross-intermediate"
-PREFERRED_PROVIDER_virtual/${TARGET_PREFIX}gcc		    = "gcc-cross"
-PREFERRED_PROVIDER_virtual/${TARGET_PREFIX}g++		    = "gcc-cross"
-
-# Set the preferred provider for a few toolchain-related items, otherwise
-# these may be selected from the external-toolchain instead.
-PREFERRED_PROVIDER_virtual/${TARGET_PREFIX}binutils	    = "binutils-cross"
-PREFERRED_PROVIDER_virtual/arm-linux-binutils		    = "binutils-cross"
-PREFERRED_PROVIDER_virtual/armeb-linux-binutils		    = "binutils-cross"
-PREFERRED_PROVIDER_linux-libc-headers			    = "linux-libc-headers"
 
 # Select the appropriate x11 library provider.  The diet-x11 libraries are
 # much smaller, but may not be as current as the standard x11 libraries; by
@@ -148,9 +142,6 @@ PREFERRED_PROVIDER_virtual/libx11-native        ?= "libx11-native"
 PREFERRED_PROVIDER_virtual/db			= "db"
 PREFERRED_PROVIDER_virtual/db-native		= "db-native"
 
-SRCDATE_ipkg-utils				?= "20060106"
-SRCDATE_ipkg-utils-native			?= "20060106"
-SRCDATE_ipkg-link				?= "20060106"
 SRCDATE_irssi					?= "20050930"
 
 # We want the newer util-linux package
@@ -181,11 +172,9 @@ PREFERRED_PROVIDER_virtual/libusb0		?= "libusb-compat"
 # we use bluez4 instead of the older bluez3
 DISTRO_BLUETOOTH_MANAGER			= "bluez4"
 PREFERRED_PROVIDER_bluez-utils-dbus		= "bluez4"
-PREFERRED_PROVIDER_bluez-libs			= "bluez-libs"
+PREFERRED_PROVIDER_bluez-libs			= "bluez4"
 PREFERRED_PROVIDER_bluez-utils			= "bluez4"
 
 # Include any package preferred versions and srcrevs:
 
 require conf/distro/include/preferred-slugos-versions.inc
-require conf/distro/include/sane-srcdates.inc
-require conf/distro/include/sane-srcrevs.inc

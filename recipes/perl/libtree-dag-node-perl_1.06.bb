@@ -1,10 +1,10 @@
 DESCRIPTION = "(super)class for representing nodes in a tree"
 SECTION = "libs"
-LICENSE = "Artistic|GPL"
+LICENSE = "Artistic|GPLv1+"
 RDEPENDS_${PN} += "perl-module-strict"
 BBCLASSEXTEND = "native"
 
-PR = "r0"
+PR = "r1"
 
 SRC_URI = "http://search.cpan.org/CPAN/authors/id/C/CO/COGENT/Tree-DAG_Node-${PV}.tar.gz;name=tree-dag-node-perl-${PV}"
 SRC_URI[tree-dag-node-perl-1.06.md5sum] = "3b006f128bd1d8961fc57c466ffa05f2"

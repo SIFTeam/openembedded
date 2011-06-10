@@ -2,9 +2,9 @@ DESCRIPTION = "ImageMagick is an image convertion tools"
 SECTION = "console/utils"
 LICENSE = "GPL"
 # FIXME: There is much more checked libraries. All should be added or explicitly disabled to get consistent results.
-DEPENDS = "bzip2 jpeg libpng librsvg tiff zlib"
+DEPENDS = "lcms bzip2 jpeg libpng librsvg tiff zlib"
 
-PR = "r5"
+PR = "r7"
 
 SRC_URI = "ftp://ftp.nluug.nl/pub/ImageMagick/ImageMagick-${PV}.tar.bz2 \
            file://PerlMagic_MakePatch;apply=yes \
@@ -16,7 +16,6 @@ S = "${WORKDIR}/ImageMagick-${IMVER}"
 
 inherit autotools binconfig pkgconfig
 
-EXTRA_AUTORECONF += "--exclude=libtoolize"
 EXTRA_OECONF = "--program-prefix= --without-x --without-freetype --without-perl --disable-openmp"
 
 FILES_${PN} += "${libdir}/ImageMagick-${IMVER}/modules-Q16/*/*.so \

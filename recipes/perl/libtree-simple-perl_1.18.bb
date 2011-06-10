@@ -1,8 +1,8 @@
 DESCRIPTION = "A simple tree object"
 SECTION = "libs"
-LICENSE = "Artistic|GPL"
-RDEPENDS += "perl-module-test-more perl-module-scalar-util"
-PR = "r0"
+LICENSE = "Artistic|GPLv1+"
+RDEPENDS_${PN} += "perl-module-test-more perl-module-scalar-util"
+PR = "r1"
 
 PACKAGE_ARCH = "all"
 

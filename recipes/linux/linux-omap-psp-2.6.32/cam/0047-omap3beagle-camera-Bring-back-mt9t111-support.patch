@@ -1,7 +1,7 @@
-From 7e836bcc19cd61006cbc8bc0eb3360b2c188fa47 Mon Sep 17 00:00:00 2001
+From e81cdbd3c914965685e213ceef5a14775bfb9397 Mon Sep 17 00:00:00 2001
 From: Sergio Aguirre <saaguirre@ti.com>
 Date: Mon, 12 Jul 2010 16:42:41 -0500
-Subject: [PATCH 47/71] omap3beagle: camera: Bring back mt9t111 support
+Subject: [PATCH 47/75] omap3beagle: camera: Bring back mt9t111 support
 
 Restore MT9T111 sensor support.
 

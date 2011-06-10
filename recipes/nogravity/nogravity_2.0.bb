@@ -3,7 +3,7 @@ DESCRIPTION = "3D arcade space shooter"
 HOMEPAGE = "http://www.realtech-vr.com/nogravity/"
 LICENSE = "GPL"
 SECTION = "x11/games"
-DEPENDS = "libsdl-x11 zlib libpng libsdl-mixer libogg libvorbis"
+DEPENDS = "virtual/libsdl zlib libpng libsdl-mixer libogg libvorbis"
 PR = "r1"
 
 SRC_URI = "http://zaurus.vivaphp.net/nogravity.tar.bz2;name=archive \
@@ -19,7 +19,7 @@ EXTRA_OECONF = "--enable-sound=sdl_mixer  --disable-opengl"
 FILES_${PN} += "/usr/games/nogravity/no*"
 FILES_${PN}-data = "/usr/games/nogravity/*.RMX"
 PACKAGE_ARCH_${PN}-data = "all"
-RRECOMMENDS+${PN} = "${PN}-data"
+RRECOMMENDS_${PN} = "${PN}-data"
 
 do_install_prepend() {
 	install -d  ${D}/usr/games/nogravity/

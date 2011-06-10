@@ -1,8 +1,9 @@
 DESCRIPTION = "Locale::gettext - message handling functions"
 SECTION = "libs"
-LICENSE = "Artistic|GPL"
+LICENSE = "Artistic|GPLv1+"
 DEPENDS = "virtual/libintl"
-PR = "r9"
+BBCLASSEXTEND = "native"
+PR = "r20"
 
 SRC_URI = "http://search.cpan.org/CPAN/authors/id/P/PV/PVANDRY/gettext-${PV}.tar.gz"
 

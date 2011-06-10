@@ -4,10 +4,11 @@
 # [23:00] oxo: glibc (any version) on sparc does not like (repeat me) "-Os"
 
 FULL_OPTIMIZATION = "-fexpensive-optimizations -fomit-frame-pointer -frename-registers -Os"
-# Work-around for alignment traps when eglibc-2.12 is built with gcc-4.5*
-FULL_OPTIMIZATION_pn-eglibc_arm = "-fexpensive-optimizations -fomit-frame-pointer -frename-registers -Os -ggdb3"
 FULL_OPTIMIZATION_pn-perl = "-fexpensive-optimizations -fomit-frame-pointer -frename-registers -O1"
 FULL_OPTIMIZATION_sparc = "-fexpensive-optimizations -fomit-frame-pointer -frename-registers -O2"
+
+# gcc 4.4 and 4.5 has a problem with 'leakage' into libgcc.a with -Os
+FULL_OPTIMIZATION_powerpc = "-fexpensive-optimizations -fomit-frame-pointer -frename-registers -O2"
 
 # JaMa: I promise to report bug upstream, but as it can take a while to fix it, I'll switch to -O2 here
 # Tested with gcc-4.4.2 and gcc-4.4.3 on armv4t and armv5te and it fails with -Os, with gcc-4.3.3 it works OK with -Os
@@ -20,7 +21,6 @@ FULL_OPTIMIZATION_pn-libsyncml = "-fexpensive-optimizations -fomit-frame-pointer
 BUILD_OPTIMIZATION_pn-perl = "-O1"
 BUILD_OPTIMIZATION_sparc = "-O2"
 
-TARGET_LINK_HASH_STYLE = "${@['-Wl,--hash-style=gnu',''][bb.data.getVar('TARGET_ARCH',d,1) in ['mips', 'mipsel']]}"
+TARGET_LINK_HASH_STYLE = "${@['-Wl,--hash-style=gnu',''][bb.data.getVar('TARGET_ARCH',d,1) in ['mips', 'mipsel', 'mips64', 'mips64el']]}"
 
 CXXFLAGS += "-fvisibility-inlines-hidden"
-

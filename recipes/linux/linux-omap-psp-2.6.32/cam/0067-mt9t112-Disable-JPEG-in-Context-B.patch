@@ -1,7 +1,7 @@
-From d098c75d211e3affc0a67ac98edce6494521faad Mon Sep 17 00:00:00 2001
+From b1196ec5f007cef5cd3342ed3dbf3415bf721bd4 Mon Sep 17 00:00:00 2001
 From: Sergio Aguirre <saaguirre@ti.com>
 Date: Sun, 18 Jul 2010 01:45:29 -0500
-Subject: [PATCH 67/71] mt9t112: Disable JPEG in Context B
+Subject: [PATCH 67/75] mt9t112: Disable JPEG in Context B
 
 Signed-off-by: Sergio Aguirre <saaguirre@ti.com>
 ---

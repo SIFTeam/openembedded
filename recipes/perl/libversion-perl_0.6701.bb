@@ -1,7 +1,9 @@
 DESCRIPTION = "version - Perl extension for Version Objects"
 SECTION = "libs"
-LICENSE = "Artistic|GPL"
-PR = "r9"
+LICENSE = "Artistic|GPLv1+"
+PR = "r20"
+
+DEFAULT_PREFERENCE = "-1"
 
 SRC_URI = "http://search.cpan.org/CPAN/authors/id/J/JP/JPEACOCK/version-${PV}.tar.gz"
 

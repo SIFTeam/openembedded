@@ -1,11 +1,13 @@
 DESCRIPTION = "libnl2 is a library for applications dealing with netlink sockets"
 SECTION = "libs/network"
 LICENSE = "LGPL"
-HOMEPAGE = "http://people.suug.ch/~tgr/libnl"
-SRCREV = "8808743839b0f459394ecd00cb0f7c1896c0ab7a"
+HOMEPAGE = "http://www.infradead.org/~tgr/libnl/"
+SRCREV = "d378220c96c3c8b6f27dca33e7d8ba03318f9c2d"
 PV = "1.9+gitr${SRCPV}"
 PE = "1"
-PR = "r1"
+PR = "r3"
+
+DEPENDS = "flex-native bison-native"
 
 inherit autotools
 
@@ -14,6 +16,7 @@ includedir = ${prefix}/include/libnl2
 SRC_URI = "\
   git://git.kernel.org/pub/scm/libs/netlink/libnl.git;protocol=git \
   file://fix-pc-file.patch \
+  file://fix-pktloc-dep-race.patch \
 "
 S = "${WORKDIR}/git"
 

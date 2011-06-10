@@ -8,12 +8,13 @@ SRC_URI = " \
 git://git.freesmartphone.org/linux-2.6.git;protocol=git;branch=palmpre/master \
 file://defconfig \
 "
+DEPENDS += "kbd-native"
 
 S = "${WORKDIR}/git/"
 
-SRCREV = "96eba42952e860f652e66a72569319dfd35756dc"
+SRCREV = "04cfb1fcb11b38932a78f66522953253347efe60"
 KV = "2.6.24"
-PR="r1"
+PR="r4"
 PV = "${KV}+gitr${SRCPV}"
 
 # linux.inc overrides LOCAVERSION but we like to stay with the one used originally

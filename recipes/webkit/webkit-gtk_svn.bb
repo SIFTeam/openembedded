@@ -3,9 +3,9 @@ DEPENDS = "geoclue enchant gtk-doc-native gtk-doc gnome-keyring libsoup-2.4 curl
 
 SRCREV_FORMAT = "webcore-rwebkit"
 
-PR = "r2"
-SRCREV = "60413"
-PV = "1.3.1+svnr${SRCPV}"
+PR = "r0"
+SRCREV = "72648"
+PV = "1.3.6+svnr${SRCPV}"
 
 SRC_URI = "\
   svn://svn.webkit.org/repository/webkit/trunk/;module=JavaScriptCore;proto=http \
@@ -34,6 +34,7 @@ EXTRA_OECONF = "\
                 --enable-svg \
                 --enable-icon-database=yes \
                 --enable-geolocation=yes \
+                --enable-link-prefetch \
 #                --with-unicode-backend=glib \
 "
 
@@ -60,10 +61,14 @@ do_compile_prepend() {
 	cd ${S}
 }
 
+do_install_prepend() {
+	cp ${S}/Programs/.libs/jsc ${S}/Programs/jsc-1 || true
+}
+
 PACKAGES =+ "${PN}-webinspector ${PN}launcher-dbg ${PN}launcher libjavascriptcore"
 FILES_${PN}launcher = "${bindir}/GtkLauncher"
 FILES_${PN}launcher-dbg = "${bindir}/.debug/GtkLauncher"
 FILES_libjavascriptcore = "${libdir}/libJavaScriptCore.so.*"
-FILES_${PN}-webinspector = "${datadir}/webkit-1.0/webinspector/"
-FILES_${PN} += "${datadir}/webkit-1.0/resources/error.html ${datadir}/webkit-1.0/images"
+FILES_${PN}-webinspector = "${datadir}/webkit*/webinspector/"
+FILES_${PN} += "${datadir}/webkit*/resources/error.html ${datadir}/webkit*/images"
 

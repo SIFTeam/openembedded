@@ -1,7 +1,7 @@
-From eed14c95dbe46b0e34b489ad5e0452654e0f1661 Mon Sep 17 00:00:00 2001
+From 2355a460abc09be0a8c61360792a59056eb09230 Mon Sep 17 00:00:00 2001
 From: Vaibhav Hiremath <hvaibhav@ti.com>
 Date: Wed, 7 Jul 2010 11:55:43 +0530
-Subject: [PATCH 31/71] BeagleXM:Cam: Add support for MT9V113 VGA Sensor
+Subject: [PATCH 31/75] BeagleXM:Cam: Add support for MT9V113 VGA Sensor
 
 This patch replaces the MT9T111 to MT9V113 sensor.
 ---

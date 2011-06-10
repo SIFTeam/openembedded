@@ -8,10 +8,8 @@ INC_SRC_URI = "file://sample.desktop \
 
 PARALLEL_MAKE = ""
 
-COMPATIBLE_MACHINE = "(zylonite|mx31litekit|omap-3430ldp|omap-3430sdp|mx31ads|qemuarm|qemux86|ipodtouch|am3517-evm|dm37x-evm|am37x-evm|beagleboard|overo|omap3evm|omap5912osk)"
-
 STDDEPENDS = "virtual/libx11 gtk-doc-native pango glib-2.0 libxfixes gtk+"
-BASE_CONF = "--disable-gtk-doc ${@get_clutter_fpu_setting(bb, d)} --enable-conformance "
+BASE_CONF = "--disable-introspection --disable-gtk-doc ${@get_clutter_fpu_setting(bb, d)} --enable-conformance "
 
 DEPENDS = "${STDDEPENDS} virtual/libgl"
 EXTRA_OECONF = "${BASE_CONF} --with-flavour=glx"
@@ -43,7 +41,12 @@ EXTRA_OECONF_mx31ads = "${BASE_CONF} --with-flavour=eglnative"
 PACKAGE_ARCH_mx31ads = "${MACHINE_ARCH}"
 LDFLAGS_append_mx31ads = " -lpvrNULLWSEGL -lstdc++ "
 
-INC_PR = "r2"
+DEPENDS_pcm043 = "${STDDEPENDS} libgles-mx31 tslib"
+EXTRA_OECONF_pcm043 = "${BASE_CONF} --with-flavour=eglnative"
+PACKAGE_ARCH_pcm043 = "${MACHINE_ARCH}"
+LDFLAGS_append_pcm043 = " -lpvrNULLWSEGL -lstdc++ "
+
+INC_PR = "r3"
 
 inherit autotools pkgconfig gtk-doc
 
@@ -59,6 +62,7 @@ FILES_${PN}-cally-examples = "${bindir}/cally-*-example"
 require clutter-common.inc
 
 do_configure_prepend() {
+	glib-gettextize --force --copy || true
 	# Fix up some weirdness in the docs
 	copy_gtk_doc_make
 
@@ -72,7 +76,7 @@ do_configure_prepend() {
 
 # helper to (re)build shader source files from *.glsl	
 rebuild_shader_sources() {
-	if [ $# == 1 ] && [ $1 ] &&  [ -d $1 ] ; then
+	if [ $# = 1 ] && [ $1 ] &&  [ -d $1 ] ; then
 		glespath=$1
 		for i in ${glespath}/*.glsl ; do 
 			# *.h

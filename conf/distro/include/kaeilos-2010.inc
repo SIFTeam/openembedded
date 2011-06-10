@@ -2,7 +2,7 @@
 #@NAME: kaeilos-2010
 #@DESCRIPTION: Release independent distribution configuration for KaeilOS 
 #@MAINTAINER: Marco Cavallini <m.cavallini@koansoftware.com>
-#@VERSION: 21-04-2010
+#@VERSION: 06-10-2010
 #
 # KaeilOS is a registered trade mark of KOAN - Bergamo - Italia
 # Product website : http://www.KaeilOS.com 
@@ -37,9 +37,9 @@ THUMB_INTERWORK = "yes"
 KAEILOS_URI ?= "http://www.kaeilos.com"
 
 #Use this variable to select which recipe you want to use to get feed configs (/etc/ipkg/, /etc/apt/sources.list)
-# usefull for derivative distros and local testing
+# useful for derivative distros and local testing
 # As this is runtime we can't and won't use virtual/feed-configs
-DISTRO_FEED_CONFIGS = "kaeilos-feed-configs"
+DISTRO_FEED_CONFIGS = ""
 
 #Set the default maintainer of kaeilos
 MAINTAINER = "KaeilOS Mantainer <m.cavallini@koansoftware.com>"
@@ -119,28 +119,6 @@ DEPLOY_DIR_IMAGE = "${DEPLOY_DIR}/images/${MACHINE}"
 
 # KaeilOS *always* has some form of release config, so error out if someone thinks he knows better 
 DISTRO_CHECK := "${@bb.data.getVar("DISTRO_VERSION",d,1) or bb.fatal('Remove this line or set a dummy DISTRO_VERSION if you really want to build an unversioned distro')}"
-
-# Configuration for tinderbox, so people only need:
-# INHERIT          += "tinderclient"
-# in their local.conf 
-
-#Name of the client
-TINDER_MACHINE  = "${MACHINE}-${LIBC}-build-image"
-
-# Which lof file to write to, which tree to report to
-TINDER_LOG        = "${TMPDIR}/tinder.log"
-TINDER_TREE       = "KaeilOS"
-
-# Which branch do we build
-TINDER_BRANCH     = "org.openembedded.dev"
-   
-## Clobbing
-## 0 for rebuilding everything from scratch
-## 1 for incremental builds
-TINDER_CLOBBER    = "1"
-
-## Do a report at all
-TINDER_REPORT     = "1"
 
 OESTATS_SERVER      ?= "tinderbox.openembedded.org"
 

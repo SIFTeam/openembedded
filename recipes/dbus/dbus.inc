@@ -1,11 +1,11 @@
 DESCRIPTION = "A message bus system for inter-process communication"
 HOMEPAGE = "http://dbus.freedesktop.org"
 SECTION = "base"
-LICENSE = "GPL"
+LICENSE = "GPLv2+ AFLv2.1"
 DEPENDS = "expat glib-2.0 virtual/libintl libsm libice virtual/libx11"
 DEPENDS_openpli = "expat glib-2.0 virtual/libintl"
 
-INC_PR = "r19"
+INC_PR = "r20"
 
 SRC_URI = "\
   http://dbus.freedesktop.org/releases/dbus/dbus-${PV}.tar.gz;name=dbus \
@@ -53,6 +53,11 @@ do_install_append() {
         if [ -e bus/.libs/dbus-daemon-launch-helper ]; then
                 install -d  ${D}${libexecdir}/
                 install -m 0755 bus/.libs/dbus-daemon-launch-helper ${D}${libexecdir}/
+        fi
+
+        # Handle case where prefix is empty
+        if [ -z "$prefix" ]; then
+                sed -i 's,/usr,,g' ${D}${sysconfdir}/init.d/dbus-1
         fi
 }
 

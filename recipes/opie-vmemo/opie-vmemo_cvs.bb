@@ -1,6 +1,10 @@
 require ${PN}.inc
 
-PV = "${OPIE_CVS_PV}"
+PV = "${OPIE_GIT_PV}"
 
-SRC_URI = "${HANDHELDS_CVS};module=opie/core/applets/vmemo \
-           ${HANDHELDS_CVS};module=opie/apps"
+PR = "r1"
+
+SRC_URI = "${OPIE_GIT};protocol=git;subpath=core/applets/vmemo \
+           ${OPIE_GIT};protocol=git;subpath=apps"
+
+DEPENDS = "libopiecore2 libopieui2 libopiemm2"

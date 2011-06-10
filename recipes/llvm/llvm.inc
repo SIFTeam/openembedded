@@ -60,6 +60,8 @@ EXTRA_OECMAKE = "\
   -DCMAKE_BUILD_TYPE:STRING=RelWithDebInfo \
   -DBUILD_SHARED_LIBS:BOOL=ON \
 "
+# We need to reset this to avoid breakage as we build out of tree
+TOOLCHAIN_OPTIONS = ""
 
 PACKAGES = "${PN} ${PN}-dev ${PN}-dbg ${PN}-doc"
 
@@ -86,9 +88,9 @@ llvm_stage() {
 	install -d ${STAGING_LIBDIR}/llvm${LLVM_RELEASE}
 
 	#	Move headers into their own directory
-	cp -r ${WORKDIR}/llvm-install/${prefix}/include/llvm \
+	cp -R ${WORKDIR}/llvm-install/${prefix}/include/llvm \
 	${STAGING_INCDIR}/llvm${LLVM_RELEASE}/
-	cp -r ${WORKDIR}/llvm-install/${prefix}/include/llvm-c \
+	cp -R ${WORKDIR}/llvm-install/${prefix}/include/llvm-c \
 	${STAGING_INCDIR}/llvm${LLVM_RELEASE}/
 
 	find ${WORKDIR}/llvm-install/${prefix}/lib -name "*" -maxdepth 1 -exec \

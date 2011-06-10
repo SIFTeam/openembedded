@@ -1,17 +1,13 @@
 LICENSE = "MIT"
 
 PV = "${DISTRO_VERSION}"
-PR = "r5"
+PR = "r6"
 PE = "1"
 
 SRC_URI = "file://lsb_release"
 
 PACKAGES = "${PN}"
 PACKAGE_ARCH = "${MACHINE_ARCH}"
-
-export METADATA_REVISION
-export METADATA_BRANCH
-export TARGET_SYS
 
 do_install() {
 	install -d ${D}${sysconfdir}

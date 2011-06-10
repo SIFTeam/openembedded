@@ -3,8 +3,10 @@
 # This script helps in launching QEMU to emulate OE based target systems
 # It accepts 2 arguments
 # First argument is the target architectures
-# second argument is empty if you want to do a complete init or
-# 'single' if booting into /bin/sh
+# Second argument is empty if your distribution does not encode the libc
+# into the deploy subdirectory structure.
+# Third argument is empty if you wish to boot the system up fully or
+# 'single' if you wish to use /bin/sh as init.
 # It assumes that bridge is setup on the eth0 device on the host systems
 
 # on debian-like systems
@@ -54,12 +56,16 @@
 #		from dhcp server. Note that this option is not entertained if networking
 #		is disabled
 
-supported_archs="{arm mips mipsel ppc sh4 x86}"
-if [ $# -lt 2 ]; then
+supported_archs="{arm mips mips64 mipsel mips64el ppc sh4 x86}"
+if [ $# -lt 3 ]; then
     echo -en "
-    Usage: `basename $0` <arch> <libc>
+    Usage: `basename $0` <arch> <libc> <image> [single|empty]
     where <arch> is one $supported_archs
-    libc is uclibc glibc or eglibc
+    <libc> is uclibc glibc or eglibc (used in the deploy directory)
+    <image> is OE image that you would like to boot for list of
+    available images look into <OE-metadata>/recipes/images
+    some common images are console-image, x11-image, minimalist-image
+    single may be passed to use /bin/sh as init or omitted.
     Example: `basename $0` arm eglibc
 "
     exit 0
@@ -67,10 +73,11 @@ fi
 
 arch=$1
 libc=$2
+image=$3
 mem=256				# memory for guest server in Mb
-imagetype="ext2"
-networking="yes"
-nfsboot="yes"
+imagetype="ext3"
+networking="no"
+nfsboot="no"
 staticip="yes"
 
 case $arch in
@@ -83,7 +90,6 @@ case $arch in
 	rootdisk="sda"
 	qemuopts="-nographic"
 	kernel="zImage"
-	image="native-sdk-image"
 	;;
     mips)
 	address="192.168.1.102"
@@ -94,7 +100,6 @@ case $arch in
 	rootdisk="hda"
 	qemuopts="-nographic"
 	kernel="vmlinux"
-	image="native-sdk-image"
 	;;
     mipsel)
 	address="192.168.1.103"
@@ -105,7 +110,6 @@ case $arch in
 	rootdisk="hda"
 	qemuopts="-nographic"
 	kernel="vmlinux"
-	image="native-sdk-image"
 	;;
     ppc|powerpc)
 	arch=ppc
@@ -118,7 +122,6 @@ case $arch in
 	rootdisk="hdc"
 	qemuopts="-nographic"
 	kernel="vmlinux"
-	image="minimalist-image"
 	;;
     sh|sh4)
 	arch=sh4
@@ -131,7 +134,6 @@ case $arch in
 	rootdisk="sda"
 	qemuopts="-monitor null -serial vc -serial stdio"
 	kernel="zImage"
-	image="minimalist-image"
 	;;
     x86)
 	address="192.168.1.106"
@@ -141,9 +143,30 @@ case $arch in
 	mem="1024"
 	consoleopt="console=ttyS0"
 	rootdisk="hda"
-	qemuopts=""
+	qemuopts="-nographic"
 	kernel="bzImage"
-	image="minimalist-image"
+	;;
+    mips64)
+	address="192.168.1.107"
+	macaddr="00:16:3e:00:00:07"
+	gdbport="1238"
+	machine="malta"
+	mem="256"
+	consoleopt="console=ttyS0"
+	rootdisk="hda"
+	qemuopts="-nographic"
+	kernel="vmlinux"
+	;;
+    mips64el)
+	address="192.168.1.108"
+	macaddr="00:16:3e:00:00:08"
+	gdbport="1239"
+	machine="malta"
+	mem="256"
+	consoleopt="console=ttyS0"
+	rootdisk="hda"
+	qemuopts="-nographic"
+	kernel="vmlinux"
 	;;
     *)
 	echo "Specify one architectures out of $supported_archs to emulate."
@@ -151,7 +174,7 @@ case $arch in
 	;;
     esac
 
-nfsserver="192.168.1.1"		# address of NFS server
+nfsserver="192.168.1.64"	# address of NFS server
 gateway="192.168.1.254"		# default gateway
 netmask="255.255.255.0"		# subnet mask
 hostname="qemu$arch"		# hostname for guest server
@@ -200,7 +223,7 @@ else
 	netopt="-net none"
 fi
 
-if [ "x$3" == "xsingle" ]; then
+if [ "x$3" = "xsingle" ]; then
     init="init=/bin/sh"
 else
     init=""

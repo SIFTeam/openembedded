@@ -1,5 +1,5 @@
 DESCRIPTION = "SHR Feed"
-PR = "r76"
+PR = "r96"
 PV = "1.0"
 LICENSE = "GPL"
 
@@ -39,7 +39,7 @@ RDEPENDS_${PN} += "\
 		libyaml-perl \
 		libnet-dbus-perl \
 		mc \
-		mpd \
+# broken	mpd \
 		mplayer \
 		navit \
 		omhacks \
@@ -50,6 +50,7 @@ RDEPENDS_${PN} += "\
 		openmoko-agpsui \
 		openvpn \
 		pyphonelog \
+		ffphonelog \
 #		shr-config \
 		shr-today \
 		shr-theme-neo \
@@ -64,6 +65,7 @@ RDEPENDS_${PN} += "\
 		shr-splash-theme-handy \
 		shr-splash-theme-tux \
 		shr-splash-theme-logo \
+		shr-splash-theme-openmoko \
 		vagalume \
 		wireshark \
 		x11vnc \
@@ -77,8 +79,7 @@ RDEPENDS_${PN} += "\
 		mtpaint \
 		telepathy-python \
 		intone-video \
-		ipkg-link \
-		ipkg-utils \
+		opkg-utils \
 		mysql \
 		fltk-chess \
 		remoko \
@@ -101,6 +102,7 @@ RDEPENDS_${PN} += "\
 		vim \
 		vpnc \
 		emacs-x11 \
+		mg \
 		mcabber \
 		gdb \
 		oh-puzzles \
@@ -117,7 +119,7 @@ RDEPENDS_${PN} += "\
 		ppp \
 		bluez-hcidump \
 		kbdd \
-		kexec-tools \
+		kexec \
 		mc \
 		iotop \
 		xprop \
@@ -158,7 +160,6 @@ RDEPENDS_${PN} += "\
 		synergy \
 		irssi \
 		zhone \
-		paroli \
 		cu \
 		net-tools \
 		iproute2 \
@@ -171,10 +172,6 @@ RDEPENDS_${PN} += "\
 		wmiconfig \
 		netkit-telnet \
 		bind-utils \
-		bubble-keyboard \
-		intuition \
-		gridpad \
-#		essential-dialer \
 		font-adobe-100dpi \
 		font-adobe-75dpi \
 		font-adobe-utopia-100dpi \
@@ -210,6 +207,11 @@ RDEPENDS_${PN} += "\
 		font-sun-misc \
 		font-winitzki-cyrillic \
 #		font-xfree86-type1 \
+		ttf-droid-sans \
+		ttf-droid-sans-mono \
+		ttf-droid-sans-fallback \
+		ttf-droid-sans-japanese \
+		ttf-droid-serif \
 #		msn-pecan \
 		qwo \
 		fso-apm \
@@ -220,7 +222,7 @@ RDEPENDS_${PN} += "\
 		mickeyterm \
 		opimd-utils \
 		omgps \
-		shr-launcher \
+# broken	shr-launcher \
 		e-tasks \
 		elmdentica \
 		shr-installer \
@@ -278,8 +280,6 @@ RDEPENDS_${PN} += "\
 		make \
 		dnsmasq \
 		libsyncml \
-		qi \
-		qi-ubi \
 		wpa-gui \
 		iliwi \
 		gabriel \
@@ -288,15 +288,16 @@ RDEPENDS_${PN} += "\
 		litephone \
 		linphone \
 		rtmom \
-		ventura \
+# broken	ventura \
 		emtooth \
+		emtooth2 \
 		podboy \
 		mcnavi \
 		neolight \
 		spojegui \
 		dbus-daemon-proxy \
 		unixbench \
-		maxima \
+# broken	maxima \
 		xfsprogs \
 		xfsdump \
 		numberx \
@@ -305,12 +306,32 @@ RDEPENDS_${PN} += "\
 		wesnoth \
 		mokosuite2 \
 		mokowm-imf-ecore \
+		mokojeweled \
+		mokohome \
+		mokopanel \
+		mokophone \
 		atrack \
 		minneo \
 		gnuplot \
 		galculator \
 		xterm \
+		ca-certificates \
+		inkspill \
+		dns2tcp \
+		efm-nav \
+		efm-path \
+		efm-pathbar \
+		setxkbmap \
+		enjoy \
+		shr-theme-efenniht \
+		gwaterpas \
+		sflphone-common \
+		samba \
+		bison \
+		automake \
 "
 
 # this is only usefull on gta02 and on other devices it's trying to pull mesa-dri (not respecting DEFAULT_PROVIDER for virtual/libgl)
-RDEPENDS_${PN}_append_om-gta02 = "glamo-dri-tests"
+RDEPENDS_${PN}_append_om-gta02 = "glamo-dri-tests \
+		valacompass \
+"

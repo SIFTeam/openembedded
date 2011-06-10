@@ -1,6 +1,6 @@
 DESCRIPTION = "Interface to pcap(3) LBL packet capture library"
 SECTION = "libs"
-LICENSE = "Artistic|GPL"
+LICENSE = "Artistic|GPLv1+"
 DEPENDS = "libpcap"
 RDEPENDS_${PN} += " \
 	perl-module-socket \
@@ -8,7 +8,7 @@ RDEPENDS_${PN} += " \
 	perl-module-xsloader \
 	"
 
-PR = "r0"
+PR = "r1"
 
 export STAGING_LIBDIR
 

@@ -4,8 +4,8 @@ HOMEPAGE = "http://avahi.org"
 SECTION = "network"
 PRIORITY = "optional"
 LICENSE = "GPL"
-DEPENDS = "expat virtual/libintl libdaemon dbus glib-2.0"
-
+DEPENDS = "libcap2 python-native expat virtual/libintl libdaemon dbus glib-2.0"
+INC_PR = "r13"
 # uclibc has no nss
 RRECOMMENDS_avahi-daemon_append_libc-glibc = "libnss-mdns"
 RDEPENDS_avahi-daemon += "sysvinit-pidof update-rc.d"
@@ -17,18 +17,21 @@ SRC_URI = "http://avahi.org/download/avahi-${PV}.tar.gz \
 inherit autotools pkgconfig update-rc.d python-dir
 # handle update-rc.d RDEPENDS_${PN} manually, we don't need it on
 # anything but avahi-daemon and avahi-autoipd
-RDEPENDS_append = ""
 
 # TODO: build and enable all the extra stuff avahi offers
 EXTRA_OECONF = "--with-distro=debian  --disable-stack-protector --disable-nls --disable-gdbm ${AVAHI_GTK} --disable-mono --disable-monodoc --disable-qt3 --disable-qt4 ${AVAHI_PYTHON}"
-AVAHI_PYTHON = "--disable-python"
-AVAHI_GTK = "--disable-gtk"
+AVAHI_PYTHON ?= "--enable-python"
+AVAHI_GTK ?= "-disable-gtk"
 
-LDFLAGS_append_linux-uclibc = " -lintl"
-LDFLAGS_append_linux-uclibceabi = " -lintl "
+LDFLAGS_append_libc-uclibc = " -lintl"
 LDFLAGS_append_uclinux-uclibc = " -lintl"
 
-PACKAGES =+ "avahi-daemon avahi-discover libavahi-common libavahi-core libavahi-client avahi-dnsconfd libavahi-glib libavahi-ui avahi-discover-standalone avahi-autoipd avahi-utils"
+do_configure_prepend() {
+    sed 's:AM_CHECK_PYMOD:echo "no pymod" #AM_CHECK_PYMOD:g' -i configure.ac
+}
+
+
+PACKAGES =+ "python-avahi avahi-daemon avahi-discover libavahi-common libavahi-core libavahi-client avahi-dnsconfd libavahi-glib libavahi-ui avahi-discover-standalone avahi-autoipd avahi-utils"
 
 FILES_libavahi-common = "${libdir}/libavahi-common.so.*"
 FILES_libavahi-core = "${libdir}/libavahi-core.so.*"
@@ -59,6 +62,9 @@ FILES_avahi-discover = "${bindir}/avahi-discover \
 FILES_avahi-discover-standalone = "${bindir}/avahi-discover-standalone \
                                    ${datadir}/avahi/interfaces/avahi-discover.glade"
 CONFFILES_avahi-daemon = "${sysconfdir}/avahi/avahi-daemon.conf"
+
+RDEPENDS_avahi-discover = "python-avahi"
+RDEPENDS_python-avahi = "python-dbus"
 
 INITSCRIPT_PACKAGES = "avahi-daemon avahi-dnsconfd"
 INITSCRIPT_NAME_avahi-daemon = "avahi-daemon"

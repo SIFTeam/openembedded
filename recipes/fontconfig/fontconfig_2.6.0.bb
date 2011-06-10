@@ -5,7 +5,7 @@ DEPENDS = "expat freetype zlib"
 
 PR = "r4"
 
-SRC_URI = "http://fontconfig.org/release/fontconfig-${PV}.tar.gz \
+SRC_URI = "http://www.freedesktop.org/software/fontconfig/release/${BPN}-${PV}.tar.gz \
            file://fix-pkgconfig.patch"
 
 PACKAGES =+ "fontconfig-utils-dbg fontconfig-utils "

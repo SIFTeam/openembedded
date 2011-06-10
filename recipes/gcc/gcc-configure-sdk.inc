@@ -1,8 +1,6 @@
 require gcc-configure-common.inc
 
-# The two lines below conflict, this needs fixing - RP
-USE_NLS = '${@base_conditional( "TARGET_OS", "linux-uclibc", "no", "", d )}'
-USE_NLS = '${@base_conditional( "TARGET_OS", "linux-uclibceabi", "no", "", d )}'
+USE_NLS_libc-uclibc = 'no'
 
 EXTRA_OECONF_PATHS = "--with-sysroot=${prefix}/${TARGET_SYS} \
                       --with-build-time-tools=${TOOLCHAIN_PATH}/${TARGET_SYS}/bin \
@@ -28,23 +26,18 @@ export WINDRES_FOR_TARGET = "${TOOLCHAIN_PATH}/${TARGET_SYS}/bin/windres"
 #
 export ARCH_FLAGS_FOR_TARGET = "--sysroot=${STAGING_DIR_TARGET}"
 
-do_configure () {
-	export CC_FOR_BUILD="${BUILD_CC}"
-	export CXX_FOR_BUILD="${BUILD_CXX}"
-	export CFLAGS_FOR_BUILD="${BUILD_CFLAGS}"
-	export CPPFLAGS_FOR_BUILD="${BUILD_CPPFLAGS}"
-	export CXXFLAGS_FOR_BUILD="${BUILD_CXXFLAGS}"
-	export LDFLAGS_FOR_BUILD="${BUILD_LDFLAGS}"
-	(cd ${S} && gnu-configize) || die "failure running gnu-configize"
-	oe_runconf
+do_configure_prepend (){
+        # Make sure we use GMP/MPFR statically
+        sed -i 's/^\(HOST_GMPLIBS =\) \(.*\)$/\1 -Wl,-Bstatic \2 -Wl,-Bdynamic/' ${S}/Makefile.tpl
+        sed -i 's/^\(HOST_GMPLIBS =\) \(.*\)$/\1 -Wl,-Bstatic \2 -Wl,-Bdynamic/' ${S}/Makefile.in
+        sed -i 's/^\(HOST_PPLLIBS =\) \(.*\)$/\1 -Wl,-Bstatic \2 -Wl,-Bdynamic/' ${S}/Makefile.tpl
+        sed -i 's/^\(HOST_PPLLIBS =\) \(.*\)$/\1 -Wl,-Bstatic \2 -Wl,-Bdynamic/' ${S}/Makefile.in
+        sed -i 's/^\(HOST_LIBELFLIBS =\) \(.*\)$/\1 -Wl,-Bstatic \2 -Wl,-Bdynamic/' ${S}/Makefile.tpl
+        sed -i 's/^\(HOST_LIBELFLIBS =\) \(.*\)$/\1 -Wl,-Bstatic \2 -Wl,-Bdynamic/' ${S}/Makefile.in
 }
 
 do_compile () {
 	export CC="${BUILD_CC}"
-	export AR_FOR_TARGET="${TARGET_SYS}-ar"
-	export RANLIB_FOR_TARGET="${TARGET_SYS}-ranlib"
-	export LD_FOR_TARGET="${TARGET_SYS}-ld"
-	export NM_FOR_TARGET="${TARGET_SYS}-nm"
 	export CC_FOR_TARGET="${CCACHE} ${TARGET_SYS}-gcc ${TARGET_CC_ARCH}"
 	base_do_compile
 }

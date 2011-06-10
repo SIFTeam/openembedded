@@ -1,5 +1,5 @@
 DESCRIPTION = "SDK task for Scratchbox rootstraps incuding GPE/GTK bits"
-PR = "r1"
+PR = "r2"
 LICENSE = "MIT"
 ALLOW_EMPTY = "1"
 
@@ -11,8 +11,7 @@ RDEPENDS_${PN} = "\
     gdk-pixbuf-loader-xpm \
     intltool \
     intltool-dev \
-    ipkg \
-    ipkg-utils \
+    opkg-utils \
     gettext-dev \
     pkgconfig-dev \
     autoconf \

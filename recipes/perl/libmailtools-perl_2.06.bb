@@ -1,6 +1,6 @@
 DESCRIPTION = "MailTools is a set of Perl modules related to mail applications"
 SECTION = "libs"
-LICENSE = "Artistic|GPL"
+LICENSE = "Artistic|GPLv1+"
 DEPENDS = " \
 	libtest-pod-perl-native \
 	libtimedate-perl-native \
@@ -13,7 +13,7 @@ RDEPENDS_${PN} += " \
 	perl-module-test-more \
 	"
 BBCLASSEXTEND = "native"
-PR = "r0"
+PR = "r1"
 
 SRC_URI = "http://search.cpan.org/CPAN/authors/id/M/MA/MARKOV/MailTools-${PV}.tar.gz;name=mailtools-perl-${PV}"
 SRC_URI[mailtools-perl-2.06.md5sum] = "3f90297c7f566cc0cc9c89ee47906abf"

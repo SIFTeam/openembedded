@@ -3,12 +3,12 @@ which provides many useful data types, macros, \
 type conversions, string utilities, file utilities, a main \
 loop abstraction, and so on. It works on many \
 UNIX-like platforms, Windows, OS/2 and BeOS."
-LICENSE = "LGPL"
+LICENSE = "LGPLv2+"
 SECTION = "libs"
 PRIORITY = "optional"
 DEPENDS = "glib-2.0-native gtk-doc zlib"
 
-PR = "r5"
+PR = "r6"
 
 SRC_URI = "\
   http://ftp.gnome.org/pub/GNOME/sources/glib/2.24/glib-${PV}.tar.bz2;name=archive \
@@ -20,6 +20,7 @@ SRC_URI = "\
   file://gvariant.patch \
   file://gasync.patch \
   file://60_wait-longer-for-threads-to-die.patch \
+  file://glib-mkenums-interpreter.patch \
 "
 
 SRC_URI[archive.md5sum] = "45a8bc697d07f859566c0b64c40382a8"

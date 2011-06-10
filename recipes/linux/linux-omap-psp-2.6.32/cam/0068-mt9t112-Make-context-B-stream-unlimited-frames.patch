@@ -1,7 +1,7 @@
-From 49fbfdfd756f126edc16fe04c55ce238e22815fc Mon Sep 17 00:00:00 2001
+From 362f211f85aa5e0f7519fca599428e03b05cb05f Mon Sep 17 00:00:00 2001
 From: Sergio Aguirre <saaguirre@ti.com>
 Date: Sun, 18 Jul 2010 01:47:41 -0500
-Subject: [PATCH 68/71] mt9t112: Make context B stream unlimited frames
+Subject: [PATCH 68/75] mt9t112: Make context B stream unlimited frames
 
 Context A does this by default, so, only context B needs
 to be configured like this.

@@ -1,19 +1,19 @@
-DESCRIPTION = " Enlightenment webbrowser"
+DESCRIPTION = " Enlightenment Web Browser"
 LICENSE = "GPL"
-DEPENDS = "webkit-efl evas ecore edje"
-PV = "0.2.0.0+svnr${SRCPV}"
+DEPENDS = "evas ecore edje elementary webkit-efl"
+PV = "0.3.0.0+svnr${SRCPV}"
 SRCREV = "${EFL_SRCREV}"
 
 inherit e
+SRC_URI = "${E_SVN}/trunk;module=${SRCNAME};proto=http;scmdata=keep"
+S = "${WORKDIR}/${SRCNAME}"
 
-SRC_URI = "svn://svn.enlightenment.org/svn/e/trunk;module=eve;proto=http \
-           file://default.theme.remove.min.size.patch \
-"
+SRC_URI += "file://eve-theme-for-smaller-screens.patch"
 
 EXTRA_OECONF = "\
   --with-edje-cc=${STAGING_BINDIR_NATIVE}/edje_cc \
 "
 
-S = "${WORKDIR}/eve"
-
-FILES_${PN} += "${datadir}/icons/eve.png"
+FILES_${PN} += "\
+        ${datadir}/icons/eve.png \
+"

@@ -1,10 +1,10 @@
 DESCRIPTION = "Terminal screen handling and optimization"
 SECTION = "libs"
-LICENSE = "Artistic|GPL"
+LICENSE = "Artistic|GPLv1+"
 DEPENDS = "ncurses"
 BBCLASSEXTEND = "native"
 
-PR = "r1"
+PR = "r2"
 
 SRC_URI = "http://search.cpan.org/CPAN/authors/id/G/GI/GIRAFFED/Curses-${PV}.tgz;name=curses-perl-${PV}"
 SRC_URI[curses-perl-1.28.md5sum] = "ed9f7ddf2d90f4266da91c3dc9fad9c9"

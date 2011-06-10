@@ -3,7 +3,7 @@ which provides many useful data types, macros, \
 type conversions, string utilities, file utilities, a main \
 loop abstraction, and so on. It works on many \
 UNIX-like platforms, Windows, OS/2 and BeOS."
-LICENSE = "LGPL"
+LICENSE = "LGPLv2+"
 SECTION = "libs"
 PRIORITY = "optional"
 DEPENDS = "glib-2.0-native gtk-doc virtual/libiconv virtual/libintl"
@@ -14,6 +14,7 @@ SRC_URI = "\
   file://configure-libtool.patch \
   file://g_once_init_enter.patch \
   file://uclibc-res_query.patch \
+  file://glib-mkenums-interpreter.patch \
 "
 SRC_URI[archive.md5sum] = "d91bcbe27556430ddecce65086355708"
 SRC_URI[archive.sha256sum] = "0d1f6bf8aaeab772f2370229eefda45bef434e3f29a7d1d8e5dfafeaa1d8ad14"
@@ -22,7 +23,7 @@ SRC_URI_append_arm = " file://atomic-thumb.patch"
 SRC_URI_append_armv6 = " file://gatomic_armv6.patch"
 SRC_URI_append_armv7a = " file://gatomic_armv6.patch" 
 
-PR = "r1"
+PR = "r2"
 
 inherit autotools gettext
 

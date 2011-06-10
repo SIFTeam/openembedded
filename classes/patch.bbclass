@@ -5,6 +5,11 @@ QUILTRCFILE ?= "${STAGING_BINDIR_NATIVE}/quiltrc"
 
 PATCHDEPENDENCY = "${PATCHTOOL}-native:do_populate_sysroot"
 
+PATCHTOOL[type] = "choice"
+PATCHTOOL[choices] = "patch quilt git"
+PATCHRESOLVE[type] = "choice"
+PATCHRESOLVE[choices] = "noop user"
+
 python patch_do_patch() {
 	import oe.patch
 	import oe.unpack
@@ -38,7 +43,7 @@ python patch_do_patch() {
 	src_uri = d.getVar("SRC_URI", True).split()
 	srcurldata = bb.fetch.init(src_uri, d, True)
 	workdir = bb.data.getVar('WORKDIR', d, 1)
-	for url in d.getVar("SRC_URI", True).split():
+	for url in src_uri:
 		urldata = srcurldata[url]
 
 		local = urldata.localpath
@@ -92,7 +97,7 @@ python patch_do_patch() {
 				continue
 
 		if "maxrev" in parm:
-			srcrev = bb.data.getVar('SRCREV', d, 1)		
+			srcrev = bb.data.getVar('SRCREV', d, 1)
 			if srcrev and srcrev > parm["maxrev"]:
 				bb.note("Patch '%s' applies to earlier revisions" % pname)
 				continue
@@ -115,14 +120,29 @@ python patch_do_patch() {
 		bb.note("Applying patch '%s' (%s)" % (pname, oe.path.format_display(local, d)))
 		try:
 			patchset.Import({"file":local, "remote":url, "strippath": striplevel}, True)
-		except Exception:
-			import sys
-			raise bb.build.FuncFailed(str(sys.exc_value))
-		resolver.Resolve()
+			resolver.Resolve()
+		except Exception, exc:
+			bb.fatal(str(exc))
 }
+
+def patch_deps(d):
+    import oe.unpack
+
+    src_uri = d.getVar("SRC_URI", True).split()
+    srcurldata = bb.fetch.init(src_uri, d, True)
+    for url in src_uri:
+        urldata = srcurldata[url]
+        local = urldata.localpath
+        if local:
+            base, ext = os.path.splitext(os.path.basename(local))
+            if ext in ('.gz', '.bz2', '.Z', '.xz'):
+                local = base
+            if oe.unpack.is_patch(local, urldata.parm):
+                return "${PATCHDEPENDENCY}"
+    return ""
 
 addtask patch after do_unpack
 do_patch[dirs] = "${WORKDIR}"
-do_patch[depends] = "${PATCHDEPENDENCY}"
+do_patch[depends] = "${@patch_deps(d)}"
 
 EXPORT_FUNCTIONS do_patch

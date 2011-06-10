@@ -57,13 +57,14 @@ sysconf_read(){
 		# slugos, eth0.  The bootproto, which LinkSys sets to static in
 		# manufacturing, is reset to dhcp if the IP is still the
 		# original (192.168.1.77)
+		#  Note: SlugOS 5.8 - Due to mass confusion, the bootproto is no
+		#  longer changed if it is set to static with ip=192.168.1.77.
 		sedcmd='/^\[[^][]*\]$/p;'
 		# only do the ip_addr and lan_interface fixups on NSLU2
 		if test "$(machine)" = nslu2
 		then
 			sedcmd="$sedcmd"'
-				s/^lan_interface=ixp0$/lan_interface=eth0/;
-				/^ip_addr=192\.168\.1\.77$/,/^bootproto/s/^bootproto=static$/bootproto=dhcp/;'
+				s/^lan_interface=ixp0$/lan_interface=eth0/;'
 		fi
 		# always fix up the hardware addr if it is present
 		mac="$(config mac)"
@@ -182,6 +183,8 @@ sysconf_reload(){
 		echo "# address, netmask and gateway are ignored for 'dhcp'"
 		echo "# but required for 'static'"
 		echo "iface $iface inet $boot"
+		# The following is used by DHCP to register the hostname
+		test -n "$host"    && echo "	hostname $host"
 		# The following are ignored for DHCP but are harmless
 		test -n "$ip"      && echo "	address $ip"
 		test -n "$netmask" && echo "	netmask $netmask"
@@ -257,7 +260,7 @@ sysconf_save_conffiles(){
 		then
 			exec cpio -p -d -m -u "$saved"
 		else
-			exec cpio -o -H crc >"$saved"
+			exec cpio -o -H newc >"$saved"
 		fi
 	)
 }

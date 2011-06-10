@@ -16,7 +16,6 @@ S = "${WORKDIR}/gsm"
 inherit autotools pkgconfig update-rc.d
 # handle update-rc.d RDEPENDS_${PN} manually, we don't need it on
 # anything but gsmd
-RDEPENDS_append = ""
 
 INITSCRIPT_NAME = "gsmd"
 INITSCRIPT_PARAMS = "defaults 35"
@@ -52,7 +51,7 @@ RDEPENDS_${BASEPN}-plugins = "\
   ${BASEPN}-plugin-vendor-tihtc \
 "
 
-RDEPENDS_${PN} += "update-rc.d initscripts"
+RDEPENDS_${PN} += "update-rc.d"
 RRECOMMENDS_${PN} += "${BASEPN}-plugins"
 
 FILES_${PN}-dbg += "${libdir}/gsmd/.debug/*"

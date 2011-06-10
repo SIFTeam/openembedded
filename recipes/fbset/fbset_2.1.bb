@@ -8,8 +8,9 @@
 DESCRIPTION = "The fbset console tool"
 LICENSE = "GPLv2"
 RRECOMMENDS_${PN} = "fbset-modes"
+DEPENDS = "bison-native"
 
-PR = "r3"
+PR = "r4"
 
 SRC_URI = "http://ftp.debian.org/debian/pool/main/f/fbset/fbset_2.1.orig.tar.gz \
            file://makefile.patch"
@@ -19,10 +20,10 @@ inherit autotools update-alternatives
 PARALLEL_MAKE = ""
 
 do_install() {
-        install -d ${D}/usr/sbin ${D}/usr/share/man/man8 ${D}/usr/share/man/man5
-        install -m 0755 ${WORKDIR}/${P}/fbset ${D}/usr/sbin/fbset.real
-        install -m 0644 ${WORKDIR}/${P}/*.5 ${D}/usr/share/man/man5
-        install -m 0644 ${WORKDIR}/${P}/*.8 ${D}/usr/share/man/man8
+        install -d ${D}${sbindir} ${D}${datadir}/man/man8 ${D}${datadir}/man/man5
+        install -m 0755 ${WORKDIR}/${P}/fbset ${D}${sbindir}/fbset.real
+        install -m 0644 ${WORKDIR}/${P}/*.5 ${D}${datadir}/man/man5
+        install -m 0644 ${WORKDIR}/${P}/*.8 ${D}${datadir}/man/man8
 }
 
 ALTERNATIVE_NAME = "fbset"

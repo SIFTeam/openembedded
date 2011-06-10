@@ -3,16 +3,17 @@ require multi-kernel.inc
 DESCRIPTION = "Linux kernel for OMAP processors"
 KERNEL_IMAGETYPE = "uImage"
 
-COMPATIBLE_MACHINE = "beagleboard|omap3evm|am3517-evm|dm37x-evm|am37x-evm|omap3-touchbook|overo"
+COMPATIBLE_MACHINE = "am3517-crane|beagleboard|omap3evm|am3517-evm|dm37x-evm|am37x-evm|omap3-touchbook|overo"
 
-# This is the v2.6.32_OMAPPSP_03.00.01.06 branch
-SRCREV = "a6bad4464f985fdd3bed72e1b82dcbfc004d7869"
+# This is on the master branch
+SRCREV = "5fc29e7b2a76a64a739f857858ef0b98294aa155"
 
 # The main PR is now using MACHINE_KERNEL_PR, for omap3 see conf/machine/include/omap3.inc
 MACHINE_KERNEL_PR_append = "+gitr${SRCREV}"
 
-SRC_URI = "git://arago-project.org/git/people/sriram/ti-psp-omap.git;protocol=git;branch=master \
-           file://0001-Revert-omap3-beagle-Fix-compile-time-errors.patch \
+SRC_URI = "git://arago-project.org/git/projects/linux-omap3.git;protocol=http;branch=master \
+           file://0001-Added-Crane-Board-support.patch \
+	   file://0001-Revert-omap3-beagle-Fix-compile-time-errors.patch \
            file://0002-board-omap3touchbook-make-it-build-against-TI-linux-.patch \
            file://0003-ARM-OMAP-add-support-for-TCT-Zippy-to-Beagle-board-f.patch \
            file://0004-ARM-OMAP-Make-beagle-u-boot-partition-writable.patch \
@@ -128,12 +129,15 @@ SRC_URI = "git://arago-project.org/git/people/sriram/ti-psp-omap.git;protocol=gi
            file://cam/0069-mt9t112-Fix-pll-p-dividers-abstraction.patch \
            file://cam/0070-mt9t112-Adjust-50-60Hz-flickering-settings.patch \
            file://cam/0071-mt9t112-Trigger-autofocus-at-the-end-of-context-swit.patch \
-           file://cam/0002-omap3beagle-camera-Fix-dual-sensor-registration.patch \
-           file://cam/0003-mt9v113-Fix-State-variable-handling.patch \
-           file://cam/0001-Move-sensor-rest-to-after-applying-power.patch \
+           file://cam/0072-omap3beagle-camera-Fix-dual-sensor-registration.patch \
+           file://cam/0073-mt9v113-Fix-State-variable-handling.patch \
+           file://cam/0074-Move-sensor-rest-to-after-applying-power.patch \
+           file://cam/0075-omap3beagle-Add-camera-bootarg.patch \
            file://0001-BeagleBoard-Adjust-USER-button-pin-for-xM.patch \
-           file://cam/0001-omap3beagle-Add-camera-bootarg.patch \
+           file://0001-PSP-3.0.1.6-kernel-source-patched-with-OCF-Linux.patch \
            file://porches.patch \
+           file://0001-OMAP3-craneboard-print-expansionboard-name-detected-.patch \
+           file://0002-OMAP3-craneboard-add-support-for-TinCanTools-Trainer.patch \
            file://defconfig"
 
 SRC_URI_append_beagleboard = " file://logo_linux_clut224.ppm \

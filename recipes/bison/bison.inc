@@ -1,14 +1,16 @@
 DESCRIPTION = "GNU Project parser generator (yacc replacement)."
 HOMEPAGE = "http://www.gnu.org/software/bison/"
-LICENSE = "GPL"
+LICENSE = "GPLv2+"
 SECTION = "devel"
 PRIORITY = "optional"
 DEPENDS = "virtual/libintl flex-native"
 
 SRC_URI = "${GNU_MIRROR}/bison/bison-${PV}.tar.gz \
-	   file://m4.patch"
+	   file://m4.patch \
+	   file://uclibc-sched_param-def.patch \
+	   "
 
-INC_PR = "r8"
+INC_PR = "r9"
 
 inherit autotools gettext
 

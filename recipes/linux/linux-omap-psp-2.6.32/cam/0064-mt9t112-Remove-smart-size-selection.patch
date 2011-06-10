@@ -1,7 +1,7 @@
-From 50c7b176efb764ff4f4e3d5e847cd44396d692dc Mon Sep 17 00:00:00 2001
+From 2c8e7e157de32ebc5c8d60bf642c2f29f607c3d0 Mon Sep 17 00:00:00 2001
 From: Sergio Aguirre <saaguirre@ti.com>
 Date: Fri, 16 Jul 2010 17:09:10 -0500
-Subject: [PATCH 64/71] mt9t112: Remove "smart" size selection
+Subject: [PATCH 64/75] mt9t112: Remove "smart" size selection
 
 This code is broken, as it doesn't really adjust all other
 settings, but output size to desired size. It isn't really

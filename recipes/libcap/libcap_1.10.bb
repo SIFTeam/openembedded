@@ -3,7 +3,7 @@ PRIORITY = "optional"
 SECTION = "libs"
 LICENSE = "GPL"
 DEPENDS = "bison-native flex-native"
-PR = "r2"
+PR = "r3"
 
 CFLAGS_append = " -I${S}/libcap/include -fPIC"
 
@@ -12,20 +12,11 @@ SRC_URI = "${KERNELORG_MIRROR}/pub/linux/libs/security/linux-privs/kernel-2.4/${
 	   file://make.patch \
 	   file://syscall.patch"
 
-FILES_${PN} = "${libdir}"
-FILES_${PN}-dev = "${includedir}"
-
 do_install() {
 	install -d ${D}${includedir}/sys
 	install -m 0644 libcap/include/sys/capability.h ${D}${includedir}/sys/
 	install -d ${D}${libdir}
 	oe_libinstall -s -C libcap libcap ${D}${libdir}
-}
-
-do_stage() {
-	install -d ${STAGING_INCDIR}/sys
-	install -m 0644 libcap/include/sys/capability.h ${STAGING_INCDIR}/sys/
-	oe_libinstall -s -C libcap libcap ${STAGING_LIBDIR}
 }
 
 SRC_URI[md5sum] = "4426a413128142cab89eb2e6f13d8571"

@@ -1,13 +1,13 @@
 DESCRIPTION = "XBMC Media Center"
 LICENSE = "xbmc"
 
-DEPENDS = "libxmu fribidi mpeg2dec ffmpeg samba fontconfig curl libmodplug libmicrohttpd wavpack libmms cmake-native libsdl-image libsdl-mixer virtual/egl mysql5 sqlite3 libmms faad2 libcdio libpcre boost lzo2 enca avahi libsamplerate0 libxrandr bzip2 virtual/libsdl"
+DEPENDS = "gperf-native libxmu fribidi mpeg2dec ffmpeg samba fontconfig curl python libmodplug libmicrohttpd wavpack libmms cmake-native libsdl-image libsdl-mixer virtual/egl mysql5 sqlite3 libmms faad2 libcdio libpcre boost lzo2 enca avahi libsamplerate0 libxinerama libxrandr libxtst bzip2 virtual/libsdl jasper zip-native zlib"
 require recipes/egl/egl.inc
 
 SRCREV = "e2ab481ebe964321c358ab9d6402088c714adcbe"
 
 PV = "10.05"
-PR = "r8"
+PR = "r11"
 PR_append = "+gitr${SRCPV}"
 
 SRC_URI = "git://xbmc.git.sourceforge.net/gitroot/xbmc/xbmc;protocol=git;branch=master \
@@ -22,6 +22,7 @@ file://0008-configure.in-also-pass-down-target-when-using-host-a.patch \
 file://0009-Added-a-configure-option-disable-optical-drive.patch \
 file://0010-Fixed-so-compile-worked-when-disabling-optical.patch \
 file://0011-reverted-so-normal-bootstrap-doesn-t-exclude-gnu-con.patch \
+file://0012-fix-lzo-things.patch \
 "
 
 inherit autotools gettext

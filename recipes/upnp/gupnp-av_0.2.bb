@@ -1,11 +1,9 @@
 LICENSE = "LGPL"
 DEPENDS = "gnupnp gstreamer"
 
-SRC_URI = "http://gupnp.org/sources/${PN}/${PN}-${PV}.tar.gz"
+require gupnp.inc
 
 inherit autotools
-
-AUTOTOOLS_STAGE_PKGCONFIG = "1"
 
 FILES_${PN} = "${libdir}/*.so.*"
 

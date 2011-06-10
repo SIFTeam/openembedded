@@ -65,11 +65,17 @@ RDEPENDS_${PN}-mail += "\
 	${PN}-protocols \
 	"
 
+do_install_append() {
+	# remove some useless files before packaging
+	find ${D} -name "*.bat" -o -name "*.c" -o -name "*.h" -exec rm {} \;
+}
+
 ALLOW_EMPTY = "1"
 FILES_${PN} = ""
 
 FILES_${PN}-test = " \
   ${libdir}/${PYTHON_DIR}/site-packages/twisted/test \
+  ${libdir}/${PYTHON_DIR}/site-packages/twisted/*/test \
 "
 
 FILES_${PN}-protocols = " \

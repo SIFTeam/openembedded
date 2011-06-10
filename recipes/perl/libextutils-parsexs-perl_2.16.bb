@@ -1,7 +1,7 @@
 DESCRIPTION = "ExtUtils::ParseXS - converts Perl XS code into C code"
 SECTION = "libs"
-LICENSE = "Artistic|GPL"
-PR = "r5"
+LICENSE = "Artistic|GPLv1+"
+PR = "r6"
 
 SRC_URI = "http://search.cpan.org/CPAN/authors/id/K/KW/KWILLIAMS/ExtUtils-ParseXS-${PV}.tar.gz"
 

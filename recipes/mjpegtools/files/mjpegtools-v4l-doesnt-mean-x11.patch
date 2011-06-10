@@ -1,8 +1,6 @@
-Index: mjpegtools-1.9.0/lavtools/Makefile.am
-===================================================================
---- mjpegtools-1.9.0.orig/lavtools/Makefile.am	2008-04-09 00:49:47.000000000 +0200
-+++ mjpegtools-1.9.0/lavtools/Makefile.am	2008-04-09 00:52:21.000000000 +0200
-@@ -59,9 +59,9 @@
+--- mjpegtools-1.9.0/lavtools/Makefile.am.orig	2010-09-29 19:36:46.000000000 +0000
++++ mjpegtools-1.9.0/lavtools/Makefile.am	2010-09-29 19:37:55.000000000 +0000
+@@ -58,9 +58,6 @@
  liblavplay_la_CPPFLAGS = $(AM_CPPFLAGS) $(LIBDV_CFLAGS) $(X_CFLAGS)
  liblavplay_la_LDFLAGS = $(LAV_ALL_LIB_OPTS)
  liblavplay_la_LIBADD = liblavfile.la $(SDL_LIBS) liblavjpeg.la $(LIBDV_LIBS) $(LIBMJPEGUTILS)

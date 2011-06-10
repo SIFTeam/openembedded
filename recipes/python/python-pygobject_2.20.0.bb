@@ -1,10 +1,10 @@
 DESCRIPTION = "Python GObject bindings"
 SECTION = "devel/python"
 LICENSE = "LGPL"
-DEPENDS = "libffi python-pygobject-native-${PV}"
+DEPENDS = "libffi python-pygobject-native-${PV} glib-2.0"
 PE = "1"
 
-PR = "r1"
+PR = "r3"
 
 MAJ_VER = "${@bb.data.getVar('PV',d,1).split('.')[0]}.${@bb.data.getVar('PV',d,1).split('.')[1]}"
 
@@ -20,11 +20,14 @@ inherit autotools distutils-base pkgconfig
 export BUILD_SYS
 export HOST_SYS
 
-export GOBJECT_INTROSPECTION_CFLAGS="-pthread -I${STAGING_INCDIR}/gobject-introspection-1.0 -I${STAGING_INCDIR}/glib-2.0 -I${STAGING_LIBDIR}/glib-2.0/include"
+# It picks up the introspection pc for the host sysroot without a knob to disable it, so force it to false
+do_configure_prepend() {
+	sed -i 's:have_gobject_introspection=true:have_gobject_introspection=false:g' configure.ac
+}
 
 do_install_append() {
 	install -d ${D}${datadir}/pygobject/
-	cp -dpfR docs/* ${D}${datadir}/pygobject/
+	cp -PpRfR docs/* ${D}${datadir}/pygobject/
 	install -d ${D}${datadir}/gtk-doc/html/pygobject/
 	cp docs/style.css ${D}${datadir}/gtk-doc/html/pygobject/
 }

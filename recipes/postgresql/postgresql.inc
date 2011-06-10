@@ -1,13 +1,14 @@
 DESCRIPTION = "PostgreSQL is a powerful, open source relational database system."
 HOMEPAGE = "http://www.postgresql.com"
 LICENSE = "BSD"
-DEPENDS = "zlib readline"
+DEPENDS = "zlib readline tzcode-native"
+INC_PR = "r5"
 
 ARM_INSTRUCTION_SET = "arm"
 
 #WARNING: this recipe assumes you have the timezone compiler present in /usr/sbin/zic
 
-SRC_URI = "ftp://ftp-archives.postgresql.org/pub/source/v${PV}/${P}.tar.bz2"
+SRC_URI = "ftp://ftp.postgresql.org/pub/source/v${PV}/${P}.tar.bz2"
 
 LEAD_SONAME = "libpq.so"
 
@@ -16,17 +17,10 @@ export LDFLAGS_SL = "${LDFLAGS}"
 
 inherit autotools pkgconfig
 
+EXTRA_OECONF_sh4 = "--disable-spinlocks"
+
 do_compile_append() {
          cp /usr/sbin/zic ${S}/src/timezone/
-}
-
-do_stage() {
-         autotools_stage_includes
-         
-         oe_libinstall -a -so -C src/interfaces/libpq libpq ${STAGING_LIBDIR}
-         oe_libinstall -a -so -C src/interfaces/ecpg/ecpglib libecpg ${STAGING_LIBDIR}
-         oe_libinstall -a -so -C src/interfaces/ecpg/compatlib libecpg_compat ${STAGING_LIBDIR}
-         oe_libinstall -a -so -C src/interfaces/ecpg/pgtypeslib libpgtypes ${STAGING_LIBDIR}
 }
 
 PACKAGES =+ "${PN}-client ${PN}-server-dev ${PN}-timezone \

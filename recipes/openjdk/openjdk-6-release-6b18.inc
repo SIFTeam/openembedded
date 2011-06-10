@@ -11,10 +11,11 @@ EXTRA_OECONF += "\
 ARM_INSTRUCTION_SET_armv4t = "ARM"
 
 # Use IcedTea6 1.8 release.
-ICEDTEA = "icedtea6-1.8"
+ICEDTEA = "icedtea6-1.8.2"
 ICEDTEA_URI = "http://icedtea.classpath.org/download/source/${ICEDTEA}.tar.gz;name=iced"
-SRC_URI[iced.md5sum] = "e08dd0762749fb50ec6c273c366ee8ae"
-SRC_URI[iced.sha256sum] = "6823ff87969d978fe5523c729be3074142698c89acc8cc96c05b849fde54f61b"
+
+SRC_URI[iced.md5sum] = "e9559699e56e90a9d50ffae2020f5df7"
+SRC_URI[iced.sha256sum] = "93d7f427fde99f2df7b457c811405af8311e0bce4192ff99516b3227d5daa716"
 
 OPENJDK_URI = "http://download.java.net/openjdk/jdk6/promoted/b18/openjdk-6-src-b18-16_feb_2010.tar.gz;subdir=openjdk-src-dir;name=openjdk"
 SRC_URI[openjdk.md5sum] = "94db01691ab38f98b7d42b2ebf4d5c0b"
@@ -28,7 +29,7 @@ JAF_URI = "http://icedtea.classpath.org/download/source/drops/jdk6-jaf-2009_10_2
 SRC_URI[jaf.md5sum] = "7a50bb540a27cdd0001885630088b758"
 SRC_URI[jaf.sha256sum] = "fdc51476fc6bcc69ea1f099f33e84601a126bfa8b11c8fa11c25dc574345aa9f"
 
-JAXP_URI = "https://jaxp.dev.java.net/files/nidaba/documents/913/147329/jdk6-jaxp-2009_10_13.zip;name=jaxp"
+JAXP_URI = "https://icedtea.classpath.org/download/source/drops/jdk6-jaxp-2009_10_13.zip;name=jaxp"
 SRC_URI[jaxp.md5sum] = "a2f7b972124cd776ff71e7754eb9a429"
 SRC_URI[jaxp.sha256sum] = "8714d55de18db48ca9da0ee986202005082f44cf4c215da8683342b70e61792b"
 
@@ -46,7 +47,6 @@ OEPATCHES = "\
 	file://fix-llvm-libs.patch \
 	file://shark-build-openjdkdir.patch \
 	file://shark-arm-linux-cpu-detection.patch \
-	file://icedtea1.8-pre1.8.1-releasebranch-fixes.patch \
 	"
 
 # Allow overriding this separately
@@ -61,22 +61,11 @@ ICEDTEAPATCHES = "\
         file://icedtea-libnet-renaming.patch;apply=no \
 	"
 
-ICEDTEAPATCHES_append_linux-uclibc = " \
+ICEDTEAPATCHES_append_libc-uclibc = " \
         file://icedtea-hotspot-isfinte.patch;apply=no \
         file://icedtea-hotspot-glibc-version.patch;apply=no \
         file://icedtea-hotspot-loadavg.patch;apply=no \
         file://icedtea-hotspot-isnanf.patch;apply=no \
-        file://icedtea-jdk-iconv-uclibc.patch;apply=no \
-        file://icedtea-jdk-remove-unused-backtrace.patch;apply=no \
-        file://icedtea-jdk-RTLD_NOLOAD.patch;apply=no \
-        file://icedtea-jdk-unpack-uclibc.patch;apply=no \
-        "
-
-ICEDTEAPATCHES_append_linux-uclibceabi = " \
-        file://icedtea-hotspot-isfinte.patch;apply=no \
-        file://icedtea-hotspot-isnanf.patch;apply=no \
-        file://icedtea-hotspot-glibc-version.patch;apply=no \
-        file://icedtea-hotspot-loadavg.patch;apply=no \
         file://icedtea-jdk-iconv-uclibc.patch;apply=no \
         file://icedtea-jdk-remove-unused-backtrace.patch;apply=no \
         file://icedtea-jdk-RTLD_NOLOAD.patch;apply=no \
@@ -95,17 +84,7 @@ DISTRIBUTION_PATCHES = "\
         patches/icedtea-libnet-renaming.patch \
 	"
 
-DISTRIBUTION_PATCHES_append_linux-uclibc = "\
-        patches/icedtea-hotspot-isfinte.patch \
-        patches/icedtea-hotspot-isnanf.patch \
-        patches/icedtea-hotspot-glibc-version.patch \
-        patches/icedtea-hotspot-loadavg.patch \
-        patches/icedtea-jdk-iconv-uclibc.patch \
-        patches/icedtea-jdk-remove-unused-backtrace.patch \
-        patches/icedtea-jdk-RTLD_NOLOAD.patch \
-        patches/icedtea-jdk-unpack-uclibc.patch \
-        "
-DISTRIBUTION_PATCHES_append_linux-uclibceabi = "\
+DISTRIBUTION_PATCHES_append_libc-uclibc = "\
         patches/icedtea-hotspot-isfinte.patch \
         patches/icedtea-hotspot-isnanf.patch \
         patches/icedtea-hotspot-glibc-version.patch \

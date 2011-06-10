@@ -1,5 +1,5 @@
 DESCRIPTION = "GMyth is a library to access MythTV backend services."
-LICENSE = "LGPLv2""
+LICENSE = "LGPLv2"
 HOMEPAGE = "http://gmyth.sourceforge.net/wiki/index.php/Main_Page"
 
 PR = "r3"
@@ -10,8 +10,6 @@ SRC_URI = "${SOURCEFORGE_MIRROR}/gmyth/${PN}_0.7-indt1.tar.gz"
 S = "${WORKDIR}/${PN}"
 
 inherit autotools
-
-AUTOTOOLS_STAGE_PKGCONFIG = "1"
 
 do_compile_append() {
         sed -i -e s:${STAGING_DIR_TARGET}::g \

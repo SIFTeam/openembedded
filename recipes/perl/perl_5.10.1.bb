@@ -1,20 +1,65 @@
 DESCRIPTION = "Perl is a popular scripting language."
 HOMEPAGE = "http://www.perl.org/"
 SECTION = "devel/perl"
-LICENSE = "Artistic|GPL"
+LICENSE = "Artistic|GPLv1+"
 PRIORITY = "optional"
-# We need gnugrep (for -I)
-DEPENDS = "virtual/db perl-native grep-native"
-PR = "r10"
+DEPENDS = "virtual/db perl-native"
+PR = "r22"
 
-# Not tested enough
-DEFAULT_PREFERENCE = "-1"
+# 5.10.1 has Module::Build built-in
+PROVIDES += "libmodule-build-perl"
 
 # Major part of version
 PVM = "5.10"
 
 SRC_URI = "ftp://ftp.funet.fi/pub/CPAN/src/perl-${PV}.tar.gz;name=perl-${PV} \
-	file://perl_${PV}-8.diff.gz \
+	file://arm_thread_stress_timeout.diff \
+	file://cpan_config_path.diff \
+	file://cpan_definstalldirs.diff \
+	file://db_file_ver.diff \
+	file://doc_info.diff \
+	file://enc2xs_inc.diff \
+	file://errno_ver.diff \
+	file://extutils_hacks.diff \
+	file://fakeroot.diff \
+	file://instmodsh_doc.diff \
+	file://ld_run_path.diff \
+	file://libnet_config_path.diff \
+	file://m68k_thread_stress.diff \
+	file://mod_paths.diff \
+	file://module_build_man_extensions.diff \
+	file://perl_synopsis.diff \
+	file://prune_libs.diff \
+	file://use_gdbm.diff \
+	file://assorted_docs.diff \
+	file://net_smtp_docs.diff \
+	file://processPL.diff \
+	file://perlivp.diff \
+	file://pod2man-index-backslash.diff \
+	file://disable-zlib-bundling.diff \
+	file://kfreebsd_cppsymbols.diff \
+	file://cpanplus_definstalldirs.diff \
+	file://cpanplus_config_path.diff \
+	file://kfreebsd-filecopy-pipes.diff \
+	file://anon-tmpfile-dir.diff \
+	file://abstract-sockets.diff \
+	file://hurd_cppsymbols.diff \
+	file://autodie-flock.diff \
+	file://archive-tar-instance-error.diff \
+	file://positive-gpos.diff \
+	file://devel-ppport-ia64-optim.diff \
+	file://trie-logic-match.diff \
+	file://hppa-thread-eagain.diff \
+	file://crash-on-undefined-destroy.diff \
+	file://tainted-errno.diff \
+	file://safe-upgrade.diff \
+	file://tell-crash.diff \
+	file://format-write-crash.diff \
+	file://arm-alignment.diff \
+	file://fcgi-test.diff \
+	file://hurd-ccflags.diff \
+	file://perl-time-hires-fix-cross-compilation.patch \
+	\
         file://Makefile.patch \
         file://Makefile.SH.patch \
         file://installperl.patch \
@@ -49,6 +94,17 @@ export LDDLFLAGS = "${LDFLAGS} -shared"
 # We're almost Debian, aren't we?
 CFLAGS += "-DDEBIAN"
 
+do_nolargefile() {
+	sed -i -e "s,\(uselargefiles=\)'define',\1'undef',g" \
+		-e "s,\(d_readdir64_r=\)'define',\1'undef',g" \
+		-e "s,\(readdir64_r_proto=\)'\w+',\1'0',g" \
+		-e "/ccflags_uselargefiles/d" \
+		-e "s/-Duselargefiles//" \
+		-e "s/-D_FILE_OFFSET_BITS=64//" \
+		-e "s/-D_LARGEFILE_SOURCE//" \
+		${S}/Cross/config.sh-${TARGET_ARCH}-${TARGET_OS}
+}
+
 do_configure() {
         # Make hostperl in build directory be the native perl
         ln -sf ${HOSTPERL} hostperl
@@ -65,7 +121,7 @@ do_configure() {
         done
 
         # Fixups for uclibc
-        if [ "${TARGET_OS}" = "linux-uclibc" -o "${TARGET_OS}" = "linux-uclibceabi" ]; then
+        if [ "${TARGET_OS}" = "linux-uclibc" -o "${TARGET_OS}" = "linux-uclibceabi" -o "${TARGET_OS}" = "linux-uclibcspe" ]; then
                 sed -i -e "s,\(d_crypt_r=\)'define',\1'undef',g" \
                        -e "s,\(d_futimes=\)'define',\1'undef',g" \
                        -e "s,\(crypt_r_proto=\)'\w+',\1'0',g" \
@@ -80,6 +136,8 @@ do_configure() {
                     config.sh-${TARGET_ARCH}-${TARGET_OS}
         fi
 
+	${@base_contains('DISTRO_FEATURES', 'largefile', '', 'do_nolargefile', d)}
+
         # Update some paths in the configuration
         sed -i -e 's,@DESTDIR@,${D},g' \
                -e 's,@ARCH@,${TARGET_ARCH}-${TARGET_OS},g' \
@@ -87,22 +145,29 @@ do_configure() {
 	       -e 's,/usr/,${exec_prefix}/,g' \
             config.sh-${TARGET_ARCH}-${TARGET_OS}
 
-        if test "${MACHINE}" != "native"; then
-            # These are strewn all over the source tree
-            for foo in `grep -I -m1 \/usr\/include\/.*\\.h ${WORKDIR}/* -r | cut -f 1 -d ":"` ; do
-                echo Fixing: $foo
-                sed -e "s%/usr/include/%${STAGING_INCDIR}/%g" -i $foo
-            done
-        fi
+	case "${TARGET_ARCH}" in
+		x86_64 | powerpc | s390)
+			sed -i -e "s,\(need_va_copy=\)'undef',\1'define',g" \
+				config.sh-${TARGET_ARCH}-${TARGET_OS}
+			;;
+		arm)
+			sed -i -e "s,\(d_u32align=\)'undef',\1'define',g" \
+				config.sh-${TARGET_ARCH}-${TARGET_OS}
+			;;
+	esac
+
+        # These are strewn all over the source tree
+        for foo in `grep -lrI -m1 \/usr\/include\/.*\\.h ${WORKDIR}/*` ; do
+            echo Fixing: $foo
+            sed -e "s%/usr/include/%${STAGING_INCDIR}/%g" -i $foo
+        done
 
         rm -f config
         echo "ARCH = ${TARGET_ARCH}" > config
         echo "OS = ${TARGET_OS}" >> config
 }
 do_compile() {
-        if test "${MACHINE}" != "native"; then
-            sed -i -e 's|/usr/include|${STAGING_INCDIR}|g' ext/Errno/Errno_pm.PL
-        fi
+        sed -i -e 's|/usr/include|${STAGING_INCDIR}|g' ext/Errno/Errno_pm.PL
         cd Cross
         oe_runmake perl LD="${CCLD}"
 }
@@ -125,24 +190,23 @@ do_install() {
         ln -sf libperl.so.${PV} ${D}/${libdir}/libperl.so.5
 
         # Fix up installed configuration
-        if test "${MACHINE}" != "native"; then
-            sed -i -e "s,${D},,g" \
-                   -e "s,-isystem${STAGING_INCDIR} ,,g" \
-                   -e "s,${STAGING_LIBDIR},${libdir},g" \
-                   -e "s,${STAGING_BINDIR},${bindir},g" \
-                   -e "s,${STAGING_INCDIR},${includedir},g" \
-                   -e "s,${TOOLCHAIN_PATH}${base_bindir}/,,g" \
-                ${D}${bindir}/h2xs \
-                ${D}${bindir}/h2ph \
-                ${D}${datadir}/perl/${PV}/pod/*.pod \
-                ${D}${datadir}/perl/${PV}/cacheout.pl \
-                ${D}${datadir}/perl/${PV}/FileCache.pm \
-                ${D}${libdir}/perl/${PV}/Config.pm \
-                ${D}${libdir}/perl/${PV}/Config_heavy.pl \
-                ${D}${libdir}/perl/${PV}/CORE/perl.h \
-                ${D}${libdir}/perl/${PV}/CORE/pp.h
-        fi
+        sed -i -e "s,${D},,g" \
+               -e "s,-isystem${STAGING_INCDIR} ,,g" \
+               -e "s,${STAGING_LIBDIR},${libdir},g" \
+               -e "s,${STAGING_BINDIR},${bindir},g" \
+               -e "s,${STAGING_INCDIR},${includedir},g" \
+               -e "s,${TOOLCHAIN_PATH}${base_bindir}/,,g" \
+            ${D}${bindir}/h2xs \
+            ${D}${bindir}/h2ph \
+            ${D}${datadir}/perl/${PV}/pod/*.pod \
+            ${D}${datadir}/perl/${PV}/cacheout.pl \
+            ${D}${datadir}/perl/${PV}/FileCache.pm \
+            ${D}${libdir}/perl/${PV}/Config.pm \
+            ${D}${libdir}/perl/${PV}/Config_heavy.pl \
+            ${D}${libdir}/perl/${PV}/CORE/perl.h \
+            ${D}${libdir}/perl/${PV}/CORE/pp.h
 }
+
 do_stage() {
         install -d ${STAGING_LIBDIR_NATIVE}/perl/${PV} \
                    ${STAGING_LIBDIR}/perl/${PV}/CORE \
@@ -150,7 +214,14 @@ do_stage() {
         # target config, used by cpan.bbclass to extract version information
         install config.sh ${STAGING_LIBDIR}/perl/
         # target configuration, used by native perl when cross-compiling
-        install lib/Config_heavy.pl ${STAGING_LIBDIR_NATIVE}/perl/${PV}/Config_heavy-target.pl
+        install lib/Config_heavy.pl ${STAGING_LIBDIR_NATIVE}/perl/${PV}/Config_heavy-${TARGET_SYS}.pl
+	sed -r -i \
+		-e "s,^(archlib=).*$,\1'${STAGING_LIBDIR}/perl/${PV}'," \
+		-e "s,^(archlibexp=).*$,\1'${STAGING_LIBDIR}/perl/${PV}'," \
+		-e "s,^(privlib=).*$,\1'${STAGING_DATADIR}/perl/${PV}'," \
+		-e "s,^(privlibexp=).*$,\1'${STAGING_DATADIR}/perl/${PV}'," \
+		${STAGING_LIBDIR_NATIVE}/perl/${PV}/Config_heavy-${TARGET_SYS}.pl \
+		${STAGING_LIBDIR}/perl/config.sh
 	# target configuration
         install lib/Config.pm       ${STAGING_LIBDIR}/perl/${PV}/
 	install lib/ExtUtils/typemap ${STAGING_DATADIR}/perl/${PV}/ExtUtils/
@@ -234,5 +305,6 @@ FILES_perl-module-unicore-name += "${datadir}/perl/${PV}/unicore"
 
 require perl-rdepends_${PV}.inc
 require perl-rprovides.inc
+require perl-rprovides_${PV}.inc
 
 PARALLEL_MAKE = ""

@@ -7,7 +7,7 @@ DEFAULT_PREFERENCE = "-1"
 
 require udev.inc
 
-PR = "${INC_PR}.1"
+PR = "${INC_PR}.6"
 
 SRC_URI += "file://mount.blacklist \
 	    file://run.rules \
@@ -73,6 +73,7 @@ do_install () {
 
 	touch ${D}${sysconfdir}/udev/saved.uname
 	touch ${D}${sysconfdir}/udev/saved.cmdline
+	touch ${D}${sysconfdir}/udev/saved.devices
 	touch ${D}${sysconfdir}/udev/saved.atags
 
 	install -d ${D}${sysconfdir}/udev/scripts/
@@ -100,9 +101,14 @@ do_install_append_hipox() {
 
 # Create the cache after checkroot has run
 pkg_postinst_udev_append() {
+if test "x$D" != "x"; then
+	OPT="-r $D"
+else
+	OPT="-s"
+fi
 update-rc.d $OPT udev-cache start 12 S .
 
-if [ -d $D/lib/udev/rules.d ] ; then
+if [ -e $D/lib/udev/rules.d ] && [ ! -L $D/lib/udev/rules.d ] ; then
 	echo "$D/lib/udev/rules.d is not a symlink, fixing that"
 	mv $D/lib/udev/rules.d/* $D${sysconfdir}/udev/rules.d/
 	rm -rf $D/lib/udev/rules.d

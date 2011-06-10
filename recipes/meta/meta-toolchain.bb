@@ -1,6 +1,6 @@
 DESCRIPTION = "Meta package for building a installable toolchain"
 LICENSE = "MIT"
-DEPENDS = "opkg-native ipkg-utils-native fakeroot-native sed-native"
+DEPENDS = "opkg-native opkg-utils-native fakeroot-native sed-native"
 
 inherit meta
 
@@ -72,9 +72,9 @@ do_populate_sdk() {
 		${IPKG_TARGET} remove -force-depends ${TOOLCHAIN_TARGET_EXCLUDE}
 	fi
 
-	install -d ${SDK_OUTPUT}/${SDKPATH}/usr/lib/opkg
-	mv ${SDK_OUTPUT}/usr/lib/opkg/* ${SDK_OUTPUT}/${SDKPATH}/usr/lib/opkg/
-	rm -Rf ${SDK_OUTPUT}/usr/lib
+	install -d ${SDK_OUTPUT}/${SDKPATH}${libdir}/opkg
+	mv ${SDK_OUTPUT}${libdir}/opkg/* ${SDK_OUTPUT}/${SDKPATH}${libdir}/opkg/
+	rm -Rf ${SDK_OUTPUT}${libdir}
 
 	# Clean up empty directories from excluded packages
 	find ${SDK_OUTPUT} -depth -type d -empty -print0 | xargs -r0 /bin/rmdir
@@ -86,7 +86,7 @@ do_populate_sdk() {
 	install -m 0644 ${IPKGCONF_SDK} ${SDK_OUTPUT}/${SDKPATH}/${sysconfdir}/
 
 	# extract and store ipks, pkgdata and shlibs data
-	target_pkgs=`cat ${SDK_OUTPUT}/${SDKPATH}/${TARGET_SYS}/usr/lib/opkg/status | grep Package: | cut -f 2 -d ' '`
+	target_pkgs=`cat ${SDK_OUTPUT}/${SDKPATH}/${TARGET_SYS}${libdir}/opkg/status | grep Package: | cut -f 2 -d ' '`
 	mkdir -p ${SDK_OUTPUT2}/${SDKPATH}/ipk/
 	mkdir -p ${SDK_OUTPUT2}/${SDKPATH}/pkgdata/runtime/
 	mkdir -p ${SDK_OUTPUT2}/${SDKPATH}/${TARGET_SYS}/shlibs/
@@ -96,7 +96,7 @@ do_populate_sdk() {
 			if [ -e $pkgnames ]; then
 				oenote "Found $pkgnames"
 				cp $pkgnames ${SDK_OUTPUT2}/${SDKPATH}/ipk/
-				orig_pkg=`ipkg-list-fields $pkgnames | grep OE: | cut -d ' ' -f2`
+				orig_pkg=`opkg-list-fields $pkgnames | grep OE: | cut -d ' ' -f2`
 				pkg_subdir=$arch${TARGET_VENDOR}${@['-' + bb.data.getVar('TARGET_OS', d, 1), ''][bb.data.getVar('TARGET_OS', d, 1) == ('' or 'custom')]}
 				mkdir -p ${SDK_OUTPUT2}/${SDKPATH}/pkgdata/$pkg_subdir/runtime
 				cp ${TMPDIR}/pkgdata/$pkg_subdir/$orig_pkg ${SDK_OUTPUT2}/${SDKPATH}/pkgdata/$pkg_subdir/
@@ -123,9 +123,11 @@ do_populate_sdk() {
 
 	# With sysroot support, gcc expects the default C++ headers to be
 	# in a specific place.
-	install -d ${SDK_OUTPUT}/${SDKPATH}/${TARGET_SYS}/include
-	mv ${SDK_OUTPUT}/${SDKPATH}/${TARGET_SYS}/usr/include/c++ \
-		${SDK_OUTPUT}/${SDKPATH}/${TARGET_SYS}/include/
+	if [ "${base_prefix}" != "${prefix}" ]; then
+		install -d ${SDK_OUTPUT}/${SDKPATH}/${TARGET_SYS}/include
+		mv ${SDK_OUTPUT}/${SDKPATH}/${TARGET_SYS}/usr/include/c++ \
+			${SDK_OUTPUT}/${SDKPATH}/${TARGET_SYS}/include/
+	fi
 
 	# Fix or remove broken .la files
 	for i in `find ${SDK_OUTPUT}/${SDKPATH}/${TARGET_SYS} -name \*.la`; do
@@ -171,8 +173,10 @@ do_populate_sdk() {
 	# Package it up
 	mkdir -p ${SDK_DEPLOY}
 	cd ${SDK_OUTPUT}
+	chmod -R go-w ${SDK_OUTPUT}
 	fakeroot tar cfj ${SDK_DEPLOY}/${TOOLCHAIN_OUTPUTNAME}.tar.bz2 .
 	cd ${SDK_OUTPUT2}
+	chmod -R go-w ${SDK_OUTPUT2}
 	fakeroot tar cfj ${SDK_DEPLOY}/${TOOLCHAIN_OUTPUTNAME}-extras.tar.bz2 .
 }
 

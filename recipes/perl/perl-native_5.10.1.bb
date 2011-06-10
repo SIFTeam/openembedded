@@ -1,13 +1,15 @@
 DESCRIPTION = "Perl is a popular scripting language."
 HOMEPAGE = "http://www.perl.org/"
 SECTION = "libs"
-LICENSE = "Artistic|GPL"
-DEPENDS = "virtual/db-native gdbm-native"
-PR = "r4"
+LICENSE = "Artistic|GPLv1+"
+PR = "r10"
 NATIVE_INSTALL_WORKS = "1"
+INHIBIT_DEFAULT_DEPS = "1"
+PATCHTOOL = "patch"
 
-# Not tested enough
-DEFAULT_PREFERENCE = "-1"
+# 5.10.1 has this module built-in
+PROVIDES += "libmodule-build-perl-native"
+RPROVIDES_${PN} += "libmodule-build-perl-native"
 
 FILESDIR = "${@os.path.dirname(bb.data.getVar('FILE',d,1))}/perl-${PV}"
 
@@ -17,6 +19,7 @@ SRC_URI = "http://ftp.funet.fi/pub/CPAN/src/perl-${PV}.tar.gz;name=perl-${PV} \
            file://perl-configpm-switch.patch \
            file://native-nopacklist.patch \
            file://native-perlinc.patch \
+	   file://perl-fix-cross-library-check.patch \
 	   "
 
 SRC_URI[perl-5.10.1.md5sum] = "b9b2fdb957f50ada62d73f43ee75d044"
@@ -32,11 +35,12 @@ do_configure () {
         -Dcflags="${CFLAGS}" \
         -Dldflags="${LDFLAGS}" \
         -Dcf_by="Open Embedded" \
+        \
         -Dprefix=${prefix} \
         -Dvendorprefix=${prefix} \
         -Dvendorprefix=${prefix} \
         -Dsiteprefix=${prefix} \
-        \
+         \
         -Dprivlib=${STAGING_LIBDIR}/perl/${PV} \
         -Darchlib=${STAGING_LIBDIR}/perl/${PV} \
         -Dvendorlib=${STAGING_LIBDIR}/perl/${PV} \
@@ -61,11 +65,6 @@ do_configure () {
         -Ud_csh \
         -Uusesfio \
         -Uusenm -des
-    sed "s!${STAGING_DIR}/bin!${STAGING_BINDIR}!;
-         s!${STAGING_DIR}/lib!${STAGING_LIBDIR}!;
-	 s!^installbin=.*!installbin=\'${STAGING_BINDIR}\'!;
-	 s!^installsitebin=.*!installsitebin=\'${STAGING_BINDIR}\'!" < config.sh > config.sh.new
-    mv config.sh.new config.sh
 }
 
 do_install() {
@@ -99,7 +98,15 @@ do_install() {
 
 	# Fix Errno.pm for target builds
 	sed -i -r "s,^\tdie\ (\"Errno\ architecture.+)$,\twarn\ \1," ${D}${libdir}/perl/${PV}/Errno.pm
+
+	# Make sure we use /usr/bin/env perl
+	for PERLSCRIPT in `grep -rIEl '#!.*/perl' ${D}${bindir}`; do
+		sed -i -e '1s|^#!.*|#!/usr/bin/env perl|' $PERLSCRIPT
+	done
+
+	create_wrapper ${D}${bindir}/perl PERL5LIB='$PERL5LIB:${STAGING_LIBDIR}/perl/${PV}:${STAGING_LIBDIR}/perl/'
 }
+
 do_install_append_nylon() {
         # get rid of definitions not supported by the gcc version we use for nylon...
         for i in ${D}${libdir}/perl/${PV}/Config_heavy.pl ${D}${libdir}/perl/config.sh; do

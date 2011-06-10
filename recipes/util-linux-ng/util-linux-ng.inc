@@ -1,14 +1,12 @@
 DESCRIPTION = "Util-linux-ng is a suite of essential utilities for any Linux system."
 SECTION = "base"
 LICENSE = "GPL"
-DEPENDS = "${@base_contains('IMAGE_DEV_MANAGER', 'udev', 'udev', '', d)} zlib ncurses virtual/libintl"
-DEPENDS_virtclass-native = "zlib-native ncurses-native lzo-native gettext-native"
+DEPENDS = "${@base_contains('DISTRO_FEATURES', 'pam', 'libpam', '', d)} zlib ncurses virtual/libintl"
+DEPENDS_virtclass-native = "zlib-native lzo-native gettext-native"
 
 inherit autotools gettext
 
-DEFAULT_PREFERENCE = "-1"
-
-INC_PR = "r29"
+INC_PR = "r36"
 
 # allows for a release candidate
 RC ?= ""
@@ -19,7 +17,7 @@ SRC_URI_append_chinook-compat = " file://chinook_libtool.patch "
 
 PACKAGES =+ "${PN}-fdisk ${PN}-cfdisk ${PN}-sfdisk ${PN}-swaponoff \
 	     ${PN}-losetup ${PN}-umount ${PN}-mount ${PN}-readprofile \
-	     ${PN}-fsck ${PN}-blkid ${PN}-mountall"
+	     ${PN}-fsck ${PN}-blkid ${PN}-mountall ${PN}-reset"
 
 PACKAGES_virtclass-native = ""	     
 
@@ -55,21 +53,26 @@ FILES_util-linux-ng-readprofile = "${sbindir}/readprofile.${PN}"
 FILES_util-linux-ng-fsck = "${base_sbindir}/fsck.${PN}"
 FILES_util-linux-ng-blkid = "${base_sbindir}/blkid.${PN}"
 FILES_${PN}-mountall = "${sysconfdir}/default/mountall.${PN}"
+FILES_${PN}-reset = "${bindir}/reset.${PN}"
 
 RREPLACES_util-linux-ng-blkid = "e2fsprogs-blkid"
 RREPLACES_${PN}-mountall = "busybox-mountall"
 
 RRECOMMENDS_${PN} = "${PN}-fdisk ${PN}-cfdisk ${PN}-sfdisk ${PN}-mount ${PN}-readprofile"
 RDEPENDS_${PN} = "${PN}-mountall ${PN}-umount ${PN}-swaponoff ${PN}-losetup ${PN}-fsck ${PN}-blkid"
+RDEPENDS_${PN}-reset = "ncurses-tools"
 
 RRECOMMENDS_${PN}_virtclass-native = ""
 RDEPENDS_${PN}_virtclass-native = ""
+
+NATIVECONF = ""
+NATIVECONF_virtclass-native = "--without-ncurses"
 
 EXTRA_OECONF = "--disable-use-tty-group --disable-makeinstall-chown \
 --enable-kill --enable-last --enable-mesg --enable-raw --enable-login-utils \
 --enable-arch --enable-init --enable-partx --enable-schedutils \
 --with-fsprobe=builtin --enable-libuuid --enable-libblkid \
---enable-fsck --enable-reset"
+--enable-fsck --enable-reset ${NATIVECONF}"
 
 LDFLAGS_append_libc-uclibc = "${@['',' -lintl'][bb.data.getVar('USE_NLS', d, 1) == 'yes']}"
 LDFLAGS_virtclass-native = "${BUILD_LDFLAGS}"
@@ -80,7 +83,7 @@ do_configure_prepend_chinook-compat () {
 
         for i in  lt~obsolete.m4 ltsugar.m4 libtool.m4 ltoptions.m4 ltversion.m4
         do
-                rm ${S}/m4/${i}
+                rm -f ${S}/m4/${i}
         done
 }
 
@@ -123,9 +126,9 @@ do_install () {
 		'LDFLAGS=${LDFLAGS}' 'DESTDIR=${D}' install
 	mkdir -p ${D}${base_bindir}
 
-        sbinprogs="agetty blockdev ctrlaltdel cfdisk"
-        sbinprogs_a="pivot_root hwclock mkswap shutdown mkfs.minix fsck.minix losetup swapon fdisk fsck blkid vigr vipw"
-        usrbinprogs_a="chfn chsh hexdump last logger mesg newgrp renice wall setsid chrt reset"
+        sbinprogs="agetty ctrlaltdel cfdisk"
+        sbinprogs_a="pivot_root hwclock mkswap shutdown mkfs.minix fsck.minix losetup swapon fdisk fsck blkid blockdev vigr vipw uuidd"
+        usrbinprogs_a="chfn chsh hexdump last logger mesg newgrp renice wall setsid chrt reset cal script flock"
         usrsbinprogs_a="readprofile"
         binprogs_a="dmesg kill more umount mount login"
 
@@ -211,12 +214,16 @@ pkg_postinst_${PN} () {
 	update-alternatives --install ${bindir}/chfn chfn chfn.${PN} 100
 	update-alternatives --install ${bindir}/newgrp newgrp newgrp.${PN} 100
 	update-alternatives --install ${bindir}/chsh chsh chsh.${PN} 100
+	update-alternatives --install ${bindir}/cal cal cal.${PN} 100
+	update-alternatives --install ${bindir}/script script script.${PN} 100
+	update-alternatives --install ${bindir}/flock flock flock.${PN} 100
 	update-alternatives --install ${base_bindir}/login login login.${PN} 100
 	update-alternatives --install ${base_sbindir}/vipw vipw vipw.${PN} 100
 	update-alternatives --install ${base_sbindir}/vigr vigr vigr.${PN} 100
-	update-alternatives --install ${bindir}/reset reset reset.${PN} 100
+	update-alternatives --install ${base_sbindir}/blockdev blockdev blockdev.${PN} 100
 	update-alternatives --install ${bindir}/setsid setsid setsid.${PN} 100
 	update-alternatives --install ${bindir}/chrt chrt chrt.${PN} 100
+	update-alternatives --install ${base_sbindir}/uuidd uuidd uuidd.${PN} 100
 	
 	# There seems to be problem, atleast on nslu2, with these, until they are
 	# fixed the busybox ones have higher priority
@@ -230,9 +237,17 @@ pkg_prerm_${PN} () {
 	test -x ${base_sbindir}/pivot_root.${PN} && \
 	update-alternatives --remove pivot_root pivot_root.${PN}
 
-	for i in dmesg kill more halt hwclock mkswap reboot shutdown sln mkfs.minix fsck.minix hexdump setsid chrt last logger mesg renice wall vipw vigr chfn newgrp chsh login reset; do
+	for i in dmesg kill more halt hwclock mkswap reboot shutdown sln mkfs.minix fsck.minix hexdump setsid chrt last logger mesg renice wall vipw vigr blockdev chfn newgrp chsh login cal script flock uuidd; do
 		update-alternatives --remove $i $i.${PN}
 	done
+}
+
+pkg_postinst_util-linux-ng-reset() {
+	update-alternatives --install ${bindir}/reset reset reset.${PN} 100
+}
+
+pkg_prerm_util-linux-ng-reset () {
+	update-alternatives --remove reset reset.${PN}
 }
 
 pkg_postinst_util-linux-ng-fdisk () {

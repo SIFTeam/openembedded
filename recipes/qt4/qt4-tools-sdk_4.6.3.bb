@@ -5,11 +5,14 @@ HOMEPAGE = "http://www.trolltech.com"
 PRIORITY = "optional"
 LICENSE = "LGPLv2.1 GPLv3"
 
+PR = "r1"
+
 DEFAULT_PREFERENCE = "-1"
 inherit sdk
 
 SRC_URI = "ftp://ftp.trolltech.com/qt/source/qt-everywhere-opensource-src-${PV}.tar.gz \
            file://configure-lflags.patch \
+           file://compile.test-lflags.patch \
            file://qt-config.patch \
            file://g++.conf \
            file://linux.conf"
@@ -29,6 +32,7 @@ EXTRA_OECONF = "-prefix ${prefix} \
                 -verbose -release -fast -static \
                 -qt3support \
                 -I${STAGING_DIR_NATIVE}/usr/include \
+                -I${STAGING_DIR_NATIVE}/usr/include/freetype2 \
                 -I${STAGING_DIR_NATIVE}/usr/include/dbus-1.0 \
                 -I${STAGING_DIR_NATIVE}/usr/lib/dbus-1.0/include"
 
@@ -76,6 +80,10 @@ do_install() {
 	for i in moc uic uic3 rcc lrelease lupdate qdbuscpp2xml qdbusxml2cpp; do \
 		ln -s ${i}4 ${i}; \
 	done)
+
+	# make a symbolic link to mkspecs for compatibility with Nokia's SDK
+	# and QTCreator
+	(cd ${D}${bindir}/..; ln -s ${TARGET_SYS}/usr/share/qtopia/mkspecs mkspecs;)
 }
 
 SRC_URI[md5sum] = "5c69f16d452b0bb3d44bc3c10556c072"

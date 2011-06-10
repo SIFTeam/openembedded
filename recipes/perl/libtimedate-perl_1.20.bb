@@ -1,8 +1,8 @@
 DESCRIPTION = "TimeDate - parser for absolute times"
 SECTION = "libs"
 # You can redistribute it and/or modify it under the same terms as Perl itself.
-LICENSE = "Artistic|GPL"
-PR = "r2"
+LICENSE = "Artistic|GPLv1+"
+PR = "r3"
 
 
 SRC_URI = "http://search.cpan.org/CPAN/authors/id/G/GB/GBARR/TimeDate-${PV}.tar.gz"

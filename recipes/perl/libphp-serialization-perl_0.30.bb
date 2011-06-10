@@ -1,7 +1,7 @@
 DESCRIPTION = "The standard database interface module for Perl."
 SECTION = "libs"
-LICENSE = "Artistic|GPL"
-PR = "r1"
+LICENSE = "Artistic|GPLv1+"
+PR = "r2"
 
 SRC_URI = "http://search.cpan.org/CPAN/authors/id/B/BO/BOBTFISH/PHP-Serialization-${PV}.tar.gz"
 

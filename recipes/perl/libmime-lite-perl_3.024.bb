@@ -1,7 +1,7 @@
 DESCRIPTION = "Simple standalone module for generating MIME messages."
 SECTION = "libs"
-LICENSE = "Artistic|GPL"
-PR = "r2"
+LICENSE = "Artistic|GPLv1+"
+PR = "r3"
 
 RDEPENDS_${PN} = "perl-module-file-spec \
             libemail-date-format-perl \

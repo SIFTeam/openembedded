@@ -4,14 +4,19 @@ AUTHOR = "Larry Doolittle <larry@doolittle.boa.org>"
 RDEPENDS_${PN} = "busybox"
 SECTION = "admin"
 LICENSE = "GPLv2"
-PR = "r3"
+PR = "r5"
 # The ntpclient package uses version numbers that include an underscore :(
 PV = "2007_365"
 # ntpclient unpacks into a directory that doesn't include version info :(
 S = "${WORKDIR}/${PN}-2007"
 
 SRC_URI = "http://doolittle.icarus.com/ntpclient/ntpclient_${PV}.tar.gz \
-           file://init"
+           file://init \
+          "
+
+UCLIBC_PATCHES = " file://fix-adjtimex-uclibc.patch \
+                 "
+SRC_URI_append_libc-uclibc = ${UCLIBC_PATCHES}
 
 INITSCRIPT_NAME = "ntpclient"
 INITSCRIPT_PARAMS = "defaults 65"

@@ -1,10 +1,10 @@
 DESCRIPTION = "Test::Differences - Test strings and data structures and show differences if not ok"
 SECTION = "libs"
-LICENSE = "Artistic|GPL"
+LICENSE = "Artistic|GPLv1+"
 DEPENDS += "libtext-diff-perl-native"
 RDEPENDS_${PN} += "perl-module-carp perl-module-constant perl-module-exporter \
              perl-module-strict libtext-diff-perl"
-PR = "r4"
+PR = "r5"
 
 SRC_URI = "http://search.cpan.org/CPAN/authors/id/R/RB/RBS/Test-Differences-${PV}.tar.gz"
 

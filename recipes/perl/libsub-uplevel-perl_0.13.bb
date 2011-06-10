@@ -1,8 +1,8 @@
 DESCRIPTION = "Sub::Uplevel - apparently run a function in a higher stack frame"
 SECTION = "libs"
-LICENSE = "Artistic|GPL"
+LICENSE = "Artistic|GPLv1+"
 RDEPENDS_${PN} += "perl-module-exporter perl-module-strict perl-module-vars"
-PR = "r5"
+PR = "r6"
 
 SRC_URI = "http://search.cpan.org/CPAN/authors/id/D/DA/DAGOLDEN/Sub-Uplevel-${PV}.tar.gz"
 

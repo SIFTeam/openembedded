@@ -1,10 +1,10 @@
 DESCRIPTION = "XML::Twig - A perl module for processing huge XML documents in tree mode."
 SECTION = "libs"
-LICENSE = "Artistic|GPL"
+LICENSE = "Artistic|GPLv1+"
 HOMEPAGE = "http://www.xmltwig.com/"
 DEPENDS += "libxml-parser-perl-native"
 RDEPENDS_${PN} += "libxml-parser-perl"
-PR = "r1"
+PR = "r2"
 
 SRC_URI = "http://search.cpan.org/CPAN/authors/id/M/MI/MIROD/XML-Twig-${PV}.tar.gz"
 SRC_URI[md5sum] = "867449a4c53c628dd16bdc8de49cfc88"

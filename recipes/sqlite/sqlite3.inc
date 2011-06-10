@@ -1,9 +1,10 @@
 DESCRIPTION = "An Embeddable SQL Database Engine"
 SECTION = "libs"
 PRIORITY = "optional"
-DEPENDS = "tcl-native readline ncurses"
+DEPENDS = "readline ncurses"
+DEPENDS_virtclass-native = "tcl-native readline-native ncurses-native"
 LICENSE = "PD"
-INC_PR = "r1"
+INC_PR = "r4"
 
 SRC_URI = "http://www.sqlite.org/sqlite-${PV}.tar.gz \
 	   file://libtool.patch"
@@ -12,8 +13,13 @@ S = "${WORKDIR}/sqlite-${PV}"
 
 inherit autotools pkgconfig
 
+BBCLASSEXTEND = "native"
+
+nolargefile = "${@base_contains('DISTRO_FEATURES', 'largefile', '', '-DSQLITE_DISABLE_LFS', d)}"
 EXTRA_OECONF = "--disable-tcl --enable-shared \
-		--enable-threadsafe"
+		--enable-threadsafe \
+		CFLAGS='${CFLAGS} ${nolargefile}' \
+		"
 export config_BUILD_CC = "${BUILD_CC}"
 export config_BUILD_CFLAGS = "${BUILD_CFLAGS}"
 export config_BUILD_LIBS = "${BUILD_LDFLAGS}"

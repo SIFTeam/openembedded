@@ -1,7 +1,7 @@
 LICENSE = "MIT"
 
 include nylon-feed.inc
-DEPENDS = "${NYLON_FEED} \
+RDEPENDS = "${NYLON_FEED} \
     boost \
     db3 \
     dhcp \
@@ -39,7 +39,7 @@ DEPENDS = "${NYLON_FEED} \
 
 do_index() {
 	touch ${DEPLOY_DIR_IPK}/Packages
-	ipkg-make-index -r ${DEPLOY_DIR_IPK}/Packages -p ${DEPLOY_DIR_IPK}/Packages -l ${DEPLOY_DIR_IPK}/Packages.filelist -m ${DEPLOY_DIR_IPK}
+	opkg-make-index -r ${DEPLOY_DIR_IPK}/Packages -p ${DEPLOY_DIR_IPK}/Packages -l ${DEPLOY_DIR_IPK}/Packages.filelist -m ${DEPLOY_DIR_IPK}
 }
 
 addtask index before do_build after do_install

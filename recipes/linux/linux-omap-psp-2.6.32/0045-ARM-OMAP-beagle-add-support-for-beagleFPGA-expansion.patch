@@ -1,7 +1,7 @@
-From fb0e78890ed606930231a32ea7d9b84ce0a88f58 Mon Sep 17 00:00:00 2001
+From 1ebb6f864a831fc8efebe4a7a9f65d07fa31466a Mon Sep 17 00:00:00 2001
 From: Koen Kooi <koen@dominion.thruhere.net>
 Date: Sat, 15 May 2010 21:47:32 +0200
-Subject: [PATCH 45/48] ARM: OMAP: beagle: add support for beagleFPGA expansionboard: http://members.cox.net/ebrombaugh1/embedded/beagle/beagle_fpga.html
+Subject: [PATCH 45/45] ARM: OMAP: beagle: add support for beagleFPGA expansionboard: http://members.cox.net/ebrombaugh1/embedded/beagle/beagle_fpga.html
 
 ---
  arch/arm/mach-omap2/board-omap3beagle.c |   26 ++++++++++++++++++++++++++

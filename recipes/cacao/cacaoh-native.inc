@@ -1,8 +1,9 @@
 DESCRIPTION = "Header generator for Cacao JVM - Needed for cross-compilation builds"
 HOMEPAGE = "http://www.cacaojvm.org/"
-LICENSE  = "GPL"
-
+LICENSE = "GPL"
 DEPENDS = "libtool-native zlib-native virtual/javac-native classpath-native"
+
+INC_PR = "r5"
 
 S = "${WORKDIR}/cacao-${PV}"
 
@@ -21,6 +22,9 @@ do_compile() {
   oe_runmake -C src/cacaoh cacaoh
 }
 
-do_stage() {
-	install -m 0755 src/cacaoh/.libs/cacaoh ${STAGING_BINDIR}/cacaoh-${PV}
+do_install() {
+  install -d ${D}${bindir}/cacaoh-${PV}
+  ${STAGING_BINDIR_NATIVE}/${HOST_SYS}-libtool --mode=install install -m 0755 src/cacaoh/cacaoh ${D}${bindir}/cacaoh-${PV}
 }
+
+NATIVE_INSTALL_WORKS = "1"

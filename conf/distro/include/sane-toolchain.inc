@@ -5,21 +5,28 @@
 #############################################################################
 
 # Base line versions, good for most things
-PREFERRED_GCC_VERSION                ?= "4.4.4"
-PREFERRED_BINUTILS                   ?= "2.20.1"
+PREFERRED_GCC_VERSION                ?= "4.5"
+PREFERRED_BINUTILS_VERSION           ?= "2.21"
+PREFERRED_UCLIBC_VERSION             ?= "git"
+PREFERRED_EGLIBC_VERSION             ?= "2.12"
+PREFERRED_GLIBC_VERSION              ?= "2.10.1"
+# we need hard assignment here, because bitbake.conf has 
+# weak "no" first so weak "yes" here won't override it
+# also use hard assignment for version to make sure it's 
+# new enough for SYSROOT support
+PREFERRED_LIBTOOL_VERSION            = "2.4"
+LIBTOOL_HAS_SYSROOT                  = "yes"
 
 # Prefer glibc 2.6 and uclibc 0.9.30, these have had the most testing.
-PREFERRED_VERSION_glibc             ?= "2.10.1"
-PREFERRED_VERSION_glibc-initial     ?= "2.10.1"
-PREFERRED_VERSION_eglibc             ?= "2.11"
-PREFERRED_VERSION_eglibc-initial     ?= "2.11"
-PREFERRED_UCLIBC_VERSION            ?= "0.9.31"
+PREFERRED_VERSION_glibc              ?= "${PREFERRED_GLIBC_VERSION}"
+PREFERRED_VERSION_glibc-initial      ?= "${PREFERRED_GLIBC_VERSION}"
+PREFERRED_VERSION_eglibc             ?= "${PREFERRED_EGLIBC_VERSION}"
+PREFERRED_VERSION_eglibc-initial     ?= "${PREFERRED_EGLIBC_VERSION}"
 
 # Some systems need a special gcc version
 PREFERRED_GCC_VERSION_486sx          ?= "4.3.2"
 PREFERRED_GCC_VERSION_avr32          ?= "4.2.2"
 PREFERRED_GCC_VERSION_bfin           ?= "4.1.2"
-PREFERRED_GCC_VERSION_xilinx-ml403   ?= "4.1.1"
 PREFERRED_GCC_VERSION_xilinx-ml403   ?= "4.1.1"
 
 # This is unrelated to the kernel version, but glibc and some userspaceapps require a recent version to build against
@@ -29,9 +36,9 @@ PREFERRED_VERSION_linux-libc-headers ?= "2.6.31"
 #KERNEL_CCSUFFIX_armv7a= "-4.2.1+csl-arm-2007q3-53"
 
 # Binutils
-PREFERRED_VERSION_binutils           ?= "${PREFERRED_BINUTILS}"
-PREFERRED_VERSION_binutils-cross     ?= "${PREFERRED_BINUTILS}"
-PREFERRED_VERSION_binutils-cross-sdk ?= "${PREFERRED_BINUTILS}"
+PREFERRED_VERSION_binutils           ?= "${PREFERRED_BINUTILS_VERSION}"
+PREFERRED_VERSION_binutils-cross     ?= "${PREFERRED_BINUTILS_VERSION}"
+PREFERRED_VERSION_binutils-cross-sdk ?= "${PREFERRED_BINUTILS_VERSION}"
 
 # Avr32 only has patches for binutils 2.17 in OE
 PREFERRED_VERSION_binutils_avr32 =           "2.17"
@@ -45,15 +52,12 @@ PREFERRED_VERSION_gcc-cross-sdk          ?= "${PREFERRED_GCC_VERSION}"
 PREFERRED_VERSION_gcc-cross-initial      ?= "${PREFERRED_GCC_VERSION}"
 PREFERRED_VERSION_gcc-cross-intermediate ?= "${PREFERRED_GCC_VERSION}"
 
-# Compiler selection
-PREFERRED_PROVIDER_virtual/${TARGET_PREFIX}binutils         = "binutils-cross"
-PREFERRED_PROVIDER_virtual/${TARGET_PREFIX}gcc-initial      = "gcc-cross-initial"
-PREFERRED_PROVIDER_virtual/${TARGET_PREFIX}gcc-intermediate = "gcc-cross-intermediate"
-PREFERRED_PROVIDER_virtual/${TARGET_PREFIX}gcc              = "gcc-cross"
-PREFERRED_PROVIDER_virtual/${TARGET_PREFIX}g++              = "gcc-cross"
-
 # Others
-PREFERRED_PROVIDER_linux-libc-headers = "linux-libc-headers"
+PREFERRED_VERSION_libtool = "${PREFERRED_LIBTOOL_VERSION}"
+PREFERRED_VERSION_libtool-cross = "${PREFERRED_LIBTOOL_VERSION}"
+PREFERRED_VERSION_libtool-native = "${PREFERRED_LIBTOOL_VERSION}"
+PREFERRED_VERSION_libtool-sdk = "${PREFERRED_LIBTOOL_VERSION}"
+PREFERRED_VERSION_libtool-nativesdk = "${PREFERRED_LIBTOOL_VERSION}"
 
 #############################################################################
 # TOOLCHAIN CUSTOMIZATION
@@ -62,10 +66,14 @@ PREFERRED_PROVIDER_linux-libc-headers = "linux-libc-headers"
 # Branding
 TARGET_VENDOR = "-oe"
 
-# Add FEED_ARCH to the overrides list so that we can override the
+# Compiler selection
+TOOLCHAIN_TYPE ?= "internal"
+require conf/distro/include/toolchain-${TOOLCHAIN_TYPE}.inc
+
+# Add BASE_PACKAGE_ARCH to the overrides list so that we can override the
 # ARM_INSTRUCTION_SET like below
 
-OVERRIDES .= ":${FEED_ARCH}"
+OVERRIDES =. "${BASE_PACKAGE_ARCH}:"
 
 # ARM920T and up can use thumb mode to decrease binary size at the expense of speed
 # (the complete story is a bit more nuanced due to cache starvation)
@@ -120,7 +128,7 @@ TARGET_CC_ARCH_pn-cairo_armv5te = "-march=armv4t"
 
 # Can be "glibc", "eglibc" or "uclibc"
 LIBC ?= "eglibc"
-require conf/distro/include/${LIBC}.inc
+require conf/distro/include/${LIBC}-${TOOLCHAIN_TYPE}.inc
 PSTAGE_EXTRAPATH = "${LIBC}"
 require conf/distro/include/sane-toolchain-${LIBC}.inc
 
@@ -190,7 +198,12 @@ def compute_os_portion_of_target_triplet (d):
 	else:
 		bb.note("DISTRO_FEATURES is not set abi suffix not set")
 		abi_suffix = ""
-	if libc_suffix is not "" or abi_suffix is not "":
+
+	if bb.data.getVar('TOOLCHAIN_BRAND', d, 1) is not None and \
+	"csl" in bb.data.getVar('TOOLCHAIN_BRAND', d, 1):
+		gnu_suffix = "gnu"
+
+	if libc_suffix + gnu_suffix + abi_suffix is not "":
 		return os_suffix + "-" + libc_suffix + gnu_suffix + abi_suffix
 	else:
 		return os_suffix

@@ -1,7 +1,7 @@
 DESCRIPTION = "Harness to build the source code from OpenJDK using Free Software build tools"
 HOMEPAGE = "http://icedtea.classpath.org"
 LICENSE  = "GPL with Classpath Exception"
-INC_PR = "r2"
+INC_PR = "r3"
 
 DEPENDS = "virtual/javac-native classpath-tools-native \
 	   virtual/java-native classpath-native \
@@ -18,12 +18,17 @@ JAVA_HOME[unexport] = "1"
 # No parallel build yet.
 PARALLEL_MAKE = ""
 
+# openjdk-ecj looks in /usr/include and /usr/lib for freetype by default.
+export ALT_FREETYPE_HEADERS_PATH = "${STAGING_INCDIR}/freetype2"
+export ALT_FREETYPE_LIB_PATH = "${STAGING_LIBDIR}"
+
 # Configure options compatible with Cacao >= 0.99 only!
 EXTRA_OECONF = "\
 	--with-parallel-jobs=1 \
 	--disable-docs \
 	--disable-pulse-java \
 	--disable-plugin \
+        --disable-npplugin \
 	--disable-xrender \
 	\
 	--with-ecj=${STAGING_BINDIR_NATIVE}/ecj-bootstrap \
@@ -184,7 +189,7 @@ do_install() {
 
 	for F in bootstrap/icedtea/{bin,include,jre,lib}
 	do
-		cp -rL $F ${JDK_INSTALL_DIR}
+		cp -RL $F ${JDK_INSTALL_DIR}
 	done
 
 	install -d ${JDK_INSTALL_DIR}/include/hpi

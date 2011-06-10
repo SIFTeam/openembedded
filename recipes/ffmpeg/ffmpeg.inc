@@ -3,7 +3,7 @@ HOMEPAGE = "http://ffmpeg.mplayerhq.hu/"
 AUTHOR = "Fabrice Bellard ffmpeg-devel@mplayerhq.hu"
 SECTION = "libs"
 PRIORITY = "optional"
-LICENSE = "LGPL"
+LICENSE = "GPLv2+"
 
 ARM_INSTRUCTION_SET = "arm"
 
@@ -12,7 +12,7 @@ PE = "2"
 DEPENDS = "zlib libogg libvorbis libtheora faac faad2 ${@base_conditional('ENTERPRISE_DISTRO', '1', '', 'lame liba52', d)}"
 RSUGGESTS_${PN} = "mplayer"
 
-INC_PR = "r16"
+INC_PR = "r17"
 
 inherit autotools pkgconfig
 
@@ -32,6 +32,8 @@ EXTRA_OECONF = "\
         \
 "
 
+EXTRA_OECONF_append_powerpc += "--${@['disable-altivec','enable-altivec'][bb.data.getVar('BASE_PACKAGE_ARCH',d,1) in ['ppce600']]}"
+
 FFMPEG_LIBS = "libavcodec libavdevice libavformat \
                libavutil libpostproc libswscale libavfilter"
 
@@ -45,7 +47,7 @@ ffmpeg_create_compat_links() {
         cd ${SYSROOT_DESTDIR}${STAGING_INCDIR}/ffmpeg
 
         for lib in ${FFMPEG_LIBS}; do
-                ln -s ../$lib/*.h '.'
+                ln -s ../$lib/*.h '.' || true
         done
 }
 

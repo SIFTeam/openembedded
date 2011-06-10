@@ -3,7 +3,7 @@ DESCRIPTION = "Tools for performance analysis."
 LICENSE = "GPL"
 RDEPENDS_${PN} = "debianutils"
 
-PR = "r0"
+PR = "r2"
 
 inherit autotools
 
@@ -34,7 +34,7 @@ do_configure() {
 
 do_compile () {
 	. ${CONFIG_SITE}
-	if [ X"$ac_cv_uint" == X"yes" ]; then
+	if [ X"$ac_cv_uint" = X"yes" ]; then
 		CFLAGS="${CFLAGS} -DHAVE_uint"
 	fi
 	install -d ${S}/bin/${TARGET_SYS}
@@ -53,4 +53,9 @@ do_install () {
 	install -m 0755 ${WORKDIR}/lmbench-run ${D}${bindir}/
 	mkdir -p ${D}${mandir}
 	mv ${D}${prefix}/man/* ${D}${mandir}/
+	install -m 0755 ${S}/scripts/lmbench ${D}${bindir}
+	install -d ${D}${datadir}/lmbench/scripts
+	install -m 0755 ${S}/scripts/* ${D}${datadir}/lmbench/scripts
 }
+
+FILES_${PN} += "${datadir}/lmbench"

@@ -22,7 +22,7 @@ INHERIT += "src_distribute_local"
 SRC_DIST_LOCAL ?= "symlink"
 
 # Can be "glibc", "eglibc" or "uclibc"
-KAEILOSLIBC ?= "glibc"
+KAEILOSLIBC ?= "eglibc"
 LIBC ?= "${KAEILOSLIBC}"
 PSTAGE_EXTRAPATH = "${LIBC}"
 
@@ -161,32 +161,6 @@ DEPLOY_DIR_IMAGE = "${DEPLOY_DIR}/images/${MACHINE}"
 DISTRO_CHECK := "${@bb.data.getVar("DISTRO_VERSION",d,1) or bb.fatal('Remove this line or set a dummy DISTRO_VERSION if you really want to build an unversioned distro')}"
 
 
-# Configuration for tinderbox, so people only need:
-# INHERIT          += "tinderclient"
-# in their local.conf 
-
-#Name of the client
-TINDER_MACHINE  = "${MACHINE}-${LIBC}-build-image"
-
-# Which lof file to write to, which tree to report to
-TINDER_LOG        = "${TMPDIR}/tinder.log"
-TINDER_TREE       = "KaeilOS"
-
-# HTTP posting    
-#TINDER_HOST       ?= "ewi546.ewi.utwente.nl"
-#TINDER_URL        ?= "/tinderbox"
-
-# Which branch do we build
-TINDER_BRANCH     = "org.openembedded.dev"
-   
-## Clobbing
-## 0 for rebuilding everything from scratch
-## 1 for incremental builds
-TINDER_CLOBBER    = "1"
-
-## Do a report at all
-TINDER_REPORT     = "1"
-
 # Configuration for seppuku autobuilder, people only need to put:
 # INHERIT += "seppuku oestats-client"
 # SEPPUKU_USER         = "your_bugzilla@user.id"
@@ -210,7 +184,7 @@ OESTATS_SERVER      ?= "tinderbox.openembedded.org"
 
 
 # We want images supporting the following features (for task-base)
-DISTRO_FEATURES = "nfs smbfs wifi ppp alsa bluetooth ext2 vfat irda pcmcia usbgadget usbhost pci pam"
+DISTRO_FEATURES = "ipv4 ipv6 nfs smbfs wifi ppp alsa bluetooth ext2 vfat irda pcmcia usbgadget usbhost pci pam"
 
 # Use-like features
 DISTRO_FEATURES += "tk"

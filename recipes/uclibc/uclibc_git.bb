@@ -6,15 +6,15 @@
 # UCLIBC_BASE can be set in a distro file, but whether this works depends
 # on whether the base patches apply to the selected (SRCDATE) svn release.
 #
-UCLIBC_BASE ?= "0.9.31"
-SRCREV="581203ebad402d1b2ed64c8ba67cc93273527a57"
+UCLIBC_BASE ?= "0.9.32"
+SRCREV="094d82d3b3e8f8c8460a802b7a9548f3ae4fda46"
 PR_append = "+gitr${SRCPV}"
 DEFAULT_PREFERENCE = "-1"
 #DEFAULT_PREFERENCE is 0 (empty), releases have a preference of 1 so take
 # precedence.
 
 require uclibc.inc
-PR = "${INC_PR}.3"
+PR = "${INC_PR}.8"
 PROVIDES += "virtual/${TARGET_PREFIX}libc-for-gcc"
 
 #recent versions uclibc require real kernel headers
@@ -31,6 +31,13 @@ SRC_URI = "git://uclibc.org/uClibc.git;branch=master;protocol=git \
 	file://uclibc-arm-ftruncate64.patch \
 	file://uclibc_enable_log2_test.patch \
 	file://ldso_use_arm_dl_linux_resolve_in_thumb_mode.patch \
-        file://isnan.patch \
+	file://reorder-use-BX.patch \
+	file://select-force-thumb.patch \
+	file://remove-sub-arch-variants.patch \
+	file://transform-eabi-oabi-choice.patch \
+	file://include-arm-asm.h.patch \
+	file://detect-bx-availibility.patch \
+	file://remove-eabi-oabi-selection.patch \
+	file://powerpc_copysignl.patch \
 	"
 S = "${WORKDIR}/git"

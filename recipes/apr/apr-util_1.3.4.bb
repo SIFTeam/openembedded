@@ -3,7 +3,7 @@ SECTION = "libs"
 DEPENDS = "apr expat gdbm"
 LICENSE = "Apache License, Version 2.0"
 
-PR = "r5"
+PR = "r7"
 
 SRC_URI = "${APACHE_MIRROR}/apr/${P}.tar.gz \
            file://configfix.patch \
@@ -14,6 +14,7 @@ EXTRA_OECONF = "--with-apr=${STAGING_BINDIR_CROSS}/apr-1-config \
 		--with-gdbm=${STAGING_DIR_HOST}${layout_prefix} \
 		--without-sqlite2 \
 		--without-sqlite3 \
+		--without-pgsql \
 		--with-expat=${STAGING_DIR_HOST}${layout_prefix}"
 
 
@@ -29,7 +30,7 @@ do_configure_prepend() {
 do_configure_append() {
 	sed -i -e  s:apr_builders=/usr/share/build-1:apr_builders=${STAGING_DATADIR}/build-1:g ${S}/build/rules.mk
 	sed -i /^LIBTOOL/d ${S}/build/rules.mk
-	echo LIBTOOL="${STAGING_BINDIR_NATIVE}/${TARGET_PREFIX}libtool --tag=CC" >> ${S}/build/rules.mk
+	echo LIBTOOL="${TARGET_PREFIX}libtool --tag=CC" >> ${S}/build/rules.mk
 }
 
 

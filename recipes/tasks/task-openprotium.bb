@@ -1,11 +1,11 @@
 DESCRIPTION = "Basic image for openprotium"
 HOMEPAGE = "http://www.openprotium.org"
 ALLOW_EMPTY = "1"
-PR = "r3"
+PR = "r4"
 
 inherit task
 DISTRO_SSH_DAEMON ?= "dropbear"
-DISTRO_DEV_MANAGER ?= ""
+IMAGE_DEV_MANAGER ?= ""
 DISTRO_INIT_MANAGER ?= ""
 DISTRO_LOGIN_MANAGER ?= ""
 PACKAGE_ARCH = "${MACHINE_ARCH}"
@@ -36,14 +36,13 @@ RDEPENDS_${PN} = " kernel \
 	update-modules \
 	module-init-tools \  
 	modutils-initscripts \
-	ipkg-collateral ipkg ipkg-link \
 	portmap \
 	util-linux-ng-blkid \
 	mdadm \
 	hdparm \
 	mtd-utils \
 	${DISTRO_SSH_DAEMON} \
-	${DISTRO_DEV_MANAGER} \
+	${IMAGE_DEV_MANAGER} \
 	${DISTRO_INIT_MANAGER} \
 	${DISTRO_LOGIN_MANAGER} \
 	${DISTRO_KERNEL_MODULES} \

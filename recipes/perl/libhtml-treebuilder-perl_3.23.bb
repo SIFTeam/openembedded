@@ -1,7 +1,7 @@
 DESCRIPTION = "HTML::TreeBUilder - Class is for HTML syntax trees that get built out of HTML source"
 SECTION = "libs"
-LICENSE = "Artistic|GPL"
-PR = "r4"
+LICENSE = "Artistic|GPLv1+"
+PR = "r5"
 
 RDEPENDS_${PN} = "perl-module-extutils-makemaker"
 

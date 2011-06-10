@@ -4,14 +4,18 @@ DEFAULT_PREFERENCE = "-1"
 DEPENDS += "gperf-native"
 FILESPATHPKG =. "eglibc-svn:"
 PV = "2.12"
-PR = "${INC_PR}.3"
+PR = "${INC_PR}.8"
 PR_append = "+svnr${SRCPV}"
-SRCREV="11306"
+SRCREV="12323"
 EGLIBC_BRANCH="eglibc-2_12"
 SRC_URI = "svn://svn.eglibc.org/branches;module=${EGLIBC_BRANCH};proto=svn \
            file://eglibc-svn-arm-lowlevellock-include-tls.patch \
            file://IO-acquire-lock-fix.patch \
            file://shorten-build-commands.patch \
+           file://sh4_set_fpscr_2.12.patch \
+           file://sh4_local-fpscr_values.patch \
+           file://eglibc-dont-cache-slibdir.patch \
+           file://armv4-eabi-compile-fix.patch \
            file://etc/ld.so.conf \
            file://generate-supported.mk"
 S = "${WORKDIR}/${EGLIBC_BRANCH}/libc"
@@ -21,7 +25,7 @@ PACKAGES_DYNAMIC = "libc6*"
 RPROVIDES_${PN}-dev = "libc6-dev virtual-libc-dev"
 PROVIDES_${PN}-dbg = "glibc-dbg"
 
-# the -isystem in bitbake.conf screws up glibc do_stage
+# the -isystem in bitbake.conf screws up eglibc sysroot
 BUILD_CPPFLAGS = "-I${STAGING_INCDIR_NATIVE}"
 TARGET_CPPFLAGS = "-I${STAGING_DIR_TARGET}${layout_includedir}"
 
@@ -48,23 +52,10 @@ python __anonymous () {
 EXTRA_OECONF = "--enable-kernel=${OLDEST_KERNEL} \
                 --without-cvs --disable-profile --disable-debug --without-gd \
                 --enable-clocale=gnu \
-                --enable-add-ons=${GLIBC_ADDONS},ports \
+                --enable-add-ons=${GLIBC_ADDONS} \
                 --with-headers=${STAGING_INCDIR} \
                 --without-selinux \
                 ${GLIBC_EXTRA_OECONF}"
-
-EXTRA_OECONF += "${@get_eglibc_fpu_setting(bb, d)}"
-
-do_unpack_append() {
-	bb.build.exec_func('do_move_ports', d)
-}
-
-do_move_ports() {
-        if test -d ${WORKDIR}/${EGLIBC_BRANCH}/ports ; then
-	    rm -rf ${S}/ports
-	    mv ${WORKDIR}/${EGLIBC_BRANCH}/ports ${S}/
-	fi
-}
 
 do_configure () {
 # override this function to avoid the autoconf/automake/aclocal/autoheader
@@ -87,7 +78,8 @@ rpcsvc = "bootparam_prot.x nlm_prot.x rstat.x \
 do_compile () {
 	# -Wl,-rpath-link <staging>/lib in LDFLAGS can cause breakage if another glibc is in staging
 	unset LDFLAGS
-	base_do_compile
+	oe_runmake libdir='${libdir}' slibdir='${base_libdir}' \
+        localedir='${libdir}/locale'
 	(
 		cd ${S}/sunrpc/rpcsvc
 		for r in ${rpcsvc}; do
@@ -97,4 +89,4 @@ do_compile () {
 	)
 }
 
-require eglibc-package.bbclass
+require eglibc-package.inc

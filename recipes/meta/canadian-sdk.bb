@@ -1,6 +1,6 @@
 DESCRIPTION = "Meta package for building a installable toolchain"
 LICENSE = "MIT"
-DEPENDS = "opkg-native ipkg-utils-native fakeroot-native sed-native zip-native"
+DEPENDS = "opkg-native opkg-utils-native fakeroot-native sed-native zip-native"
 PR = "r5"
 
 # NOTE: We need to save and restore PACKAGE_ARCHS, because sdk.bbclass
@@ -91,7 +91,7 @@ do_populate_sdk() {
 			if [ -e $pkgnames ]; then
 				oenote "Found $pkgnames"
 				cp $pkgnames ${SDK_OUTPUT}/${prefix}/ipk/
-				orig_pkg=`ipkg-list-fields $pkgnames | grep OE: | cut -d ' ' -f2`
+				orig_pkg=`opkg-list-fields $pkgnames | grep OE: | cut -d ' ' -f2`
 				pkg_subdir=$arch${TARGET_VENDOR}${@['-' + bb.data.getVar('TARGET_OS', d, 1), ''][bb.data.getVar('TARGET_OS', d, 1) == ('' or 'custom')]}
 				mkdir -p ${SDK_OUTPUT}/${prefix}/pkgdata/$pkg_subdir/runtime
 				cp ${STAGING_DIR}/pkgdata/$pkg_subdir/$orig_pkg ${SDK_OUTPUT}/${prefix}/pkgdata/$pkg_subdir/

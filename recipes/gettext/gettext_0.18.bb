@@ -2,7 +2,7 @@ DESCRIPTION = "The GNU internationalization library."
 HOMEPAGE = "http://www.gnu.org/software/gettext/gettext.html"
 SECTION = "libs"
 LICENSE = "GPLv3"
-PR = "r2"
+PR = "r5"
 DEPENDS = "gettext-native virtual/libiconv ncurses expat"
 DEPENDS_virtclass-native = "libxml2-native"
 PROVIDES = "virtual/libintl"
@@ -19,9 +19,15 @@ SRC_URI = "${GNU_MIRROR}/gettext/gettext-${PV}.tar.gz \
 
 SRC_URI_append_libc-uclibc = " file://gettext-error_print_progname.patch"
 
+nolargefile = "${@base_contains('DISTRO_FEATURES', 'largefile', '', '-DNO_LARGEFILE_SOURCE', d)}"
+EXTRA_OEMAKE_append_libc-uclibc = "'CFLAGS=${CFLAGS} ${nolargefile}'"
+
 PARALLEL_MAKE = ""
 
 inherit autotools
+
+NATIVECONF = "--disable-rpath"
+NATIVECONF_virtclass-native += "--enable-relocatable --disable-curses"
 
 EXTRA_OECONF += "--without-lispdir \
 		 --disable-csharp \
@@ -31,7 +37,10 @@ EXTRA_OECONF += "--without-lispdir \
 		 --disable-openmp \
 		 --with-included-glib \
 		 --without-emacs \
+		 --with-included-libcroco \
+		 ${NATIVECONF} \
 	        "
+
 acpaths = '-I ${S}/gnulib-local/m4/ \
 	   -I ${S}/gettext-runtime/m4 \
 	   -I ${S}/gettext-tools/m4'

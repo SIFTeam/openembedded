@@ -1,6 +1,6 @@
 require libsdl.inc
 
-PR = "${INC_PR}.0"
+PR = "${INC_PR}.1"
 
 SECTION = "opie/libs"
 DEPENDS = "virtual/libqpe1 libopie2"
@@ -17,6 +17,7 @@ SRC_URI += "\
   file://no-PAGE_SIZE.patch \
   file://fix_Makefile.am.patch \
   file://fix_configure.in.patch \
+  file://asm_page_h.patch \
 "
 
 EXTRA_OECONF = "--disable-static --disable-debug --enable-cdrom --enable-threads --enable-timers --enable-endian \
@@ -29,7 +30,7 @@ EXTRA_OECONF = "--disable-static --disable-debug --enable-cdrom --enable-threads
                 --disable-video-picogui --enable-video-qtopia --enable-dlopen"
 
 do_compile_prepend() {
-	if [ "${PALMTOP_USE_MULTITHREADED_QT}" == "yes" ]
+	if [ "${PALMTOP_USE_MULTITHREADED_QT}" = "yes" ]
 	then
 		sed -i s,-lqte\([^-]\),-lqte-mt, src/Makefile
 	fi

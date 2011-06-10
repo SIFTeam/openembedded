@@ -1,7 +1,7 @@
 DESCRIPTION = "A lightweight Terminal Emulator based on libvte, written in Vala."
 SECTION = "x11/applications"
 DEPENDS = "vala-native vte"
-SRCREV = "0241cf2f19710b885dc060d03ec80af438e8246e"
+SRCREV = "6cfb8bf8eb1a3812e39fac10a4810b6680fa066a"
 PV = "1.1.1+gitr${SRCPV}"
 PE = "1"
 PR = "r1"

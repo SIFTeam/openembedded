@@ -18,6 +18,12 @@
 
 [ "$UTC" = yes ] && UTC=-u || UTC=-l
 
+if  [ ! -z "$HWCLOCKDEVICE" ]; then
+	if [ -e $HWCLOCKDEVICE ]; then
+		DEVICE="-f $HWCLOCKDEVICE"
+	fi
+fi
+
 case "$1" in
         start)
                 if [ "$VERBOSE" != no ]
@@ -30,9 +36,9 @@ case "$1" in
 		then
 			if [ -z "$TZ" ]
 			then
-	                   hwclock -s $UTC
+				hwclock -s $UTC $DEVICE
 			else
-			   TZ="$TZ" hwclock -s $UTC
+				TZ="$TZ" hwclock -s $UTC $DEVICE
 			fi
 		fi
 
@@ -55,7 +61,7 @@ case "$1" in
 		fi
 		if [ "$HWCLOCKACCESS" != no ]
 		then
-			hwclock -w $UTC
+			hwclock -w $UTC $DEVICE
 		fi
 		if [ "$VERBOSE" != no ]
 		then
@@ -66,7 +72,7 @@ case "$1" in
 	show)
 		if [ "$HWCLOCKACCESS" != no ]
 		then
-			hwclock -r $UTC
+			hwclock -r $UTC $DEVICE
 		fi
 		;;
         *)

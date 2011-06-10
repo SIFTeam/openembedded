@@ -1,5 +1,5 @@
 require u-boot.inc
-PR ="r64"
+PR = "r72"
 
 FILESPATHPKG =. "u-boot-git:"
 
@@ -12,10 +12,13 @@ SRCREV_afeb9260 = "6b8edfde22acc574b5532e9f086e6a7287a9bc78"
 SRCREV_afeb9260-180 = "6b8edfde22acc574b5532e9f086e6a7287a9bc78"
 SRCREV_palmpre = "668a6b45915d10d75357f5b93f569bbf49ea2b06"
 SRCREV_cm-t35 = "3c014f1586d5bfe30dca7549396915c83f31cd30"
+SRCREV_mpc8544ds = "f20393c5e787b3776c179d20f82a86bda124d651"
 SRCREV_mpc8641-hpcn = "f20393c5e787b3776c179d20f82a86bda124d651"
 SRCREV_p1020rdb = "f20393c5e787b3776c179d20f82a86bda124d651"
+SRCREV_p2020rdb = "f20393c5e787b3776c179d20f82a86bda124d651"
 SRCREV_p2020ds = "f20393c5e787b3776c179d20f82a86bda124d651"
 SRCREV_bug20 = "169a4c804dbaf11facb041b1333d394c6ceb8d68"
+SRCREV_nokia900 = "bd2313078114c4b44c4a5ce149af43bcb7fc8854"
 SRC_URI_append_afeb9260 = " file://AFEB9260-network-fix.patch"
 SRC_URI_append_afeb9260-180 = " file://AFEB9260-network-fix.patch"
 SRC_URI_append_cm-t35 = "file://cm-t35/cm-t35.patch"
@@ -23,7 +26,7 @@ SRC_URI_append_bug20 = "file://bug-uboot.patch"
 SRC_URI_append_bug20 += "file://bug-video-setting.patch"
 
 SRC_URI_beagleboard = "git://www.denx.de/git/u-boot.git;protocol=git \
-                       file://0001-OMAP3-enable-i2c-bus-switching-for-Beagle-and-Overo.patch \
+                       file://0001-Enable-I2C-bus-switching.patch \
                        file://0002-OMAP3-add-board-revision-detection-for-Overo.patch \
                        file://0003-OMAP3-update-Beagle-revision-detection-to-recognize-.patch \
                        file://0004-OMAP3-Set-VAUX2-to-1.8V-for-EHCI-PHY-on-Beagle-Rev-C.patch \
@@ -62,17 +65,18 @@ SRC_URI_beagleboard = "git://www.denx.de/git/u-boot.git;protocol=git \
                        file://0037-OMAP3-beagle-pass-expansionboard-name-in-bootargs.patch \
                        file://0038-Added-configurations-for-xM-Rev-A-board.patch \
                        file://0039-OMAP3-beagle-setenv-beaglerev-for-AxBx-Cx-xMA-for-be.patch \
-                       file://0001-OMAP-mmc-add-support-for-second-and-third-mmc-chan.patch \
-                       file://0001-OMAP3-Beagle-enable-support-for-second-and-third-m.patch \
-                       file://0038-BeagleBoard-Added-LED-driver.patch \
-                       file://0039-Add-led-command.patch \
-                       file://0041-BeagleBoard-Enabled-LEDs.patch \
-                       file://0042-BeagleBoard-New-command-for-status-of-USER-button.patch \
-                       file://0043-BeagleBoard-Add-CONFIG_SYS_MEMTEST_SCRATCH.patch \
-                       file://0044-Beagleboard-Adjust-boot.patch \
-                       file://0045-BeagleBoard-Enable-pullups-on-i2c2.patch \
-                       file://0046-BeagleBoard-Add-camera-to-default-bootargs.patch \
-		       file://0001-BeagleBoard-move-ramdisk-parameters.patch \
+                       file://0040-OMAP-mmc-add-support-for-second-and-third-mmc-channe.patch \
+                       file://0041-OMAP3-Beagle-enable-support-for-second-and-third-mmc.patch \
+                       file://0042-BeagleBoard-Added-LED-driver.patch \
+                       file://0043-Add-led-command.patch \
+                       file://0044-BeagleBoard-Enabled-LEDs.patch \
+                       file://0045-BeagleBoard-Added-userbutton-command.patch \
+                       file://0046-BeagleBoard-Add-CONFIG_SYS_MEMTEST_SCRATCH.patch \
+                       file://0047-BeagleBoard-Adjust-boot-command-on-USER-button.patch \
+                       file://0048-BeagleBoard-Enable-pullups-on-i2c2.patch \
+                       file://0049-BeagleBoard-Add-camera-to-default-bootargs.patch \
+                       file://0050-BeagleBoard-move-ramdisk-parameters.patch \
+                       file://0051-add-support-for-beagleboardtoys-expansionboards.patch \
                        file://fw_env.config \
 "
 SRCREV_beagleboard = "ca6e1c136ddb720c3bb2cc043b99f7f06bc46c55"
@@ -107,7 +111,7 @@ do_compile_calamari () {
         oe_runmake MPC8536DS_SPIFLASH_config
         oe_runmake all
         mv u-boot.bin u-boot-spiflash.bin
-        oe_runmake tools env
+	oe_runmake tools env HOSTCC="${CC}"
 }
 
 do_deploy_calamari () {
@@ -163,6 +167,17 @@ SRCREV_dm37x-evm = "c0a8fb217fdca7888d89f9a3dee74a4cec865620"
 PV_dm37x-evm = "2009.11+${PR}+gitr${SRCREV}"
 
 # ~ TI PSP v2009.11_OMAPPSP_03.00.01.06 (+ couple of commits)
+SRC_URI_am3517-crane = "git://arago-project.org/git/projects/u-boot-omap3.git;protocol=git \
+                        file://0001-Added-Support-for-AM3517-05-based-CraneBoard.patch \
+                        file://0001-OMAP2-3-I2C-Add-support-for-second-and-third-bus.patch \
+                        file://0002-ARMV7-Restructure-OMAP-i2c-driver-to-allow-code-shar.patch \
+                        file://0003-craneboard-add-expansionboard-support.patch \
+"
+
+SRCREV_am3517-crane = "c0a8fb217fdca7888d89f9a3dee74a4cec865620"
+PV_am3517-crane = "2009.11+${PR}+gitr${SRCREV}"
+
+# ~ TI PSP v2009.11_OMAPPSP_03.00.01.06 (+ couple of commits)
 SRC_URI_am37x-evm = "git://arago-project.org/git/projects/u-boot-omap3.git;protocol=git \
 	file://0001-omap3evm-Change-default-console-serial-port-from.patch \
 "
@@ -180,12 +195,15 @@ PV_omapzoom = "2009.01+${PR}+gitr${SRCREV}"
 
 SRC_URI_omapzoom2 = "git://dev.omapzoom.org/pub/scm/bootloader/u-boot.git;branch=master;protocol=git \
                      file://0001-OMAP3-set-L1NEON-bit-in-aux-control-register.patch \
-                     file://inline-fix.patch"
-SRCREV_omapzoom2 = "78e778e0ea884306841c6499851a1e35177d81d0"
+                     file://fix-default-boot.patch \
+                    "
+
+SRCREV_omapzoom2 = "fbe4cef852de5a39412234b4acd47a830d0282a2"
 PV_omapzoom2 = "1.1.4+${PR}+gitr${SRCREV}"
 PE_omapzoom2 = "1"
 
 do_compile_omapzoom2 () {
+	sed -i -e "s|OPTFLAGS=.*|OPTFLAGS=|" config.mk
         unset LDFLAGS
         unset CFLAGS
         unset CPPFLAGS
@@ -194,12 +212,17 @@ do_compile_omapzoom2 () {
         oe_runmake tools
 }
 
-SRC_URI_omapzoom36x = "git://dev.omapzoom.org/pub/scm/bootloader/u-boot.git;branch=master;protocol=git"
-SRCREV_omapzoom36x = "ab45d2a787a9674bed30542139175d8e090e0749"
+SRC_URI_omapzoom36x = "git://dev.omapzoom.org/pub/scm/bootloader/u-boot.git;branch=master;protocol=git \
+                       file://0001-OMAP3-set-L1NEON-bit-in-aux-control-register.patch \
+                       file://fix-default-boot.patch \
+                      "
+
+SRCREV_omapzoom36x = "fbe4cef852de5a39412234b4acd47a830d0282a2"
 PV_omapzoom36x = "1.1.4+${PR}+gitr${SRCREV}"
 PE_omapzoom36x = "1"
 
 do_compile_omapzoom36x () {
+	sed -i -e "s|OPTFLAGS=.*|OPTFLAGS=|" config.mk
         unset LDFLAGS
         unset CFLAGS
         unset CPPFLAGS
@@ -208,12 +231,10 @@ do_compile_omapzoom36x () {
         oe_runmake tools
 }
 
-SRC_URI_overo = "git://gitorious.org/u-boot-omap3/mainline.git;branch=omap3-dev;protocol=git \
-                 file://fw-env.patch \
-                 file://dss2.patch \
+SRC_URI_overo = "git://www.sakoman.com/git/u-boot.git;branch=omap4-exp;protocol=git \
 "
-SRCREV_overo = "2dea1db2a3b7c12ed70bbf8ee50755089c5e5170"
-PV_overo = "2009.03+${PR}+gitr${SRCREV}"
+SRCREV_overo = "261733408a27d14590cf3ec6b596461808050e32"
+PV_overo = "2010.12+${PR}+gitr${SRCREV}"
 
 # DaVinci dm355-evm/dm365-evm/dm6446-evm/dm6467-evm/dm6467t-evm - PSP 3.1.0/3.2.0 (build 35)
 
@@ -240,19 +261,20 @@ SRC_URI_dm6467t-evm  = "git://arago-project.org/git/projects/u-boot-dm646x.git;p
 SRCREV_dm6467t-evm   = "98b31e3aae3e3fb772f8d06c18ccdd6265aa0d38"
 PV_dm6467t-evm       = "2009.08+${PR}+gitr${SRCREV}"
 
-# OMAPL1 da380-omapl137/da850-omapl138-evm - PSP 3.20.0.11
+# OMAPL1 omapl137/omapl138 - PSP 3.20.0.11
 
-SRC_URI_da830-omapl137-evm = "git://arago-project.org/git/projects/u-boot-omapl1.git;protocol=git"
-SRCREV_da830-omapl137-evm  = "5f16b8551b125f16cd8d58f278cb25b94272fd9f"
-PV_da830-omapl137-evm      = "2009.11+${PR}+gitr${SRCREV}"
+SRC_URI_omapl137 = "git://arago-project.org/git/projects/u-boot-omapl1.git;protocol=git"
+SRCREV_omapl137  = "5f16b8551b125f16cd8d58f278cb25b94272fd9f"
+PV_omapl137      = "2009.11+${PR}+gitr${SRCREV}"
 
-SRC_URI_da850-omapl138-evm = "git://arago-project.org/git/projects/u-boot-omapl1.git;protocol=git"
-SRCREV_da850-omapl138-evm  = "5f16b8551b125f16cd8d58f278cb25b94272fd9f"
-PV_da850-omapl138-evm      = "2009.11+${PR}+gitr${SRCREV}"
+SRC_URI_omapl138 = "git://arago-project.org/git/projects/u-boot-omapl1.git;protocol=git"
+SRCREV_omapl138  = "5f16b8551b125f16cd8d58f278cb25b94272fd9f"
+PV_omapl138      = "2009.11+${PR}+gitr${SRCREV}"
 
 # hawkboard - master branch (hawk still .07beta)
 
 SRC_URI_hawkboard          = "git://arago-project.org/git/people/sekhar/u-boot-omapl1.git;protocol=git;branch=master"
+SRC_URI_hawkboard         += "file://dont-inline-weak-symbols.patch"
 SRCREV_hawkboard           = "0d291f2f255e6d66a78b3dc2445362a96ae39a57"
 PV_hawkboard               = "2009.08+gitr${SRCREV}"
 
@@ -270,6 +292,7 @@ SRCREV_sequoa = "cf3b41e0c1111dbb865b6e34e9f3c3d3145a6093"
 SRC_URI_sequoia = "git://www.denx.de/git/u-boot.git;protocol=git;tag=cf3b41e0c1111dbb865b6e34e9f3c3d3145a6093 "
 
 SRC_URI_mini2440 = "git://repo.or.cz/u-boot-openmoko/mini2440.git;protocol=git;branch=dev-mini2440-stable"
+SRC_URI_mini2440 += "file://dont-inline-weak-symbols-mini2440.patch"
 SRCREV_mini2440 = "3516c35fb777ca959e5cadf2156a792ca10e1cff"
 
 SRC_URI_micro2440 = "git://repo.or.cz/u-boot-openmoko/mini2440.git;protocol=git;branch=dev-mini2440-stable"
@@ -288,8 +311,8 @@ SRC_URI_append_c7x0 = "file://pdaXrom-u-boot.patch \
                        file://uboot-eabi-fix-HACK2.patch \
                        file://corgi-standard-partitioning.patch \
                        "
-SRC_URI_sheevaplug = "git://git.denx.de/u-boot-marvell.git;protocol=git;branch=testing"
-SRCREV_sheevaplug = "119b9942da2e450d4e525fc004208dd7f7d062e0"
+SRC_URI_sheevaplug = "git://git.denx.de/u-boot-marvell.git;protocol=git;branch=master"
+SRCREV_sheevaplug = "749c971873dbba301bd138c95d31223a25b32150"
 
 SRC_URI_xilinx-ml507 = "git://git.xilinx.com/u-boot-xlnx.git;protocol=git"
 SRCREV_xilinx-ml507 = "26e999650cf77c16f33c580abaadab2532f5e8b2"
@@ -340,3 +363,21 @@ if [ -d "${XILINX_BSP_PATH}" ]; then
     install ${S}/u-boot ${XILINX_BSP_PATH}
 fi
 }
+
+PV_nokia900 = "2010.06+gitr${SRCPV}"
+SRC_URI_nokia900 = "git://www.denx.de/git/u-boot.git;protocol=git \
+                    file://0001-ARM-Avoid-compiler-optimization-for-usages-of-readb-.patch \
+                    file://0001-Reduce-delays-in-omap-i2c-driver.patch \
+                    file://0002-Make-bootm-optionally-use-pre-existing-atags-for-Lin.patch \
+                    file://0003-Store-existing-atags-at-startup-if-chainloading.patch \
+                    file://0004-Nokia-RX-51-aka-N900-support.patch \
+                    file://0001-nokia-rx51-fix-declaration-fails-when-building-with-.patch \
+                    file://0005-fix-loading-file-from-ext2-partition-on-OMAP3-evm.patch \
+                    file://0006-omap3_mmc.c-fix-formating.patch \
+                    file://0007-Only-delay-boot-if-keyboard-open.patch \
+"
+SRC_URI_nokia900_append_shr = " \
+                    file://0001-configs-nokia_rx51.h-start-shr-as-default-and-change.patch \
+"
+
+UBOOT_MACHINE_nokia900 = "nokia_rx51_config"

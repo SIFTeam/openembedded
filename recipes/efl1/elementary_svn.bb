@@ -1,19 +1,18 @@
 DESCRIPTION = "EFL based widget set for mobile devices"
 LICENSE = "LGPL"
-DEPENDS = "eet-native efreet evas ecore edje eet edbus"
+DEPENDS = "eet-native efreet evas ecore edje eet edbus ethumb"
 PV = "0.7.0+svnr${SRCPV}"
 PR = "r11"
 SRCREV = "${EFL_SRCREV}"
 
 inherit efl
+SRC_URI = "${E_SVN}/trunk;module=${SRCNAME};proto=http;scmdata=keep"
+S = "${WORKDIR}/${SRCNAME}"
 
 EXTRA_OECONF = "\
   --with-edje-cc=${STAGING_BINDIR_NATIVE}/edje_cc \
   --with-eet-eet=${STAGING_BINDIR_NATIVE}/eet \
 "
-
-SRC_URI = "svn://svn.enlightenment.org/svn/e/trunk/TMP/st;module=elementary;proto=http"
-S = "${WORKDIR}/elementary"
 
 do_compile_append() {
         sed -i -e s:${STAGING_DIR_TARGET}::g \
@@ -29,6 +28,10 @@ RDEPENDS_${PN} = "\
 "
 RSUGGESTS_${PN} = "elementary-tests"
 
+FILES_${PN} += "\
+  ${libdir}/edje/modules/elm \
+"
+
 FILES_${PN}-themes = "\
   ${datadir}/elementary/themes \
 "
@@ -39,6 +42,7 @@ FILES_${PN}-configs = "\
 
 FILES_${PN}-dbg += "\
   ${libdir}/elementary/modules/test_entry/*/.debug \
+  ${libdir}/edje/modules/elm/*/.debug \
 "
 
 FILES_${PN}-tests = "\

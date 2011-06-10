@@ -4,11 +4,9 @@ LICENSE  = "GPL"
 
 DEPENDS = "libtool-native zlib-native virtual/javac-native classpath-native icedtea6-native"
 
-inherit java autotools
-
 S = "${WORKDIR}/cacao-${PV}"
 
-inherit autotools native
+inherit java autotools native
 
 EXTRA_OECONF = " \
                 --with-java-runtime-library=openjdk \
@@ -27,5 +25,5 @@ do_compile() {
 }
 
 do_install() {
-	install -m 0755 src/cacaoh/.libs/cacaoh ${STAGING_BINDIR}/cacaoh-openjdk-${PV}
+	${STAGING_BINDIR_NATIVE}/${HOST_SYS}-libtool --mode=install install -m 0755 src/cacaoh/cacaoh ${STAGING_BINDIR}/cacaoh-openjdk-${PV}
 }

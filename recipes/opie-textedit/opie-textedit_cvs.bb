@@ -1,7 +1,10 @@
 require ${PN}.inc
 
-PV = "${OPIE_CVS_PV}"
+PV = "${OPIE_GIT_PV}"
+PR = "r1"
 
-SRC_URI = "${HANDHELDS_CVS};module=opie/core/apps/${APPNAME} \
-           ${HANDHELDS_CVS};module=opie/pics \
-           ${HANDHELDS_CVS};module=opie/apps"
+SECTION = "opie/applications"
+
+SRC_URI = "${OPIE_GIT};protocol=git;subpath=core/apps/${APPNAME} \
+           ${OPIE_GIT};protocol=git;subpath=pics \
+           ${OPIE_GIT};protocol=git;subpath=apps"

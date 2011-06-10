@@ -2,14 +2,14 @@ DESCRIPTION = "Linux kernel for bug"
 
 PV_append = "+svnr${SRCREV}"
 KV = "2.6.27.2"
-PR = "r32"
+PR = "r34"
 
 COMPATIBLE_MACHINE = "bug"
 
 SVN_PRJ = "bug-linux-${KV}"
 SRCREV = "10746"
 
-SRC_URI = "svn://svn.buglabs.net/bug/branches/R1.4/qa;module=${SVN_PRJ};proto=svn \
+SRC_URI = "svn://bugcamp.net/bug/branches/R1.4/qa;module=${SVN_PRJ};proto=svn \
            file://defconfig \
            "
 
@@ -25,6 +25,7 @@ do_install_append() {
 }
 
 do_install_append() {
+	install -d $kerneldir/include/asm/
 	cp -fR ${S}/arch/arm/include/asm/* $kerneldir/include/asm/
 	if [ ! -e $kerneldir/include/mach ]; then
 		mkdir $kerneldir/include/mach

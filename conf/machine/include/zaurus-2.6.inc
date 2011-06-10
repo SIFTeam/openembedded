@@ -55,8 +55,6 @@ PREFERRED_PROVIDER_virtual/libgl_spitz = "mesa-dri"
 # kernel
 ########
 
-MACHINE_KERNEL_VERSION = "2.6"
-
 PREFERRED_PROVIDER_virtual/kernel = "linux-rp"
 
 # Starting with 2.6.32 linux-rp is deprecated for some models
@@ -75,6 +73,8 @@ PREFERRED_PROVIDER_udev-compat_poodle = "udev-compat141"
 ZAURUS_KERNEL_IMAGETYPE ?= "zImage"
 KERNEL_IMAGETYPE = "${ZAURUS_KERNEL_IMAGETYPE}"
 
+# kernel bootlogo
+LOGO_SIZE = '${@base_conditional("GUI_MACHINE_CLASS", "bigscreen", "vga", "qvga", d)}'
 
 ################
 # machine tuning

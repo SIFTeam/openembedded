@@ -11,10 +11,13 @@ BUILDNAME = "Angstrom ${DISTRO_VERSION}"
 
 TARGET_VENDOR = "-angstrom"
 
+# Uncomment this to get a custom string appended to the target kernels uname
+#LOCALVERSION = "-Angstrom"
+
 SOC_FAMILY ?= "Unknown"
 
 # Add FEED_ARCH and SOC_FAMILY to overrides
-OVERRIDES .= ":${FEED_ARCH}:${SOC_FAMILY}"
+MACHINE_OVERRIDES += "${FEED_ARCH} ${SOC_FAMILY}"
 
 # Put links to sources in deploy/sources to make it easier for people to be GPL compliant
 INHERIT += "src_distribute_local"
@@ -60,7 +63,7 @@ THUMB_INTERWORK = "yes"
 
 
 #Use this variable in feeds and other parts that need a URI
-ANGSTROM_URI ?= "http://www.angstrom-distribution.org"
+ANGSTROM_URI ?= "http://feeds.angstrom-distribution.org"
 
 #Use this variable to select which recipe you want to use to get feed configs (/etc/ipkg/, /etc/apt/sources.list)
 # usefull for derivative distros and local testing
@@ -130,6 +133,7 @@ TARGET_FPU_ppc405 ?= "soft"
 TARGET_FPU_armv6 ?= "hard"
 TARGET_FPU_armv6-novfp ?= "soft"
 TARGET_FPU_armv7a ?= "hard"
+TARGET_FPU_armv7a-vfp ?= "hard"
 TARGET_FPU_ppc603e ?= "hard"
 
 # webkit-gtk and cairo have alignment issues with double instructions on armv5 so
@@ -153,32 +157,6 @@ DEPLOY_DIR_IMAGE = "${DEPLOY_DIR}/images/${MACHINE}"
 DISTRO_CHECK := "${@bb.data.getVar("DISTRO_VERSION",d,1) or bb.fatal('Remove this line or set a dummy DISTRO_VERSION if you really want to build an unversioned distro')}"
 
 
-# Configuration for tinderbox, so people only need:
-# INHERIT          += "tinderclient"
-# in their local.conf 
-
-#Name of the client
-TINDER_MACHINE  = "${MACHINE}-${LIBC}-build-image"
-
-# Which lof file to write to, which tree to report to
-TINDER_LOG        = "${TMPDIR}/tinder.log"
-TINDER_TREE       = "Angstrom"
-
-# HTTP posting    
-TINDER_HOST       ?= "ewi546.ewi.utwente.nl"
-TINDER_URL        ?= "/tinderbox"
-
-# Which branch do we build
-TINDER_BRANCH     = "org.openembedded.dev"
-   
-## Clobbing
-## 0 for rebuilding everything from scratch
-## 1 for incremental builds
-TINDER_CLOBBER    = "1"
-
-## Do a report at all
-TINDER_REPORT     = "1"
-
 # Configuration for seppuku autobuilder, people only need to put:
 # INHERIT += "seppuku oestats-client"
 # SEPPUKU_USER         = "your_bugzilla@user.id"
@@ -200,7 +178,7 @@ SEPPUKU_COMPONENT    = "org.openembedded.dev"
 OESTATS_SERVER      ?= "tinderbox.openembedded.org"
 
 # We want images supporting the following features (for task-base)
-DISTRO_FEATURES = "largefile ipv4 ipv6 nfs smbfs wifi ppp alsa bluetooth ext2 vfat irda pcmcia usbgadget usbhost pci pam"
+DISTRO_FEATURES = "xattr largefile ipv4 ipv6 nfs smbfs wifi ppp alsa bluetooth ext2 vfat irda pcmcia usbgadget usbhost pci pam"
 
 # Use-like features
 DISTRO_FEATURES += "tk"

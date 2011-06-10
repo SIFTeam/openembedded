@@ -1,9 +1,5 @@
 # Bitbake recipe for the madwifi-ng driver
 
-# Disable stripping of kernel modules, since this action strips too
-# much out, and the resulting module won't load.
-PACKAGE_STRIP = "no"
-
 require madwifi-ng_r.inc
 
 SRC_URI += " \
@@ -13,6 +9,12 @@ SRC_URI += " \
 
 MACHINE_KERNEL_PR_append = ".1"
 
+SRC_URI += " \
+        svn://svn.openwrt.org/openwrt/trunk/package/madwifi;module=patches \
+        http://mirror2.openwrt.org/sources/ath_hal-${HAL_VERSION}.tgz;name=hal \
+        file://fix-target-mips32.patch \
+        file://remove-wprobe.patch;apply=no \
+        "
 SRC_URI[md5sum] = "2c7352cbbdac995de8c3bce5b80db5f2"
 SRC_URI[sha256sum] = "0599c75b95ba63bdc554cb8124192e62c75fbeb71b9e8a5a7bc351c8e0666758"
 

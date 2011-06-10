@@ -1,9 +1,10 @@
 DESCRIPTION = "Configuration files for online package repositories aka feeds"
+LICENSE = "MIT"
 
 RRECOMMENDS_${PN} += "opkg"
 
 #PV = "${DISTRO_VERSION}"
-PR = "r11"
+PR = "r14"
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 
 FEED_BASEPATH ?= "unstable/feed/"

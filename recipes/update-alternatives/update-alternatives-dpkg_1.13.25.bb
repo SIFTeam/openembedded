@@ -1,11 +1,14 @@
 require update-alternatives-dpkg.inc
 
+PR="r1"
 RPROVIDES_${PN} = "update-alternatives"
 RDEPENDS_${PN} = "perl dpkg"
 
+SRC_URI += "file://paths.patch"
+
 do_install () {
     install -d ${D}${sbindir} \
-               ${D}${localstatedir}/dpkg/alternatives \
+               ${D}${localstatedir}/lib/dpkg/alternatives \
                ${D}${sysconfdir}/alternatives
 
     install -m 0755 scripts/update-alternatives ${D}${sbindir}/update-alternatives

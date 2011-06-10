@@ -13,7 +13,7 @@ PROVIDES += "virtual/libintl virtual/libiconv"
 COMPATIBLE_TARGET_SYS ?= "(?!nios2)"
 
 # INC_PR for glibc.inc, glibc-initial.inc and glibc-stage.inc
-INC_PR = "r36"
+INC_PR = "r37"
 
 inherit autotools
 
@@ -25,3 +25,7 @@ INHIBIT_DEFAULT_DEPS = "1"
 ARM_INSTRUCTION_SET = "arm"
 
 PACKAGES = "glibc catchsegv sln nscd ldd localedef glibc-utils glibc-dev glibc-doc glibc-locale libsegfault glibc-extra-nss glibc-thread-db glibc-pcprofile"
+
+# Work around issues with pstage package install order and intermediate steps
+# in the toolchain build.
+do_setscene[deptask] = "do_setscene"

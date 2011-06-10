@@ -2,15 +2,15 @@
 #
 # reboot	Execute the reboot command.
 #
-# Version:      @(#)reboot  2.75  22-Jun-1998  miquels@cistron.nl
-#
 
 PATH=/sbin:/bin:/usr/sbin:/usr/bin
 
 echo "Rebooting... "
-if [ -x /usr/sbin/kexec ] ; then
-	echo " trying kexec..."
-	kexec -f -e -x
+
+if test -x /usr/sbin/kexec ; then
+    echo " Trying kexec first..."
+    /usr/sbin/kexec --force --exec #--no-ifdown
+    echo " No kexec kernel loaded (or kexec failed), doing normal reboot..."
 fi
-echo " normal reboot..."
+
 reboot -d -f -i

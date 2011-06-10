@@ -1,7 +1,7 @@
 DESCRIPTION = "Various MIME modules."
 SECTION = "libs"
-LICENSE = "Artistic|GPL"
-PR = "r2"
+LICENSE = "Artistic|GPLv1+"
+PR = "r3"
 
 RDEPENDS_${PN} = "perl-module-scalar-util \
             perl-module-file-spec \

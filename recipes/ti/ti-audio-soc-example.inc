@@ -6,7 +6,7 @@ LICENSE = "TI BSD"
 require ti-paths.inc
 require ti-staging.inc
 
-COMPATIBLE_MACHINE = "(da830-omapl137-evm|da850-omapl138-evm)"
+COMPATIBLE_MACHINE = "(omapl137|omapl138)"
 
 PR = "r5"
 
@@ -17,11 +17,11 @@ SRC_URI = "http://software-dl.ti.com/dsps/dsps_public_sw/apps_processors/Audio_s
 DEPENDS = "ti-cgt6x ti-xdctools ti-dspbios ti-biospsp ti-edma3lld ti-dsplink"
 DEPENDS += "virtual/kernel"
 
-PLATFORM_da830-omapl137-evm = "omapl137" 
-PLATFORM_da850-omapl138-evm = "omapl138" 
+PLATFORM_omapl137 = "omapl137" 
+PLATFORM_omapl138= "omapl138" 
  
-BOARD_da830-omapl137-evm =  "evmOMAPL137"
-BOARD_da850-omapl138-evm =  "evmOMAPL138"
+BOARD_omapl137 =  "evmOMAPL137"
+BOARD_omapl138 =  "evmOMAPL138"
  
 do_compile() {
     # Build gpp sample application
@@ -60,11 +60,11 @@ do_install() {
     cp -pPrf ${S}/* ${D}${AUDIO_SOC_INSTALL_DIR_RECIPE}
 
     install -d ${D}/${installdir}/ti-audio-soc-example
-    cp -rf ${S}/gpp/${BOARD} ${D}/${installdir}/ti-audio-soc-example
-    cp -rf ${S}/data/* ${D}/${installdir}/ti-audio-soc-example
+    cp -Rf ${S}/gpp/${BOARD} ${D}/${installdir}/ti-audio-soc-example
+    cp -Rf ${S}/data/* ${D}/${installdir}/ti-audio-soc-example
 
-    cp -rf ${S}/dsp/${BOARD}/Debug/audioSoc_dsp.out  ${D}/${installdir}/ti-audio-soc-example/${BOARD}/Debug
-    cp -rf ${S}/dsp/${BOARD}/Debug/audioSoc_dsp.out  ${D}/${installdir}/ti-audio-soc-example/${BOARD}/Release
+    cp -Rf ${S}/dsp/${BOARD}/Debug/audioSoc_dsp.out  ${D}/${installdir}/ti-audio-soc-example/${BOARD}/Debug
+    cp -Rf ${S}/dsp/${BOARD}/Debug/audioSoc_dsp.out  ${D}/${installdir}/ti-audio-soc-example/${BOARD}/Release
 
 }
 

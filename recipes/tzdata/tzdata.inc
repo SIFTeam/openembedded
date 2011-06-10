@@ -3,11 +3,11 @@ SECTION = "base"
 PRIORITY = "optional"
 DEPENDS = "tzcode-native"
 
-INC_PR = "r7"
+INC_PR = "r8"
 
 DEFAULT_TIMEZONE ?= "Europe/London"
 
-RCONFLICTS= "timezones timezone-africa timezone-america timezone-antarctica \
+RCONFLICTS_${PN} = "timezones timezone-africa timezone-america timezone-antarctica \
              timezone-arctic timezone-asia timezone-atlantic \
              timezone-australia timezone-europe timezone-indian \
              timezone-iso3166.tab timezone-pacific timezone-zone.tab"
@@ -39,7 +39,7 @@ do_install () {
         install -d ${D}${prefix} ${D}${datadir}/zoneinfo
         cp -pPR ${WORKDIR}/build${prefix}/* ${D}${prefix}
         # Only eglibc is removing zoneinfo files from package
-        if [ "${LIBC}"x == "eglibc"x ] ; then
+        if [ "${LIBC}"x = "eglibc"x ] ; then
           cp -pP "${WORKDIR}/zone.tab" ${D}${datadir}/zoneinfo
           cp -pP "${WORKDIR}/iso3166.tab" ${D}${datadir}/zoneinfo
         fi

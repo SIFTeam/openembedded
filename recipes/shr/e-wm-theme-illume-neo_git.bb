@@ -5,10 +5,11 @@ AUTHOR = "Jesus McCloud <bernd.pruenster@gmail.com"
 DEPENDS = "edje-native"
 RDEPENDS_${PN} = "e-wm"
 RSUGGESTS_${PN} = "elementary-theme-neo gtk-theme-neo gpe-theme-neo icon-theme-neo"
+PACKAGE_ARCH = "all"
 LICENCE = "unknown"
 
-SRCREV = "820f4d41531ad6f790615b6a7312a60e30e99fdc"
-PV = "0.1-${EFL_SRCREV}+gitr${SRCPV}"
+SRCREV = "c2443c4052997045f8862462a06a5b07dce42cb5"
+PV = "0.2+gitr${SRCPV}"
 PR = "r4"
 
 SRC_URI = "git://git.shr-project.org/repo/shr-themes.git;protocol=http;branch=master"

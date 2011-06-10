@@ -1,6 +1,6 @@
 require mtd-utils.inc
 
-DEPENDS += "util-linux-ng"
+DEPENDS += "util-linux-ng lzo"
 
 PARALLEL_MAKE = ""
 ARM_INSTRUCTION_SET = "arm"

@@ -9,8 +9,7 @@ JAVA_arm ?= ""
 JAVA_armeb ?= ""
 JAVA_mipsel ?= ""
 JAVA_sh3 ?= ""
-OBJC_linux-uclibceabi ?= ""
-OBJC_linux-uclibc ?= ""
+OBJC_libc-uclibc ?= ""
 OBJC_avr ?= ""
 OBJC_nylon ?= ""
 OBJC_mips ?= ""
@@ -51,8 +50,9 @@ EXTRA_OECONF = "${@['--enable-clocale=generic', ''][bb.data.getVar('USE_NLS', d,
 # Build uclibc compilers without cxa_atexit support
 EXTRA_OECONF_append_linux               = " --enable-__cxa_atexit"
 EXTRA_OECONF_append_linux-gnueabi       = " --enable-__cxa_atexit"
-EXTRA_OECONF_append_linux-uclibc        = " --disable-__cxa_atexit"
-EXTRA_OECONF_append_linux-uclibceabi    = " --disable-__cxa_atexit"
+EXTRA_OECONF_append_libc-uclibc         = " --disable-__cxa_atexit"
+EXTRA_OECONF_append_mips64    = " --with-abi=64"
+EXTRA_OECONF_append_mips64el    = " --with-abi=64"
 EXTRA_OECONF_FPU = "${@get_gcc_fpu_setting(bb, d)}"
 CPPFLAGS = ""
 
@@ -91,7 +91,14 @@ do_configure () {
 	sed -i 's/^LDFLAGS = $/LDFLAGS = @LDFLAGS@/' ${S}/Makefile.tpl
 
 	(cd ${S} && gnu-configize) || die "failure running gnu-configize"
-
+	# gcc assumes ${sysroot}/usr to be prefix on linux targets
+	# but we have distro option to flatten out the tree and micro
+	# uses root file system without leading /usr so we need to
+	# teach gcc configure to look in correct include paths
+	# unfortunately there is no configure knob to indicate this
+	# to configury hence the sed :(
+	sed -i 's:/usr/include:${target_includedir}:g' ${S}/gcc/configure.ac
+	sed -i 's:/usr/include:${target_includedir}:g' ${S}/gcc/configure
 	if [ "${HOST_SYS}" != "${TARGET_SYS}" ]; then
 		# splice our idea of where the headers live into gcc's world
 		echo "NATIVE_SYSTEM_HEADER_DIR = ${target_includedir}" > ${T}/t-oe

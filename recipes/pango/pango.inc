@@ -17,8 +17,10 @@ PACKAGES_DYNAMIC = "pango-module-*"
 PACKAGES_DYNAMIC_virtclass-native = ""
 
 RRECOMMENDS_${PN} = "pango-module-basic-x pango-module-basic-fc" 
+RRECOMMENDS_${PN}_virtclass-native = ""
 
-INC_PR = "r0"
+
+INC_PR = "r1"
 
 # seems to go wrong with default cflags
 FULL_OPTIMIZATION_arm = "-O2"
@@ -26,9 +28,9 @@ FULL_OPTIMIZATION_arm = "-O2"
 SRC_URI += "file://no-tests.patch \
            "
 
-EXTRA_OECONF = "--disable-glibtest \
-		--enable-explicit-deps=no \
-	        --disable-debug"
+EXTRA_OECONF += "--disable-glibtest \
+                 --enable-explicit-deps=no \
+                 --disable-debug"
 
 LEAD_SONAME = "libpango-1.0*"
 LIBV = "1.6.0"

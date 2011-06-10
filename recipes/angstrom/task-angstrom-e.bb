@@ -1,5 +1,6 @@
 DESCRIPTION = "Task packages for the Angstrom distribution"
-PR = "r0"
+LICENSE = "MIT"
+PR = "r1"
 ALLOW_EMPTY = "1"
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
@@ -12,7 +13,7 @@ RDEPENDS_angstrom-e-base-depends := "\
     angstrom-x11-base-depends \
     rxvt-unicode xstroke xtscal xrandr xmodmap xdpyinfo \
     ttf-bitstream-vera \
-    entrance e-wm \
+    elementary-tests expedite e-wm \
     glibc-charmap-utf-8 glibc-localedata-i18n"
 #xserver-kdrive-fbdev 
 

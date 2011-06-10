@@ -1,11 +1,8 @@
 LICENSE = "BSD"
 PV = "0.1.0+svnr${SRCPV}"
-
-PR = "r4"
+PR = "${INC_PR}.0"
 
 require e-module.inc
-
-SRC_URI += "file://fix-api.diff;maxrev=39830;striplevel=3"
 
 do_configure_prepend() {
        sed -i -e /po/d -e /AM_GNU_GETTEXT/d configure.ac

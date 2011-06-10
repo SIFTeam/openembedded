@@ -122,6 +122,7 @@ GLES_INSTALL_append_omap3evm     = "libgles-omap3"
 #GLES_INSTALL_append_overo        = "libgles-omap3"
 GLES_INSTALL_append_mx31ads      = "libgles-mx31"
 GLES_INSTALL_append_mx31litekit  = "libgles-mx31"
+GLES_INSTALL_append_pcm043      = "libgles-mx31"
 GLES_INSTALL_append_zylonite     = "libgles-zylonite"
 
 # python
@@ -144,9 +145,6 @@ APPS_INSTALL = "\
 #   elementary-alarm \
    expedite \
    expedite-themes \
-#   libefso \
-#   essential-dialer \
-#   elementary-sms \
 "
 
 IMAGE_INSTALL = "\

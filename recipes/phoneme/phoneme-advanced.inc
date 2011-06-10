@@ -8,11 +8,10 @@ DEPENDS = "classpath-tools-native virtual/javac-native linux-libc-headers"
 inherit java update-alternatives
 
 # The PhoneME Advanced build system is documented here: http://java.sun.com/javame/reference/docs/cdc_build_system.pdf
-# NOTE: We need to provide an empty password. pswd='' seems not to be the correct way.
 SRC_URI = "\
-	svn://guest:''@phoneme.dev.java.net/svn/phoneme/builds/phoneme_advanced-mr2-dev-${BUILDREV};module=cdc;proto=https;localdir=cdc \
-	svn://guest:''@phoneme.dev.java.net/svn/phoneme/builds/phoneme_advanced-mr2-dev-${BUILDREV};module=tools;proto=https;localdir=tools \
-	svn://guest:''@phoneme.dev.java.net/svn/phoneme;module=legal;localdir=legal;proto=https \
+	svn://svn.java.net/svn/phoneme~svn/builds/phoneme_advanced-mr2-dev-${BUILDREV};module=cdc;proto=https;localdir=cdc \
+	svn://svn.java.net/svn/phoneme~svn/builds/phoneme_advanced-mr2-dev-${BUILDREV};module=tools;proto=https;localdir=tools \
+	svn://svn.java.net/svn/phoneme~svn;module=legal;localdir=legal;proto=https \
 	"
 
 PROVIDES = "virtual/java-cdc java-cdc-runtime"
@@ -21,6 +20,12 @@ SECTION  = "interpreters"
 
 # PhoneME builds currently cannot be parallel
 PARALLEL_MAKE = ""
+
+# with Thumb mode enabled it fails with
+# | /tmp/cc20oI7T.s:11528: Error: selected processor does not support `swp r2,r3,[r8]'
+# or on other host with even better error
+# | /tmp/ccIG8VdD.s:875: Error: selected processor does not support Thumb mode `swp r5,r7,[r4]'
+ARM_INSTRUCTION_SET = "ARM"
 
 S = "${WORKDIR}"
 
@@ -143,6 +148,10 @@ oe_phoneme_configarm() {
 	fi
 
 	pmo USE_AAPCS $tf
+}
+
+oe_phoneme_configmips() {
+	pmo LINK_ARCH_LIBS -lm
 }
 
 oe_phoneme_configx86() {

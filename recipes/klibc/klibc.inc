@@ -24,8 +24,8 @@ ARM_INSTRUCTION_SET = "arm"
 KLIBC_FETCHDIR = "1.5"
 SRC_URI = "${KERNELORG_MIRROR}/pub/linux/libs/klibc/${KLIBC_FETCHDIR}/klibc-${PV}.tar.bz2"
 
-SRC_URI_append_linux-gnueabi = "file://klibc-config-eabi.patch"
-SRC_URI_append_linux-uclibceabi = "file://klibc-config-eabi.patch"
+SRC_URI_append_linux-gnueabi = " file://klibc-config-eabi.patch"
+SRC_URI_append_linux-uclibceabi = " file://klibc-config-eabi.patch"
 
 SRC_URI += "file://fstype-sane-vfat-and-jffs2-for-1.5.patch \
             file://modprobe.patch \
@@ -38,7 +38,6 @@ SRC_URI += "file://fstype-sane-vfat-and-jffs2-for-1.5.patch \
             file://socket.h.patch \
             file://isystem.patch \
             file://getrusage.patch \
-            file://klcc_prefix.patch \
             "
 SRC_URI_append_dm7025 = "\
 	file://klibc_kexecsyscall_r.patch \

@@ -1,6 +1,6 @@
 DESCRIPTION = "Tracker is a tool designed to extract information and metadata about your personal data so that it can be searched easily and quickly."
 LICENSE = "GPLv2"
-DEPENDS = "file gtk+ gstreamer gamin gmime dbus poppler libexif libgsf libgnomecanvas gettext"
+DEPENDS = "file gtk+ gstreamer gamin gmime dbus poppler libexif libgsf libgnomecanvas gettext hal"
 HOMEPAGE="http://www.tracker-project.org/"
 
 PR = "r2"
@@ -22,7 +22,7 @@ EXTRA_OECONF += " tracker_cv_have_ioprio=yes"
 LEAD_SONAME = "libtrackerclient.so.0"
 
 do_install_append() {
-   cp -dPr ${D}${STAGING_DATADIR}/* ${D}${datadir}/ || true 
+   cp -PpR ${D}${STAGING_DATADIR}/* ${D}${datadir}/ || true
    install -d ${D}/${sysconfdir}/X11/Xsession.d/
    install -m 0755 ${WORKDIR}/90tracker  ${D}/${sysconfdir}/X11/Xsession.d/
 }

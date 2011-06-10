@@ -1,9 +1,9 @@
 DESCRIPTION = "Net::IP - Perl extension for manipulating IPv4/IPv6 addresses"
 SECTION = "libs"
-LICENSE = "Artistic|GPL"
+LICENSE = "Artistic|GPLv1+"
 DEPENDS += "libio-zlib-perl-native"
 RDEPENDS_${PN} += "libio-zlib-perl perl-module-math-bigint"
-PR = "r7"
+PR = "r8"
 
 SRC_URI = "http://search.cpan.org/CPAN/authors/id/M/MA/MANU/Net-IP-${PV}.tar.gz"
 

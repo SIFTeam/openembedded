@@ -3,13 +3,14 @@ DESCRIPTION = "Tools for performance analysis."
 LICENSE = "GPL"
 RDEPENDS_${PN} = "debianutils"
 
-PR = "r3"
+PR = "r4"
 
 inherit autotools
 
 SRC_URI = "${SOURCEFORGE_MIRROR}/lmbench/lmbench-${PV}.tgz \
 	   file://debian.patch \
 	   file://exe.patch \
+	   file://gnu-os-rundir.patch \
 	   file://lmbench-run"
 S = "${WORKDIR}/lmbench-${PV}"
 
@@ -32,7 +33,7 @@ do_configure() {
 
 do_compile () {
 	. ${CONFIG_SITE}
-	if [ X"$ac_cv_uint" == X"yes" ]; then
+	if [ X"$ac_cv_uint" = X"yes" ]; then
 		CFLAGS="${CFLAGS} -DHAVE_uint"
 	fi
 	install -d ${S}/bin/${TARGET_SYS}

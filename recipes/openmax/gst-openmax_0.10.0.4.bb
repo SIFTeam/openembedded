@@ -3,10 +3,11 @@ LICENSE = "LGPLv2"
 DEPENDS = "gstreamer libomxil-bellagio"
 
 SRC_URI = "http://gstreamer.freedesktop.org/src/gst-openmax/pre/gst-openmax-${PV}.tar.bz2 \
-           file://check.diff \
           "
 
 inherit autotools
+
+EXTRA_OEMAKE += "'ERROR_CFLAGS=-Wall'"
 
 FILES_${PN} += "${libdir}/gstreamer-0.10/*.so"
 FILES_${PN}-dbg += "${libdir}/gstreamer-0.10/.debug"

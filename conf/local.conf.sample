@@ -27,8 +27,12 @@ DL_DIR = "${HOME}/sources"
 BBFILES := "${@bb.fatal('Edit your conf/local.conf: BBFILES')}"
 
 # Use the BBMASK below to instruct BitBake to _NOT_ consider some .bb files
-# This is a regulary expression, so be sure to get your parenthesis balanced.
-BBMASK = ""
+# This is a regular expression, so be sure to get your parenthesis balanced.
+# BBMASK = "/(nonworking|obsolete)/"
+
+# Comment this if your host distribution does not provide the
+# help2man tool.
+ASSUME_PROVIDED += "help2man-native"
 
 # Uncomment this if your host distribution has recent enough Linux
 # Kernel header files.  Utilities we use to generate certain types of
@@ -114,12 +118,12 @@ PREFERRED_PROVIDERS += " virtual/${TARGET_PREFIX}g++:gcc-cross"
 # INHERIT = "package_tar"
 
 # Add the required image file system types below. Valid are 
-# jffs2, tar(.gz|bz2), cpio(.gz), cramfs, ext2(.gz), ext3(.gz)
+# jffs2, tar(.gz|bz2), cpio(.gz), cramfs, ext2(.gz), ext3(.gz), ext4(.gz|.bz2),
 # squashfs, squashfs-lzma
 IMAGE_FSTYPES = "jffs2 tar"
 
 # Uncomment this if you want to keep the temporary rootfs
-# diretory, this can be useful during development.
+# directory, this can be useful during development.
 # (Note that this rootfs is NOT usuable as NFS export.)
 # IMAGE_KEEPROOTFS = "1"
 
@@ -171,10 +175,6 @@ IMAGE_FSTYPES = "jffs2 tar"
 
 # Uncomment this if you want BitBake to emit the log if a build fails.
 BBINCLUDELOGS = "yes"
-
-# Specifies a location to search for pre-generated tarballs when fetching
-# a cvs:// URI. Outcomment this, if you always want to pull directly from CVS.
-#CVS_TARBALL_STASH = ""
 
 # Uncomment this if you want to install shared libraries directly under their SONAME,
 # rather than installing as the full version and symlinking to the SONAME.

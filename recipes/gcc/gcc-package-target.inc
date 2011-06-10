@@ -7,18 +7,12 @@ PACKAGES = "\
   objc objc-dev \
   gcov gcov-symlinks \
   libmudflap libmudflap-dev \
-  libgcc \
   libgcc-dev \
-  libstdc++ \
   libstdc++-dev \
   libg2c-dev \
   libgfortran-dev \
   ${PN}-doc \
 "
-
-# These 2 raise QA errors, but we need them to get generated
-INSANE_SKIP_libgcc = "True"
-INSANE_SKIP_libstdc++ = "True"
 
 FILES_${PN} = "\
   ${bindir}/${TARGET_PREFIX}gcc \
@@ -61,7 +55,7 @@ FILES_gcov = "${bindir}/${TARGET_PREFIX}gcov"
 FILES_gcov-symlinks = "${bindir}/gcov"
 
 FILES_libgcc = "${base_libdir}/libgcc*.so.*"
-FILES_libgcc-dev = "${base_libdir}/libgcc*.so"
+FILES_libgcc-dev = "${libdir}/libgcc*.so"
 
 # Called from within gcc-cross, so libdir is set wrong
 FILES_libg2c = "${target_libdir}/libg2c.so.*"
@@ -133,11 +127,12 @@ do_install () {
 	else
 		mv ${D}${libdir}/libgcc_s.so.* ${D}${base_libdir} || true
 	fi
-	rm -f ${D}${libdir}/libgcc_s.so || true 
-	ln -sf `echo ${libdir}/gcc/${TARGET_SYS}/${BINV} \
-		| tr -s / \
-		| sed -e 's,^/,,' -e 's,[^/]*,..,g'`/lib/libgcc_s.so.1 \
-		      ${D}${libdir}/gcc/${TARGET_SYS}/${BINV}/libgcc_s.so
+	rm -f ${D}${libdir}/libgcc_s.so || true
+	rm -f ${D}${base_libdir}/libgcc_s.so || true
+	echo "/* GNU ld script
+   Use the shared library, but some functions are only in
+   the static library.  */
+GROUP ( libgcc_s.so.1 libgcc.a )" > ${D}${libdir}/libgcc_s.so
 
 	# We don't need libtool libraries
 	rm -f ${D}${libdir}/libg2c.la &>/dev/null || true
