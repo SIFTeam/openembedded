@@ -18716,7 +18716,7 @@ diff -ruN v4l-dvb.orig/linux/drivers/media/video/em28xx/em28xx-cards.c v4l-dvb/l
  		ctl->demod = XC3028_FE_DEFAULT;
  		break;
  	case EM2880_BOARD_AMD_ATI_TV_WONDER_HD_600:
-@@ -2403,92 +2390,12 @@
+@@ -2403,92 +2390,6 @@
  }
  
  /* ----------------------------------------------------------------------- */
@@ -18799,12 +18799,12 @@ diff -ruN v4l-dvb.orig/linux/drivers/media/video/em28xx/em28xx-cards.c v4l-dvb/l
 -#endif
 -		break;
 -	}
- #if LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 30)
- 
- 	if (dev->init_data.name)
- 		info.platform_data = &dev->init_data;
- 	i2c_new_probed_device(&dev->i2c_adap, &info, addr_list);
- #endif
+-#if LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 30)
+-
+-	if (dev->init_data.name)
+-		info.platform_data = &dev->init_data;
+-	i2c_new_probed_device(&dev->i2c_adap, &info, addr_list);
+-#endif
 -}
  
  void em28xx_card_setup(struct em28xx *dev)
@@ -18913,6 +18913,18 @@ diff -ruN v4l-dvb.orig/linux/drivers/media/video/em28xx/em28xx.h v4l-dvb/linux/d
  #define EM2883_BOARD_KWORLD_HYBRID_330U                  57
  #define EM2820_BOARD_COMPRO_VIDEOMATE_FORYOU	  58
  #define EM2883_BOARD_HAUPPAUGE_WINTV_HVR_850	  60
+@@ -623,11 +623,6 @@
+ 	struct delayed_work sbutton_query_work;
+ 
+ 	struct em28xx_dvb *dvb;
+-
+-#if LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 30)
+-	/* I2C keyboard data */
+-	struct IR_i2c_init_data init_data;
+-#endif
+ };
+ 
+ struct em28xx_ops {
 @@ -705,17 +703,6 @@
  void em28xx_release_resources(struct em28xx *dev);
  
