@@ -1,0 +1,3770 @@
+diff --git a/fs/Kconfig b/fs/Kconfig
+index 0e7da7b..339c02a 100644
+--- a/fs/Kconfig
++++ b/fs/Kconfig
+@@ -89,6 +89,9 @@ menu "CD-ROM/DVD Filesystems"
+ source "fs/isofs/Kconfig"
+ source "fs/udf/Kconfig"
+ 
++config CDFS_FS
++	tristate "CDFS file system support"
++
+ endmenu
+ endif # BLOCK
+ 
+diff --git a/fs/Makefile b/fs/Makefile
+index af6d047..11265b1 100644
+--- a/fs/Makefile
++++ b/fs/Makefile
+@@ -108,6 +108,7 @@ obj-$(CONFIG_AUTOFS4_FS)	+= autofs4/
+ obj-$(CONFIG_ADFS_FS)		+= adfs/
+ obj-$(CONFIG_FUSE_FS)		+= fuse/
+ obj-$(CONFIG_UDF_FS)		+= udf/
++obj-$(CONFIG_CDFS_FS)		+= cdfs/
+ obj-$(CONFIG_SUN_OPENPROMFS)	+= openpromfs/
+ obj-$(CONFIG_OMFS_FS)		+= omfs/
+ obj-$(CONFIG_JFS_FS)		+= jfs/
+diff --git a/fs/cdfs/CHANGES b/fs/cdfs/CHANGES
+new file mode 100644
+index 0000000..5074a67
+--- /dev/null
++++ b/fs/cdfs/CHANGES
+@@ -0,0 +1,9 @@
++cdfs 2.6.10
+++ Removing module now remove daemon properly ;
+++ NULL code check after kmalloc that was ommited (and cause oops in a
++preemptible kernel) ;
++
++Thibault Mondary, 2005
++
++
++
+diff --git a/fs/cdfs/COPYING b/fs/cdfs/COPYING
+new file mode 100644
+index 0000000..a43ea21
+--- /dev/null
++++ b/fs/cdfs/COPYING
+@@ -0,0 +1,339 @@
++		    GNU GENERAL PUBLIC LICENSE
++		       Version 2, June 1991
++
++ Copyright (C) 1989, 1991 Free Software Foundation, Inc.
++                          675 Mass Ave, Cambridge, MA 02139, USA
++ Everyone is permitted to copy and distribute verbatim copies
++ of this license document, but changing it is not allowed.
++
++			    Preamble
++
++  The licenses for most software are designed to take away your
++freedom to share and change it.  By contrast, the GNU General Public
++License is intended to guarantee your freedom to share and change free
++software--to make sure the software is free for all its users.  This
++General Public License applies to most of the Free Software
++Foundation's software and to any other program whose authors commit to
++using it.  (Some other Free Software Foundation software is covered by
++the GNU Library General Public License instead.)  You can apply it to
++your programs, too.
++
++  When we speak of free software, we are referring to freedom, not
++price.  Our General Public Licenses are designed to make sure that you
++have the freedom to distribute copies of free software (and charge for
++this service if you wish), that you receive source code or can get it
++if you want it, that you can change the software or use pieces of it
++in new free programs; and that you know you can do these things.
++
++  To protect your rights, we need to make restrictions that forbid
++anyone to deny you these rights or to ask you to surrender the rights.
++These restrictions translate to certain responsibilities for you if you
++distribute copies of the software, or if you modify it.
++
++  For example, if you distribute copies of such a program, whether
++gratis or for a fee, you must give the recipients all the rights that
++you have.  You must make sure that they, too, receive or can get the
++source code.  And you must show them these terms so they know their
++rights.
++
++  We protect your rights with two steps: (1) copyright the software, and
++(2) offer you this license which gives you legal permission to copy,
++distribute and/or modify the software.
++
++  Also, for each author's protection and ours, we want to make certain
++that everyone understands that there is no warranty for this free
++software.  If the software is modified by someone else and passed on, we
++want its recipients to know that what they have is not the original, so
++that any problems introduced by others will not reflect on the original
++authors' reputations.
++
++  Finally, any free program is threatened constantly by software
++patents.  We wish to avoid the danger that redistributors of a free
++program will individually obtain patent licenses, in effect making the
++program proprietary.  To prevent this, we have made it clear that any
++patent must be licensed for everyone's free use or not licensed at all.
++
++  The precise terms and conditions for copying, distribution and
++modification follow.
++
++		    GNU GENERAL PUBLIC LICENSE
++   TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
++
++  0. This License applies to any program or other work which contains
++a notice placed by the copyright holder saying it may be distributed
++under the terms of this General Public License.  The "Program", below,
++refers to any such program or work, and a "work based on the Program"
++means either the Program or any derivative work under copyright law:
++that is to say, a work containing the Program or a portion of it,
++either verbatim or with modifications and/or translated into another
++language.  (Hereinafter, translation is included without limitation in
++the term "modification".)  Each licensee is addressed as "you".
++
++Activities other than copying, distribution and modification are not
++covered by this License; they are outside its scope.  The act of
++running the Program is not restricted, and the output from the Program
++is covered only if its contents constitute a work based on the
++Program (independent of having been made by running the Program).
++Whether that is true depends on what the Program does.
++
++  1. You may copy and distribute verbatim copies of the Program's
++source code as you receive it, in any medium, provided that you
++conspicuously and appropriately publish on each copy an appropriate
++copyright notice and disclaimer of warranty; keep intact all the
++notices that refer to this License and to the absence of any warranty;
++and give any other recipients of the Program a copy of this License
++along with the Program.
++
++You may charge a fee for the physical act of transferring a copy, and
++you may at your option offer warranty protection in exchange for a fee.
++
++  2. You may modify your copy or copies of the Program or any portion
++of it, thus forming a work based on the Program, and copy and
++distribute such modifications or work under the terms of Section 1
++above, provided that you also meet all of these conditions:
++
++    a) You must cause the modified files to carry prominent notices
++    stating that you changed the files and the date of any change.
++
++    b) You must cause any work that you distribute or publish, that in
++    whole or in part contains or is derived from the Program or any
++    part thereof, to be licensed as a whole at no charge to all third
++    parties under the terms of this License.
++
++    c) If the modified program normally reads commands interactively
++    when run, you must cause it, when started running for such
++    interactive use in the most ordinary way, to print or display an
++    announcement including an appropriate copyright notice and a
++    notice that there is no warranty (or else, saying that you provide
++    a warranty) and that users may redistribute the program under
++    these conditions, and telling the user how to view a copy of this
++    License.  (Exception: if the Program itself is interactive but
++    does not normally print such an announcement, your work based on
++    the Program is not required to print an announcement.)
++
++These requirements apply to the modified work as a whole.  If
++identifiable sections of that work are not derived from the Program,
++and can be reasonably considered independent and separate works in
++themselves, then this License, and its terms, do not apply to those
++sections when you distribute them as separate works.  But when you
++distribute the same sections as part of a whole which is a work based
++on the Program, the distribution of the whole must be on the terms of
++this License, whose permissions for other licensees extend to the
++entire whole, and thus to each and every part regardless of who wrote it.
++
++Thus, it is not the intent of this section to claim rights or contest
++your rights to work written entirely by you; rather, the intent is to
++exercise the right to control the distribution of derivative or
++collective works based on the Program.
++
++In addition, mere aggregation of another work not based on the Program
++with the Program (or with a work based on the Program) on a volume of
++a storage or distribution medium does not bring the other work under
++the scope of this License.
++
++  3. You may copy and distribute the Program (or a work based on it,
++under Section 2) in object code or executable form under the terms of
++Sections 1 and 2 above provided that you also do one of the following:
++
++    a) Accompany it with the complete corresponding machine-readable
++    source code, which must be distributed under the terms of Sections
++    1 and 2 above on a medium customarily used for software interchange; or,
++
++    b) Accompany it with a written offer, valid for at least three
++    years, to give any third party, for a charge no more than your
++    cost of physically performing source distribution, a complete
++    machine-readable copy of the corresponding source code, to be
++    distributed under the terms of Sections 1 and 2 above on a medium
++    customarily used for software interchange; or,
++
++    c) Accompany it with the information you received as to the offer
++    to distribute corresponding source code.  (This alternative is
++    allowed only for noncommercial distribution and only if you
++    received the program in object code or executable form with such
++    an offer, in accord with Subsection b above.)
++
++The source code for a work means the preferred form of the work for
++making modifications to it.  For an executable work, complete source
++code means all the source code for all modules it contains, plus any
++associated interface definition files, plus the scripts used to
++control compilation and installation of the executable.  However, as a
++special exception, the source code distributed need not include
++anything that is normally distributed (in either source or binary
++form) with the major components (compiler, kernel, and so on) of the
++operating system on which the executable runs, unless that component
++itself accompanies the executable.
++
++If distribution of executable or object code is made by offering
++access to copy from a designated place, then offering equivalent
++access to copy the source code from the same place counts as
++distribution of the source code, even though third parties are not
++compelled to copy the source along with the object code.
++
++  4. You may not copy, modify, sublicense, or distribute the Program
++except as expressly provided under this License.  Any attempt
++otherwise to copy, modify, sublicense or distribute the Program is
++void, and will automatically terminate your rights under this License.
++However, parties who have received copies, or rights, from you under
++this License will not have their licenses terminated so long as such
++parties remain in full compliance.
++
++  5. You are not required to accept this License, since you have not
++signed it.  However, nothing else grants you permission to modify or
++distribute the Program or its derivative works.  These actions are
++prohibited by law if you do not accept this License.  Therefore, by
++modifying or distributing the Program (or any work based on the
++Program), you indicate your acceptance of this License to do so, and
++all its terms and conditions for copying, distributing or modifying
++the Program or works based on it.
++
++  6. Each time you redistribute the Program (or any work based on the
++Program), the recipient automatically receives a license from the
++original licensor to copy, distribute or modify the Program subject to
++these terms and conditions.  You may not impose any further
++restrictions on the recipients' exercise of the rights granted herein.
++You are not responsible for enforcing compliance by third parties to
++this License.
++
++  7. If, as a consequence of a court judgment or allegation of patent
++infringement or for any other reason (not limited to patent issues),
++conditions are imposed on you (whether by court order, agreement or
++otherwise) that contradict the conditions of this License, they do not
++excuse you from the conditions of this License.  If you cannot
++distribute so as to satisfy simultaneously your obligations under this
++License and any other pertinent obligations, then as a consequence you
++may not distribute the Program at all.  For example, if a patent
++license would not permit royalty-free redistribution of the Program by
++all those who receive copies directly or indirectly through you, then
++the only way you could satisfy both it and this License would be to
++refrain entirely from distribution of the Program.
++
++If any portion of this section is held invalid or unenforceable under
++any particular circumstance, the balance of the section is intended to
++apply and the section as a whole is intended to apply in other
++circumstances.
++
++It is not the purpose of this section to induce you to infringe any
++patents or other property right claims or to contest validity of any
++such claims; this section has the sole purpose of protecting the
++integrity of the free software distribution system, which is
++implemented by public license practices.  Many people have made
++generous contributions to the wide range of software distributed
++through that system in reliance on consistent application of that
++system; it is up to the author/donor to decide if he or she is willing
++to distribute software through any other system and a licensee cannot
++impose that choice.
++
++This section is intended to make thoroughly clear what is believed to
++be a consequence of the rest of this License.
++
++  8. If the distribution and/or use of the Program is restricted in
++certain countries either by patents or by copyrighted interfaces, the
++original copyright holder who places the Program under this License
++may add an explicit geographical distribution limitation excluding
++those countries, so that distribution is permitted only in or among
++countries not thus excluded.  In such case, this License incorporates
++the limitation as if written in the body of this License.
++
++  9. The Free Software Foundation may publish revised and/or new versions
++of the General Public License from time to time.  Such new versions will
++be similar in spirit to the present version, but may differ in detail to
++address new problems or concerns.
++
++Each version is given a distinguishing version number.  If the Program
++specifies a version number of this License which applies to it and "any
++later version", you have the option of following the terms and conditions
++either of that version or of any later version published by the Free
++Software Foundation.  If the Program does not specify a version number of
++this License, you may choose any version ever published by the Free Software
++Foundation.
++
++  10. If you wish to incorporate parts of the Program into other free
++programs whose distribution conditions are different, write to the author
++to ask for permission.  For software which is copyrighted by the Free
++Software Foundation, write to the Free Software Foundation; we sometimes
++make exceptions for this.  Our decision will be guided by the two goals
++of preserving the free status of all derivatives of our free software and
++of promoting the sharing and reuse of software generally.
++
++			    NO WARRANTY
++
++  11. BECAUSE THE PROGRAM IS LICENSED FREE OF CHARGE, THERE IS NO WARRANTY
++FOR THE PROGRAM, TO THE EXTENT PERMITTED BY APPLICABLE LAW.  EXCEPT WHEN
++OTHERWISE STATED IN WRITING THE COPYRIGHT HOLDERS AND/OR OTHER PARTIES
++PROVIDE THE PROGRAM "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED
++OR IMPLIED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
++MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.  THE ENTIRE RISK AS
++TO THE QUALITY AND PERFORMANCE OF THE PROGRAM IS WITH YOU.  SHOULD THE
++PROGRAM PROVE DEFECTIVE, YOU ASSUME THE COST OF ALL NECESSARY SERVICING,
++REPAIR OR CORRECTION.
++
++  12. IN NO EVENT UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN WRITING
++WILL ANY COPYRIGHT HOLDER, OR ANY OTHER PARTY WHO MAY MODIFY AND/OR
++REDISTRIBUTE THE PROGRAM AS PERMITTED ABOVE, BE LIABLE TO YOU FOR DAMAGES,
++INCLUDING ANY GENERAL, SPECIAL, INCIDENTAL OR CONSEQUENTIAL DAMAGES ARISING
++OUT OF THE USE OR INABILITY TO USE THE PROGRAM (INCLUDING BUT NOT LIMITED
++TO LOSS OF DATA OR DATA BEING RENDERED INACCURATE OR LOSSES SUSTAINED BY
++YOU OR THIRD PARTIES OR A FAILURE OF THE PROGRAM TO OPERATE WITH ANY OTHER
++PROGRAMS), EVEN IF SUCH HOLDER OR OTHER PARTY HAS BEEN ADVISED OF THE
++POSSIBILITY OF SUCH DAMAGES.
++
++		     END OF TERMS AND CONDITIONS
++
++	Appendix: How to Apply These Terms to Your New Programs
++
++  If you develop a new program, and you want it to be of the greatest
++possible use to the public, the best way to achieve this is to make it
++free software which everyone can redistribute and change under these terms.
++
++  To do so, attach the following notices to the program.  It is safest
++to attach them to the start of each source file to most effectively
++convey the exclusion of warranty; and each file should have at least
++the "copyright" line and a pointer to where the full notice is found.
++
++    <one line to give the program's name and a brief idea of what it does.>
++    Copyright (C) 19yy  <name of author>
++
++    This program is free software; you can redistribute it and/or modify
++    it under the terms of the GNU General Public License as published by
++    the Free Software Foundation; either version 2 of the License, or
++    (at your option) any later version.
++
++    This program is distributed in the hope that it will be useful,
++    but WITHOUT ANY WARRANTY; without even the implied warranty of
++    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++    GNU General Public License for more details.
++
++    You should have received a copy of the GNU General Public License
++    along with this program; if not, write to the Free Software
++    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
++
++Also add information on how to contact you by electronic and paper mail.
++
++If the program is interactive, make it output a short notice like this
++when it starts in an interactive mode:
++
++    Gnomovision version 69, Copyright (C) 19yy name of author
++    Gnomovision comes with ABSOLUTELY NO WARRANTY; for details type `show w'.
++    This is free software, and you are welcome to redistribute it
++    under certain conditions; type `show c' for details.
++
++The hypothetical commands `show w' and `show c' should show the appropriate
++parts of the General Public License.  Of course, the commands you use may
++be called something other than `show w' and `show c'; they could even be
++mouse-clicks or menu items--whatever suits your program.
++
++You should also get your employer (if you work as a programmer) or your
++school, if any, to sign a "copyright disclaimer" for the program, if
++necessary.  Here is a sample; alter the names:
++
++  Yoyodyne, Inc., hereby disclaims all copyright interest in the program
++  `Gnomovision' (which makes passes at compilers) written by James Hacker.
++
++  <signature of Ty Coon>, 1 April 1989
++  Ty Coon, President of Vice
++
++This General Public License does not permit incorporating your program into
++proprietary programs.  If your program is a subroutine library, you may
++consider it more useful to permit linking proprietary applications with the
++library.  If this is what you want to do, use the GNU Library General
++Public License instead of this License.
+diff --git a/fs/cdfs/INSTALL b/fs/cdfs/INSTALL
+new file mode 100644
+index 0000000..089a87c
+--- /dev/null
++++ b/fs/cdfs/INSTALL
+@@ -0,0 +1,124 @@
++CDfs        (C) 1999-2009 Michiel Ronsse (michiel.ronsse@UGent.be)
++----
++
++
++To compile:
++	
++	make
++
++To install the module:    (optional)
++
++	make install
++
++To load the filesystem:
++
++	insmod cdfs.ko
++
++or
++	modprobe cdfs    (if you installed the module)
++
++To remove the modules:
++	
++	rmmod cdfs
++
++This seems to take a few seconds, as unregistering the kernel thread fails.
++
++
++
++To obtain information about a mounted cdrom, check
++
++	cat /proc/cdfs
++
++
++Mount a cdrom with something like
++
++	mount -t cdfs -o ro /dev/cdrom /mnt/cdfs
++
++ISO images will show up as "sessions1_?.iso" or "session-?.iso", HFS images as "apple.hfs",
++boot images as "boot.image", VideoCD tracks as "videocd-?.mpeg" and audio tracks as 
++"track-?.wav". ISO, HFS and boot images can be mounted loopback.
++
++You can specify the uid, gid and mode that should be used for the files. E.g
++
++	mount -t cdfs -o ro,uid=0,mode=600 /dev/cdrom /mnt/cdfs
++
++If you don't specify values, default values are used.
++
++Use the option 'single' to export all ISO sessions as single sessions, e.g. for
++accessing data on faulty multi session disks:
++
++	mount -t cdfs -o ro,single /dev/cdrom /mnt/cdfs
++
++Use the option 'raw' to access the raw audio tracks (without the WAV header).
++
++Use the option 'toc_scsi' to use an alternate method to read the TOC of an audio CD.
++The alternate method uses SCSI functions, so you should either have a SCSI drive, or
++use SCSI emulation. This alternate method has preliminary support for audio CDs that 
++have been produced using faulty machines that produce CDs that no longer comply with 
++the Red Book standard. Please report failure or success if you use this method to read
++such a disk.
++
++Instead of compiling cdfs as a standalone module, it is also possible
++to include it in the kernel. In order to do this:
++	mkdir $LINUXDIR/fs/cdfs
++	cd $LINUXDIR/fs/cdfs
++	bunzip2 -c cdfsXXX.bz2 | tar xf -
++	mv patch.cdfs $LINUXDIR
++	cd $LINUXDIR
++	patch -p0 < patch.cdfs
++with $LINUXDIR the directory where the kernel source is installed.
++After these steps, configure & compile the kernel in the usual way.	
++
++
++----------------------------------------------------------
++
++E.g.: RedHat 6.0 cdrom:
++
++
++
++[root@k6 /root]# mount -t cdfs -o ro /dev/cdrom /mnt/cdfs
++
++[root@k6 /root]# cat /proc/cdfs
++[cdfs   V0.1]
++
++CD contains 2 tracks:
++
++
++Track 1: data track (sessions_1-1.iso), [0-278028], length=543 MB
++        type: 1 info: CD001 version: 1
++        date: 20/04/1999 time: 01:23:33
++        system: LINUX                           
++        volume: Red Hat Linux/i386 6.0          
++        publisher: 
++        preparer: 
++        application: Red Hat Linux/i386 6.0 
++        length: 543 MB / 543 MB / 543 MB / 543 MB
++
++Bootimage (boot.image), [254332-255051], length=1440 kB
++        ID string:
++
++[root@k6 /root]# ls -l /mnt/cdfs
++total 0
++-r--r--r--   1 ronsse   ronsse     1474560 Jan  1  1970 boot.image
++-r--r--r--   1 ronsse   ronsse   569403392 Apr 20 03:23 sessions_1-1.iso
++
++[root@k6 /root]# file /mnt/cdfs/boot.image 
++/mnt/cdfs/boot.image: x86 boot sector, system SYSLINUX, FAT (12 bit) label: LINUX BOOT , 2880 sectors
++
++[root@k6 /root]# mount -t vfat -o loop /mnt/cdfs/boot.image /mnt/loop1
++
++[root@k6 /root]# mount -t iso9660 -o loop /mnt/cdfs/sessions_1-1.iso /mnt/loop2
++
++[root@k6 /root]# ls /mnt/loop1
++boot.msg  expert.msg  general.msg  initrd.img  kickit.msg  ldlinux.sys  param.msg  rescue.msg  syslinux.cfg  vmlinuz
++
++[root@k6 /root]# ls /mnt/loop2
++COPYING  README  RPM-PGP-KEY  RedHat  TRANS.TBL  boot.cat  doc  dosutils  images  misc  rr_moved
++
++[root@k6 /root]# df
++Filesystem                1k-blocks      Used Available Use% Mounted on
++...
++/dev/sr0                     556058    556058         0 100% /mnt/cdfs
++/mnt/cdfs/boot.image           1423      1388        35  98% /mnt/loop1
++/mnt/cdfs/sessions_1-1.iso   556054    556054         0 100% /mnt/loop2
++
+diff --git a/fs/cdfs/Makefile b/fs/cdfs/Makefile
+new file mode 100644
+index 0000000..715d834
+--- /dev/null
++++ b/fs/cdfs/Makefile
+@@ -0,0 +1,18 @@
++ifneq ($(KERNELRELEASE),)
++obj-m := cdfs.o
++cdfs-objs := root.o audio.o cdXA.o cddata.o hfs.o iso.o proc.o root.o utils.o daemon.o discid.o toc.o
++
++else
++KDIR        := /lib/modules/$(shell uname -r)/build
++PWD         := $(shell pwd)
++
++all:
++	$(MAKE) -C $(KDIR) SUBDIRS=$(PWD) modules
++
++install:
++	$(MAKE) -C $(KDIR) SUBDIRS=$(PWD) modules_install
++endif
++
++
++clean:
++	-rm *.o *.ko .*.cmd *.mod.c *~
+diff --git a/fs/cdfs/audio.c b/fs/cdfs/audio.c
+new file mode 100644
+index 0000000..616d384
+--- /dev/null
++++ b/fs/cdfs/audio.c
+@@ -0,0 +1,191 @@
++/*
++
++   File audio.c - routines for 2352 byte frames cdfs
++
++
++   Copyright (c) 1999, 2000, 2001 by Michiel Ronsse 
++
++
++   This program is free software; you can redistribute it and/or modify
++   it under the terms of the GNU General Public License as published by
++   the Free Software Foundation; either version 2, or (at your option)
++   any later version.
++
++   This program is distributed in the hope that it will be useful,
++   but WITHOUT ANY WARRANTY; without even the implied warranty of
++   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++   GNU General Public License for more details.
++
++   You should have received a copy of the GNU General Public License
++   along with this program; if not, write to the Free Software
++   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  
++
++*/
++
++
++#include "cdfs.h"
++#include <asm/byteorder.h>
++
++/***************************************************************************/
++
++void cdfs_make_header(char * temp, unsigned int size){
++  PRINT("MAKING HEADER, size=%d @ 0x%x\n", size, temp);
++
++  /* RIFF header */
++  strcpy(             temp,     "RIFF");
++  *(u32 *) (temp+ 4) = cpu_to_le32(size-8);    /* size of RIFF */
++
++  /* WAVE file */
++  strcpy(             temp+ 8,  "WAVE");
++
++  /* WAVE format*/
++  strcpy(             temp+12,  "fmt ");
++  *(u32 *) (temp+16) = cpu_to_le32(16);        /* size of format descriptor */
++  /* common fields */
++  *(u16 *) (temp+20) = cpu_to_le16(1);         /* format category: WAVE_FORMAT_PCM */
++  *(u16 *) (temp+22) = cpu_to_le16(2);         /* number of channels */
++  *(u32 *) (temp+24) = cpu_to_le32(44100);     /* sample rate */
++  *(u32 *) (temp+28) = cpu_to_le32(44100*4);   /* bytes/sec */
++  *(u16 *) (temp+32) = cpu_to_le16(4);         /* data block size */
++  /* format specific fields (PCM) */
++  *(u16 *) (temp+34) = cpu_to_le16(16);        /* bits per sample */
++
++  /* WAVE data */
++  strcpy(             temp+36,  "data");
++  *(u32 *) (temp+40) = cpu_to_le32(size-44);   /* size of data chunk */
++
++}
++/***************************************************************************/
++
++void cdfs_copy_from_cd(struct super_block * sb, int inode, unsigned int start, 
++    unsigned int stop, char * buf){
++  int start_sector, start_byte, stop_sector, stop_byte, sector;
++  int status;
++  struct cdrom_read_audio cdda;
++  unsigned int read_size=CD_FRAMESIZE_RAW;
++  cd * this_cd = cdfs_info(sb);      
++  unsigned start_lba=this_cd->track[inode].start_lba;
++
++  /* cache */
++  char * temp, * temp2;
++  char * temp_start;
++  int temp_length;
++
++  PRINT("copy_from_cd(%x, %d, %d, %d, %x)\n", sb, inode, start, stop, buf);
++
++  temp = this_cd->cache+CD_FRAMESIZE_RAWER;
++
++  start_sector = start/read_size;
++  start_byte   = start%read_size;
++  stop_sector  = stop/read_size;
++  stop_byte    = stop%read_size;
++
++  start_sector += start_lba;
++  stop_sector  += start_lba;
++
++  if (!stop_byte) {            /* empty frame */
++    stop_sector -= 1;
++    stop_byte    = CD_FRAMESIZE_RAW;
++  }
++
++  PRINT("%d[%d-%d] -> 0x%x...0x%x  ... (%d,%d),(%d,%d)\n", 
++      inode, start, stop, (int)buf, (int)buf+stop-start,
++      start_sector,start_byte,stop_sector,stop_byte);
++
++  cdda.addr_format = CDROM_LBA;
++  cdda.nframes     = CACHE_SIZE;
++  cdda.buf         = temp;
++
++  // testen of eindadres>CD
++
++  for (sector=start_sector; sector<=stop_sector; sector++){
++
++    PRINT("cache holds [%d-%d], we want sector=%d\n", this_cd->cache_sector, this_cd->cache_sector+CACHE_SIZE-1,  sector);
++
++    if (!((this_cd->cache_sector<=sector) && (sector<this_cd->cache_sector+CACHE_SIZE))) { 
++      PRINT("reading sector %d from CD\n", sector);
++      this_cd->cache_sector = cdda.addr.lba = sector;
++      status = cdfs_ioctl(sb, CDROMREADAUDIO, (unsigned long)&cdda);
++      if (status) {
++	printk("copy_from_cd(%d) ioctl failed: %d\n", cdda.addr.lba, status);
++	return;
++      }      
++    } else {
++      PRINT("getting sector %d from cache\n", sector);
++    }
++
++    temp2=temp+(sector-this_cd->cache_sector)*CD_FRAMESIZE_RAW;
++
++    if (sector==start_sector) {
++      temp_start  = temp2+start_byte;
++      if (sector!=stop_sector) 
++	temp_length = read_size-start_byte;
++      else
++	temp_length = stop_byte-start_byte;
++    } else if (sector==stop_sector) {
++      temp_start  = temp2;
++      temp_length = stop_byte;
++    } else {
++      temp_start  = temp2;
++      temp_length = read_size;
++    }
++
++    PRINT("memcpy(0x%x, %x, %d)\n",(int)buf, (int)temp_start, temp_length);
++    memcpy(buf, (char*)temp_start, temp_length);
++    buf += temp_length;
++
++  } 
++}
++
++/***************************************************************************/
++
++void cdfs_cdda_file_read(struct inode * inode, char * buf, size_t count, unsigned start, int raw){
++  unsigned stop=start+count;
++
++  PRINT("cdda_file_read(%x, %x, %d, %d)\n", inode, buf, count, start);
++
++  if (raw) {
++    cdfs_copy_from_cd(inode->i_sb, inode->i_ino, start, stop, buf);      
++  } else {
++    if (start < WAV_HEADER_SIZE) {
++      if (stop > WAV_HEADER_SIZE) {
++	cdfs_cdda_file_read( inode,  buf,                        WAV_HEADER_SIZE-start,  start , 0 );
++	cdfs_cdda_file_read( inode,  buf+WAV_HEADER_SIZE-start,  stop-WAV_HEADER_SIZE,   WAV_HEADER_SIZE, 0 );
++      } else {
++	char temp[44];
++	cdfs_make_header(temp, inode->i_size);
++	memcpy(buf, temp+start, stop-start);
++      }
++    } else {
++      start -= WAV_HEADER_SIZE;
++      stop  -= WAV_HEADER_SIZE;
++      cdfs_copy_from_cd(inode->i_sb, inode->i_ino, start, stop, buf);
++    }
++  }
++}
++
++/***************************************************************************/
++
++struct file_operations cdfs_cdda_file_operations = {
++    .read = do_sync_read,
++    .aio_read = generic_file_aio_read,
++    .mmap = generic_file_mmap,
++};
++
++int kcdfsd_add_cdda_request(struct file * file, struct page *page){
++  PRINT("kcdfsd_add_cdda_request(%x, %x)\n", file, page);
++  return kcdfsd_add_request(file->f_dentry, page, CDDA_REQUEST);
++}
++
++int kcdfsd_add_cdda_raw_request(struct file * file, struct page *page){
++  PRINT("kcdfsd_add_cdda_request(%x, %x)\n", file, page);
++  return kcdfsd_add_request(file->f_dentry, page, CDDA_RAW_REQUEST);
++}
++
++struct address_space_operations cdfs_cdda_aops = {
++    .readpage = kcdfsd_add_cdda_request,
++};
++
++struct address_space_operations cdfs_cdda_raw_aops = {
++    .readpage = kcdfsd_add_cdda_raw_request,
++};
+diff --git a/fs/cdfs/cdXA.c b/fs/cdfs/cdXA.c
+new file mode 100644
+index 0000000..09da159
+--- /dev/null
++++ b/fs/cdfs/cdXA.c
+@@ -0,0 +1,166 @@
++/*
++  
++  File cdXA.c - routines for frames <>2048 and <> 2352 byte frames for cdfs
++
++  
++  Copyright (c) 1999, 2000, 2001 by Michiel Ronsse 
++  
++  
++  This program is free software; you can redistribute it and/or modify
++  it under the terms of the GNU General Public License as published by
++  the Free Software Foundation; either version 2, or (at your option)
++  any later version.
++  
++  This program is distributed in the hope that it will be useful,
++  but WITHOUT ANY WARRANTY; without even the implied warranty of
++  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++  GNU General Public License for more details.
++  
++  You should have received a copy of the GNU General Public License
++  along with this program; if not, write to the Free Software
++  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  
++  
++*/
++
++
++#include "cdfs.h"
++
++struct file_operations cdfs_cdXA_file_operations = {
++    .read = do_sync_read,
++    .aio_read = generic_file_aio_read,
++    .mmap = generic_file_mmap,
++};
++
++struct address_space_operations cdfs_cdXA_aops = {
++    .readpage = kcdfsd_add_cdXA_request,
++};
++
++/************************************************************/
++
++int kcdfsd_add_cdXA_request(struct file * file, struct page *page){
++  return kcdfsd_add_request(file->f_dentry, page, CDXA_REQUEST);
++}
++
++/***********************************************************/            
++
++int cdfs_read_raw_frame(struct super_block * sb, int lba, unsigned char *buf) {     
++  struct cdrom_msf *msf;
++  msf = (struct cdrom_msf*) buf;
++  msf->cdmsf_min0   = (lba + CD_MSF_OFFSET) / CD_FRAMES / CD_SECS;
++  msf->cdmsf_sec0   = (lba + CD_MSF_OFFSET) / CD_FRAMES % CD_SECS;
++  msf->cdmsf_frame0 = (lba + CD_MSF_OFFSET) % CD_FRAMES;
++  return cdfs_ioctl(sb, CDROMREADMODE2, (unsigned long)msf);
++}
++
++/***********************************************************/            
++
++void cdfs_get_XA_info(struct super_block * sb, int inode) {
++  char frame[CD_FRAMESIZE_RAW0];
++  cd * this_cd = cdfs_info(sb);
++  track_info * this_track = &(this_cd->track[inode]);
++  unsigned start_lba = this_track->start_lba;
++  int status;
++
++  if((status = cdfs_read_raw_frame(sb, start_lba, frame))) {
++    printk("get_XA_info: ioctl failed: %d\n", status);
++    return;
++  }
++  
++  if (frame[0] == frame[4] &&
++      frame[1] == frame[5] &&
++      frame[2] == frame[6] &&
++      frame[3] == frame[7] &&
++      frame[2] != 0 &&
++      frame[0] < 8 &&
++      frame[1] < 8) {
++    this_track->xa_data_size   = (frame[2] & 0x20) ? 2324 : 2048;
++    this_track->xa_data_offset = 8;
++  } else {
++    this_track->xa_data_size   = 2048;
++    this_track->xa_data_offset = 0;
++  }
++
++  // Get type & title
++  if((status = cdfs_read_raw_frame(sb, 150, frame))) {
++    printk("get_XA_info: ioctl failed: %d\n", status);
++    return;
++  }
++
++  strncpy(this_cd->videocd_type, frame+this_track->xa_data_offset, 8);
++  this_cd->videocd_type[8]=0;
++  strncpy(this_cd->videocd_title, frame+this_track->xa_data_offset+10, 16);
++  this_cd->videocd_title[16]=0;
++
++}
++
++/***********************************************************/
++
++void cdfs_copy_from_cdXA(struct super_block * sb, int inode, unsigned int start,
++	unsigned int stop, char * buf){
++  int start_sector, start_byte, stop_sector, stop_byte, sector;
++  int status;
++  cd * this_cd = cdfs_info(sb);
++  track_info * this_track = &(this_cd->track[inode]);
++  unsigned start_lba = this_track->start_lba;
++  unsigned int data_size = this_track->xa_data_size;
++  unsigned int data_offset = this_track->xa_data_offset;
++  
++  PRINT("start_lba=%d\n", start_lba);
++  
++  start_sector = start / data_size;
++  start_byte   = start % data_size;
++  stop_sector  = stop  / data_size;
++  stop_byte    = stop  % data_size;
++
++  if (!stop_byte) {            /* empty frame */
++    stop_sector -= 1;
++    stop_byte    = data_size;  // Diego Rodriguez <diegoro@hotmail.com>
++  }
++  
++  PRINT("%d[%d-%d] -> 0x%x...0x%x  ... (%d,%d),(%d,%d)\n",
++        inode, start, stop, (int)buf, (int)buf+stop-start,
++        start_sector,start_byte,stop_sector,stop_byte);
++  
++  for (sector=start_sector; sector<=stop_sector; sector++) {
++    
++    int lba=sector+start_lba;
++    
++    PRINT("reading sector %d, lba=%d\n", sector, lba);
++    
++    if (this_cd->cache_sector == lba) {
++      PRINT("using cache\n");
++    } else {
++      this_cd->cache_sector = lba;
++      if((status = cdfs_read_raw_frame(sb, lba, this_cd->cache))) {
++        printk("copy_from_cdXA(%d): ioctl failed: %d\n", lba, status);
++        return;
++      }
++    }
++
++    {
++      char * copy_start;
++      int copy_length;
++      
++      if (sector==start_sector) {
++        copy_start  = this_cd->cache+data_offset+start_byte;
++        if (sector!=stop_sector)
++          copy_length = data_size-start_byte;
++        else
++          copy_length = stop_byte-start_byte;
++      } else if (sector==stop_sector) {
++        copy_start  = this_cd->cache+data_offset;
++        copy_length = stop_byte;
++      } else {
++        copy_start  = this_cd->cache+data_offset;
++        copy_length = data_size;
++      }
++      PRINT("memcpy(0x%x, %x, %d)\n", (int)buf, (int)copy_start, copy_length);      
++      memcpy(buf, (char*)copy_start, copy_length);
++      buf+=copy_length;
++    }
++
++  }
++}
++
++
++/***************************************************************************/
+diff --git a/fs/cdfs/cddata.c b/fs/cdfs/cddata.c
+new file mode 100644
+index 0000000..4a985a7
+--- /dev/null
++++ b/fs/cdfs/cddata.c
+@@ -0,0 +1,184 @@
++/*
++  
++  File cddata.c - routines for 2048 byte frames for cdfs
++
++  
++  Copyright (c) 1999, 2000, 2001 by Michiel Ronsse 
++  
++  
++  This program is free software; you can redistribute it and/or modify
++  it under the terms of the GNU General Public License as published by
++  the Free Software Foundation; either version 2, or (at your option)
++  any later version.
++  
++  This program is distributed in the hope that it will be useful,
++  but WITHOUT ANY WARRANTY; without even the implied warranty of
++  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++  GNU General Public License for more details.
++  
++  You should have received a copy of the GNU General Public License
++  along with this program; if not, write to the Free Software
++  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  
++  
++*/
++
++
++#include "cdfs.h"
++
++
++/***************************************************************************/
++
++
++unsigned cdfs_data_bmap(struct super_block * sb, int inode, int block){
++  int result;
++  cd * this_cd = cdfs_info(sb);
++  track_info * this_track = &(this_cd->track[inode]);
++  int session;
++
++  if ((this_track->type == BOOT) || (this_track->type == HFS) || (block<20) || this_cd->single)  
++    /* 20 sectors seems to be OK for ISO */ 
++
++    result = this_track->start_lba+block;
++
++  else {
++    
++    /* ISO past sector 18 */
++    result = block;
++    
++    /* post processing */
++    for (session=0; session < this_cd->nr_iso_sessions; session++){
++      PRINT("this is sector %d, checking session %d: %d-%d\n", result, session, 
++            this_cd->lba_iso_sessions[session].start,
++            this_cd->lba_iso_sessions[session].stop);
++      if ((this_cd->lba_iso_sessions[session].start<=result)
++          && (result<=this_cd->lba_iso_sessions[session].stop)) 
++        goto exit;    /* OK, reading from an ISO session */
++      if ((this_cd->lba_iso_sessions[session].stop<result)
++          && (result<this_cd->lba_iso_sessions[session].start)) {
++        result = 0;
++        goto exit;    /* not OK, reading between two ISO sessions => we force 0*/
++      }
++    }
++
++    /* We only get here if we read past the last session => we force 0 */
++    result = 0;
++
++  }
++
++ exit: 
++
++  PRINT("BMAP('%s', block %d) => sector %d\n", this_track->name, block, result);
++
++  return result;
++}
++
++/***************************************************************************/
++
++
++struct file_operations cdfs_cddata_file_operations = {
++  .read = do_sync_read,
++  .aio_read = generic_file_aio_read,
++#ifdef OLD_KERNEL
++  .mmap             = generic_file_mmap
++#else
++  .mmap             = generic_file_readonly_mmap,
++#if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,27)
++  .sendfile         = generic_file_sendfile
++#else
++  .splice_read      = generic_file_splice_read
++#endif
++#endif
++};
++
++struct address_space_operations cdfs_cddata_aops = {
++  .readpage         = kcdfsd_add_cddata_request
++};
++
++/************************************************************/
++
++int kcdfsd_add_cddata_request(struct file * file, struct page *page){
++  return kcdfsd_add_request(file->f_dentry, page, CDDATA_REQUEST);
++}
++
++/***********************************************************/            
++
++int cdfs_read_rawDATA_frame(struct super_block * sb, unsigned lba, unsigned char *buf) {     
++  struct buffer_head * bh;
++
++  bh=cdfs_bread(sb, lba, CD_FRAMESIZE);
++  if (!bh) {
++    // dit gebeurt indien track1!=ISO is, bv. De Morgen CD
++    printk("cdfs_read_rawDATA(%x, %u, %x) FAILED!\n", (unsigned)sb, lba, (unsigned)buf);
++  } else {
++    memcpy(buf, bh->b_data, CD_FRAMESIZE);
++    brelse(bh);
++  }
++  return 0;
++}
++
++/***********************************************************/            
++
++void cdfs_copy_from_cddata(struct super_block * sb, int inode, unsigned int start,
++	unsigned int stop, char * buf){
++  int start_sector, start_byte, stop_sector, stop_byte, sector;
++  int status;
++  cd * this_cd = cdfs_info(sb);
++  unsigned int data_size = CD_FRAMESIZE;
++    
++  start_sector = start / data_size;
++  start_byte   = start % data_size;
++  stop_sector  = stop  / data_size;
++  stop_byte    = stop  % data_size;
++
++  if (!stop_byte) {            /* empty frame */
++    stop_sector -= 1;
++    stop_byte    = CD_FRAMESIZE;
++  }
++  
++  PRINT("%d[%d-%d] -> 0x%x...0x%x  ... (%d,%d),(%d,%d)\n",
++        inode, start, stop, (int)buf, (int)buf+stop-start,
++        start_sector,start_byte,stop_sector,stop_byte);
++  
++  for (sector=start_sector; sector<=stop_sector; sector++) {
++    
++    unsigned lba = cdfs_data_bmap(sb, inode, sector);
++    
++    PRINT("reading sector %d, lba=%d\n", sector, lba);
++    
++    if (this_cd->cache_sector == lba) {
++      PRINT("using cache\n");
++    } else {
++      this_cd->cache_sector = lba;
++      if((status = cdfs_read_rawDATA_frame(sb, lba, this_cd->cache))) {
++        printk("copy_from_cddata(%d): ioctl failed: %d\n", lba, status);
++        return;
++      }          
++    }
++    
++    {
++      char * copy_start;
++      int copy_length;
++      
++      if (sector==start_sector) {
++        copy_start  = this_cd->cache+start_byte;
++        if (sector!=stop_sector)
++          copy_length = data_size-start_byte;
++        else
++          copy_length = stop_byte-start_byte;
++      } else if (sector==stop_sector) {
++        copy_start  = this_cd->cache;
++        copy_length = stop_byte;
++      } else {
++        copy_start  = this_cd->cache;
++        copy_length = data_size;
++      }
++      PRINT("memcpy(0x%x, %x, %d)\n", (int)buf, (int)copy_start, copy_length);      
++      memcpy(buf, (char*)copy_start, copy_length);
++      buf+=copy_length;
++    }
++
++  }
++}
++
++
++/***************************************************************************/
+diff --git a/fs/cdfs/cdfs.h b/fs/cdfs/cdfs.h
+new file mode 100644
+index 0000000..8c03ce8
+--- /dev/null
++++ b/fs/cdfs/cdfs.h
+@@ -0,0 +1,207 @@
++/*
++#define PRDEBUG
++*/
++
++#include <linux/version.h>
++
++#if LINUX_VERSION_CODE < KERNEL_VERSION(2,4,0)
++#error Sorry, this version of cdfs needs at least kernel 2.4.0
++#endif
++
++#if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,0)
++#define OLD_KERNEL
++#endif
++
++#ifndef CONFIG_CDFS_VERSION
++#define CONFIG_CDFS_VERSION "2.6.27"
++#endif
++
++
++#ifdef OLD_KERNEL
++#define MODULE
++#define __KERNEL__ 
++#endif
++
++#define FSNAME "cdfs"
++#define VERSION CONFIG_CDFS_VERSION
++
++
++#ifdef PRDEBUG
++# define PRINT(format, arg...) printk(FSNAME "-> " format, ## arg)
++#else
++# define PRINT(format, arg...) 
++#endif
++
++#ifdef OLD_KERNEL
++#include <linux/autoconf.h>
++#ifdef CONFIG_MODVERSIONS
++#include <linux/modversions.h>
++#endif
++#endif
++
++
++#include <linux/types.h>
++#include <linux/errno.h>
++#include <linux/slab.h>
++#include <linux/fs.h>
++#ifdef OLD_KERNEL
++#include <linux/locks.h>
++#else
++#include <linux/buffer_head.h>
++#include <linux/pagemap.h>
++#endif
++#include <linux/init.h>
++#include <linux/cdrom.h>
++#include <linux/iso_fs.h>
++#include <linux/time.h>
++#include <linux/proc_fs.h>
++#include <linux/string.h>
++#include <asm/uaccess.h>
++
++#define CDFS_MAGIC 0xCDDA
++#define CDFS_MAXFN 128
++
++#define TRUE 1
++#define FALSE 0
++
++#define MAX_TRACKS 99
++#define WAV_HEADER_SIZE 44
++
++#define READ_AHEAD 0
++
++#define NONE  0
++#define AUDIO 1
++#define DATA  2
++#define BOOT  3
++#define HFS   4
++
++#define AUDIO_NAME       "track-%02d.wav"
++#define RAW_AUDIO_NAME       "track-%02d.raw"
++#define AVI_AUDIO_NAME       "track-%02d.avi"
++#define DATA_NAME_ISO    "sessions_1-%d.iso"
++#define DATA_NAME_SINGLE "session-%d.iso"
++#define DATA_NAME_VCD    "videocd-%d.mpeg"
++
++#define UID   0
++#define GID   0
++#define MODE  (S_IFREG | S_IRUSR | S_IRGRP | S_IROTH) 
++
++#ifdef OLD_KERNEL
++#define cdfs_info(X)    ((X)->u.generic_spb)
++#define cdfs_bread(S,O,L) bread((S)->s_dev,(O),(L))
++#else
++#define cdfs_info(X)    ((X)->s_fs_info)
++#define cdfs_bread(S,O,L) __bread((S)->s_bdev,(O),(L))
++#endif
++
++#define CACHE_SIZE 1
++
++// Convert track to inode number
++#define T2I(X) ((X)+3)
++
++/*
++ sb        ->  inode 0
++ .         ->  inode 1
++ ..        ->  inode 2
++ track-01  ->  inode 3  (track 0!)
++ track-02  ->  inode 4  (track 1!)
++ etc.
++*/
++
++typedef struct _iso_track_ {
++  unsigned start;
++  unsigned stop;
++} iso_track;
++
++typedef struct _track_info {
++  unsigned size;                              /* in bytes */
++  unsigned start_lba;
++  unsigned stop_lba;
++  unsigned hfs_offset;                        /* in 512 bytes */
++  unsigned track_size;                        /* in bytes */
++  unsigned iso_size;                          /* in bytes */
++  unsigned type;                              /* audio, data of boot */
++  char name[99];
++  unsigned inode;
++  time_t time;                                /* only for data tracks */
++  struct iso_primary_descriptor * iso_info;   /* only for data tracks */
++  int xa_data_size;                           /* only for xa data tracks */
++  int xa_data_offset;                         /* only for xa data tracks */
++  char bootID[99];
++  int avi; /* only for raw audio tracks */
++  int avi_offset;
++  int avi_swab; /* swap audio bytes? */
++} track_info;
++
++typedef struct _cd_ {
++  mode_t mode;
++  gid_t gid;
++  uid_t uid;    
++  int single;
++  unsigned size;                      /* bytes */
++  unsigned tracks;                    /* number of tracks */
++  track_info track[MAX_TRACKS];       /* info per track */
++  int nr_iso_sessions;
++  int discid;                         /* disc id hash */
++  iso_track lba_iso_sessions[MAX_TRACKS];
++  char videocd_type[9];
++  char videocd_title[17];
++  char * cache;
++  int cache_sector;
++  int raw_audio;
++  int toc_scsi;
++} cd;
++
++typedef unsigned char byte; 
++
++int cdfs_read_proc(char *buf, char **start, off_t offset, int len, int *eof, void *data );
++
++extern struct file_operations cdfs_cdda_file_operations;
++extern struct file_operations cdfs_cdXA_file_operations;
++extern struct file_operations cdfs_cddata_file_operations;
++extern struct file_operations cdfs_cdhfs_file_operations;
++
++extern struct address_space_operations cdfs_cdda_aops;
++extern struct address_space_operations cdfs_cdda_raw_aops;
++extern struct address_space_operations cdfs_cdXA_aops;
++extern struct address_space_operations cdfs_cddata_aops;
++extern struct address_space_operations cdfs_cdhfs_aops;
++
++int cdfs_toc_read(struct super_block *sb);
++int cdfs_toc_read_full(struct super_block *sb);
++time_t cdfs_constructtime(char * time);
++unsigned cdfs_constructsize(char * size);
++void cdfs_constructMSFsize(char * result, unsigned length);
++int cdfs_ioctl(struct super_block *s, int cmd, unsigned long arg);
++struct iso_primary_descriptor * cdfs_get_iso_info(struct super_block *sb, int track_no);
++int cdfs_get_hfs_info(struct super_block *sb, unsigned track);
++void cdfs_check_bootable(struct super_block *sb);
++void cdfs_get_XA_info(struct super_block * sb, int inode);
++void cdfs_copy_from_cdXA(struct super_block * sb, int inode, unsigned int start,
++	unsigned int stop, char * buf);
++void cdfs_copy_from_cddata(struct super_block * sb, int inode, unsigned int start,
++	unsigned int stop, char * buf);
++void cdfs_copy_from_cdhfs(struct super_block * sb, int inode, unsigned int start,
++	 unsigned int stop, char * buf);
++void cdfs_cdda_file_read(struct inode * inode, char * buf, size_t count, unsigned start /*loff_t *ppos*/,int raw);
++
++int kcdfsd_add_cdXA_request(struct file * file, struct page *page);
++int kcdfsd_add_cddata_request(struct file * file, struct page *page);
++int kcdfsd_add_cdda_request(struct file * file, struct page *page);
++int kcdfsd_add_cdda_raw_request(struct file * file, struct page *page);
++int kcdfsd_add_cdhfs_request(struct file * file, struct page *page);
++
++int kcdfsd_add_request(struct dentry *dentry, struct page *page, unsigned type);
++int kcdfsd_thread(void *unused);
++void kcdfsd_cleanup_thread(void);
++extern int kcdfsd_pid;
++
++/* for discid stuff */
++unsigned long discid(cd *);
++
++// REQUEST TYPES
++#define CDDA_REQUEST   1
++#define CDXA_REQUEST   2
++#define CDHFS_REQUEST  3
++#define CDDATA_REQUEST 4
++#define CDDA_RAW_REQUEST 5
+diff --git a/fs/cdfs/cdfs.html b/fs/cdfs/cdfs.html
+new file mode 100644
+index 0000000..476a1e0
+--- /dev/null
++++ b/fs/cdfs/cdfs.html
+@@ -0,0 +1,351 @@
++
++<html>
++
++  <head>
++    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
++    <meta name="Author" content="Michiel Ronsse">
++    <title>CDfs v2.6.3</title>
++  </head>
++
++  <body>
++
++    <hr WIDTH="100%">
++
++    <center><img SRC="cdfs.png" ALT="CDfs logo" height=40 width=87></center>
++
++    <hr WIDTH="100%">
++
++    <ul>
++      <li><font size=+1>What?</font></li>
++
++      <br>CDfs is a file system for Linux systems that `exports' all tracks and
++      boot images on a CD as normal files. These files can then be mounted (e.g.
++      for ISO and boot images), copied, played (audio and VideoCD tracks)...
++      The primary goal for developing this file system was to `unlock' information
++      <br>in old ISO images. For instance, if you have a multisession CD with
++      two ISO images that both contain the file '<tt>a'</tt>, you only
++      see the file '<tt>a'</tt> in the second session if you use the iso9660
++      file system:
++      <p><tt><font color="#3333FF">[root@k6 /root]# mount -t iso9660 -o ro /dev/cdrom
++	  /mnt/cdrom</font></tt>
++      <p><tt><font color="#3333FF">[root@k6 /root]# ls -l /mnt/cdrom</font></tt>
++      <br><tt><font color="#3333FF">total 2</font></tt>
++      <br><tt><font color="#3333FF">-r-xr-xr-x 1 root
++	  root
++	  2 Aug 8 19:16 a</font></tt>
++      <br><tt><font color="#3333FF">-r-xr-xr-x 1 root
++	  root
++	  2 Aug 8 19:19 b</font></tt>
++      <p>If you mount the CD with the cdfs file system, you get the two sessions
++      as files:
++      <p><tt><font color="#3333FF">[root@k6 /root]# mount -t cdfs -o ro /dev/cdrom
++	  /mnt/cdfs</font></tt>
++      <p><tt><font color="#3333FF">[root@k6 /root]# ls -l /mnt/cdfs</font></tt>
++      <br><tt><font color="#3333FF">total 33389</font></tt>
++      <br><tt><font color="#3333FF">-r--r--r-- 1 ronsse
++	  ronsse 33503232 Aug 8 19:36 sessions_1-1.iso</font></tt>
++      <br><tt><font color="#3333FF">-r--r--r-- 1 ronsse
++	  ronsse 34121728 Aug 8 1999 sessions_1-2.iso</font></tt>
++      <p>These files can then be mounted loop back:
++      <p><tt><font color="#3333FF">[root@k6 /root]# mount -t iso9660 -o loop
++	  /cdfs/sessions_1-1.iso /mnt/loop1</font></tt>
++      <p><tt><font color="#3333FF">[root@k6 /root]# mount -t iso9660 -o loop
++	  /cdfs/sessions_1-2.iso /mnt/loop2</font></tt>
++      <p><font color="#000000">and the file <tt>a</tt> can be accessed in both
++	sessions</font>
++      <p><tt><font color="#3333FF">[root@k6 /root]# ls -l /mnt/loop1</font></tt>
++      <br><tt><font color="#3333FF">total 9889</font></tt>
++      <br><tt><font color="#3333FF">-r-xr-xr-x 1 root
++	  root 10104236 Aug 8 17:34 a</font></tt>
++      <p><tt><font color="#3333FF">[root@k6 /root]# ls -l /mnt/loop2</font></tt>
++      <br><tt><font color="#3333FF">total 2</font></tt>
++      <br><tt><font color="#3333FF">-r-xr-xr-x 1 root
++	  root
++	  2 Aug 8 19:16 a</font></tt>
++      <br><tt><font color="#3333FF">-r-xr-xr-x 1 root
++	  root
++	  2 Aug 8 19:19 b</font></tt>
++      <p>The file system also allows you to access data on faulty multi session
++      disks, e.g. disk with multiple single sessions instead of a multi session
++      (for instance created with <tt>mkisofs</tt> without the proper <tt>-C</tt>
++      parameters).
++      <br>
++      <li>
++      <font size=+1>Limitations</font></li>
++
++      <br>Red Book (audio), Yellow Book Mode 1 (data) , Green/White Book Mode
++      2 / XA Form 1 and Green/White Book Mode 2 / XA Form 2 (data) tracks are
++      exported. Other types will be added in the future. Data tracks are checked
++      for ISO, HFS and boot images. If none of these are found, the data track
++      is exported as `unknown`. This version only exports the first HFS and boot
++      image (anybody seen a CD with more than 1 HFS or boot image?).
++      <br>
++      <li>
++      <font size=+1>Download, compile &amp; install</font></li>
++
++      <br>The file system can be downloaded from <a href=download/>here</a>.
++      See the INSTALL file for information on how to compile, install and use cdfs. 
++      <br>
++      <li>
++      <font size=+1>Usage</font></li>
++
++      <br>Mount a CD with something like
++      <p><tt><font color="#3333FF"> mount -t cdfs -o ro /dev/cdrom
++	  /mnt/cdfs</font></tt>
++      <p>Check <tt>/proc/cdfs</tt> for information about the tracks. The exported
++      files can be found under <tt>/mnt/cdfs</tt> and will have one of these
++      names:
++      <br>
++      <ul>
++	<li>
++	<tt>sessions1_?.iso</tt>: an ISO session. ISO sessions are exported in
++	groups, e.g. if you have a disk with four images, you get</li>
++
++	<br>
++	<p>
++	<p><tt><font color="#3333FF">[root@k6 /root]# mount -t cdfs -o ro /dev/cdrom
++	    /mnt/cdfs</font></tt>
++	<p><tt><font color="#3333FF">[root@k6 /root]# ls -l /mnt/cdfs</font></tt>
++	<br><tt><font color="#3333FF">total 0</font></tt>
++	<br><tt><font color="#3333FF">-r--r--r-- 1 ronsse
++	    ronsse 362471424 Mar 10 21:39 sessions_1-1.iso</font></tt>
++	<br><tt><font color="#3333FF">-r--r--r-- 1 ronsse
++	    ronsse 518234112 Apr 10 01:11 sessions_1-2.iso</font></tt>
++	<br><tt><font color="#3333FF">-r--r--r-- 1 ronsse
++	    ronsse 638572544 Jun 19 22:33 sessions_1-3.iso</font></tt>
++	<br><tt><font color="#3333FF">-r--r--r-- 1 ronsse
++	    ronsse 680714240 Jul 21 01:35 sessions_1-4.iso</font></tt>
++	<p>The first file contains the first session, the second file contains
++	sessions 1 &amp; 2, the 3 contains sessions 1, 2 &amp; 3 and the last file
++	contains all the sessions. You can mount all the files/sessions at the
++	same time:
++	<p><tt><font color="#3333FF">[root@k6 /root]# mount -o loop /cdfs/sessions_1-1.iso
++	    /mnt/loop1</font></tt>
++	<br><tt><font color="#3333FF">[root@k6 /root]# mount -o loop /cdfs/sessions_1-2.iso
++	    /mnt/loop2</font></tt>
++	<br><tt><font color="#3333FF">[root@k6 /root]# mount -o loop /cdfs/sessions_1-3.iso
++	    /mnt/loop3</font></tt>
++	<br><tt><font color="#3333FF">[root@k6 /root]# mount -o loop /cdfs/sessions_1-4.iso
++	    /mnt/loop4</font></tt>
++	<br>
++	<li>
++	<tt>session-?.iso: </tt>a single session ISO image. Use the '<tt>single</tt>'
++	option when mounting to access all sessions on a CD as single session images,
++	e.g.:</li>
++
++	<br>
++	<p>
++	<p><tt><font color="#3333FF">[root@k6 /root]# mount -t cdfs -o ro,single
++	    /dev/cdrom /mnt/cdfs</font></tt>
++	<br>
++	<li>
++	<tt>boot.image</tt>: a boot image. Use the <tt>file command </tt>to check
++	the file system on the boot disk and mount it loop back. E.g. (WIN98):</li>
++
++	<br>
++	<p>
++	<p><tt><font color="#3333FF">[root@k6 /root]# mount -t cdfs -o ro /dev/cdrom
++	    /mnt/cdfs</font></tt>
++	<p><tt><font color="#3333FF">[root@k6 /root]# ls -l /mnt/cdfs</font></tt>
++	<br><tt><font color="#3333FF">total 0</font></tt>
++	<br><tt><font color="#3333FF">-r--r--r-- 1 ronsse
++	    ronsse 1474560 Jan 1 1970 boot.image</font></tt>
++	<br><tt><font color="#3333FF">-r--r--r-- 1 ronsse
++	    ronsse 654815232 Nov 24 1998 sessions_1-1.iso</font></tt>
++	<p><tt><font color="#3333FF">[root@k6 /root]# file /mnt/cdfs/boot.image</font></tt>
++	<br><tt><font color="#3333FF">/mnt/cdfs/boot.image: x86 boot sector, system
++	    )+3EjIHC, FAT (12 bit) unlabeled, 2880 sectors</font></tt>
++	<p><tt><font color="#3333FF">[root@k6 /root]# mount -t vfat -o loop /mnt/cdfs/boot.image
++	    /mnt/loop1</font></tt>
++	<p><tt><font color="#3333FF">[root@k6 /root]# head /mnt/loop1/autoexec.bat</font></tt>
++	<br><tt><font color="#3333FF">@ECHO OFF</font></tt>
++	<br><tt><font color="#3333FF">set EXPAND=YES</font></tt>
++	<br><tt><font color="#3333FF">SET DIRCMD=/O:N</font></tt>
++	<br><tt><font color="#3333FF">cls</font></tt>
++	<br><tt><font color="#3333FF">set temp=c:\</font></tt>
++	<br><tt><font color="#3333FF">set tmp=c:\</font></tt>
++	<br><tt><font color="#3333FF">path=a:\</font></tt>
++	<p><tt><font color="#3333FF">IF "%config%"=="NOCD" GOTO QUIT</font></tt>
++	<br><tt><font color="#3333FF">LH MSCDEX.EXE /D:oemcd001 /L:D</font></tt>
++	<br>
++	<li>
++	<tt>apple.hfs: </tt>an Apple Hierarchical File System. You can mount it
++	loop back with the <tt>hfs</tt> file system. Example: a CD with one data
++	track containing both an ISO and a HFS file system:</li>
++
++	<br>
++	<p>
++	<p><tt><font color="#000099">[</font><font color="#3333FF">root@k6 /root]#
++	    mount -t cdfs -o ro /dev/cdrom /mnt/cdfs</font></tt>
++	<p><tt><font color="#3333FF">[root@k6 /root]# ls -al /mnt/cdfs</font></tt>
++	<br><tt><font color="#3333FF">total 15666</font></tt>
++	<br><tt><font color="#3333FF">dr-xr-xr-x 2 ronsse
++	    ronsse 1234 Aug 14 18:46 .</font></tt>
++	<br><tt><font color="#3333FF">drwxr-xr-x 12 root
++	    root 1024 Jul 24 22:56
++	    ..</font></tt>
++	<br><tt><font color="#3333FF">-r--r--r-- 1 ronsse
++	    ronsse 16008192 Jan 1 1970 apple.hfs</font></tt>
++	<br><tt><font color="#3333FF">-r--r--r-- 1 ronsse
++	    ronsse 61360128 Apr 17 06:18 sessions_1-1.iso</font></tt>
++	<p><tt><font color="#3333FF">[root@k6 /root]# mount -t iso9660 -o loop,ro
++	    /mnt/cdfs/sessions_1-1.iso /mnt/loop1</font></tt>
++	<p><tt><font color="#3333FF">[root@k6 /root]# mount -t hfs -o loop,ro /mnt/cdfs/apple.hfs
++	    /mnt/loop2</font></tt>
++	<p><tt><font color="#3333FF">[root@k6 /root]# ls -a /mnt/loop1</font></tt>
++	<br><tt><font color="#3333FF">. .. autorun.inf files
++	    jpg1024 jpg1152 jpg1280 jpg640 jpg800 setup.exe</font></tt>
++	<p><tt><font color="#3333FF">[root@k6 /root]# ls -a /mnt/loop2</font></tt>
++	<br><tt><font color="#3333FF">. .. .finderinfo .resource
++	    .rootinfo AppleShare PDS Desktop DB Desktop DF
++	    M&amp;T ScreenSaver M&amp;T ScreenSaver Data OpenFolderListDF:0d
++	    Trash</font></tt>
++	<br>
++	<li>
++	<tt>videocd-?.mpeg: </tt>a VideoCD track. Use your favourite player to
++	view the contents (mtv[p], plaympeg, gtv, ZZplayer).</li>
++
++	<br>
++	<li>
++	<tt>track-?.wav</tt>: an audio file. The file starts with a WAV-header
++	and can be copied or played (by copying it to the audio device) , e.g.
++
++	<br>
++	<p>
++	<p><tt><font color="#3333FF">[root@k6 /root]# mount -t cdfs -o ro /dev/cdrom
++	    /mnt/cdfs</font></tt>
++	<p><tt><font color="#3333FF">[root@k6 /]# ls -l /mnt/cdfs</font></tt>
++	<br><tt><font color="#3333FF">total 0</font></tt>
++	<br><tt><font color="#3333FF">-r--r--r-- 1 ronsse
++	    ronsse 42973392 Aug 8 18:01 track-1.wav</font></tt>
++	<br><tt><font color="#3333FF">-r--r--r-- 1 ronsse
++	    ronsse 65164512 Aug 8 18:01 track-2.wav</font></tt>
++	<br><tt><font color="#3333FF">-r--r--r-- 1 ronsse
++	    ronsse 71743056 Aug 8 18:01 track-3.wav</font></tt>
++	<br><tt><font color="#3333FF">-r--r--r-- 1 ronsse
++	    ronsse 66940272 Aug 8 18:01 track-4.wav</font></tt>
++	<p><tt><font color="#3333FF">[root@k6 /]# sox /mnt/cdfs/track-1.wav -t
++	    ossdsp /dev/dsp</font></tt></li>
++	<li><tt>track-?.raw</tt>: a raw audio track without the WAV header.
++	<p>Note that audio tracks are `exported' by cdfs because they are on the
++	CD. However, cdfs will make no attempt to correct reading errors while
++	reading from scratched disks, to solve misalignment, frame jitter, loss
++	of streaming, etc. You should use <a href="http://www.xiph.org/paranoia/">cdparanoia</a>
++	or <a href="ftp://ftp.gwdg.de/pub/linux/misc/cdda2wav/">cdda2wav</a> if
++	you encounter these problems.
++	<br></ul>
++
++      <li><font size=+1>Related work:</font></li> 
++
++      <ul>
++
++	<li>for audio tracks only:</li>
++
++	<ul>
++
++	  <li><a href="http://fly.cc.fer.hr/~ptolomei/audiofs/">audiofs</a> for Linux</li>
++
++	  <li><a href="http://www.sonicspot.com/alternatecdfsvxd/alternatecdfsvxd.html">CDFS.VXD</a> for Win</li>
++
++	  <li><a href="http://www.bebits.com//app.php3/157">cdda-fs</a> for BeOS</li>
++
++	</ul>
++
++	<li>for VideoCD only:</li>
++
++	<ul>
++
++	  <li>vcdfs, xreadvcd and vcdread for Linux</li>
++
++	</ul>
++
++      </ul>
++
++      <li><font size=+1>History</font></li>
++
++      <ul>
++
++	<li>For kernel 2.2.X:</li>
++
++	<ul>
++
++	  <li>v0.1 (08/21/99): Original Release.</li>
++
++	  <li>v0.2 (10/24/99): Added support for detecting the type of boot image.</li>
++
++	  <li>v0.2b (11/05/99): Solved problem with versioned symbols (thanks to <a href=mailto:bodo@bellut.net>Bodo Bellut</a>).</li>
++
++	  <li>v0.3 (01/06/00): Audio cache is now dynamically allocated. Removed 1/75 seconds of silence from the start of each audio track. Better memory management. Detects more boot images. Changed numbering of audio tracks.</li>
++
++	  <li>v0.3b (01/11/00): Solved problems with systems with multiple CD drives (cache problems).</li>
++
++	  <li>v0.3c (01/17/00): Several bugfixes.</li>
++
++	</ul>
++
++	<li>For kernel 2.4.X:</li>
++
++	<ul>
++
++	  <li>v0.4 (07/27/00) for 2.4.X: Added a kernel thread 'kcdfsd' for asynchronuous I/O and support for VideoCD (thanks to <a href=mailto:b4506055@ken.csie.ntu.edu.tw>Chih-Chung Chang</a>). Karaoke CDs should also work. Uses address_space_operations for all block sizes. Simplified root.c. Support for bigendian CPUs.</li>
++	  <li>v0.41 (09/12/00) adapted for 2.4.0-test8.
++	  <li>v0.42 (01/25/01) support for multiple boot images (thanks to <a href="mailto:olaf.loesken@epost.de">Olaf L&ouml;sken</a>).
++	  <li>v0.5 (02/21/01) usage of ./configure (thanks to <a href="mailto:barsnick@gmx.net">Moritz Barsnick</a>.
++	  <li>v0.5a (02/27/01)
++	  <li>v0.5b (12/27/01) added support for raw tracks (e.g. avi files
++	  written as audio tracks; thanks to <a href="mailto:karpati@optics.szfki.kfki.hu">Attila Karpati</a>). /proc/cdfs now shows the discid for audio CDs. Added kernel patch for compiling cdfs as part of the kernel instead of a stand alone module (thanks to <a href="mailto:jfch@mail.prf.cuni.cz">Jan F. Chadima</a>).
++	  <li>v0.5c (04/07/02) bug fixes
++	</ul>
++
++	<li>New versions of cdfs have the same version number of the kernel they have been developed for.</li>
++	<ul>
++	  <li>v2.4.20 (04/21/2003). Far better HFS support. /proc/cdfs now uses kernel sequential synthetic file support (thanks to
++	  Robert W. Boone). First and preliminary support for audio CDs that have been produced using faulty machines that
++	  produce CDs that no longer comply with the Red Book standard... (thanks to Laurent Pinchart).
++
++	  <li>v2.6.3 (03/03/2004). Ported to kernel 2.6.3 by <a href="mailto:john@pond-weed.com">John Williams</a>. 
++          <li>v2.6.10 (02/05/2005). Removing module now removes daemon properly &amp;no longer causes oops in preemptible kernel (changes by Thibault Mondary). Discid is now correctly calculated if an audio CD contains data tracks (changed by Stefan Huelswitt).
++
++	</ul>
++
++      </ul>
++
++      <li><font size=+1>Author</font></li>
++
++      <br><a href="mailto:ronsse@elis.rug.ac.be">Michiel Ronsse</a>, with help from Bodo Bellut, Chih-Chung Chang, Olaf L&ouml;sken, Moritz Barsnick, Attila Karpati, Jan F. Chadima, Robert W. Boone, Laurent Pinchart and  John Williams.
++
++
++    </ul>
++
++
++
++    <hr WIDTH="100%">
++
++    <div align=right>10/24/99</div>
++
++
++    <!-- Start of NedStat Basic code -->
++
++    <a href="http://nl.nedstatbasic.net/cgi-bin/viewstat?name=cdfs">
++      <img src="http://nl.nedstatbasic.net/cgi-bin/nedstat.gif?name=cdfs"
++      border=0 alt="" nosave width=22 height=22></a>
++
++    <!-- End of NedStat Basic code -->
++    <!-- Start of ReferStat -->
++
++    <script type="text/javascript" language="JavaScript">
++      <!--
++      d=document;
++      d.write("<img src=\"http://nl.nedstatbasic.net");
++      d.write("/cgi-bin/referstat.gif?");
++      d.write("name=cdfs&refer=");
++      d.write(escape(top.document.referrer));
++      d.write("\" width=1 height=1 align=\"right\">");
++      // -->
++    </script>
++
++    <!-- End of ReferStat -->
++
++
++  </body>
++</html>
+diff --git a/fs/cdfs/daemon.c b/fs/cdfs/daemon.c
+new file mode 100644
+index 0000000..d5747aa
+--- /dev/null
++++ b/fs/cdfs/daemon.c
+@@ -0,0 +1,202 @@
++/*
++
++   File daemon.c - kernel thread routines for asynchronuous I/O
++
++   Initial code written by Chih-Chung Chang
++
++   Copyright (c) 2000, 2001 by Michiel Ronsse
++
++   Support for kmap by  Peter Korf <peter@niendo.de>
++   
++   NULL checking after kmalloc + Clean daemon removing by Thibault Mondary <thibm82@yahoo.fr>
++
++   This program is free software; you can redistribute it and/or modify
++   it under the terms of the GNU General Public License as published by
++   the Free Software Foundation; either version 2, or (at your option)
++   any later version.
++
++   This program is distributed in the hope that it will be useful,
++   but WITHOUT ANY WARRANTY; without even the implied warranty of
++   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++   GNU General Public License for more details.
++
++   You should have received a copy of the GNU General Public License
++   along with this program; if not, write to the Free Software
++   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  
++
++ */
++
++
++#include "cdfs.h"
++#include <linux/sched.h>
++
++int kcdfsd_pid = 0;
++static int kcdfsd_running = 0;
++static DECLARE_WAIT_QUEUE_HEAD(kcdfsd_wait);
++static LIST_HEAD(kcdfsd_req_list);       /* List of requests needing servicing */
++
++struct kcdfsd_req {
++  struct list_head req_list;
++  struct dentry *dentry;
++  struct page *page;
++  unsigned request_type;
++};
++
++/*********************************************************************************/
++
++int kcdfsd_add_request(struct dentry *dentry, struct page *page, unsigned request){
++  struct kcdfsd_req *req = NULL;
++  int count=0;
++
++  do {
++     req = (struct kcdfsd_req *) kmalloc (sizeof (struct kcdfsd_req), GFP_KERNEL);
++    count++;
++  } while (req==NULL && count <5);
++   
++  if (req != NULL){
++    INIT_LIST_HEAD (&req->req_list);
++    req->dentry = dentry;
++    req->page = page;
++    req->request_type = request;
++    list_add_tail (&req->req_list, &kcdfsd_req_list);
++    wake_up (&kcdfsd_wait);
++    return(0);
++  }
++
++  return (-ENOMEM);
++}
++
++/*********************************************************************************/
++
++static void kcdfsd_process_request(void){
++  struct list_head * tmp;
++  struct kcdfsd_req * req;
++  struct page * page;
++  struct inode * inode;
++  unsigned request;
++  
++  while (!list_empty (&kcdfsd_req_list)){
++    /* Grab the next entry from the beginning of the list */
++    tmp = kcdfsd_req_list.next;
++    req = list_entry (tmp, struct kcdfsd_req, req_list);
++    list_del (tmp);
++    page = req->page;
++    inode = req->dentry->d_inode;
++    request = req->request_type;
++    if (!PageLocked(page))
++#if (LINUX_VERSION_CODE < KERNEL_VERSION(2,6,12))
++      PAGE_BUG(page);
++#else
++      BUG();
++#endif
++
++    switch (request){
++      case CDDA_REQUEST:
++      case CDDA_RAW_REQUEST:
++        {
++          cd *this_cd = cdfs_info (inode->i_sb);
++          char *p;
++          track_info *this_track = &(this_cd->track[inode->i_ino]);
++          cdfs_cdda_file_read (inode,
++                               p = (char *) kmap (page),
++                               1 << PAGE_CACHE_SHIFT,
++                               (page->index << PAGE_CACHE_SHIFT) +
++                               ((this_track->avi) ? this_track->
++                                avi_offset : 0),
++                               (request == CDDA_RAW_REQUEST));
++          if ((this_track->avi) && (this_track->avi_swab)){
++              int k;
++              for (k=0; k<(1 << PAGE_CACHE_SHIFT); k+=2){
++                  char c;
++                  c = p[k];
++                  p[k] = p[k + 1];
++                  p[k + 1] = c;
++                }
++            }
++        }
++        break;
++      case CDXA_REQUEST:
++        cdfs_copy_from_cdXA(inode->i_sb,
++                            inode->i_ino,
++                            page->index << PAGE_CACHE_SHIFT,
++                            (page->index + 1) << PAGE_CACHE_SHIFT,
++                            (char *)kmap(page));
++        break;
++      case CDDATA_REQUEST:
++        cdfs_copy_from_cddata(inode->i_sb,
++                              inode->i_ino,
++                              page->index << PAGE_CACHE_SHIFT,
++                              (page->index + 1) << PAGE_CACHE_SHIFT,
++                              (char *)kmap(page));
++        break;
++      case CDHFS_REQUEST:
++        cdfs_copy_from_cdhfs(inode->i_sb,
++                             inode->i_ino,
++                             page->index << PAGE_CACHE_SHIFT,
++                             (page->index + 1) << PAGE_CACHE_SHIFT,
++                             (char *)kmap(page));
++        break;
++    }
++
++    SetPageUptodate (page);
++    kunmap (page);
++    unlock_page (page);
++    kfree (req);
++  }
++}
++
++/****************************************************************************/
++
++int kcdfsd_thread(void *unused){
++  kcdfsd_running = 1;
++
++  /*
++   * This thread doesn't need any user-level access,
++   * so get rid of all our resources
++   */
++#ifdef OLD_KERNEL
++  exit_files(current);  /* daemonize doesn't do exit_files */
++  daemonize();
++#else
++  daemonize("k"FSNAME"d");
++
++  /* Allow SIGTERM to quit properly when removing module */
++  /* By default with daemonize all signals are dropped */
++  allow_signal(SIGTERM);
++#endif
++
++  /* Setup a nice name */
++  strcpy(current->comm, "k"FSNAME"d");
++
++  /* Send me a signal to get me die */
++  do {
++    kcdfsd_process_request();
++    interruptible_sleep_on(&kcdfsd_wait);
++  } while (!signal_pending(current));
++
++  kcdfsd_running = 0;
++  return 0;
++}
++
++/****************************************************************************/
++
++void kcdfsd_cleanup_thread(){
++  int ret;
++#if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,27)
++  ret = kill_proc(kcdfsd_pid, SIGTERM, 1);
++#else
++  ret = kill_pid(find_vpid(kcdfsd_pid), SIGTERM, 1);
++#endif
++
++  if (!ret) {
++    /* Wait 10 seconds */
++    int count = 10 * HZ;
++
++    while (kcdfsd_running && --count) {
++      current->state = TASK_INTERRUPTIBLE;
++      schedule_timeout(1);
++    }
++    if (!count)
++      printk(FSNAME": Giving up on killing k"FSNAME"d!\n");
++  }
++}
+diff --git a/fs/cdfs/discid.c b/fs/cdfs/discid.c
+new file mode 100644
+index 0000000..1180005
+--- /dev/null
++++ b/fs/cdfs/discid.c
+@@ -0,0 +1,33 @@
++
++#include "cdfs.h"
++
++static unsigned int cddb_sum(int n);
++
++
++unsigned long discid(cd * this_cd) {
++  unsigned int i=0, t, n = 0, trks=0, l=0;
++
++  for (i=0; i< this_cd->tracks; i++)
++    if(this_cd->track[T2I(i)].type==AUDIO) {
++      n += cddb_sum((this_cd->track[T2I(i)].start_lba+CD_MSF_OFFSET)/CD_FRAMES);
++      trks++; l=i;
++      }
++
++  t = (this_cd->track[T2I(l+1)].start_lba-
++       this_cd->track[T2I(0)].start_lba)/CD_FRAMES;
++
++  return (((n % 0xFF) << 24) | (t << 8) | trks);
++}
++
++
++static unsigned int cddb_sum(int n) {
++  unsigned int ret = 0;
++
++  while (n > 0) {
++    ret += (n % 10);
++    n /= 10;
++  }
++
++  return ret;
++}
++
+diff --git a/fs/cdfs/hfs.c b/fs/cdfs/hfs.c
+new file mode 100644
+index 0000000..dcb852b
+--- /dev/null
++++ b/fs/cdfs/hfs.c
+@@ -0,0 +1,209 @@
++/*
++  
++  File hfs.c - routines for HFS partitions for cdfs
++
++  
++  Copyright (c) 1999, 2000, 2001 by Michiel Ronsse 
++  
++  
++  This program is free software; you can redistribute it and/or modify
++  it under the terms of the GNU General Public License as published by
++  the Free Software Foundation; either version 2, or (at your option)
++  any later version.
++  
++  This program is distributed in the hope that it will be useful,
++  but WITHOUT ANY WARRANTY; without even the implied warranty of
++  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++  GNU General Public License for more details.
++  
++  You should have received a copy of the GNU General Public License
++  along with this program; if not, write to the Free Software
++  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  
++  
++*/
++
++
++#include "cdfs.h"
++
++/* from /usr/src/linux/fs/hfs/part_tbl.c */
++
++struct new_pmap {
++  char  pmSig[2]; 
++  char  padding[2]; 
++  char  pmMapBlkCnt[4];
++  char  pmPyPartStart[4];
++  char  pmPartBlkCnt[4];
++  char  pmPartName[32]; 
++  char  pmPartType[32]; 
++};
++
++/*************************/
++
++int cdfs_get_hfs_info(struct super_block *sb, unsigned track){
++  cd * this_cd = cdfs_info(sb);
++  struct buffer_head * bh;
++  struct new_pmap * pmapp;
++  int thistrack;
++  int part;
++  int aantal;
++  unsigned start_lba=this_cd->track[track].start_lba;
++
++  /* We only check for the first partition. */
++
++  PRINT("Retrieving HFS info: reading frame %d from track %d\n", start_lba, track);
++
++  if (!(bh = cdfs_bread(sb, start_lba+0, CD_FRAMESIZE ))) { /* read 2048 bytes */
++    PRINT("FAILED\n");
++    return -1;
++  }
++
++  if (!strncmp(bh->b_data,"ER",2)){
++    pmapp=(struct new_pmap*)(bh->b_data+512);   /* 2e blok van 512 bytes */
++    if (!strncmp(pmapp->pmSig,"PM",2)){
++      this_cd->tracks++;
++      thistrack = this_cd->tracks+2;
++      this_cd->track[thistrack].type       = HFS;
++      this_cd->track[thistrack].start_lba  = ntohl(*(unsigned*)(pmapp->pmPyPartStart))/4;
++      this_cd->track[thistrack].hfs_offset = ntohl(*(unsigned*)(pmapp->pmPyPartStart))-4*this_cd->track[thistrack].start_lba;
++      this_cd->track[thistrack].size       = ntohl(*(unsigned*)(pmapp->pmPartBlkCnt))*512;
++      this_cd->track[thistrack].stop_lba   = this_cd->track[thistrack].start_lba + this_cd->track[thistrack].size/2048;
++      this_cd->track[thistrack].time       = 0;
++      sprintf(this_cd->track[thistrack].name, "%d.1.%s", track, (char*)&pmapp->pmPartType);
++      strcpy(this_cd->track[thistrack].bootID,(char*)&pmapp->pmPartName);
++      this_cd->track[thistrack].start_lba  += start_lba;
++      this_cd->track[thistrack].stop_lba   += start_lba;
++      PRINT("Found HFS: %s, starts at %d (offset=%d), stops at %d\n", &pmapp->pmPartName, 
++	  this_cd->track[thistrack].start_lba,  
++	  this_cd->track[thistrack].hfs_offset,
++	  this_cd->track[thistrack].stop_lba);  
++      aantal=this_cd->track[thistrack].size/512;
++      PRINT(">>%d<<\n", aantal);
++      for (part=2; part<aantal+2; part++){
++	PRINT("getting %d\n", start_lba+part/4);
++	bh = cdfs_bread(sb, start_lba+part/4, CD_FRAMESIZE);
++	PRINT("mapping @ %d\n",(part%4)*512);
++	pmapp=(struct new_pmap*)(bh->b_data+(part%4)*512);
++	if (!strncmp(pmapp->pmSig,"PM",2)&&*(unsigned*)(pmapp->pmPartBlkCnt)){
++	  if (ntohl(*(unsigned*)(pmapp->pmPyPartStart))==1){
++	    //printk("done!!\n");
++	    part=aantal*2;
++	  } else {
++	    this_cd->tracks++;
++	    thistrack = this_cd->tracks+2;
++	    this_cd->track[thistrack].type       = HFS;
++	    this_cd->track[thistrack].start_lba  = ntohl(*(unsigned*)(pmapp->pmPyPartStart))/4;
++	    this_cd->track[thistrack].hfs_offset = ntohl(*(unsigned*)(pmapp->pmPyPartStart))-4*this_cd->track[thistrack].start_lba;
++	    this_cd->track[thistrack].size       = ntohl(*(unsigned*)(pmapp->pmPartBlkCnt))*512;
++	    this_cd->track[thistrack].stop_lba   = this_cd->track[thistrack].start_lba + this_cd->track[thistrack].size/2048;
++	    this_cd->track[thistrack].time       = 0;
++	    sprintf(this_cd->track[thistrack].name, "%d.%d.%s", track, part, (char*)&pmapp->pmPartType);
++	    strcpy(this_cd->track[thistrack].bootID,(char*)&pmapp->pmPartName);
++	    this_cd->track[thistrack].start_lba  += start_lba;
++	    this_cd->track[thistrack].stop_lba   += start_lba;
++	    PRINT("Found HFS: %s/%s, starts at %d (offset=%d), stops at %d\n", &pmapp->pmPartName, 
++		&pmapp->pmPartType,
++		this_cd->track[thistrack].start_lba,  
++		this_cd->track[thistrack].hfs_offset,
++		this_cd->track[thistrack].stop_lba);  
++	  }
++	} //else printk("failed:%s\n", pmapp->pmSig);
++
++      }
++    }
++    brelse(bh);
++    return 0;
++  } else {
++    brelse(bh);
++    return -1;
++  }
++}
++
++/***********************************************************/
++
++
++void cdfs_copy_from_cdhfs(struct super_block * sb, int inode, unsigned int start, 
++	 unsigned int stop, char * buf){
++  int start_sector, start_byte, stop_sector, stop_byte, sector;
++  unsigned int read_size=2048;
++  cd * this_cd = cdfs_info(sb);      
++  struct buffer_head * bh;
++  unsigned start_lba=this_cd->track[inode].start_lba;
++  char * temp;
++  char * temp_start;
++  int temp_length;
++  char * buf_ptr;
++
++  PRINT("start_lba=%d\n", start_lba);
++
++  /* recalculate start and stop in bytes from the real start of the CD !! */
++  start += start_lba*2048+ this_cd->track[inode].hfs_offset*512;
++  stop  += start_lba*2048+ this_cd->track[inode].hfs_offset*512;
++
++  start_sector = start/read_size;
++  start_byte   = start - start_sector*read_size;
++  stop_sector  = stop/read_size;
++  stop_byte    = stop - stop_sector*read_size;
++
++  if (!stop_byte) {
++    stop_sector--;
++    stop_byte=2048;
++  }
++
++  PRINT("%d[%d-%d] -> 0x%x...0x%x  ... (%d,%d),(%d,%d)\n", 
++         inode, start, stop, (int)buf, (int)buf+stop-start,
++         start_sector,start_byte,stop_sector,stop_byte); 
++  
++  buf_ptr=buf;
++  
++  for (sector=start_sector; sector<=stop_sector; sector++){
++    
++    PRINT("reading sector %d, lba=%d\n", sector, start_lba);
++    
++    if (!(bh = cdfs_bread(sb, sector, CD_FRAMESIZE))) { /* read 2048 bytes */
++      PRINT("FAILED\n");
++      return;
++    }
++
++    temp = bh->b_data;
++    
++    if (sector==start_sector) {
++      temp_start  = temp+start_byte;
++      if (sector!=stop_sector) 
++        temp_length = read_size-start_byte;
++      else
++        temp_length = stop_byte-start_byte;
++    } else if (sector==stop_sector) {
++      temp_start  = temp;
++      temp_length = stop_byte;
++    } else {
++      temp_start  = temp;
++      temp_length = read_size;
++    }
++    
++    PRINT("memcpy(0x%x, %x, %d)\n", (int)buf_ptr, (int)temp_start, temp_length);
++    
++    memcpy(buf_ptr, (char*)temp_start, temp_length);
++
++    brelse(bh);
++    
++    buf_ptr+=temp_length;
++    
++  }
++};
++
++/***************************************************************************/
++
++struct file_operations cdfs_cdhfs_file_operations = {
++  .read = do_sync_read,
++  .aio_read = generic_file_aio_read,
++  .mmap             = generic_file_mmap
++};
++
++
++int kcdfsd_add_cdhfs_request(struct file * file, struct page *page){
++  return kcdfsd_add_request(file->f_dentry, page, CDHFS_REQUEST);
++}
++
++struct address_space_operations cdfs_cdhfs_aops = {
++  .readpage         = kcdfsd_add_cdhfs_request
++};
+diff --git a/fs/cdfs/iso.c b/fs/cdfs/iso.c
+new file mode 100644
+index 0000000..f81aa83
+--- /dev/null
++++ b/fs/cdfs/iso.c
+@@ -0,0 +1,170 @@
++/* 
++  
++  File iso.c - routines for ISO segments and boot images for cdfs
++
++  
++  Copyright (c) 1999, 2000, 2001 by Michiel Ronsse 
++
++  
++  This program is free software; you can redistribute it and/or modify
++  it under the terms of the GNU General Public License as published by
++  the Free Software Foundation; either version 2, or (at your option)
++  any later version.
++  
++  This program is distributed in the hope that it will be useful,
++  but WITHOUT ANY WARRANTY; without even the implied warranty of
++  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++  GNU General Public License for more details.
++  
++  You should have received a copy of the GNU General Public License
++  along with this program; if not, write to the Free Software
++  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  
++  
++*/
++
++
++#include "cdfs.h"
++#if LINUX_VERSION_CODE > KERNEL_VERSION(2,6,24)
++extern struct inode *cdfs_iget(struct super_block *sp, unsigned long ino);
++#endif
++
++
++struct _bootmedia_ {
++  char text[20];
++  unsigned int size;   /* in bytes */
++} cdfs_bootmedia[5] = {
++  {"No Emulation", 0},
++  {"1.2 MB diskette", 1200*1024},
++  {"1.44 MB diskette", 1440*1024},
++  {"2.88 MB diskette", 2800*1024},
++  {"Hard Disk", 0}
++};
++
++/************************/
++
++void cdfs_check_bootable(struct super_block *sb){
++  struct buffer_head * bh1, * bh2, *bh3;
++  cd * this_cd = cdfs_info(sb);
++  int boottrack=0;
++  int no_bootimage=0;
++  int sectionoffset=0;
++
++  
++  if (!(bh1 = cdfs_bread(sb, 17, CD_FRAMESIZE)))
++    return;                            /* sector 17 is unreadable */
++  else
++    if (!strncmp(bh1->b_data+7, "EL TORITO", 9)) {      
++     
++
++      PRINT("BOOT, catalog at %d\n", *(unsigned int*)(bh1->b_data+71));
++      bh2 = cdfs_bread(sb,  *(unsigned int*)(bh1->b_data+71), CD_FRAMESIZE);
++      
++      PRINT("Catalog:\n\tHeader ID=%d, Platform ID=%d, Developer ID=%s\n", 
++             *(unsigned char*)(bh2->b_data), 
++	     *(unsigned char*)(bh2->b_data+1), bh2->b_data+4);
++      
++      do {
++	this_cd->tracks++;
++        boottrack = this_cd->tracks+2;
++		
++        PRINT("\tInitial/Default entry: %x Bootable, media: %d\n",
++               *(unsigned char*)(bh2->b_data+32+0+sectionoffset),
++               *(unsigned char*)(bh2->b_data+32+1+sectionoffset) & 15);
++        PRINT("\tSector count: %d, Load LBA: %d\n",
++               *(unsigned short*)(bh2->b_data+32+6+sectionoffset),
++               *(unsigned int*)(bh2->b_data+32+8+sectionoffset));         
++  
++        this_cd->track[boottrack].type      = BOOT;
++        this_cd->track[boottrack].start_lba = *(unsigned int*)
++		(bh2->b_data+32+8+sectionoffset);
++        this_cd->track[boottrack].size      = cdfs_bootmedia[
++		*(unsigned char*)(bh2->b_data+32+1+sectionoffset) & 15].size;
++        if (!this_cd->track[boottrack].size)
++            this_cd->track[boottrack].size  = *(unsigned short*)
++		    (bh2->b_data+32+6+sectionoffset) * CD_FRAMESIZE ;
++        this_cd->track[boottrack].stop_lba = this_cd->track[boottrack].
++		start_lba + this_cd->track[boottrack].size/CD_FRAMESIZE -1;
++        this_cd->track[boottrack].time      = 0;
++        sprintf(this_cd->track[boottrack].name,"boot.image_%d",no_bootimage);
++        strncpy(this_cd->track[boottrack].bootID,
++			bh2->b_data+4+sectionoffset,24);  /* 27?? */
++        this_cd->track[boottrack].bootID[24]=0;     
++
++        /* get first sector from boot image */
++        bh3=cdfs_bread(sb, this_cd->track[boottrack].start_lba, CD_FRAMESIZE);
++        if ((*(unsigned char*)(bh3->b_data+511)==0xAA) && 
++			(*(unsigned char*)(bh3->b_data+512)==0x55)) {
++          strcat(this_cd->track[boottrack].bootID, 
++			  "\n\tType: x86 boot sector, ");
++
++          if (!strncmp(bh3->b_data+2, "LILO", 4)) 
++            strcat(this_cd->track[boottrack].bootID, 
++			    "LILO boot/chain loader with ");
++          else if (!strncmp(bh3->b_data+495, "LDLINUX", 7)) {
++            strncat(this_cd->track[boottrack].bootID, bh3->b_data+495, 12);
++            strcat(this_cd->track[boottrack].bootID, " boot loader with ");
++          }
++        
++          if (*(unsigned short*)(bh3->b_data+0x438)==0xEF53)         
++            strcat(this_cd->track[boottrack].bootID, 
++			    "Linux/i386 ext2 filesystem\n");
++          else /* FAT */ 
++            strncat(this_cd->track[boottrack].bootID, 
++			    bh3->b_data+54, 8);  /* FAT type */
++        }
++
++        brelse(bh3);
++        if (sectionoffset==0) sectionoffset=0x60;
++        sectionoffset=sectionoffset+0x20;
++      } while (*(unsigned char*)(bh2->b_data+0x42)>no_bootimage++);
++      brelse(bh2); 
++    }
++    brelse(bh1);
++#if LINUX_VERSION_CODE > KERNEL_VERSION(2,6,24)
++    cdfs_iget(sb,boottrack);
++#endif
++
++}
++
++/*************************/
++
++struct iso_primary_descriptor * cdfs_get_iso_info(struct super_block *sb, int track_no){
++  cd * this_cd = cdfs_info(sb);
++  struct buffer_head * bh;
++  int block;
++  struct iso_primary_descriptor * iso_info = NULL;
++
++  iso_info=(struct iso_primary_descriptor *)kmalloc(sizeof(struct iso_primary_descriptor), GFP_KERNEL);
++
++  if (iso_info==NULL) {
++    printk(FSNAME ": kmalloc failed in cdfs_get_iso_info\n");
++    return NULL;
++  }
++
++  block = this_cd->track[track_no].start_lba+16;  /* ISO info at sector 16 */
++  
++  PRINT("Retrieving info for data track %d: block %d\n", 
++        track_no, block);
++
++  if (!(bh = cdfs_bread(sb, block, CD_FRAMESIZE))) {
++    PRINT("FAILED\n");
++    return NULL;
++  }
++
++  if (!strncmp(bh->b_data+1,"CD001",5)) {
++    memcpy(iso_info, bh->b_data, 
++		    sizeof(struct iso_primary_descriptor));   /* ISO session */
++  } else {
++    kfree(iso_info);
++    iso_info=NULL;                                       /* DATA, but no ISO */
++  }
++
++  brelse(bh);
++
++  return iso_info;
++
++}
++
++/***********************/
++
++
+diff --git a/fs/cdfs/modules.order b/fs/cdfs/modules.order
+new file mode 100644
+index 0000000..7860b44
+--- /dev/null
++++ b/fs/cdfs/modules.order
+@@ -0,0 +1 @@
++kernel/fs/cdfs/cdfs.ko
+diff --git a/fs/cdfs/patch.cdfs b/fs/cdfs/patch.cdfs
+new file mode 100644
+index 0000000..9f0fe0e
+--- /dev/null
++++ b/fs/cdfs/patch.cdfs
+@@ -0,0 +1,22 @@
++--- fs/Makefile.orig	2004-02-28 23:10:02.000000000 +0000
+++++ fs/Makefile	2004-03-03 13:20:53.000000000 +0000
++@@ -91,6 +91,7 @@
++ obj-$(CONFIG_ADFS_FS)		+= adfs/
++ obj-$(CONFIG_FUSE_FS)		+= fuse/
++ obj-$(CONFIG_UDF_FS)		+= udf/
+++obj-$(CONFIG_CDFS_FS)		+= cdfs/
++ obj-$(CONFIG_RELAYFS_FS)	+= relayfs/
++ obj-$(CONFIG_SUN_OPENPROMFS)	+= openpromfs/
++ obj-$(CONFIG_JFS_FS)		+= jfs/
++--- fs/Kconfig.orig	2004-02-28 23:10:02.000000000 +0000
+++++ fs/Kconfig	2004-03-03 13:10:55.000000000 +0000
++@@ -759,6 +759,9 @@
++ 
++ 	  It is perfectly safe to say N here.
++ 
+++config CDFS_FS
+++	tristate "CDFS file system support"
+++
++ endmenu
++ 
++ menu "DOS/FAT/NT Filesystems"
+diff --git a/fs/cdfs/proc.c b/fs/cdfs/proc.c
+new file mode 100644
+index 0000000..0757f25
+--- /dev/null
++++ b/fs/cdfs/proc.c
+@@ -0,0 +1,387 @@
++/*
++   File proc.c - /proc routines for cdfs
++
++
++   Copyright (c) 1999, 2000, 2001 by Michiel Ronsse 
++
++
++   This program is free software; you can redistribute it and/or modify
++   it under the terms of the GNU General Public License as published by
++   the Free Software Foundation; either version 2, or (at your option)
++   any later version.
++
++   This program is distributed in the hope that it will be useful,
++   but WITHOUT ANY WARRANTY; without even the implied warranty of
++   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++   GNU General Public License for more details.
++
++   You should have received a copy of the GNU General Public License
++   along with this program; if not, write to the Free Software
++   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  
++
++*/
++
++/*++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*
++ * Robert W. Boone (November, 2002)                                           *
++ * 	Rewrote using kernel sequential synthetic file support.  This was     *
++ * 	done to fix a kernel segmentation fault caused by trying to shove too *
++ * 	much data into a kernel buffer when looking at a CD with more than a  *
++ * 	few sessions on it.  I tried modifying existing code to gracefully    *
++ *	carve up output into 4K pieces but it quickly became a nightmare to   *
++ *	manage the file position to keep proc_file_read() from changing it    *
++ *	unexpectedly.  To me, it seemed most logical to break up the output   *
++ *	into manageable chunks, with each chunk being a CD track.  Thus, file *
++ *	offset 0 would be track 0, file offset 1 would be track 1, etc.       *
++ *	Since the kernel already provides this capability in the form of      *
++ *	sequential synthetic file support, that's what I settled on using.    *
++ *++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
++
++
++#include "cdfs.h"
++#include <linux/seq_file.h>
++
++struct proc_dir_entry * cdfs_proc_entry;
++
++cd * cdfs_proc_cd;
++
++/******************************************************************************
++ * Pointer to dummy track; used to tell cdfs_show() there is no CD mounted    *
++ ******************************************************************************/
++
++struct _track_info *dummy_track_p = NULL;
++
++
++/*============================================================================*
++ *  cdfs_start()                                                              *
++ *	Purpose:                                                              *
++ *	    Given a track number, find its track[] entry.                     *
++ *	Inputs:                                                               *
++ *	    file_p ===>	Pointer to seq_file descriptor; unused                *
++ *	    offset_p =>	Pointer to offset (track number) within /proc/cdfs    *
++ *	Returns:                                                              *
++ *	    If no CD is mounted, dummy_track_p is returned as long as we      *
++ *	    don't try to go past the first track, otherwise NULL is returned. *
++ *	    If there are no more tracks left, NULL is returned.  Otherwise,   *
++ *	    the address of the track's track[] entry is returned.             *
++ *============================================================================*/
++
++static void *
++cdfs_start(struct seq_file *file_p, loff_t *offset_p) {
++
++    /*
++     *	If there is no CD
++     *	    If we're not trying to go past the first track
++     *		Allocate a dummy track pointer if needed
++     *	    	Tell cdfs_show() to print "No CD mounted" message
++     *	    Else
++     *		Indicate end of file
++     */
++
++    if (cdfs_proc_cd == NULL) {
++	if (*offset_p < 1) {
++	    if (dummy_track_p == NULL) {
++		dummy_track_p = (struct _track_info *)kmalloc(sizeof(struct _track_info), GFP_KERNEL);
++		if (dummy_track_p == NULL) {
++                   printk(FSNAME ": kmalloc failed in cdfs_start !\n"); 
++                   return NULL;
++		}
++	    }
++            return dummy_track_p;
++	} else {
++	    return NULL;
++	}
++    }
++
++    /*
++     *	If there are no more tracks left
++     *	    Indicate end of file
++     */
++
++    if (*offset_p >= cdfs_proc_cd->tracks) {
++	return NULL;
++    }
++
++    /*
++     *	Return track[] entry address for track, converting track to inode
++     */
++
++    return &cdfs_proc_cd->track[T2I(*offset_p)];
++}
++
++
++/*============================================================================*
++ *  cdfs_next()                                                               *
++ *	Purpose:                                                              *
++ *	    Move to next track number.                                        *
++ *	Inputs:                                                               *
++ *	    file_p ===>	Pointer to seq_file descriptor; unused                *
++ *	    data_p ===>	Pointer to some bit of data; unused                   *
++ *	    offset_p =>	Pointer to offset (track number) within /proc/cdfs    *
++ *	Returns:                                                              *
++ *	    cdfs_start() result.                                              *
++ *============================================================================*/
++
++static void *
++cdfs_next(struct seq_file *file_p, void *data_p, loff_t *offset_p) {
++
++    /*
++     *	Go to next track and get its track[] entry address
++     */
++
++    (*offset_p)++;
++    return cdfs_start(file_p, offset_p);
++}
++
++
++/*============================================================================*
++ *  cdfs_stop()                                                               *
++ *	Purpose:                                                              *
++ *	    Placeholder function; does nothing.                               *
++ *	Inputs:                                                               *
++ *	    file_p ===>	Pointer to seq_file descriptor; unused                *
++ *	    data_p ===>	Pointer to some bit of data; unused                   *
++ *	Returns:                                                              *
++ *	    Nothing.                                                          *
++ *============================================================================*/
++
++static void
++cdfs_stop(struct seq_file *file_p, void *data_p) {
++}
++
++
++/*============================================================================*
++ *  remove_trailing_blanks()                                                  *
++ *	Purpose:                                                              *
++ *	    Remove trailing blanks from a string, placing a null character    *
++ *	    (\0) immediately after first non-blank character found during     *
++ *	    right to left scan.                                               *
++ *	Inputs:                                                               *
++ *	    string_p => Pointer to string to remove blanks from               *
++ *	    bytes ====> Maximum number of bytes in string                     *
++ *	Returns:                                                              *
++ *	    Address of 
++ *============================================================================*/
++
++static char temp_buffer[4096];
++
++static char *
++remove_trailing_blanks(
++    char *string_p,
++    int bytes
++) {
++    char	*temp_p;
++
++    /*
++     *	Make copy of string in temporary buffer
++     *	Get address of last character in string
++     */
++
++    (void) memcpy(temp_buffer, string_p, bytes);
++    temp_p = temp_buffer + bytes - 1;
++
++    /*
++     *	While string not exhausted and current character is a blank
++     *	    Move one character to the left in the string
++     */
++ 
++    while ((temp_p >= temp_buffer) && (*temp_p == ' ')) {
++	temp_p -= 1;
++    }
++
++    /*
++     *	We went too far left, move one character back to right
++     *	Insert null character to terminate string
++     */
++
++    temp_p += 1;
++    *temp_p = '\0';
++    return &temp_buffer[0];
++}
++
++
++/*============================================================================*
++ *  cdfs_show()                                                               *
++ *	Purpose:                                                              *
++ *	    Print information for a CD track.                                 *
++ *	Inputs:                                                               *
++ *	    file_p ===>	Pointer to seq_file descriptor                        *
++ *	    data_p ===>	Pointer to address of track's track[] entry           *
++ *	Returns:                                                              *
++ *	    0 on success.  Negative number on failure.                        *
++ *============================================================================*/
++
++#define TRACK_POINTER_TO_TRACK_NUMBER(pointer) \
++    ((pointer - &cdfs_proc_cd->track[0]) - 3) + 1
++
++static int
++cdfs_show(struct seq_file *file_p, void *data_p) {
++    struct _track_info	*track_p;
++
++    track_p = data_p;
++
++    /*
++     *	If no CD mounted
++     *	    Print that message but nothing else
++     */
++
++    if (track_p == dummy_track_p) {
++	seq_printf(
++	    file_p,
++	    "[%s\t%s]\n\tNo CD mounted\n",
++	    FSNAME,
++	    VERSION
++	);
++	return 0;
++    }
++
++    /*
++     *	If current track is track 1 (inode 3)
++     *	    Print disc ID and number of tracks before anything else
++     */
++
++    if (track_p == &(cdfs_proc_cd->track[3])) {
++	seq_printf(
++	    file_p,
++	    "[%s\t%s%s]\n\nCD (discid=%08X) contains %d track%s:\n\n",
++	    FSNAME,
++	    VERSION,
++	    cdfs_proc_cd->toc_scsi?", with new (SCSI) TOC support":"",
++	    cdfs_proc_cd->discid,
++	    cdfs_proc_cd->tracks,
++	    cdfs_proc_cd->tracks - 1 ? "s" : ""
++	);
++    }
++
++    seq_printf(file_p, "\n");
++
++    /*
++     *	Now print information for current track
++     */
++
++    if (track_p->type == DATA) {
++	if (track_p->iso_size) {
++	    seq_printf(
++		file_p,
++		"Track %2d: data track (%s), [%d-%d/%d], length=%d MB\n",
++		TRACK_POINTER_TO_TRACK_NUMBER(track_p),
++		track_p->name,
++		track_p->start_lba,
++		track_p->iso_size / 2048,
++		track_p->stop_lba,
++		track_p->track_size / 1024 / 1024
++	    );
++	    seq_printf(
++		file_p,
++		"\ttype: %c info: %.5s version: %c\n"
++		"\tdate: %.2s/%.2s/%.4s time: %.2s:%.2s:%.2s\n"
++		"\tsystem: %.32s\n\tvolume: %.32s\n",
++		track_p->iso_info->type[0] + 48,
++		track_p->iso_info->id,
++		track_p->iso_info->version[0] + 48,
++		track_p->iso_info->creation_date + 6,
++		track_p->iso_info->creation_date + 4,
++		track_p->iso_info->creation_date,
++		track_p->iso_info->creation_date + 8,
++		track_p->iso_info->creation_date + 10,
++		track_p->iso_info->creation_date + 12,
++		track_p->iso_info->system_id,
++		track_p->iso_info->volume_id
++	    );
++	    seq_printf(
++		file_p,
++		"\tpublisher: %.128s\n",
++		remove_trailing_blanks(track_p->iso_info->publisher_id, 128)
++	    );
++	    seq_printf(
++		file_p,
++		"\tpreparer: %.128s\n",
++		remove_trailing_blanks(track_p->iso_info->preparer_id, 128)
++	    );
++	    seq_printf(
++		file_p,
++		"\tapplication: %.128s\n",
++		remove_trailing_blanks(track_p->iso_info->application_id, 128)
++	    );
++	    seq_printf(
++		file_p,
++		"\tlength: %d MB / %d MB / %d MB / %d MB\n",
++		(track_p->iso_size - track_p->start_lba * CD_FRAMESIZE) / 1024 / 1024,
++		track_p->track_size / 1024 / 1024,
++		track_p->iso_size / 1024 / 1024,
++		track_p->size / 1024 / 1024
++	    );
++	} else {
++	    seq_printf(
++		file_p,
++		"Track %2d: data track (%s), [%d-%d], length=%d kB\n",
++		TRACK_POINTER_TO_TRACK_NUMBER(track_p),
++		track_p->name,
++		track_p->start_lba,
++		track_p->stop_lba,
++		track_p->track_size / 1024
++	    );
++	    seq_printf(
++		file_p,
++		"\ttype:  %s\n",
++		cdfs_proc_cd->videocd_type
++	    );
++	    seq_printf(
++		file_p,
++		"\ttitle:  %s\n",
++		cdfs_proc_cd->videocd_title
++	    );
++	    seq_printf(
++		file_p,
++		"\tframesize:  %d B\n",
++		track_p->xa_data_size
++	    );
++	}
++    } else if (track_p->type == BOOT) {
++	seq_printf(
++	    file_p,
++	    "Bootimage (%s), [%d-%d], length=%d kB\n\tID string:%s\n",
++	    track_p->name,
++	    track_p->start_lba,
++	    track_p->stop_lba,
++	    track_p->size / 1024,
++	    track_p->bootID
++	);
++    } else if (track_p->type == HFS) {
++	seq_printf(
++	    file_p,
++	    "Apple HFS (%s), [%d-%d], length=%d MB\n\tID string:%s\n",
++	    track_p->name,
++	    track_p->start_lba,
++	    track_p->stop_lba,
++	    track_p->size / 1024 / 1024,
++	    track_p->bootID
++	);
++    } else if (track_p->type == AUDIO) {
++	char	MSFsize[10];
++
++	cdfs_constructMSFsize(MSFsize, track_p->size);
++	seq_printf(
++	    file_p,
++	    "Track %2d: audio track (%s), [%8d -%8d], length=%s\n",
++	    TRACK_POINTER_TO_TRACK_NUMBER(track_p),
++	    track_p->name,
++	    track_p->start_lba,
++	    track_p->stop_lba,
++	    MSFsize
++	);
++    }
++
++    return 0;
++}
++
++
++/******************************************************************************
++ * Table of sequential file operations implemented for CDFS                   *
++ ******************************************************************************/
++
++struct seq_operations cdfs_operations = {
++    .start = cdfs_start,
++    .next  = cdfs_next,
++    .stop  = cdfs_stop,
++    .show  = cdfs_show,
++};
+diff --git a/fs/cdfs/root.c b/fs/cdfs/root.c
+new file mode 100644
+index 0000000..3851fb7
+--- /dev/null
++++ b/fs/cdfs/root.c
+@@ -0,0 +1,711 @@
++/*
++
++  File root.c - superblock and module routines for cdfs
++
++  
++  Copyright (c) 1999, 2000, 2001 by Michiel Ronsse 
++
++  
++  This program is free software; you can redistribute it and/or modify
++  it under the terms of the GNU General Public License as published by
++  the Free Software Foundation; either version 2, or (at your option)
++  any later version.
++  
++  This program is distributed in the hope that it will be useful,
++  but WITHOUT ANY WARRANTY; without even the implied warranty of
++  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++  GNU General Public License for more details.
++  
++  You should have received a copy of the GNU General Public License
++  along with this program; if not, write to the Free Software
++  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  
++  
++*/
++
++#include "cdfs.h"
++
++#include <linux/module.h>
++#include <linux/sched.h>
++
++/*++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*
++ * Robert W. Boone (November, 2002)                                           *
++ *	Added code to transform /proc/cdfs into a sequential synthetic file.  *
++ *++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
++
++
++#include <linux/seq_file.h>
++
++#ifndef OLD_KERNEL
++#include <linux/statfs.h>
++#endif
++
++extern struct seq_operations cdfs_operations;
++extern struct _track_info *dummy_track_p;
++
++#if LINUX_VERSION_CODE > KERNEL_VERSION(2,6,24) 
++struct inode *cdfs_iget(struct super_block *sp, unsigned long ino); 
++#endif
++/*============================================================================*
++ *  cdfs_open()                                                               *
++ *	Description:                                                          *
++ *	    Open a CDFS /proc file as a sequential synthetic file.            *
++ *	Input:                                                                *
++ *	    inode_p => Pointer to /proc file inode; unused                    *
++ *	    file_p ==> Pointer to sequential file descriptor                  *
++ *	Return Value:                                                         *
++ *	    seq_open() result.                                                *
++ *============================================================================*/
++
++static int
++cdfs_open(struct inode *inode_p, struct file *file_p) {
++    return seq_open(file_p, &cdfs_operations);
++}
++
++
++/*============================================================================*
++ *  cdfs_release()                                                            *
++ *	Description:                                                          *
++ *	    Free any memory allocated when /proc/cdfs was opened or accessed  *
++ *	    as a sequential synthetic file.                                   *
++ *	Input:                                                                *
++ *	    inode_p => Pointer to /proc file inode                            *
++ *	    file_p ==> Pointer to sequential file descriptor                  *
++ *	Return Value:                                                         *
++ *	    seq_release() result.                                             *
++ *============================================================================*/
++
++int
++cdfs_release(struct inode *inode_p, struct file *file_p) {
++
++    /*
++     *	Release any memory allocated to tell cdfs_show() there is no CD
++     */
++
++    if (dummy_track_p != NULL) {
++	kfree(dummy_track_p);
++	dummy_track_p = NULL;
++    }
++
++    return seq_release(inode_p, file_p);
++}
++
++
++/******************************************************************************
++ * CDFS high-level file operations table                                      *
++ ******************************************************************************/
++
++struct file_operations proc_cdfs_operations = {
++    .owner	= THIS_MODULE,
++    .llseek	= seq_lseek,
++    .read	= seq_read,
++    .open	= cdfs_open,
++    .release	= cdfs_release,
++};
++
++
++/********************************************************************/
++
++static struct super_operations cdfs_ops;
++
++void cdfs_parse_options(char *, cd *);
++
++extern struct proc_dir_entry * cdfs_proc_entry;
++
++extern cd * cdfs_proc_cd;
++
++/********************************************************************/
++
++#ifdef OLD_KERNEL
++static struct super_block * cdfs_mount(struct super_block *sb, void *data, int silent){
++  kdev_t dev = sb->s_dev;
++  int i, j, t;
++  struct cdrom_tochdr  hdr;
++#else
++static int cdfs_fill_super(struct super_block *sb, void *data, int silent){
++  int i, t;
++#endif
++  struct cdrom_tocentry   entry;   
++  int no_audio=0, no_data=0;
++  cd * this_cd;
++  struct inode *retinode;
++
++  PRINT("cdfs_mount\n");
++
++#ifdef OLD_KERNEL
++  MOD_INC_USE_COUNT;
++
++  set_blocksize(dev, CD_FRAMESIZE);  // voor bread met ide-cd
++#else
++  sb_set_blocksize(sb, CD_FRAMESIZE);  // voor bread met ide-cd
++#endif
++
++  sb->s_blocksize = CD_FRAMESIZE;
++  sb->s_blocksize_bits = 11;
++
++  if (!(this_cd = cdfs_info(sb) = kmalloc(sizeof(cd), GFP_KERNEL))){
++#ifdef OLD_KERNEL
++    MOD_DEC_USE_COUNT;     
++    return NULL;
++#else
++    return -ENOMEM;
++#endif
++  }
++
++  this_cd->mode           = MODE;
++  this_cd->gid            = GID;
++  this_cd->uid            = UID;
++  this_cd->single         = FALSE;
++  this_cd->raw_audio      = 0;
++  this_cd->toc_scsi       = FALSE;
++
++  // Initialize cache for maximum sector size
++  if (!(this_cd->cache = kmalloc(CD_FRAMESIZE_RAWER*CACHE_SIZE, GFP_KERNEL))) {
++#ifdef OLD_KERNEL
++    MOD_DEC_USE_COUNT;
++    return NULL;
++#else
++    kfree(cdfs_info(sb));
++    return -ENOMEM;
++#endif
++  }
++
++  // Cache is still invalid
++  this_cd->cache_sector = -CACHE_SIZE;
++
++  cdfs_parse_options((char *) data, this_cd);
++
++  /* Populate CD info with '.' and '..' */
++  strcpy(this_cd->track[1].name, ".");  this_cd->track[1].start_lba=0;
++  strcpy(this_cd->track[2].name, ".."); this_cd->track[2].start_lba=0;
++  this_cd->nr_iso_sessions = 0;
++  this_cd->size            = 0;
++
++  if (this_cd->toc_scsi){
++    if (cdfs_toc_read_full(sb)){
++      printk("TOC read failed\n");
++#ifdef OLD_KERNEL
++      MOD_DEC_USE_COUNT;
++      return NULL;
++#else
++      goto invalid;
++#endif
++    }
++  } else {
++    //if (cdfs_ioctl(sb, CDROMREADTOCHDR, (unsigned long)&hdr)){
++    if (cdfs_toc_read(sb)){
++      printk("cdfs_toc_read failed\n");
++#ifdef OLD_KERNEL
++      MOD_DEC_USE_COUNT;
++      return NULL;
++#else
++      goto invalid;
++#endif
++    }
++  }
++
++  PRINT("CD contains %d tracks\n", this_cd->tracks);
++
++  /* Collect track info */
++  entry.cdte_format = CDROM_LBA;
++
++  for (t=this_cd->tracks; t>=0; t--) {
++
++    i = T2I(t);
++//    j = this_cd->tracks-i;
++
++ //   entry.cdte_track = (t==this_cd->tracks) ? CDROM_LEADOUT : t+1;
++ //   PRINT("Read track %d/%d/%d\n", entry.cdte_track, t, i);
++
++ //   if (cdfs_ioctl(sb, CDROMREADTOCENTRY, (unsigned long)&entry)){
++   //   printk("ioctl(CDROMREADTOCENTRY) failed\n");
++     // MOD_DEC_USE_COUNT;
++  //    return NULL;
++   // }
++
++ //   this_cd->track[i].start_lba  = entry.cdte_addr.lba;
++ //   this_cd->track[i].stop_lba   = this_cd->track[i+1].start_lba - 1;
++    this_cd->track[i].track_size = this_cd->track[i+1].start_lba - this_cd->track[i].start_lba;  /* in sectors! */
++
++    PRINT("Start[%d]: %d\n", i, this_cd->track[i].start_lba);
++
++    if (t!=this_cd->tracks) {                 /* all tracks but the LEADOUT */
++      if (this_cd->track[i].type==DATA) {
++	//int track=i;
++	no_data++;
++	this_cd->track[i].iso_info  = cdfs_get_iso_info(sb, i);
++	if (this_cd->track[i].iso_info) {
++	  this_cd->track[i].time      = cdfs_constructtime((char*)&(this_cd->track[i].iso_info->creation_date));
++	  this_cd->track[i].iso_size  = cdfs_constructsize((char*)&(this_cd->track[i].iso_info->volume_space_size)) * CD_FRAMESIZE;
++	  if (!this_cd->single) this_cd->track[i].iso_size += this_cd->track[i].start_lba * CD_FRAMESIZE;
++	  this_cd->track[i].track_size *= CD_FRAMESIZE;
++	  this_cd->track[i].size = this_cd->track[i+1].start_lba * CD_FRAMESIZE;
++	  sprintf(this_cd->track[i].name, this_cd->single ? DATA_NAME_SINGLE : DATA_NAME_ISO, t+1);
++	  this_cd->lba_iso_sessions[this_cd->nr_iso_sessions].start = this_cd->track[i].start_lba;
++	  this_cd->lba_iso_sessions[this_cd->nr_iso_sessions].stop  = this_cd->track[i].iso_size/CD_FRAMESIZE;
++	  this_cd->nr_iso_sessions++;
++	  cdfs_get_hfs_info(sb, i);  // possibly also a HFS
++	} else {  // DATA, but no ISO -> either HFS or VideoCD
++	  if (cdfs_get_hfs_info(sb, i)==-1){
++	    printk("CHECKING VIDEOCD!!\n");
++	    cdfs_get_XA_info(sb, i);
++	    this_cd->track[i].time       = 0;
++	    this_cd->track[i].iso_size   = 0;
++	    this_cd->track[i].track_size = (this_cd->track[i].track_size-1) * this_cd->track[i].xa_data_size;
++	    this_cd->track[i].size       = this_cd->track[i].track_size;
++	    sprintf(this_cd->track[i].name, DATA_NAME_VCD, no_data);
++	  } else { // HFS, no ISO, no VideoCD -> remove track
++	    this_cd->track[i].iso_info  = NULL;
++	    this_cd->track[i].type      = 0;
++	  }
++	}
++      } else {
++	no_audio++;
++	this_cd->track[i].iso_info    = NULL;
++	this_cd->track[i].type        = AUDIO;
++	this_cd->track[i].time        = get_seconds();
++	this_cd->track[i].iso_size    = 0;
++	this_cd->track[i].track_size  = this_cd->track[i].track_size * CD_FRAMESIZE_RAW + ((this_cd->raw_audio==0)?WAV_HEADER_SIZE:0);
++	this_cd->track[i].size        = this_cd->track[i].track_size;
++	this_cd->track[i].avi         = 0;
++	sprintf(this_cd->track[i].name, (this_cd->raw_audio)? RAW_AUDIO_NAME:AUDIO_NAME, t+1);
++	if (this_cd->raw_audio) {
++	  /* read the first sector. */
++	  struct cdrom_read_audio cdda;
++	  int status,k,j,prevk=0;
++	  char* buf;
++	  buf=kmalloc(CD_FRAMESIZE_RAW*2,GFP_KERNEL);
++	  if(buf==NULL) {
++		printk(FSNAME ": kmalloc failed in root.c !\n");
++		return(-ENOMEM);
++	  }
++	  for (j=0;j<10;j++) {
++	    cdda.addr_format = CDROM_LBA;
++	    cdda.nframes     = 1;
++	    cdda.buf         = buf+CD_FRAMESIZE_RAW;
++	    cdda.addr.lba = this_cd->track[i].start_lba+j;
++	    status = cdfs_ioctl(sb,CDROMREADAUDIO,(unsigned long)&cdda);
++	    if (status) {
++	      printk("cdfs_ioctl(CDROMREADAUDIO,%d) ioctl failed: %d\n", cdda.addr.lba, status);
++	      goto out;
++	    }
++	    /* search the first non-zero byte */
++	    for (k=0;k<CD_FRAMESIZE_RAW;k++)
++	      if (buf[k+CD_FRAMESIZE_RAW]) break;
++	    if (k<=CD_FRAMESIZE_RAW-4) break;
++	    prevk=k;
++	    if (k<CD_FRAMESIZE_RAW)
++	      for (k=0;k<CD_FRAMESIZE_RAW;k++)
++		buf[k]=buf[k+CD_FRAMESIZE_RAW];
++	  }
++	  if (j==10) goto out;
++	  if ((j!=0)&&(prevk!=CD_FRAMESIZE_RAW)) {
++	    k=prevk;
++	    j--;
++	  }
++	  else k+=CD_FRAMESIZE_RAW;
++	  this_cd->track[i].avi_offset = j*CD_FRAMESIZE_RAW+k-CD_FRAMESIZE_RAW;
++	  if ((buf[k]=='R')&&(buf[k+1]=='I')&&
++	      (buf[k+2]=='F')&&(buf[k+3]=='F')) {
++	    this_cd->track[i].avi = 1;
++	    this_cd->track[i].avi_swab = 0;
++	  } else if ((buf[k]=='I')&&(buf[k+1]=='R')&&
++	      (buf[k+2]=='F')&&(buf[k+3]=='F')) {
++	    this_cd->track[i].avi = 1;
++	    this_cd->track[i].avi_swab = 1;
++	  }
++	  if (this_cd->track[i].avi) {
++	    if ((this_cd->track[i].avi_offset&1)!=0) {
++	      printk("AVI offset is not even, error\n");
++	      this_cd->track[i].avi=0;
++	    } else {
++	      this_cd->track[i].track_size -= this_cd->track[i].avi_offset;
++	      sprintf(this_cd->track[i].name, AVI_AUDIO_NAME, t+1);
++	    }
++	  }
++out:
++    kfree(buf);
++	}
++      }
++      // Calculate total CD size
++      this_cd->size += this_cd->track[i].track_size;
++
++      PRINT("Track %2d: (%dB)\n", t,  this_cd->track[i].size);
++
++    } // else CDROM_LEADOUT
++
++  }
++
++  PRINT("CD ends at %d\n", this_cd->track[this_cd->tracks].start_lba);
++
++
++  /* take care to get disc id after the toc has been read. JP, 29-12-2001 */
++  this_cd->discid = discid(this_cd);
++
++  ////////////////////////////////
++
++  /* Check if CD is bootable */
++  if (this_cd->track[T2I(0)].type==DATA) cdfs_check_bootable(sb);
++
++  /* Check for an HFS partition in the first data track */
++  /*if (no_data) {
++    i=T2I(0);
++    while (i<T2I(this_cd->tracks)) {
++      if (this_cd->track[i].type==DATA)
++        break;
++      i++;
++    }
++    cdfs_get_hfs_info(sb, i);
++  }
++  */
++  
++  PRINT("%d audio tracks and %d data tracks => %dbytes\n", 
++        no_audio, no_data, this_cd->size);
++  
++  sb->s_magic  = CDFS_MAGIC;
++  sb->s_flags |= MS_RDONLY;
++  sb->s_op     = &cdfs_ops;
++  /* always get inode status */
++#if LINUX_VERSION_CODE > KERNEL_VERSION(2,6,24)
++  retinode=cdfs_iget(sb, 0);
++#else
++  retinode=iget(sb, 0);
++#endif
++  if ( IS_ERR(retinode) )
++    return PTR_ERR(retinode);
++
++  PRINT("retinode = %ld\n", retinode->i_ino);
++
++  sb->s_root   = d_alloc_root(retinode);
++
++  cdfs_proc_cd = this_cd;
++
++#ifdef OLD_KERNEL
++  return sb;
++#else
++  return 0;
++
++invalid:
++  kfree(this_cd->cache);
++  kfree(cdfs_info(sb));
++  return -EINVAL;
++#endif
++}
++
++/************************************************************************/
++
++static void cdfs_umount(struct super_block *sb) {
++  int t;
++  cd * this_cd = cdfs_info(sb);
++
++  PRINT("cdfs_umount\n");
++
++  for (t=0; t<=this_cd->tracks; t++)
++    if ((this_cd->track[T2I(t)].type == DATA) && this_cd->track[T2I(t)].iso_info)
++      kfree(this_cd->track[T2I(t)].iso_info);
++  
++  // Free & invalidate cache
++  kfree(this_cd->cache);
++  this_cd->cache_sector = -CACHE_SIZE;
++
++  // Remove /proc entry
++  cdfs_proc_cd = NULL; 
++  kfree(cdfs_info(sb));
++
++#ifdef OLD_KERNEL
++  MOD_DEC_USE_COUNT;
++#endif
++
++}
++
++/************************************************************************/
++
++#ifdef OLD_KERNEL
++static int cdfs_statfs(struct super_block *sb, struct statfs *buf) {
++  cd * this_cd = cdfs_info(sb);
++#else
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,18)
++static int cdfs_statfs(struct dentry *d, struct kstatfs *buf) {
++  cd * this_cd = cdfs_info(d->d_sb);
++#else
++static int cdfs_statfs(struct super_block *sb, struct kstatfs *buf) {
++  cd * this_cd = cdfs_info(sb);
++#endif
++#endif
++  PRINT("rmfs_statfs\n");
++
++  buf->f_type    = CDFS_MAGIC;
++  buf->f_bsize   = CD_FRAMESIZE;
++  buf->f_blocks  = this_cd->size/CD_FRAMESIZE;
++  buf->f_namelen = CDFS_MAXFN;
++  buf->f_files   = this_cd->tracks;
++  return 0;
++}
++
++/************************************************************************/
++
++static int cdfs_readdir(struct file *filp, void *dirent, filldir_t filldir) {
++  struct inode *inode = filp->f_dentry->d_inode;
++  int i;
++  cd * this_cd = cdfs_info(inode->i_sb);
++
++  PRINT("cdfs_readdir ino=%ld f_pos=%u\n", inode->i_ino, (int)filp->f_pos);
++
++  for(i=filp->f_pos; i<T2I(this_cd->tracks); i++) {
++    if (filldir(dirent, this_cd->track[i].name, strlen(this_cd->track[i].name), 0, i, DT_UNKNOWN) < 0) 
++      return 0;
++    filp->f_pos++;
++  }
++  return 1;
++}
++
++/************************************************************************/
++
++#ifdef OLD_KERNEL
++static struct dentry * cdfs_lookup(struct inode *dir, struct dentry *dentry){
++#else
++static struct dentry * cdfs_lookup(struct inode *dir, struct dentry *dentry, struct nameidata *nd){
++#endif
++  struct inode * inode;
++  int i;
++  cd * this_cd = cdfs_info(dir->i_sb);
++
++  PRINT("cdfs_lookup %s ino=%ld \n", dentry->d_name.name, dir->i_ino);
++
++  for(i=0; i<T2I(this_cd->tracks); i++)
++    if (!(strcmp(this_cd->track[i].name, dentry->d_name.name))) {
++        goto found;
++    }
++  return ERR_PTR(-ENOENT);
++
++/* Use goto and read inode with iget()/cdfs_iget() */
++/* Thanks to David Howells for patch and Master class in his mail */
++found:
++#if LINUX_VERSION_CODE > KERNEL_VERSION(2,6,24)
++inode = cdfs_iget(dir->i_sb, i);
++if (IS_ERR(inode))
++  return ERR_CAST(inode);
++#else
++  inode = iget(dir->i_sb, i);
++  if (!inode)
++    return ERR_PTR(-ENOMEM);
++#endif
++d_add(dentry, inode);
++return NULL;
++}
++
++
++/***************************************************************************/
++
++static struct file_operations cdfs_dir_operations = {
++  .read     = generic_read_dir,
++  .readdir  = cdfs_readdir,
++};
++
++static struct inode_operations cdfs_inode_operations = {
++  .lookup   = cdfs_lookup
++};
++
++/**************************************************************************/
++
++
++static void cdfs_read_inode(struct inode *i) {
++  cd * this_cd = cdfs_info(i->i_sb);
++
++  PRINT("this_cd = 0x%x\n", (unsigned)this_cd);
++
++  PRINT("read inode %ld\n", i->i_ino);
++  
++  i->i_uid        = this_cd->uid;
++  i->i_gid        = this_cd->gid;
++  i->i_nlink      = 1;
++  i->i_op         = &cdfs_inode_operations;
++  i->i_fop        = NULL;
++  i->i_data.a_ops = NULL;
++
++  if (i->i_ino <= 2) {                               /* . and .. */
++    i->i_size  = 0;                      /* Uuugh ?? */
++    i->i_mtime = i->i_atime = i->i_ctime = CURRENT_TIME;
++    i->i_mode  = S_IFDIR | S_IRUSR | S_IXUSR | S_IRGRP |  S_IXGRP | S_IROTH | S_IXOTH;
++    i->i_fop   = &cdfs_dir_operations;
++  } else {                                          /* file */
++    i->i_size  = this_cd->track[i->i_ino].size;
++#ifdef OLD_KERNEL
++    i->i_mtime = i->i_atime = i->i_ctime = this_cd->track[i->i_ino].time;
++#else
++    i->i_mtime.tv_sec = i->i_atime.tv_sec = i->i_ctime.tv_sec = this_cd->track[i->i_ino].time;
++    i->i_mtime.tv_nsec = i->i_atime.tv_nsec = i->i_ctime.tv_nsec = 0;
++#endif
++    i->i_mode  = this_cd->mode;
++    if ((this_cd->track[i->i_ino].type==DATA) && this_cd->track[i->i_ino].iso_size) {
++      i->i_fop          = &cdfs_cddata_file_operations; 
++      i->i_data.a_ops   = &cdfs_cddata_aops;
++    } else if (this_cd->track[i->i_ino].type==AUDIO) {
++      i->i_fop          = &cdfs_cdda_file_operations;
++      if (this_cd->raw_audio)
++	i->i_data.a_ops   = &cdfs_cdda_raw_aops;
++      else
++	i->i_data.a_ops   = &cdfs_cdda_aops;
++    } else if (this_cd->track[i->i_ino].type==BOOT) {
++      i->i_fop          = &cdfs_cddata_file_operations;
++      i->i_data.a_ops   = &cdfs_cddata_aops;
++    } else if (this_cd->track[i->i_ino].type==HFS) {
++      if (this_cd->track[i->i_ino].hfs_offset) {
++        i->i_fop        = &cdfs_cdhfs_file_operations; /* Bummer, this partition isn't properly aligned... */
++        i->i_data.a_ops = &cdfs_cdhfs_aops;
++      } else {
++        i->i_fop        = &cdfs_cddata_file_operations;
++        i->i_data.a_ops = &cdfs_cddata_aops;
++      }
++    } else {
++      i->i_fop          = &cdfs_cdXA_file_operations;
++      i->i_data.a_ops   = &cdfs_cdXA_aops;
++    }
++  }
++}
++
++
++struct inode *cdfs_iget(struct super_block *sp, unsigned long ino) {
++  /* info from http://git.kernel.org/?p=linux/kernel/git/torvalds/linux-2.6.git;a=commit;h=12debc4248a4a7f1873e47cda2cdd7faca80b099 */ 
++  struct inode *i; 
++  i = iget_locked(sp, ino); 
++  if (!i) {
++    PRINT("cdfs_iget NOT inode\n");
++    return ERR_PTR(-ENOMEM); 
++  }
++  if (!(i->i_state & I_NEW)) {
++    PRINT("cdfs_iget NOT I_NEW\n");
++    return i;
++  }
++
++  PRINT("cdfs_iget BEFORE inode %ld\n", i->i_ino);
++  cdfs_read_inode(i);
++  PRINT("cdfs_iget AFTER inode %ld\n", i->i_ino);
++  return i;
++}
++
++
++/******************************************************************/
++
++static struct super_operations cdfs_ops = {
++#if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,25)
++  .read_inode = cdfs_read_inode,
++#endif
++  .put_super  = cdfs_umount,
++  .statfs     = cdfs_statfs
++};
++
++#ifdef OLD_KERNEL
++static DECLARE_FSTYPE_DEV(cdfs_fs_type, FSNAME, cdfs_mount);
++#else
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,18)
++static int cdfs_get_sb(struct file_system_type *fs_type, int flags, const char *dev_name, void *data, struct vfsmount *mnt) {
++  return get_sb_bdev(fs_type, flags, dev_name, data, cdfs_fill_super, mnt);
++#else
++static struct super_block *cdfs_get_sb(struct file_system_type *fs_type, int flags, const char *dev_name, void *data) {
++  return get_sb_bdev(fs_type, flags, dev_name, data, cdfs_fill_super);
++#endif
++}
++
++static struct file_system_type cdfs_fs_type = {
++  .owner    = THIS_MODULE,
++  .name     = "cdfs",
++  .get_sb   = cdfs_get_sb,
++  .kill_sb  = kill_block_super,
++  .fs_flags = FS_REQUIRES_DEV
++};
++#endif
++
++/******************************************************/
++
++MODULE_AUTHOR("Michiel Ronsse (ronsse@elis.UGent.be)");
++MODULE_DESCRIPTION("CDfs: a CD filesystem");
++MODULE_LICENSE("GPL"); 
++
++#ifdef OLD_KERNEL
++EXPORT_NO_SYMBOLS;
++#endif
++
++/******************************************************************/
++
++static int __init cdfs_init(void) {
++  int err;
++  PRINT("init_module (insmod)\n");
++
++  printk(FSNAME" "VERSION" loaded.\n");
++ 
++  // register file system
++  err = register_filesystem(&cdfs_fs_type);
++  if (err < 0) return err;
++
++  // register /proc entry
++  if ((cdfs_proc_entry = create_proc_entry(FSNAME, 0, NULL )))
++    cdfs_proc_entry->proc_fops = &proc_cdfs_operations;
++  cdfs_proc_cd=NULL;
++
++  // start kernel thread
++  if ((kcdfsd_pid = kernel_thread(kcdfsd_thread, NULL, CLONE_FS | CLONE_FILES | CLONE_SIGHAND)) >0 ) {
++    return 0;
++  } else {
++    printk(FSNAME" kernel_thread failed.\n");
++    if (cdfs_proc_entry) remove_proc_entry(FSNAME, NULL);
++    unregister_filesystem(&cdfs_fs_type);
++    return -1;
++  }
++}
++
++/******************************************************************/
++
++static void __exit cdfs_exit(void) {
++  PRINT("cleanup_module (rmmod)\n");
++  kcdfsd_cleanup_thread();
++  if (cdfs_proc_entry) remove_proc_entry(FSNAME, NULL);
++  unregister_filesystem(&cdfs_fs_type);
++}
++
++/******************************************************************/
++
++module_init(cdfs_init);
++module_exit(cdfs_exit);
++
++/******************************************************************/
++
++void cdfs_parse_options(char *options, cd * this_cd) {  
++  char *this_char,*value;
++  
++  /* from isofs */
++  
++  if (!options) return;
++  
++#ifdef OLD_KERNEL
++  for (this_char = strtok(options,","); this_char; this_char = strtok(NULL,",")) {
++#else
++  while ((this_char = strsep(&options,",")) != NULL) {
++#endif
++    
++    if (!strcmp(this_char,"single")) 
++      this_cd->single=TRUE;
++    else if (!strcmp(this_char,"raw")) 
++      this_cd->raw_audio=TRUE;
++    else if (!strcmp(this_char,"toc_scsi")) {
++      printk("Using new TOC function!\n");
++      this_cd->toc_scsi=TRUE;
++    } else {
++      if ((value = strchr(this_char,'=')) != NULL)
++        *value++ = 0;     
++      if (value &&
++          (!strcmp(this_char,"mode") ||
++           !strcmp(this_char,"uid") ||
++           !strcmp(this_char,"gid"))) {
++        char * vpnt = value;                                   
++        unsigned int ivalue = simple_strtoul(vpnt, &vpnt, 0);
++        if (*vpnt) return;
++        switch(*this_char) {
++        case 'u':  this_cd->uid = ivalue;              break;
++        case 'g':  this_cd->gid = ivalue;              break;
++        case 'm':  this_cd->mode = ivalue | S_IFREG ;  break;
++        }
++      } else 
++        return;
++    }
++  }
++}
+diff --git a/fs/cdfs/toc.c b/fs/cdfs/toc.c
+new file mode 100644
+index 0000000..6ffdb89
+--- /dev/null
++++ b/fs/cdfs/toc.c
+@@ -0,0 +1,225 @@
++/*
++
++  File toc.c - superblock and module routines for cdfs
++
++  
++  Copyright (c) 2003 by Laurent Pinchart
++
++  
++  This program is free software; you can redistribute it and/or modify
++  it under the terms of the GNU General Public License as published by
++  the Free Software Foundation; either version 2, or (at your option)
++  any later version.
++  
++  This program is distributed in the hope that it will be useful,
++  but WITHOUT ANY WARRANTY; without even the implied warranty of
++  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++  GNU General Public License for more details.
++  
++  You should have received a copy of the GNU General Public License
++  along with this program; if not, write to the Free Software
++  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  
++  
++*/
++
++#include "cdfs.h"
++#include <scsi/scsi.h>
++
++/*
++ * Send a SCSI command
++ */
++static int cdfs_scsi_send_command( struct super_block *sb,
++    char *cmd, int dir, void *buffer, int buflen )
++{
++    struct cdrom_generic_command cd_cmd;
++    struct request_sense sense;
++
++    /* No need to zero the request sense as we don't use it anyway */
++    memset( &cd_cmd, 0, sizeof( cd_cmd ) );
++    memcpy( cd_cmd.cmd, cmd, CDROM_PACKET_SIZE );
++
++    cd_cmd.data_direction = dir;
++    cd_cmd.buffer = buffer;
++    cd_cmd.buflen = buflen;
++    cd_cmd.timeout = 20000;
++    cd_cmd.sense = &sense;
++    cd_cmd.quiet = 0;
++    cd_cmd.stat = GOOD;
++
++    if ( cdfs_ioctl( sb, CDROM_SEND_PACKET, (unsigned long)&cd_cmd ) < 0 || cd_cmd.stat != GOOD )
++    {
++        PRINT( "cdfs_scsi_send_command: CDROM_SEND_PACKET ioctl failed (status %d)\n", cd_cmd.stat );
++        return -1;
++    }
++
++    return 0;
++}
++
++#define TIME2LBA(min, sec, frame) ((((min)*60)+(sec))*75+(frame))
++
++int cdfs_toc_read_full( struct super_block *sb )
++{
++    unsigned char cmd[CDROM_PACKET_SIZE];
++    unsigned char toc[12];
++    int first_session, last_session;
++    int sess, cur_track;
++    int lead_out;
++    cd * this_cd = cdfs_info( sb );
++
++    /* Get the number of sessions */
++    memset( cmd, 0, sizeof( cmd ) );
++    memset( toc, 0, sizeof( toc ) );
++    cmd[0] = READ_TOC;
++    cmd[2] = 1;				/* Format : Session Info    */
++    cmd[8] = sizeof( toc );
++    if ( cdfs_scsi_send_command( sb, cmd, CGC_DATA_READ, toc, sizeof( toc ) ) < 0 )
++        return -1;
++
++    first_session = toc[2];
++    last_session = toc[3];
++    PRINT( "cdfs_toc_read_full: CD contains %d sessions\n", last_session - first_session + 1 ); 
++
++    cur_track = T2I(0);
++    this_cd->track[0].start_lba  = 0;
++    this_cd->track[1].start_lba  = 0;
++    this_cd->track[2].start_lba  = 0;
++
++    /* Iterate through the sessions */
++    cmd[1] = 2;				/* Addresses in TIME format */
++    cmd[2] = 2;				/* Format : Full TOC        */
++    lead_out = 0;
++    for ( sess = first_session; sess <= last_session; ++sess )
++    {
++        unsigned char *stoc;
++        int toc_size, tracks, j;
++
++        /* Read the first 4 bytes of the full TOC to get the TOC length */
++        cmd[6] = sess;			/* Session number           */
++	cmd[7] = 0;			/* Allocation length MSB    */
++	cmd[8] = 4;			/* Allocation length LSB    */
++
++        if ( cdfs_scsi_send_command( sb, cmd, CGC_DATA_READ, toc, sizeof( toc ) ) < 0 )
++	{
++	    printk( "cdfs_read_toc: unable to read session %d toc header, skipping\n", sess );
++	    continue;
++	}
++
++        /* Allocate memory for the session TOC */
++        toc_size = ( toc[0] << 8 ) + toc[1] + 2;
++	tracks = ( toc_size - 4 ) / 11;
++        PRINT( "cdfs_toc_read_full: session %d contains %d track descriptors\n", sess, tracks ); 
++	if ( tracks == 0 )
++	    continue;
++
++        if ( ! ( stoc = kmalloc( toc_size, GFP_KERNEL ) ) )
++	{
++	    printk( "cdfs_read_toc: unable to allocate memory for session %d toc, skipping\n", sess );
++	    continue;
++	}
++
++        /* Read the full session TOC */
++        cmd[7] = toc_size >> 8;
++	cmd[8] = toc_size & 0xff;
++        if ( cdfs_scsi_send_command( sb, cmd, CGC_DATA_READ, stoc, toc_size ) < 0 )
++	{
++	    printk( "cdfs_read_toc: unable to read session %d toc, skipping\n", sess );
++	    kfree( stoc );
++	    continue;
++	}
++
++        /* Iterate through the tracks descriptors */
++	lead_out = 0;
++        for ( j = 0; j < tracks; ++j )
++	{
++	    struct track_descriptor
++	    {
++	        unsigned char session;
++		unsigned char adr_control;
++		unsigned char tno;
++		unsigned char point;
++		unsigned char min;
++		unsigned char sec;
++		unsigned char frame;
++		unsigned char zero;
++		unsigned char pmin;
++		unsigned char psec;
++		unsigned char pframe;
++	    } *track = (struct track_descriptor*)&stoc[11*j+4];
++
++	    if ( ( track->adr_control >> 4 ) != 1 )
++	        continue;
++
++	    if ( track->point == 0xa2 )
++	        /* Lead out start. Needed to compute the size of the last track */
++		lead_out = TIME2LBA( track->pmin, track->psec, track->pframe ) - 150;
++	    else if ( track->point <= 0x63 )
++	    {
++	        /* This is a true track descriptor */
++		this_cd->track[cur_track].type = ( track->adr_control & 0x04 ) ? DATA : AUDIO;
++		this_cd->track[cur_track].time = get_seconds();
++		this_cd->track[cur_track].start_lba = TIME2LBA( track->pmin, track->psec, track->pframe ) - 150;
++		this_cd->track[cur_track-1].stop_lba = this_cd->track[cur_track].start_lba - 1;
++                PRINT("Start[%d]: %d\n", cur_track, this_cd->track[cur_track].start_lba);
++		++cur_track;
++	    }
++	}
++	this_cd->track[cur_track-1].stop_lba = lead_out - 1;
++
++	kfree( stoc );
++	break; ////////////
++    }
++
++    this_cd->track[cur_track].start_lba = lead_out;
++    this_cd->tracks = cur_track-T2I(0);
++    return 0;
++}
++
++int cdfs_toc_read( struct super_block *sb )
++{
++    int i, t;
++    struct cdrom_tochdr hdr;
++    struct cdrom_tocentry entry;   
++    cd * this_cd = cdfs_info( sb );
++
++    if ( cdfs_ioctl( sb, CDROMREADTOCHDR, (unsigned long)&hdr ) )
++    {
++        printk( "ioctl(CDROMREADTOCHDR) failed\n" );
++        return -1;
++    }
++
++    this_cd->tracks = hdr.cdth_trk1 - hdr.cdth_trk0 + 1;
++    PRINT( "CD contains %d tracks: %d-%d\n", this_cd->tracks, hdr.cdth_trk0, hdr.cdth_trk1 );
++
++    /* Collect track info */
++    entry.cdte_format = CDROM_LBA;
++
++    this_cd->track[0].start_lba  = 0;
++    this_cd->track[1].start_lba  = 0;
++    this_cd->track[2].start_lba  = 0;
++    for ( t = this_cd->tracks; t >= 0; --t )
++    {
++        i = T2I(t);
++
++        entry.cdte_track = ( t == this_cd->tracks ) ? CDROM_LEADOUT : t+1;
++        PRINT( "Read track %d/%d/%d\n", entry.cdte_track, t, i );
++
++        if ( cdfs_ioctl( sb, CDROMREADTOCENTRY, (unsigned long)&entry ) )
++	{
++            printk( "ioctl(CDROMREADTOCENTRY) failed\n" );
++            return -1;
++        }
++
++        this_cd->track[i].start_lba  = entry.cdte_addr.lba;
++        this_cd->track[i].stop_lba   = this_cd->track[i+1].start_lba - 1;
++
++        PRINT("Start[%d]: %d\n", i, this_cd->track[i].start_lba);
++
++        if ( t != this_cd->tracks )	/* all tracks but the LEADOUT */
++	{
++            this_cd->track[i].type = ( entry.cdte_ctrl & CDROM_DATA_TRACK ) ? DATA : AUDIO;
++            this_cd->track[i].time = get_seconds();
++        }
++    }
++
++    return 0;
++}
+diff --git a/fs/cdfs/utils.c b/fs/cdfs/utils.c
+new file mode 100644
+index 0000000..21d033c
+--- /dev/null
++++ b/fs/cdfs/utils.c
+@@ -0,0 +1,81 @@
++/*
++  
++  File utils.c - miscellaneous routines for cdfs
++
++  
++  Copyright (c) 1999, 2000, 2001 by Michiel Ronsse 
++  
++  
++  This program is free software; you can redistribute it and/or modify
++  it under the terms of the GNU General Public License as published by
++  the Free Software Foundation; either version 2, or (at your option)
++  any later version.
++  
++  This program is distributed in the hope that it will be useful,
++  but WITHOUT ANY WARRANTY; without even the implied warranty of
++  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++  GNU General Public License for more details.
++  
++  You should have received a copy of the GNU General Public License
++  along with this program; if not, write to the Free Software
++  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  
++  
++*/
++
++
++#include "cdfs.h"
++
++
++/* convert YYYYMMDDHHMMSS to time_t (seconds since 1/1/1970) */
++
++time_t cdfs_constructtime(char * time){
++  
++  unsigned year,month,day,hour,min,sec;
++
++  if (!time) return 0;
++  if ((*time!='1') && (*time!='2')) return 0;
++
++  year  = 1000*(time[0]-'0')+100*(time[1]-'0')+10*(time[2]-'0')+(time[3]-'0');
++
++  if (year<1970)
++    return 0;
++  else {
++    year -= 1970;
++    month = 10*(time[ 4]-'0') + (time[ 5]-'0');
++    day   = 10*(time[ 6]-'0') + (time[ 7]-'0');
++    hour  = 10*(time[ 8]-'0') + (time[ 9]-'0');
++    min   = 10*(time[10]-'0') + (time[11]-'0');
++    sec   = 10*(time[12]-'0') + (time[13]-'0');
++
++    return mktime(year, month, day, hour, min, sec);
++  }
++}
++
++/****************************************/
++
++unsigned cdfs_constructsize(char * size){
++  return (unsigned char)size[0]+
++    ((unsigned char)size[1]<<8)+
++    ((unsigned char)size[2]<<16)+
++    ((unsigned char)size[3]<<24);
++}
++
++/**************************/
++
++
++void cdfs_constructMSFsize(char * result, unsigned length){
++  int min,sec;
++  length = (length-WAV_HEADER_SIZE)/CD_FRAMESIZE_RAW;
++  length /= 75;
++  sec = length%60;
++  min = length/60;
++  sprintf(result,"%2d:%02d", min, sec);
++}
++
++/***********************************************************************/
++
++int cdfs_ioctl(struct super_block *s, int cmd, unsigned long arg) {
++  return ioctl_by_bdev(s->s_bdev, cmd, arg); 
++}
++
++/************************/

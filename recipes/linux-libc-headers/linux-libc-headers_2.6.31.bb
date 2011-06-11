@@ -9,7 +9,9 @@ DEFAULT_PREFERENCE = "-1"
 SRC_URI = "${KERNELORG_MIRROR}/pub/linux/kernel/v2.6/linux-${PV}.tar.bz2 \
            file://0001-implement-TIF_RESTORE_SIGMASK-support-and-enable-the.patch \
 	   file://powerpc-fix-build-with-make-3.82.patch \
+	   file://dvbapi-5.3.patch \
 	  "
+
 S = "${WORKDIR}/linux-${PV}"
 
 do_configure() {
