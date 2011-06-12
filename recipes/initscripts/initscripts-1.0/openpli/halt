@@ -1,0 +1,12 @@
+#! /bin/sh
+
+PATH=/sbin:/bin:/usr/sbin:/usr/bin
+
+if test -x /usr/share/switchoff.mvi
+then
+	showiframe /usr/share/switchoff.mvi
+fi
+
+halt -d -f -i -p -h
+
+: exit 0
