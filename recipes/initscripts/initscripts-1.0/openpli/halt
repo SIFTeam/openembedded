@@ -2,7 +2,7 @@
 
 PATH=/sbin:/bin:/usr/sbin:/usr/bin
 
-if test -x /usr/share/switchoff.mvi
+if test -e /usr/share/switchoff.mvi
 then
 	showiframe /usr/share/switchoff.mvi
 fi
