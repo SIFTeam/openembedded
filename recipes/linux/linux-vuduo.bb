@@ -43,7 +43,7 @@ do_configure_prepend() {
 	oe_machinstall -m 0644 ${WORKDIR}/bm750_defconfig ${S}/.config
 	if [ -d ${WORKDIR}/cdfs-${PV} ]; then
 		mv ${WORKDIR}/cdfs-${PV} ${S}/fs/cdfs
-		cd ${S} & patch -p0 < ${S}/fs/cdfs/patch.cdfs
+		cd ${S}; patch -p0 < ${S}/fs/cdfs/patch.cdfs
 	fi;
 	oe_runmake oldconfig
 }
