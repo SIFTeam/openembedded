@@ -78,7 +78,7 @@ do_compile_prepend () {
 	fi
 }
 
-do_compile_append () {
+do_compile_kernelmodules_append () {
 	patch -d ${S} -p1 < ${WORKDIR}/squashfs-lzma/sqlzma2k-3.2-r2-2.6.12.6.patch
 	touch ${S}/.patched
 	oe_runmake -C ${WORKDIR}/squashfs-lzma KDir=${S} BUILD_CC="${CC}" BUILD_CXX="${CXX}" BUILD_LD="${LD}" BUILD_AR="${AR}" BUILD_LDFLAGS="${TARGET_LDFLAGS}" BUILD_CFLAGS="${TARGET_CFLAGS}" BUILD_CXXFLAGS="${TARGET_CXXFLAGS}"
