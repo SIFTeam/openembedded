@@ -8,7 +8,6 @@ CONFLICTS = "ipkg"
 INC_PR = "r5"
 
 SRC_URI = "svn://opkg.googlecode.com/svn;module=trunk;proto=http \
-	file://opkg_depmod_force_update.patch \
 	file://configure \
 "
 
