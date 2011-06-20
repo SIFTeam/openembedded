@@ -7,9 +7,6 @@
 -if HAVE_V4L
 -   liblavplay_la_LIBADD += ${X_LIBS} -lX11
 -endif
-+#if !X_DISPLAY_MISSING
-+#   liblavplay_la_LIBADD += ${X_LIBS} -lX11
-+#endif
  liblavplay_la_DEPENDENCIES = liblavfile.la liblavjpeg.la
  
  # *********************************************************************
