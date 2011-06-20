@@ -6,7 +6,6 @@ LICENSE = "GPL LGPL"
 SRC_URI = "${SOURCEFORGE_MIRROR}/libsigc/libsigc++-${PV}.tar.gz \
 	   file://autofoo.patch \
 	   file://fix-install.patch \
-       file://duplicate_header_fix.patch \
 	   file://pkgconfig.patch"
 S = "${WORKDIR}/libsigc++-${PV}"
 
