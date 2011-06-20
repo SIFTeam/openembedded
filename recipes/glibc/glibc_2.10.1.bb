@@ -1,6 +1,6 @@
 require glibc.inc
 
-PR = "${INC_PR}.1"
+PR = "${INC_PR}.2"
 
 ARM_INSTRUCTION_SET = "arm"
 
@@ -57,6 +57,7 @@ SRC_URI = "ftp://ftp.gnu.org/pub/gnu/glibc/glibc-${PV}.tar.bz2;name=archive \
            file://glibc-2.9-enable-binutils-2.2.patch \
 	   file://armv4t-interworking.patch \
 	   file://PTR_MANGLE.patch \
+	   file://noexterninlines.patch \
            "
 
 # Build fails on sh3 and sh4 without additional patches
