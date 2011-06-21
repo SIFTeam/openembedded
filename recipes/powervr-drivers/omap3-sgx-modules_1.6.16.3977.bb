@@ -1,6 +1,3 @@
-# untested and huge change from 1.4.x
-DEFAULT_PREFERENCE = "-1"
-
 DESCRIPTION = "Kernel drivers for the PowerVR SGX chipset found in the omap3 SoCs"
 LICENSE = "GPLv2"
 
@@ -11,18 +8,19 @@ LICENSE = "GPLv2"
 TI_BIN_UNPK_CMDS="Y: qY:workdir:Y"
 require ../ti/ti-eula-unpack.inc
 
-SGXPV = "4_03_00_01"
+SGXPV = "4_03_00_02"
 IMGPV = "1.6.16.3977"
 BINFILE := "Graphics_SDK_setuplinux_${SGXPV}.bin"
 
 inherit module
 
-MACHINE_KERNEL_PR_append = "h"
+MACHINE_KERNEL_PR_append = "i"
 
 SRC_URI = "http://software-dl.ti.com/dsps/dsps_public_sw/sdo_sb/targetcontent/gfxsdk/${SGXPV}/exports/Graphics_SDK_setuplinux_${SGXPV}.bin \
-"
-SRC_URI[md5sum] = "4163ee51bc05689b6f61e7eadf5ab9cf"
-SRC_URI[sha256sum] = "1afe0dc4974c3c0a0ccf267a531d0964459d1cdf1929e732958230641973da94"
+           file://Compile-fixes-for-38-kernel.patch \
+          "
+SRC_URI[md5sum] = "ff8c1f2b8e4cb42f4ced6a613b081ada"
+SRC_URI[sha256sum] = "cdb0bd3964e107733d632aa8224e0537b05c1ffac34befc036423458c8d75255"
 
 S = "${WORKDIR}/Graphics_SDK_${SGXPV}/GFX_Linux_KM"
 
@@ -31,10 +29,10 @@ PVRBUILD = "release"
 PACKAGE_STRIP = "no"
 
 TI_PLATFORM_omap3 = "omap3630"
-TI_PLATFORM_ti816x = "ti8168"
+TI_PLATFORM_ti816x = "ti81xx"
 
 MODULESLOCATION_omap3 = "dc_omap3430_linux"
-MODULESLOCATION_ti816x = "dc_ti8168_linux"
+MODULESLOCATION_ti816x = "dc_ti81xx_linux"
 
 MAKE_TARGETS = " BUILD=${PVRBUILD} TI_PLATFORM=${TI_PLATFORM}"
 

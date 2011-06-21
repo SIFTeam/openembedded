@@ -6,9 +6,9 @@ LICENSE = "GPLv2 | BSD"
 LIC_FILES_CHKSUM = "file://../COPYING;md5=c54ce9345727175ff66d17b67ff51f58 \
                     file://../README;md5=54cfc88015d3ce83f7156e63c6bb1738 \
                     file://wpa_supplicant.c;beginline=1;endline=17;md5=acdc5a4b0d6345f21f136eace747260e"
-DEPENDS = "gnutls dbus libnl2 openssl ${@base_contains("COMBINED_FEATURES", "madwifi", "madwifi-ng", "",d)}"
+DEPENDS = "gnutls dbus libnl openssl ${@base_contains("COMBINED_FEATURES", "madwifi", "madwifi-ng", "",d)}"
 RRECOMMENDS_${PN} = "wpa-supplicant-passphrase wpa-supplicant-cli"
-INC_PR = "r6"
+INC_PR = "r7"
 
 SRC_URI = "http://hostap.epitest.fi/releases/wpa_supplicant-${PV}.tar.gz \
            file://defconfig \
@@ -19,11 +19,6 @@ SRC_URI = "http://hostap.epitest.fi/releases/wpa_supplicant-${PV}.tar.gz \
            file://99_wpa_supplicant"
 
 S = "${WORKDIR}/wpa_supplicant-${PV}/wpa_supplicant"
-
-# We stage libnl2 header files not directly as they clash with libnl files. Once
-# we only use libnl2 and stage the headers at the normal place we can remove
-# this.
-CFLAGS += "-I${STAGING_INCDIR}/libnl2/"
 
 PACKAGES_prepend = "wpa-supplicant-passphrase wpa-supplicant-cli "
 FILES_wpa-supplicant-passphrase = "/usr/sbin/wpa_passphrase"
@@ -55,14 +50,6 @@ do_install () {
 	install -m 600 ${WORKDIR}/defaults-sane ${D}${sysconfdir}/default/wpa
 	install -m 600 ${WORKDIR}/wpa_supplicant.conf-sane ${D}${sysconfdir}/wpa_supplicant.conf
 
-	install -d ${D}${sysconfdir}/network/if-pre-up.d/
-	install -d ${D}${sysconfdir}/network/if-post-down.d/
-	install -d ${D}${sysconfdir}/network/if-down.d/
-	install -m 644 ${WORKDIR}/wpa_supplicant.conf ${D}${sysconfdir}
-	install -m 755 ${WORKDIR}/wpa-supplicant.sh ${D}${sysconfdir}/network/if-pre-up.d/wpa-supplicant
-	cd ${D}${sysconfdir}/network/ && \
-	ln -sf ../if-pre-up.d/wpa-supplicant if-post-down.d/wpa-supplicant
-
 	if grep -q ^CONFIG_CTRL_IFACE_DBUS=y .config || grep -q ^CONFIG_CTRL_IFACE_DBUS_NEW=y .config; then
 		install -d ${D}/${sysconfdir}/dbus-1/system.d
 		install -m 644 ${S}/dbus/dbus-wpa_supplicant.conf ${D}/${sysconfdir}/dbus-1/system.d
@@ -76,6 +63,14 @@ do_install () {
 			install -m 644 ${S}/dbus/fi.w1.wpa_supplicant1.service ${D}/${datadir}/dbus-1/system-services
 		fi
 	fi
+
+	install -d ${D}${sysconfdir}/network/if-pre-up.d/
+	install -d ${D}${sysconfdir}/network/if-post-down.d/
+	install -d ${D}${sysconfdir}/network/if-down.d/
+	install -m 644 ${WORKDIR}/wpa_supplicant.conf ${D}${sysconfdir}
+	install -m 755 ${WORKDIR}/wpa-supplicant.sh ${D}${sysconfdir}/network/if-pre-up.d/wpa-supplicant
+	cd ${D}${sysconfdir}/network/ && \
+	ln -sf ../if-pre-up.d/wpa-supplicant if-post-down.d/wpa-supplicant
 
 	install -d ${D}/etc/default/volatiles
 	install -m 0644 ${WORKDIR}/99_wpa_supplicant ${D}/etc/default/volatiles

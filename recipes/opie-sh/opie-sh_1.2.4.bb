@@ -1,6 +1,6 @@
 require ${PN}.inc
 
-PR = "r1"
+PR = "r2"
 
 SRC_URI = "http://sources.openembedded.org/opie-1.2.4-split_noncore_tools_opie-sh.tar.bz2;name=split_noncore_tools_opie-sh \
            http://sources.openembedded.org/opie-1.2.4-split_pics.tar.bz2;name=split_pics \
@@ -9,7 +9,7 @@ SRC_URI = "http://sources.openembedded.org/opie-1.2.4-split_noncore_tools_opie-s
            http://sources.openembedded.org/opie-1.2.4-split_apps.tar.bz2;name=split_apps \
            http://sources.openembedded.org/opie-1.2.4-split_bin.tar.bz2;name=split_bin \
            file://opie-sh-path.patch \
-           file://opie-sh-fsmounter-name.patch"
+           file://opie-sh-fsmounter-name.patch;patchdir=${WORKDIR}/apps"
 SRC_URI[split_noncore_tools_opie-sh.md5sum] = "bc57f7ab07181c122ebc382e302bb594"
 SRC_URI[split_noncore_tools_opie-sh.sha256sum] = "a1305994918160449177b24efe384a0de87dc9dfcecf476e33b87cf8999b5bb1"
 SRC_URI[split_pics.md5sum] = "5499dc84b65395ab99bda6ed9d01ff0f"

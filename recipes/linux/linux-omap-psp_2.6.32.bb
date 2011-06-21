@@ -9,7 +9,7 @@ COMPATIBLE_MACHINE = "am3517-crane|beagleboard|omap3evm|am3517-evm|dm37x-evm|am3
 SRCREV = "5fc29e7b2a76a64a739f857858ef0b98294aa155"
 
 # The main PR is now using MACHINE_KERNEL_PR, for omap3 see conf/machine/include/omap3.inc
-MACHINE_KERNEL_PR_append = "+gitr${SRCREV}"
+MACHINE_KERNEL_PR_append = "c+gitr${SRCREV}"
 
 SRC_URI = "git://arago-project.org/git/projects/linux-omap3.git;protocol=http;branch=master \
            file://0001-Added-Crane-Board-support.patch \
@@ -133,14 +133,25 @@ SRC_URI = "git://arago-project.org/git/projects/linux-omap3.git;protocol=http;br
            file://cam/0073-mt9v113-Fix-State-variable-handling.patch \
            file://cam/0074-Move-sensor-rest-to-after-applying-power.patch \
            file://cam/0075-omap3beagle-Add-camera-bootarg.patch \
+           file://cam/5m03/0001-mt9p031-import-driver-from-https-github.com-Aptina-B.patch \
            file://0001-BeagleBoard-Adjust-USER-button-pin-for-xM.patch \
            file://0001-PSP-3.0.1.6-kernel-source-patched-with-OCF-Linux.patch \
            file://porches.patch \
            file://0001-OMAP3-craneboard-print-expansionboard-name-detected-.patch \
            file://0002-OMAP3-craneboard-add-support-for-TinCanTools-Trainer.patch \
+           file://0001-ARM-6329-1-wire-up-sys_accept4-on-ARM.patch \
            file://defconfig"
 
 SRC_URI_append_beagleboard = " file://logo_linux_clut224.ppm \
+           file://beagleboard-xmc/0001-omap-Beagle-revision-detection.patch \
+           file://beagleboard-xmc/0002-omap-Beagle-only-Cx-boards-use-pin-23-for-write-prot.patch \
+           file://beagleboard-xmc/0003-omap-Beagle-no-gpio_wp-pin-connection-on-xM.patch \
+           file://beagleboard-xmc/0004-omap3-beaglexm-fix-EHCI-power-up-GPIO-dir.patch \
+           file://beagleboard-xmc/0005-omap3-beaglexm-fix-DVI-reset-GPIO.patch \
+           file://beagleboard-xmc/0006-omap3-beaglexm-fix-power-on-of-DVI.patch \
+           file://beagleboard-xmc/0007-beagleboard-hack-in-support-from-xM-rev-C.patch \
+           file://beagleboard-xmc/0008-omap3-beagle-cleaned-up-board-revision-conditions.patch \
+           file://cam/5m03/0002-board-omap3beagle-import-li5m03-driver-from-https-gi.patch \
 "
 
 SRC_URI_append_omap3-touchbook = " \

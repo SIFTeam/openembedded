@@ -1,7 +1,7 @@
 DESCRIPTION = "libGLES for the omap3"
 LICENSE = "proprietary-binary"
 
-PR = "r11"
+PR = "r15"
 
 COMPATIBLE_MACHINE = "(omap3|ti816x)"
 
@@ -85,7 +85,7 @@ do_compile() {
 		for demo in ${S}/GFX_Linux_SDK/OGLES2/SDKPackage/Demos/* ; do
 			cd $demo/OGLES2/Build/LinuxGeneric
 			oe_runmake Common=1 PLATFORM=$PLATFORM X11BUILD=$X11BUILD  
-			rm $demo/OGLES2/Build/LinuxOMAP3/Release*/*.o
+			rm -f $demo/OGLES2/Build/LinuxOMAP3/Release*/*.o
 			install -m 0755 $demo/OGLES2/Build/LinuxOMAP3/ReleaseX11/* ${S}/demos/x11 || true
 			sed -e s:NAME:$(basename $demo): \
 			    -e s:EXEC:${bindir}/SGX/demos/X11/$(basename $demo/OGLES2/Build/LinuxOMAP3/ReleaseX11/*): \
@@ -96,6 +96,8 @@ do_compile() {
 
 	mkdir -p ${S}/trainingcourses/raw
 	mkdir -p ${S}/trainingcourses/x11
+
+	find ${S} -name "*_org" -delete
 
 	# Build OGLES2 Trainingcourses for both Raw and X11
 	for X11BUILD in 0 1 ; do
@@ -109,7 +111,7 @@ do_compile() {
 			fi			
 
 			oe_runmake Common=1 PLATFORM=$PLATFORM X11BUILD=$X11BUILD  
-			rm $training/OGLES2/Build/LinuxOMAP3/Release*/*.o
+			rm -f $training/OGLES2/Build/LinuxOMAP3/Release*/*.o
 			install -m 0755 $training/OGLES2/Build/LinuxOMAP3/ReleaseX11/* ${S}/trainingcourses/x11 || true
 			install -m 0755 $training/OGLES2/Build/LinuxOMAP3/ReleaseRaw/* ${S}/trainingcourses/raw || true	
 		done
@@ -143,6 +145,7 @@ do_install () {
 	cp -pPr ${S}/GFX_Linux_SDK/OVG/SDKPackage/Builds/OVG/Include/v* ${D}${includedir}/ || true
 	cp -pPr ${S}/GFX_Linux_SDK/OVG/SDKPackage/Builds/OVG/Include/V* ${D}${includedir}/ || true
 	cp -pPr ${S}/include/*.h ${D}${includedir} || true
+	cp -pPr ${S}/include/wsegl/*.h ${D}${includedir} || true
 	
 	install -d ${D}${sysconfdir}/init.d/
 	cp -pP ${WORKDIR}/rc.pvr ${D}${sysconfdir}/init.d/pvr-init

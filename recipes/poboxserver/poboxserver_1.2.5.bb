@@ -2,13 +2,13 @@ DESCRIPTION = "OpenPOBox is an open source implementation of a 'Predictive Opera
 SECTION = "inputmethods"
 LICENSE = "GPL"
 DEPENDS = "perl-native ruby-native nkf-native"
-PR = "r7"
+PR = "r8"
 
 SRC_URI = "${SOURCEFORGE_MIRROR}/gakusei/pobox-${PV}.tar.bz2;name=archive \
            http://www.vanille.de/mirror/pbserver-${PV}.tar.gz;name=pbserver \
            file://OpenPOBox-1.25.diff \
            file://remove-local-includes.patch \
-           file://unicode.patch \
+           file://unicode.patch;patchdir=${WORKDIR}/pbserver \
            file://pbserver.sh"
 
 S = "${WORKDIR}/OpenPOBox"

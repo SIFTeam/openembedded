@@ -3,11 +3,11 @@ LICENSE = "tcl"
 SECTION = "devel/tcltk"
 HOMEPAGE = "http://tcl.sourceforge.net"
 DEPENDS = "tcl virtual/libx11 libxt"
-PR = "r0"
+PR = "r1"
 
 SRC_URI = "\
   ${SOURCEFORGE_MIRROR}/tcl/tk${PV}-src.tar.gz \
-  file://disable-xim.patch;striplevel=0 \
+  file://disable-xim.patch;patchdir=..;striplevel=0 \
   file://tk-add-soname.patch;striplevel=2 \
 #  file://fix-configure.patch;striplevel=2 \
 "
