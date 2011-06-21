@@ -8,8 +8,11 @@ SRC_URI[archive.sha256sum] = "adfbce68b9fbadb7a7aeda2227af6afe1928ef025af4158726
 inherit gconf
 
 DEPENDS += "hal pulseaudio speex libsoup-2.4 flac gst-plugins-base openssl popt esound libv4l"
+DEPENDS_openpli += "libsoup-2.4 flac gst-plugins-base"
 
 PACKAGES =+ "gst-plugin-gconfelements"
 FILES_gst-plugin-gconfelements += "${sysconfdir}/gconf"
 
-EXTRA_OECONF += " --with-libv4l2 "
+do_configure_prepend() {
+	    sed -i -e s:docs::g Makefile.am
+}
