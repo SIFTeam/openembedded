@@ -2,8 +2,8 @@ CAMNAME = "rqcamd"
 DESCRIPTION = "${CAMNAME} ${PV} softcam"
 
 PN = "enigma2-plugin-softcams-${CAMNAME}"
-PV = "1.09"
-PR = "r1"
+PV = "1.31"
+PR = "r0"
 
 SRC_URI = "http://downloads.pli-images.org/softcams/${CAMNAME}-${PV}-binaries.tar.gz"
 
