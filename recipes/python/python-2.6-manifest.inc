@@ -1,5 +1,6 @@
+
 # WARNING: This file is AUTO GENERATED: Manual edits will be lost next time I regenerate the file.
-# Generator: 'contrib/python/generate-manifest-2.6.py' Version 20110222 (C) 2002-2010 Michael 'Mickey' Lauer <mlauer@vanille-media.de>
+# Generator: 'contrib/python/generate-manifest-2.6.py' Version 20110622 (C) 2002-2010 Michael 'Mickey' Lauer <mlauer@vanille-media.de>
 # Visit the Python for Embedded Systems Site => http://www.Vanille.de/projects/python.spy
 
  
@@ -250,7 +251,7 @@ FILES_${PN}-unittest="${libdir}/python2.6/unittest.* "
 
 DESCRIPTION_${PN}-unixadmin="Python Unix Administration Support"
 RDEPENDS_${PN}-unixadmin="${PN}-core"
-FILES_${PN}-unixadmin="${libdir}/python2.6/lib-dynload/nis.so ${libdir}/python2.6/lib-dynload/grp.so ${libdir}/python2.6/lib-dynload/pwd.so ${libdir}/python2.6/getpass.* "
+FILES_${PN}-unixadmin="${libdir}/python2.6/lib-dynload/nis.so ${libdir}/python2.6/lib-dynload/grp.so ${libdir}/python2.6/lib-dynload/pwd.so ${libdir}/python2.6/lib-dynload/spwd.so ${libdir}/python2.6/getpass.* "
 
 DESCRIPTION_${PN}-xml="Python basic XML support."
 RDEPENDS_${PN}-xml="${PN}-core ${PN}-elementtree ${PN}-re"

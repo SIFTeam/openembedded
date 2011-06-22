@@ -12,7 +12,7 @@ import time
 VERSION = "2.6.6"
 
 __author__ = "Michael 'Mickey' Lauer <mlauer@vanille-media.de>"
-__version__ = "20110222"
+__version__ = "20110622"
 
 class MakefileMaker:
 
@@ -345,7 +345,7 @@ if __name__ == "__main__":
     "unittest.*" )
 
     m.addPackage( "${PN}-unixadmin", "Python Unix Administration Support", "${PN}-core",
-    "lib-dynload/nis.so lib-dynload/grp.so lib-dynload/pwd.so getpass.*" )
+    "lib-dynload/nis.so lib-dynload/grp.so lib-dynload/pwd.so lib-dynload/spwd.so getpass.*" )
 
     m.addPackage( "${PN}-xml", "Python basic XML support.", "${PN}-core ${PN}-elementtree ${PN}-re",
     "lib-dynload/pyexpat.so xml xmllib.*" ) # package
