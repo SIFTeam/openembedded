@@ -13,6 +13,8 @@ RDEPENDS_enigma2-plugin-upnp-ushare = "ushare"
 DESCRIPTION_enigma2-plugin-pli-bitrate = "Bitrate viewer"
 DESCRIPTION_enigma2-plugin-pli-newsreader = "RSS reader"
 
+DESCRIPTION_enigma2-plugin-pli-buienradar = "Buienradar actuele situatie"
+
 DESCRIPTION_enigma2-plugin-pli-nfsserver = "NFS server configuration"
 RDEPENDS_enigma2-plugin-pli-nfsserver = "nfs-utils"
 
