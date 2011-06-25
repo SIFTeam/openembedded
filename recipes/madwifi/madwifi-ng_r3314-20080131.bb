@@ -2,12 +2,12 @@
 
 require madwifi-ng_r.inc
 
-SRC_URI += " \
-	http://sources.dreamboxupdate.com/download/snapshots/openwrt_madwifi_patches_20080829.tar.bz2 \
-	http://sources.dreamboxupdate.com/download/snapshots/ath_hal-20080815.tgz \
-	file://40-fix-warnings.patch"
+# PR set after the include, to override what's set in the included file.
+PR = "${INC_PR}.2"
 
-MACHINE_KERNEL_PR_append = ".1"
+# versions of OpenWrt backfire (10.03)
+HAL_VERSION = "20090508"
+SRCREV = "20550"
 
 SRC_URI += " \
         svn://svn.openwrt.org/openwrt/trunk/package/madwifi;module=patches \
@@ -17,23 +17,19 @@ SRC_URI += " \
         "
 SRC_URI[md5sum] = "2c7352cbbdac995de8c3bce5b80db5f2"
 SRC_URI[sha256sum] = "0599c75b95ba63bdc554cb8124192e62c75fbeb71b9e8a5a7bc351c8e0666758"
+SRC_URI[hal.md5sum] = "4ab7ae8bdb96c0be388c98bf8f92d5ca"
+SRC_URI[hal.sha256sum] = "ced93d25aea7ee43807147a0269e69a072e718d59e7dab904bbe48b900409483"
 
-do_munge() {
-	rm -rf ${S}/hal || /bin/true
-	mv ${WORKDIR}/ath_hal-20080815 ${S}/hal
-	CUR=`pwd`
-	cd ${S}
-	for i in `ls ${WORKDIR}/openwrt_madwifi_patches | grep ".patch" | sort -n | xargs`; do
-		oenote "Applying openwrt madwifi patch '$i'";
-		patch -p1 < ${WORKDIR}/openwrt_madwifi_patches/$i;
-	done;
-	cd $CUR
-}
+addtask postpatch after do_patch before do_configure
 
-addtask munge before do_compile after do_patch
-
-# We really must clear out LDFLAGS to get this to link.
-do_compile() {
-	unset LDFLAGS
-	oe_runmake all
+do_postpatch() {
+        rm -rf hal
+        cp -a ${WORKDIR}/ath_hal-${HAL_VERSION} hal
+        rm -f ${WORKDIR}/patches/104-autocreate_none.patch
+        rm -f ${WORKDIR}/patches/446-single_module.patch
+        for i in ${WORKDIR}/patches/*.patch; do
+                oenote "Applying openwrt patch '$i'"
+                patch -p1 -i $i
+        done
+        patch -p1 -i ${WORKDIR}/remove-wprobe.patch
 }
