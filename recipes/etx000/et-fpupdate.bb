@@ -6,9 +6,9 @@ RCONFLICTS_${PN} = "et9000-fpupdate"
 RREPLACES_${PN} = "et9000-fpupdate"
 
 PV = "1.0"
-PR = "r2"
+PR = "r3"
 
-FPVERSION = "10"
+FPVERSION = "11"
 
 SRC_URI = " \
 	http://www.et-view.com/download/fpupdate-${PV}.zip \

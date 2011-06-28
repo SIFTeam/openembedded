@@ -3,7 +3,7 @@ SECTION = "base"
 PRIORITY = "required"
 LICENSE = "proprietary"
 
-SRCDATE = "20110516"
+SRCDATE = "20110627"
 
 KV = "2.6.18-7.4"
 PV = "2.6.18-7.4+${SRCDATE}"
