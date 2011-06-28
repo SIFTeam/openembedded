@@ -4,6 +4,7 @@ PRIORITY = "optional"
 LICENSE = "GPL"
 RDEPENDS_${PN} = "kernel-${KERNEL_VERSION}"
 DEPENDS = "virtual/kernel"
+INC_PR = "r7"
 
 WACKELF_SRC_URI = ""
 WACKELF_SRC_URI_ixp4xx = " file://20-xscale-VFP-wackelf.patch"
@@ -40,15 +41,19 @@ do_compile() {
 }
 
 do_install() {
-	install -d ${D}${sbindir}
-	unset LDFLAGS
-	oe_runmake DESTDIR=${D} BINDIR=${sbindir} install
+	oe_runmake DESTDIR=${D} BINDIR=${sbindir} install-tools
+	unset CFLAGS CPPFLAGS CXXFLAGS LDFLAGS
+	oe_runmake DESTDIR=${D} BINDIR=${sbindir} install-modules
+	install -d ${D}${includedir}/${PN}/include
+	install -m 644 include/compat.h ${D}${includedir}/${PN}/include
+	install -d ${D}${includedir}/${PN}/net80211
+	install -m 644 net80211/*.h ${D}${includedir}/${PN}/net80211
 	install -d ${D}/${sysconfdir}/modutils
 	echo ath_pci > ${D}/${sysconfdir}/modutils/madwifi
 }
 
 pkg_postinst_{PN}-modules() {
-if [ -n "$D" ]; then
+if test "x$D" != "x1" ]; then
 	exit 1
 else
 	depmod -a ${KERNEL_VERSION}
@@ -61,7 +66,7 @@ pkg_postrm_{PN}-modules() {
 }
 
 PACKAGES =+ "${PN}-modules ${PN}-tools"
-FILES_${PN}-modules = "/lib/modules /etc/modutils"
-FILES_${PN}-tools = "/usr/sbin"
+FILES_${PN}-modules = "/lib/modules/ /etc/modutils"
+FILES_${PN}-tools = "${sbindir}/*"
 FILES_${PN}-doc = "/usr/local/man"
 
