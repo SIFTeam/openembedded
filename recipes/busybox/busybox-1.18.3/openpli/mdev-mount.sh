@@ -14,6 +14,11 @@ case "$ACTION" in
 		# remove old mountpoint symlinks we might have for this device
 		rm -f $MOUNTPOINT
 		DEVBASE=`expr substr $MDEV 1 3`
+		# check for "please don't mount it" file
+		if [ -f "/dev/nomount.${DEVBASE}" ] ; then
+			# blocked
+			exit 0
+		fi
 		# check for full-disk partition
 		if [ "${DEVBASE}" == "${MDEV}" ] ; then
 			if [ -d /sys/block/${DEVBASE}/${DEVBASE}1 ] ; then

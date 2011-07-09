@@ -5,8 +5,14 @@ NOTIFYDEVNAME=$MDEV
 
 case "$ACTION" in
 	add|"")
+		ACTION="add"
 		# Set device parameters
 		DEVBASE=`expr substr $MDEV 1 3`
+		# check for "please don't mount it" file
+		if [ -f "/dev/nomount.${DEVBASE}" ] ; then
+			# blocked
+			exit 0
+		fi
 		# remove old mountpoint symlinks we might have for this device
 		rm -f $MOUNTPOINT
 		# first allow fstab to determine the mountpoint
@@ -14,6 +20,12 @@ case "$ACTION" in
 		if [ $? -ne 0 ] ; then
 			# check for full-disk partition
 			if [ "${DEVBASE}" == "${MDEV}" ] ; then
+				if [ -x /usr/bin/enable-dma-mode.sh ] ; then
+					# call the DMA mode parser for hd devices
+					if [ `expr substr $DEVBASE 1 2` == hd ] ; then
+						/usr/bin/enable-dma-mode.sh ${MDEV}
+					fi
+				fi
 				if [ -d /sys/block/${DEVBASE}/${DEVBASE}1 ] ; then
 					# Partition detected, bail out!
 					exit 0
