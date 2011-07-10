@@ -4,7 +4,7 @@ PRIORITY = "required"
 DEPENDS = "makedevs"
 RDEPENDS_${PN} = "makedevs"
 LICENSE = "GPL"
-PR = "r126"
+PR = "r127"
 
 SRC_URI = "file://functions \
            file://halt \
@@ -31,8 +31,7 @@ SRC_URI = "file://functions \
            file://device_table.txt \
            file://populate-volatile.sh \
            file://volatiles \
-           file://save-rtc.sh \
-           file://save-rtc-uclibc.sh"
+           "
 
 SRC_URI_append_arm = " file://alignment.sh"
 
@@ -73,7 +72,6 @@ do_install () {
 	install -m 0755    ${WORKDIR}/devpts		${D}${sysconfdir}/default
 	install -m 0755    ${WORKDIR}/sysfs.sh		${D}${sysconfdir}/init.d
 	install -m 0755    ${WORKDIR}/populate-volatile.sh ${D}${sysconfdir}/init.d
-	install -m 0755    ${WORKDIR}/save-rtc.sh	${D}${sysconfdir}/init.d
 	install -m 0644    ${WORKDIR}/volatiles		${D}${sysconfdir}/default/volatiles/00_core
 	if [ "${TARGET_ARCH}" = "arm" ]; then
 		install -m 0755 ${WORKDIR}/alignment.sh	${D}${sysconfdir}/init.d
@@ -105,8 +103,6 @@ do_install () {
 	ln -sf		../init.d/umountfs	${D}${sysconfdir}/rc0.d/S40umountfs
 	# udev will run at S55 if installed
 	ln -sf		../init.d/halt		${D}${sysconfdir}/rc0.d/S90halt
-	ln -sf		../init.d/save-rtc.sh	${D}${sysconfdir}/rc0.d/S25save-rtc.sh
-	ln -sf		../init.d/save-rtc.sh	${D}${sysconfdir}/rc6.d/S25save-rtc.sh
 	ln -sf		../init.d/banner	${D}${sysconfdir}/rcS.d/S02banner
 	ln -sf		../init.d/checkroot		${D}${sysconfdir}/rcS.d/S10checkroot
 #	ln -sf		../init.d/checkfs.sh	${D}${sysconfdir}/rcS.d/S30checkfs.sh
@@ -134,9 +130,4 @@ do_install_append_angstrom () {
 # HIPOX needs /sys in reboot for kexec check
 do_install_append_hipox () {
 	ln -sf		../init.d/sysfs.sh	${D}${sysconfdir}/rc6.d/S80sysfs
-}
-
-# uclibc's date does support only SUSv3 strptime()
-do_install_append_libc-uclibc() {
-	install -m 0755    ${WORKDIR}/save-rtc-uclibc.sh ${D}${sysconfdir}/init.d/save-rtc.sh
 }
