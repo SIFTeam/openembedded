@@ -9,7 +9,7 @@ PR = "r0"
 
 SRC_URI = "file://config/oscam.*"
 
-S = "${WORKDIR}/${CAMNAME}"
+S = "${WORKDIR}/${CSNAME}"
 
 INHIBIT_PACKAGE_STRIP = "1"
 
@@ -22,6 +22,6 @@ CONFFILES = "/etc/tuxbox/config/oscam.conf /etc/tuxbox/config/oscam.server /etc/
 
 do_install() {
 	install -d ${D}/etc/tuxbox/config
-        install -m 0644 ${WORKDIR}/config/* ${D}/etc/tuxbox/config/
+	install -m 0644 ${WORKDIR}/config/* ${D}/etc/tuxbox/config/
 }
 
