@@ -7,7 +7,8 @@ RCONFLICTS_${PN} = "oscam-bin"
 RPROVIDES_${PN} = "oscam"
 
 # SRC_URI = "svn://streamboard.gmc.to/svn/oscam;module=trunk;proto=http;rev=${SRCREV}"
-SRC_URI = "svn://oscam.ump2002.net/svn/oscam;module=trunk;proto=http;rev=${SRCREV}"
+# SRC_URI = "svn://oscam.ump2002.net/svn/oscam;module=trunk;proto=http;rev=${SRCREV}"
+SRC_URI = "svn://www.oscam.to/svn/oscam;module=trunk;proto=http;rev=${SRCREV}"
 
 S = "${WORKDIR}/trunk"
 
