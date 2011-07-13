@@ -12,7 +12,7 @@ SRC_URI = "http://mirrors.m0k.org/transmission/files/transmission-${PV}.tar.bz2;
 INITSCRIPT_NAME = "transmission"
 INITSCRIPT_PARAMS = "defaults 60 "
 
-inherit autotools update-rc.d
+inherit autotools update-rc.d gettext
 
 OE_EXTRACONF_openpli = "--disable-gtk --disable-nls"
 
