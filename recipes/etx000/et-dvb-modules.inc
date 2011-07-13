@@ -6,7 +6,7 @@ KV = "2.6.31-3.2"
 PV = "2.6.31-3.2+${SRCDATE}"
 MACHINE_KERNEL_PR_append = ".1"
 
-RDEPENDS = "kernel (${KV}) et-fpupdate"
+RDEPENDS_${PN} = "kernel (${KV}) et-fpupdate"
 
 SRC_URI = "http://www.et-view.com/download/drivers/${MACHINE}-drivers-2.6.31-${SRCDATE}.zip"
 
