@@ -4,7 +4,7 @@ LICENSE = "BSD"
 SECTION = "console/network"
 PRIORITY = "optional"
 DEPENDS = "libpcap"
-PR = "r1"
+PR = "r2"
 
 SRC_URI = " \
 	http://www.tcpdump.org/release/tcpdump-${PV}.tar.gz \
@@ -12,6 +12,7 @@ SRC_URI = " \
 	file://0001-minimal-IEEE802.15.4-allowed.patch \
 	file://ipv6-cross.patch \
 	file://configure.patch \
+	file://configure_multiple_siteconf_files.patch \
 "
 
 inherit autotools

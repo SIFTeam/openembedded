@@ -1,0 +1,11 @@
+--- a/configure	2011-07-14 23:26:23.000000000 +0200
++++ b/configure	2011-07-14 23:27:28.046136730 +0200
+@@ -1616,7 +1616,7 @@
+ 	"$ac_default_prefix/etc/config.site"
+ fi
+ shift
+-for ac_site_file
++for ac_site_file in $CONFIG_SITE
+ do
+   if test -r "$ac_site_file"; then
+     { echo "$as_me:$LINENO: loading site script $ac_site_file" >&5
