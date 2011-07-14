@@ -46,6 +46,9 @@ ac_cv_func_posix_getgrgid_r=${ac_cv_func_posix_getgrgid_r=yes}
 ac_cv_linux_vers=${ac_cv_linux_vers=2}
 ac_cv_func_getaddrinfo=${ac_cv_func_getaddrinfo=yes}
 
+# tcpdump
+td_cv_buggygetaddrinfo=${td_cv_buggygetaddrinfo=no}
+
 # slrn
 slrn_cv___va_copy=${slrn_cv___va_copy=yes}
 slrn_cv_va_copy=${slrn_cv_va_copy=yes}
