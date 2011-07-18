@@ -1835,7 +1835,7 @@ CONFIG_TRACING_SUPPORT=y
 # CONFIG_DYNAMIC_DEBUG is not set
 # CONFIG_SAMPLES is not set
 CONFIG_HAVE_ARCH_KGDB=y
-CONFIG_CMDLINE="bmem=130M lpj=203264 root=/dev/mtdblock3 rootfstype=jffs2 rw console=null"
+CONFIG_CMDLINE="bmem=130M lpj=203264 ubi.mtd=3 root=ubi0:rootfs rootfstype=ubifs rw console=null"
 
 #
 # Security options
