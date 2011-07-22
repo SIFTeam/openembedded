@@ -3,6 +3,13 @@
 MOUNTPOINT="/media/$MDEV"
 NOTIFYDEVNAME=$MDEV
 
+notify() {
+	# we don't really depend on the hotplug_e2_helper, but when it exists, call it
+	if [ -x /usr/bin/hotplug_e2_helper ]; then
+		/usr/bin/hotplug_e2_helper $ACTION /block/$MDEV $PHYSDEVPATH
+	fi
+}
+
 case "$ACTION" in
 	add|"")
 		ACTION="add"
@@ -22,7 +29,8 @@ case "$ACTION" in
 		# check for full-disk partition
 		if [ "${DEVBASE}" == "${MDEV}" ] ; then
 			if [ -d /sys/block/${DEVBASE}/${DEVBASE}1 ] ; then
-				# Partition detected, bail out!
+				# Partition detected, just tell and quit
+				notify
 				exit 0
 			fi
 			if [ ! -f /sys/block/${DEVBASE}/size ] ; then
@@ -121,7 +129,4 @@ case "$ACTION" in
 		;;
 esac
 
-# we don't really depend on the hotplug_e2_helper, but when it exists, call it
-if [ -x /usr/bin/hotplug_e2_helper ]; then
-	/usr/bin/hotplug_e2_helper $ACTION /block/$MDEV $PHYSDEVPATH
-fi
+notify
