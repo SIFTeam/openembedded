@@ -1,4 +1,4 @@
-SRCREV = "3937"
+SRCREV = "5625"
 
 require oscam-bin.inc
 
