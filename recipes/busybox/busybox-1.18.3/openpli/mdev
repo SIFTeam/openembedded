@@ -2,7 +2,7 @@
 
 mount -t tmpfs tmpfs /dev  -o size=64k,mode=0755
 
-mkdir /dev/pts /dev/shm
+mkdir /dev/pts
 
 mount -t devpts devpts /dev/pts
 
