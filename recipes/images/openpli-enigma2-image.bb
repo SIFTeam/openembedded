@@ -34,7 +34,6 @@ ENIGMA2_PLUGINS = " \
 				${@base_contains("MACHINE_FEATURES", "dvbapi5", "usbtunerhelper" , "", d)} \
 				${@base_contains("MACHINE_FEATURES", "3dtv", "enigma2-plugin-systemplugins-osd3dsetup" , "", d)} \
 				${@base_contains("MACHINE_FEATURES", "wifi", "enigma2-plugin-systemplugins-wirelesslan", "", d)} \
-				${@base_contains("MACHINE_FEATURES", "wifi", "${WIFI_DRIVERS}", "", d)} \
 				"
 
 DEPENDS += "enigma2 enigma2-plugins enigma2-pliplugins"
@@ -68,6 +67,7 @@ IMAGE_INSTALL += " \
 				tuxbox-common \
 				libavahi-client \
 				settings-autorestore \
+				${@base_contains("MACHINE_FEATURES", "wifi", "${WIFI_DRIVERS}", "", d)} \
 				"
 
 OPTIONAL_PACKAGES += " \
