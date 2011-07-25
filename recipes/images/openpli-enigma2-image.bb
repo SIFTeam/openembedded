@@ -1,5 +1,14 @@
 require openpli-image.bb
 
+WIFI_DRIVERS = " \
+				rtl871x \
+				rtl8192cu \
+				rt3070 \
+				${@base_contains("MACHINE_FEATURES", "wifiusblegacy", "rt73", "kernel-module-rt73usb kernel-module-rtl8187 kernel-module-rt2500usb kernel-module-zd1211rw", d)} \
+				rt73-firmware \
+				zd1211-firmware \
+				"
+
 ENIGMA2_PLUGINS = " \
 				enigma2-plugin-pli-ppanel \
 				enigma2-plugin-pli-softcamsetup \
@@ -25,9 +34,7 @@ ENIGMA2_PLUGINS = " \
 				${@base_contains("MACHINE_FEATURES", "dvbapi5", "usbtunerhelper" , "", d)} \
 				${@base_contains("MACHINE_FEATURES", "3dtv", "enigma2-plugin-systemplugins-osd3dsetup" , "", d)} \
 				${@base_contains("MACHINE_FEATURES", "wifi", "enigma2-plugin-systemplugins-wirelesslan", "", d)} \
-				${@base_contains("MACHINE_FEATURES", "wifi", "rtl871x rtl8192cu rt3070", "", d)} \
-				${@base_contains("MACHINE_FEATURES", "wifi", "rt73-firmware zd1211-firmware", "", d)} \
-				${@base_contains("MACHINE_FEATURES", "wifiusblegacy", "rt73", "kernel-module-rt73usb kernel-module-rtl8187 kernel-module-rt2500usb kernel-module-zd1211rw", d)} \
+				${@base_contains("MACHINE_FEATURES", "wifi", "${WIFI_DRIVERS}", "", d)} \
 				"
 
 DEPENDS += "enigma2 enigma2-plugins enigma2-pliplugins"
