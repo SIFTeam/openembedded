@@ -1,14 +1,16 @@
 DESCRIPTION = "Ralink 3572"
 SECTION = "kernel/modules"
 LICENSE = "GPLv2"
-PR = "r0"
+PR = "r1"
 
 inherit module
 
 SRC_URI = "http://sources.openembedded.org/2010_0709_RT3572_Linux_STA_v${PV}.tar.bz2 \
-           file://makefile.patch \
-           file://config.patch \
-	 "
+	file://makefile.patch \
+	file://config.patch \
+	file://rt3572-add-vendor.patch \
+	file://rt3572-ra-to-wlan.patch \
+	"
 
 EXTRA_OEMAKE = "LINUX_SRC=${STAGING_KERNEL_DIR}"
 

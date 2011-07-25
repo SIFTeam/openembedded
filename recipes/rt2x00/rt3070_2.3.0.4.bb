@@ -2,15 +2,16 @@ DESCRIPTION = "Ralink 3070"
 HOMEPAGE = "http://eng.ralinktech.com.tw/support.php?s=2"
 SECTION = "kernel/modules"
 LICENSE = "GPLv2"
-PR = "r1"
+PR = "r2"
 
 inherit module
 
 # Original URL needs a click-wrap license.
 SRC_URI = "http://www.penguin.cz/~utx/hardware/Ralink_3071/DPO_RT3070_LinuxSTA_V${PV}_20100604.tar.bz2 \
-	   file://makefile.patch \
-           file://add_belkin_F6D4050v2.patch \
-	 "
+	file://makefile.patch \
+	file://rt3070sta-2.3.0.4-ra-to-wlan.patch \
+	file://rt3070sta-2.3.0.4-add-vendor.patch \
+	"
 
 EXTRA_OEMAKE = "LINUX_SRC=${STAGING_KERNEL_DIR}"
 

@@ -1,0 +1,15 @@
+Index: DPO_RT3070_LinuxSTA_V2.3.0.4_20100604/common/rtusb_dev_id.c
+===================================================================
+--- 2010_0709_RT3572_Linux_STA_v2.4.0.1.orig/common/rtusb_dev_id.c	2011-07-25 15:00:00.000000000 +0200
++++ 2010_0709_RT3572_Linux_STA_v2.4.0.1/common/rtusb_dev_id.c	2010-10-02 10:40:23.000000000 +0200
+index 205d61f..c6ed772 100644
+@@ -100,7 +100,9 @@ USB_DEVICE_ID rtusb_dev_id[] = {
+	{USB_DEVICE(0x7392,0x7718)},
+	{USB_DEVICE(0x7392,0x7717)},
+	{USB_DEVICE(0x1737,0x0070)}, /* Linksys WUSB100 */
++	{USB_DEVICE(0x1737,0x0078)}, /* Linksys WUSB100 */
+	{USB_DEVICE(0x1737,0x0071)}, /* Linksys WUSB600N */
++	{USB_DEVICE(0x1737,0x0077)}, /* Linksys WUSB600N */
+	{USB_DEVICE(0x0411,0x00e8)}, /* Buffalo WLI-UC-G300N*/
+	{USB_DEVICE(0x050d,0x815c)}, /* Belkin F5D8053 */
+	{USB_DEVICE(0x100D,0x9031)}, /* Motorola 2770 */
