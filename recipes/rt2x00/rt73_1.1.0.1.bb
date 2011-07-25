@@ -6,7 +6,7 @@ LICENSE = "GPL"
 RREPLACES_${PN} = "rt73-k2wrlz"
 RCONFLICTS_${PN} = "rt73-k2wrlz"
 
-MACHINE_KERNEL_PR_append = ".1"
+MACHINE_KERNEL_PR_append = ".2"
 
 SRC_URI = "http://downloads.pli-images.org/misc/2008_0506_RT73_Linux_STA_Drv1.1.0.1.tar.bz2 \
            file://changeiface.patch"
@@ -32,13 +32,9 @@ do_compile () {
 do_install() {
 	install -d ${D}${base_libdir}/modules/${KERNEL_VERSION}/kernel/drivers/net/
 	install -m 0644 rt73${KERNEL_OBJECT_SUFFIX} ${D}${base_libdir}/modules/${KERNEL_VERSION}/kernel/drivers/net/
-	install -d ${D}${base_libdir}/firmware
-	install -m 0644 rt73.bin ${D}${base_libdir}/firmware
 	install -d ${D}/etc/modutils
 	echo rt73 > ${D}/etc/modutils/rt73
 }
-
-FILES_${PN} += "${base_libdir}/firmware/"
 
 SRC_URI[md5sum] = "3e08bf734b740e83391fda571c8e9ecd"
 SRC_URI[sha256sum] = "932b9c127992fd7985e4054d91120164e54f7132fa457b06fdcd30307e5b70f9"
