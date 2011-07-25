@@ -25,6 +25,7 @@ ENIGMA2_PLUGINS = " \
 				${@base_contains("MACHINE_FEATURES", "dvbapi5", "usbtunerhelper" , "", d)} \
 				${@base_contains("MACHINE_FEATURES", "3dtv", "enigma2-plugin-systemplugins-osd3dsetup" , "", d)} \
 				${@base_contains("MACHINE_FEATURES", "wifi", "enigma2-plugin-systemplugins-wirelesslan rtl871x", "", d)} \
+				${@base_contains("MACHINE_FEATURES", "wifi", "rt73-firmware", "", d)} \
 				${@base_contains("MACHINE_FEATURES", "wifiusblegacy", "rt73 rt3070", "", d)} \
 				"
 
