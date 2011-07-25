@@ -57,6 +57,7 @@ ENIGMA2_OPTIONAL = " \
 				picons-enigma2-meta \
 				softcams-enigma2-meta \
 				dvbsnoop \
+				mtd-utils \
 				"
 
 IMAGE_INSTALL += " \
