@@ -25,9 +25,9 @@ ENIGMA2_PLUGINS = " \
 				${@base_contains("MACHINE_FEATURES", "dvbapi5", "usbtunerhelper" , "", d)} \
 				${@base_contains("MACHINE_FEATURES", "3dtv", "enigma2-plugin-systemplugins-osd3dsetup" , "", d)} \
 				${@base_contains("MACHINE_FEATURES", "wifi", "enigma2-plugin-systemplugins-wirelesslan", "", d)} \
-				${@base_contains("MACHINE_FEATURES", "wifi", "rtl871x rtl8192cu", "", d)} \
+				${@base_contains("MACHINE_FEATURES", "wifi", "rtl871x rtl8192cu rt3070", "", d)} \
 				${@base_contains("MACHINE_FEATURES", "wifi", "rt73-firmware zd1211-firmware", "", d)} \
-				${@base_contains("MACHINE_FEATURES", "wifiusblegacy", "rt73 rt3070", "kernel-module-rt73usb kernel-module-rtl8187 kernel-module-rt2800usb kernel-module-rt2500usb kernel-module-zd1211rw", d)} \
+				${@base_contains("MACHINE_FEATURES", "wifiusblegacy", "rt73", "kernel-module-rt73usb kernel-module-rtl8187 kernel-module-rt2500usb kernel-module-zd1211rw", d)} \
 				"
 
 DEPENDS += "enigma2 enigma2-plugins enigma2-pliplugins"
