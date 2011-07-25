@@ -1,7 +1,7 @@
 DESCRIPTION = "Secure ftp daemon"
 SECTION = "console/network"
 LICENSE = "GPL"
-PR = "r5"
+PR = "r6"
 
 SRC_URI = "ftp://vsftpd.beasts.org/users/cevans/vsftpd-${PV}.tar.gz \
            file://makefile.patch \
@@ -38,6 +38,10 @@ do_install() {
         install -m 0755 ${WORKDIR}/vsftpd.conf ${D}${sysconfdir}/vsftpd.conf
         install -d ${D}${sysconfdir}/init.d/
         install -m 755 ${WORKDIR}/init ${D}${sysconfdir}/init.d/vsftpd
+}
+
+do_install_append_openpli() {
+	install -m 500 -d ${D}${localstatedir}/empty
 }
 
 pkg_postinst() {
