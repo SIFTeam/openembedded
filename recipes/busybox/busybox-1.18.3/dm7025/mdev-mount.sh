@@ -23,7 +23,7 @@ case "$ACTION" in
 				if [ -x /usr/bin/enable-dma-mode.sh ] ; then
 					# call the DMA mode parser for hd devices
 					if [ `expr substr $DEVBASE 1 2` == hd ] ; then
-						/usr/bin/enable-dma-mode.sh ${MDEV}
+						(sleep 10; /usr/bin/enable-dma-mode.sh ${MDEV})&
 					fi
 				fi
 				if [ -d /sys/block/${DEVBASE}/${DEVBASE}1 ] ; then
