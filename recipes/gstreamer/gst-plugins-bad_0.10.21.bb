@@ -58,6 +58,7 @@ gst-plugin-dccp.* \
 gst-plugin-debugutilsbad.* \
 gst-plugin-dfbvideosink.* \
 gst-plugin-dtmf.* \
+gst-plugin-dtsdec.* \
 gst-plugin-dvb.* \
 gst-plugin-dvbsuboverlay.* \
 gst-plugin-dvdspu.* \
