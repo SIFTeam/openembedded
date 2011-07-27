@@ -1,7 +1,7 @@
 DESCRIPTION = "Additional plugins for Enigma2"
 MAINTAINER = "Felix Domke <tmbinc@elitedvb.net>"
 
-PACKAGES_DYNAMIC = "enigma2-plugin-*"
+PACKAGES_DYNAMIC = "enigma2-plugin-(?!pli-).*"
 
 inherit gitpkgv
 

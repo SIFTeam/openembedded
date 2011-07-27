@@ -1,7 +1,7 @@
-# we cannot use PACKAGES_DYNAMIC = "enigma2-plugin-*"  here, because enigma2-plugins already has it,
-# so we only publish enigma2-plugin-pli-* here (as a result, only those can occur in any RDEPENDS)
+# we cannot use PACKAGES_DYNAMIC = "enigma2-plugin-.*"  here, because enigma2-plugins already has it,
+# so we only publish enigma2-plugin-pli-.* here (as a result, only those can occur in any RDEPENDS)
 
-PACKAGES_DYNAMIC = "enigma2-plugin-pli-*"
+PACKAGES_DYNAMIC = "enigma2-plugin-pli-.*"
 
 DEPENDS = "nfs-utils ushare twistedsnmp"
 
