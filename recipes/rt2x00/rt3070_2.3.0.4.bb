@@ -2,7 +2,8 @@ DESCRIPTION = "Ralink 3070"
 HOMEPAGE = "http://eng.ralinktech.com.tw/support.php?s=2"
 SECTION = "kernel/modules"
 LICENSE = "GPLv2"
-PR = "r2"
+
+MACHINE_KERNEL_PR_append = ".1"
 
 inherit module
 
@@ -31,10 +32,12 @@ do_install() {
 	install -m 0644 ${S}/RT2870STA.dat ${D}/etc/Wireless/RT2870STA
 	install -d ${D}/lib/firmware
 	install -m 0644 ${S}/common/*.bin ${D}/lib/firmware/
+	install -d ${D}/etc/modutils
+	echo rt3070sta > ${D}/etc/modutils/rt3070
 }
 
 PACKAGES =+ "${PN}-firmware"
-FILES_${PN}-firmware = "/etc /lib/firmware"
+FILES_${PN}-firmware = "/etc/Wireless /lib/firmware"
 
 RDEPENDS_${PN} = "${PN}-firmware"
 
