@@ -8,14 +8,19 @@ DEPENDS = "\
 	enigma2-plugin-softcams-mgcamd \
 	enigma2-plugin-softcams-evocamd \
 	enigma2-plugin-softcams-newcs \
-	enigma2-plugin-softcams-oscam \
-	enigma2-plugin-softcams-oscam-cs \
+	enigma2-plugin-softcams-oscam-stable \
+	enigma2-plugin-softcams-oscam-unstable \
+	enigma2-plugin-softcams-oscam-experimental \
+	enigma2-plugin-softcams-oscam-stable-cs \
+	enigma2-plugin-softcams-oscam-unstable-cs \
+	enigma2-plugin-softcams-oscam-experimental-cs \
 	enigma2-plugin-softcams-rqcamd \
 	enigma2-plugin-softcams-scam \
 	enigma2-plugin-softcams-customcam \
 	"
 # Some alternatives
-DEPENDS += "\
-	oscam-stable \
-	oscam-experimental \
-	"
+#DEPENDS += "\
+#	oscam-stable \
+#	oscam-unstable \
+#	oscam-experimental \
+#	"
