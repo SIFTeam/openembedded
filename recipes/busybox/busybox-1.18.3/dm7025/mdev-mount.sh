@@ -13,6 +13,20 @@ case "$ACTION" in
 			# blocked
 			exit 0
 		fi
+		# Call hdparm for hda/hdc
+		if [ `expr substr $DEVBASE 1 2` == hd ] ; then
+			if [ "${DEVBASE}" == "${MDEV}" ] ; then
+				if [ -x /usr/bin/enable-dma-mode.sh ] ; then
+					# call the DMA mode parser for hd devices
+					(sleep 10; /usr/bin/enable-dma-mode.sh ${MDEV})&
+				fi
+			fi
+		fi
+                # check if already mounted
+                if grep -q "^/dev/${MDEV} " /proc/mounts ; then
+                        # Already mounted
+                        exit 0
+                fi
 		# remove old mountpoint symlinks we might have for this device
 		rm -f $MOUNTPOINT
 		# first allow fstab to determine the mountpoint
@@ -20,12 +34,6 @@ case "$ACTION" in
 		if [ $? -ne 0 ] ; then
 			# check for full-disk partition
 			if [ "${DEVBASE}" == "${MDEV}" ] ; then
-				if [ -x /usr/bin/enable-dma-mode.sh ] ; then
-					# call the DMA mode parser for hd devices
-					if [ `expr substr $DEVBASE 1 2` == hd ] ; then
-						(sleep 10; /usr/bin/enable-dma-mode.sh ${MDEV})&
-					fi
-				fi
 				if [ -d /sys/block/${DEVBASE}/${DEVBASE}1 ] ; then
 					# Partition detected, bail out!
 					exit 0
