@@ -13,7 +13,7 @@ PR_font-valis-hd = "r1"
 PKGV_font-valis-hd = "${PV_font-valis-hd}"
 DESCRIPTION_font-valis-hd = "Valis hd fonts"
 
-PACKAGES = "skin-magic-hd-common ${EPSM}-hd ${EPSM}-ehd ${EPSM}-hd-lite ${EPSM}-ehd-lite font-valis-enigma font-valis-hd"
+PACKAGES = "skin-magic-hd-common ${EPSM}-hd ${EPSM}-ehd ${EPSM}-hd-lite ${EPSM}-ehd-lite font-valis-hd"
 PROVIDES = "${PN} font-valis-hd skin-magic-hd-common"
 
 SRC_URI = "git://git.assembla.com/openvix.7.git;protocol=git file://pli.png"
