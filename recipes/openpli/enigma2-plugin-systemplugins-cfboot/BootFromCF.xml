@@ -1,0 +1,20 @@
+<directory name="Boot from CF card">
+      <execute name="Copy internal flash to CF card"
+               target="/usr/bin/root_to_cf.sh"
+               confirmation = "true"
+               condition = "[ -d /media/cf ]"
+               helptext="Copies contents of flash and use CF card for booting next time"/>
+
+      <execute name="De-activate CF boot"
+               condition = "[ -f /boot/bin/initflash ]"
+               target="ln -f /boot/bin/initflash /boot/bin/init"
+               helptext="Boot from flash again, losing all changes, settings, etc."/>
+
+      <execute name="Activate CF boot"
+               target="ln -f /boot/bin/initcf /boot/bin/init"
+               condition = "[ -f /boot/bin/initcf ]"
+               helptext="Boot from CF again, without making a copy."/>
+
+      <comment name="Note that the initial flash -> CF copy takes a few minutes"/>
+
+</directory>
