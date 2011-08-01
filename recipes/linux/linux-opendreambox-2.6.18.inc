@@ -15,6 +15,7 @@ SRC_URI += " http://trappist.elis.ugent.be/~mronsse/cdfs/download/cdfs-2.6.18.ta
 	file://dvb-api-2.6.18-5.3.patch \
 	file://linux-2.6.18-dvb-core-headers-20100904.patch \
 	file://linux-2.6.18-dvb-frontends-headers-20100904.patch \
+	file://linux-2.6.18-Makefile.patch \
 	"
 
 do_configure_prepend() {
