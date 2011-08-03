@@ -17,8 +17,8 @@ do_compile() {
 	sed -i "s/\"r001\"/\"r${SRCPV}\"/g" __init__.py
 	# sanitize file modes
 	chmod a-x *.py */*.py
-	# Compile python files
-	python -O -m compileall ${S}
+	# Compile python files (and blatantly ignore errors)
+	python -O -m compileall ${S} || true
 	# Create weird file, required for the plugin to work
 	echo "oe16" > oe.txt
 }
