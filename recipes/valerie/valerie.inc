@@ -1,4 +1,5 @@
-SRCREV = "${AUTOREV}"
+# SRCREV = "${AUTOREV}"
+SRCREV = "886"
 PV = "1.0+svnr${SRCPV}"
 PR = "r0"
 
