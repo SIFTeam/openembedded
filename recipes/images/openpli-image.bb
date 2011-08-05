@@ -43,6 +43,7 @@ OPTIONAL_PACKAGES += " \
 			smartmontools \
 			hdparm \
 			rsync \
+			ntfs-3g \
 			"
 
 export IMAGE_BASENAME = "openpli"
