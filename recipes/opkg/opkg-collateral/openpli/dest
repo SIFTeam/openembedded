@@ -1,5 +1,1 @@
 dest root /
-dest cf /media/cf/
-dest hdd /media/hdd/
-dest usb /media/usb/
-dest mmc1 /media/mmc1/
