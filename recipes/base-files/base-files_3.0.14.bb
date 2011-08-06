@@ -1,7 +1,7 @@
 DESCRIPTION = "Miscellaneous files for the base system."
 SECTION = "base"
 PRIORITY = "required"
-PR = "r101"
+PR = "r101.1"
 LICENSE = "GPL"
 
 FSTAB = "fstab"
