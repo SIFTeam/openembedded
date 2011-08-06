@@ -16,6 +16,8 @@ EXTRA_OECONF = " \
 	HOST_SYS=${HOST_SYS} \
 	STAGING_INCDIR=${STAGING_INCDIR} \
 	STAGING_LIBDIR=${STAGING_LIBDIR} \
+	--without-debug \
+        ${@base_contains("MACHINE_FEATURES", "tpm", "--with-tpm" , "", d)} \
 "
 
 CONFFILES_${PN} += "${sysconfdir}/enigma2/movietags"
