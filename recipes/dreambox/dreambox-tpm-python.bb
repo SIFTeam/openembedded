@@ -3,7 +3,7 @@ DEPENDS = "python"
 PACKAGES = "${PN}"
 PACKAGE_ARCH = "all"
 LICENSE = "GPL"
-PV = "0.1"
+PV = "0.2"
 PR = "r0"
 
 SRC_URI = "file://*"

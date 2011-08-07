@@ -1,6 +1,6 @@
 # TPM check module based on the TPM check demo in the enigma2 repository
 from enigma import eTPM
-import sha
+import hashlib
 
 def bin2long(s):
 	return reduce( lambda x,y:(x<<8L)+y, map(ord, s))
@@ -18,7 +18,7 @@ def decrypt_block(src, mod):
 	if len(src) != 128 and len(src) != 202:
 		return None
 	dest = rsa_pub1024(src[:128], mod)
-	hash = sha.new(dest[1:107])
+	hash = hashlib.sha1(dest[1:107])
 	if len(src) == 202:
 		hash.update(src[131:192])	
 	result = hash.digest()
@@ -89,3 +89,4 @@ class PyTPM:
 			raise AttributeError
 
 tpm = PyTPM()
+check = tpm.check
