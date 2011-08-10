@@ -7,7 +7,7 @@ inherit gitpkgv
 
 PV = "experimental-git${SRCPV}"
 PKGV = "experimental-git${GITPKGV}"
-PR = "r4"
+PR = "r5"
 
 SRC_URI="git://openpli.git.sourceforge.net/gitroot/openpli/plugins-enigma2;protocol=git"
 
@@ -75,7 +75,9 @@ python populate_packages_prepend () {
 		getControlLines(mydir, d, package.split('-')[-1])
 }
 
-# remove unused .pyc files
 do_install_append() {
-        find ${D}/usr/lib/enigma2/python/ -name '*.pyc' -exec rm {} \;
+	# remove unused .pyc files
+	find ${D}/usr/lib/enigma2/python/ -name '*.pyc' -exec rm {} \;
+	# remove leftover webinterface garbage
+	${@base_contains('MACHINE_FEATURES', 'tpm','','rm -rf ${D}/usr/lib/enigma2/python/Plugins/Extensions/WebInterface',d)}
 }
