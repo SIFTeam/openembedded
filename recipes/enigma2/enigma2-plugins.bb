@@ -30,7 +30,9 @@ inherit autotools
 
 S = "${WORKDIR}/git"
 
-DEPENDS = "enigma2 python-pyopenssl python-gdata streamripper python-mutagen python-twisted python-daap dvdbackup"
+DEPENDS = "enigma2 python-pyopenssl python-gdata streamripper python-mutagen python-twisted python-daap dvdbackup \
+        ${@base_contains("MACHINE_FEATURES", "tpm", "" , "enigma2-plugin-extensions-webinterface-old", d)} \
+	"
 
 python populate_packages_prepend () {
 	enigma2_plugindir = bb.data.expand('${libdir}/enigma2/python/Plugins', d)
