@@ -52,7 +52,7 @@ python populate_packages_prepend () {
 		for line in src.split("\n"):
 			if line.startswith('Package: '):
 				full_package = line[9:]
-			if line.startswith('Depends: '):
+			elif line.startswith('Depends: '):
 				# some plugins still reference twisted-* dependencies, these packages are now called python-twisted-*
 				depends = line[9:].replace(',', '').split(' ')
 				rdepends = ''
@@ -62,13 +62,15 @@ python populate_packages_prepend () {
 					else:
 						rdepends += ' ' + depend
 				bb.data.setVar('RDEPENDS_' + full_package, rdepends, d)
-			if line.startswith('Description: '):
+			elif line.startswith('Recommends: '):
+				bb.data.setVar('RRECOMMENDS_' + full_package, line[12:], d)
+			elif line.startswith('Description: '):
 				bb.data.setVar('DESCRIPTION_' + full_package, line[13:], d)
-			if line.startswith('Replaces: '):
+			elif line.startswith('Replaces: '):
 				bb.data.setVar('RREPLACES_' + full_package, ' '.join(line[10:].split(', ')), d)
-			if line.startswith('Conflicts: '):
+			elif line.startswith('Conflicts: '):
 				bb.data.setVar('RCONFLICTS_' + full_package, ' '.join(line[11:].split(', ')), d)
-			if line.startswith('Maintainer: '):
+			elif line.startswith('Maintainer: '):
 				bb.data.setVar('MAINTAINER_' + full_package, line[12:], d)
 
 
