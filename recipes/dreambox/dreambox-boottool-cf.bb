@@ -4,7 +4,7 @@ PRIORITY = "optional"
 MAINTAINER = "Mike Looijmans <MiLo@pli-images.org>"
 
 PV = "1.0"
-PR = "r3"
+PR = "r4"
 DEPENDS = "klcc-cross"
 
 SRC_URI = "file://boottool-${MACHINE}.c file://root_to_cf.sh"
@@ -21,6 +21,14 @@ do_install_append() {
 
 do_compile_append() {
 	${STAGING_BINDIR_CROSS}/klcc ${S}/boottool-${MACHINE}.c -o ${S}/boottool
+}
+
+# Need a read/write /boot filesystem
+pkg_preinst() {
+	if grep -q ' /boot ' /proc/mounts
+	then
+		mount -o remount,rw /boot
+	fi
 }
 
 pkg_postinst() {
