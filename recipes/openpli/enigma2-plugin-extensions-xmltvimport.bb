@@ -16,7 +16,7 @@ S = "${WORKDIR}/git/src"
 
 inherit distutils
 
-DEPENDS = ""
+DEPENDS = "python"
 RDEPENDS = "python-compression python-shell"
 RRECOMMENDS = "${PN}-rytec"
 PACKAGES = "dbg-${PN} ${PN}"
