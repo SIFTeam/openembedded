@@ -114,3 +114,5 @@ cv_mono_sizeof_sunpath=108
 mono_cv_sizeof_sunpath=108
 mono_cv_uscore=${mono_cv_uscore=no}
 
+# force autoconf to detect largefile support
+ac_cv_sizeof_off_t=${ac_cv_sizeof_off_t=8}
