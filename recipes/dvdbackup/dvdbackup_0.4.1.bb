@@ -3,6 +3,7 @@ SECTION = "console/multimedia"
 PRIORITY = "optional"
 LICENSE = "GPLv3+"
 DEPENDS = "libdvdread"
+PR = "r1"
 
 SRC_URI = "${SOURCEFORGE_MIRROR}/${PN}/${P}.tar.bz2"
 SRC_URI[md5sum] = "e4b35ba716852361f35cecafff44f37c"
