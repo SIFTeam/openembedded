@@ -4,5 +4,5 @@ PR = "${INC_PR}.0"
 
 SRC_URI += "file://makefile_fix.patch"
 
-SRC_URI[libpng.md5sum] = "e3ac7879d62ad166a6f0c7441390d12b"
-SRC_URI[libpng.sha256sum] = "b9ab20f1c2c3bf6c4448fd9bd8a4a8905b918114d5fada56c97bb758a17b7215"
+SRC_URI[libpng.md5sum] = "e8b43dc78ef95b3949af7f961d76874b"
+SRC_URI[libpng.sha256sum] = "a5e796e1802b2e221498bda09ff9850bc7ec9068b6788948cc2c42af213914d8"
