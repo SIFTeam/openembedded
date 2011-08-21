@@ -5,20 +5,33 @@
 
 BACKUPDIR=/media/hdd
 INSTALLED=/etc/installed
+MACADDR=`cat /sys/class/net/eth0/address | cut -b 1,2,4,5,7,8,10,11,13,14`
 
-for candidate in /media/cf /media/usb /media/mmc1
-do
-   if [ -d ${candidate}/backup ]
-   then
-     if [ ! -f ${BACKUPDIR}/backup/.timestamp ]
-     then
-     	BACKUPDIR=${candidate}
-     elif [ ${candidate}/backup/.timestamp -nt ${BACKUPDIR}/backup/.timestamp ]
-     then
-     	BACKUPDIR=${candidate}
-     fi
-   fi    
-done
+if [ -f /tmp/backupdir ]
+then
+    BACKUPDIR=`cat /tmp/backupdir`
+else
+	for candidate in `cat /proc/mounts | cut -d ' ' -f 2 | grep '^/media'`
+	do
+	   if [ -d ${candidate}/backup ]
+	   then
+	     if [ ! -f ${BACKUPDIR}/backup/.timestamp ]
+	     then
+	     	BACKUPDIR=${candidate}
+	     elif [ ${candidate}/backup/.timestamp -nt ${BACKUPDIR}/backup/.timestamp ]
+	     then
+	     	BACKUPDIR=${candidate}
+	     fi
+	   fi    
+	done
+fi
+
+if [ -f ${BACKUPDIR}/backup/autoinstall${MACADDR} ]
+then
+	AUTOINSTALL=${BACKUPDIR}/backup/autoinstall${MACADDR}
+else
+	AUTOINSTALL=${BACKUPDIR}/backup/autoinstall
+fi
 
 if [ -x /usr/bin/opkg ]
 then
@@ -30,10 +43,10 @@ fi
 ${IPKG} list_installed | cut -d ' ' -f 1 > ${INSTALLED}
 chmod 444 ${INSTALLED}
 
-if [ -f ${BACKUPDIR}/backup/autoinstall ]
+if [ -f ${AUTOINSTALL} ]
 then
 	${IPKG} update  
-	for package in `cat ${BACKUPDIR}/backup/autoinstall`
+	for package in `cat ${AUTOINSTALL}`
 	do
 		packagefile=`echo ${package} | sed 's/,/ /g' | awk '{print $1}'`
 		packageoption=`echo ${package} | sed 's/,/ /g' | awk '{print $2" "$3" "$4}'`
