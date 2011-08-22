@@ -1,0 +1,90 @@
+diff --git a/drivers/ata/sata_svw.c b/drivers/ata/sata_svw.c
+index b65e251..e16d2e8 100644
+--- a/drivers/ata/sata_svw.c
++++ b/drivers/ata/sata_svw.c
+@@ -855,7 +855,7 @@ static void k2_sata_tf_load(struct ata_port *ap, const struct ata_taskfile *tf)
+ 		else
+ #endif
+ 		{
+-			writeb(tf->ctl, ioaddr->ctl_addr);
++			writeb(tf->ctl, (void *)ioaddr->ctl_addr);
+ 		}
+ 		ap->last_ctl = tf->ctl;
+ 		ata_wait_idle(ap);
+@@ -1164,10 +1164,11 @@ static int k2_sata_do_softreset(struct ata_link *link, unsigned int *class, int
+ 	void __iomem *port = (void __iomem *)ap->ioaddr.cmd_addr;
+ 	struct k2_port_priv *pp = ap->private_data;
+ 	struct ata_taskfile tf;
++	int retry_cnt = 0;
+ 
+ 	if (pp->do_port_srst)
+ 		goto out;
+-		
++
+ 	if (ata_link_offline(link)) {
+ 		*class = ATA_DEV_NONE;
+ 		goto out;
+@@ -1177,17 +1178,27 @@ static int k2_sata_do_softreset(struct ata_link *link, unsigned int *class, int
+ 
+ 	writeb(ATA_SRST, (void __iomem *) ap->ioaddr.ctl_addr);
+ 	msleep(1);
+-	writeb(0x0, (void __iomem *) ap->ioaddr.ctl_addr);	
++	writeb(0x0, (void __iomem *) ap->ioaddr.ctl_addr);
+ 	msleep(1);
+-		
+-	memset(&tf, 0, sizeof(tf));
+ 
++tf_read_retry:
++	memset(&tf, 0, sizeof(tf));
+ 	ap->ops->tf_read(ap, &tf);
++
+ 	*class = ata_dev_classify(&tf);
+ 
+-	if (*class == ATA_DEV_UNKNOWN)
++	if (*class == ATA_DEV_UNKNOWN) {
++		printk("tf_read status %02x, device %02x, feature %02x, nsect %02x, class %02x %02x %02x\n", tf.command, tf.device, tf.feature, tf.nsect, tf.lbal, tf.lbam, tf.lbah);
++		if (retry_cnt < 40) {
++			printk("dev_classify try %d failed.. retry\n", retry_cnt);
++			msleep(250);
++			++retry_cnt;
++			goto tf_read_retry;
++		}
+ 		*class = ATA_DEV_NONE;
+-
++	}
++	else if (retry_cnt)
++		printk("tf_read status %02x, device %02x, feature %02x, nsect %02x, class %02x %02x %02x\n", tf.command, tf.device, tf.feature, tf.nsect, tf.lbal, tf.lbam, tf.lbah);
+ out:
+ 	pp->do_port_srst = 1;
+ 	return 0;
+diff --git a/include/linux/libata.h b/include/linux/libata.h
+index ce12660..d909da0 100644
+--- a/include/linux/libata.h
++++ b/include/linux/libata.h
+@@ -1220,13 +1220,26 @@ static inline u8 ata_busy_wait(struct ata_port *ap, unsigned int bits,
+ 			       unsigned int max)
+ {
+ 	u8 status;
++	unsigned int org_max = max;
++	unsigned long state_d0_timeout = 5000000;
+ 
++d0_retry:
+ 	do {
+ 		udelay(10);
+ 		status = ata_chk_status(ap);
+ 		max--;
+ 	} while (status != 0xff && (status & bits) && (max > 0));
+ 
++	if (!max && status == 0xD0 && state_d0_timeout >= (10000 + org_max*10)) {
++		max = org_max;
++		state_d0_timeout -= 10000;
++		state_d0_timeout -= max * 10;
++		printk(KERN_WARNING "ATA: ata_busy_wait 0xD0 timeout spinup?!? %lu msecs left\n",
++			state_d0_timeout/1000);
++		mdelay(10);
++		goto d0_retry;
++	}
++
+ 	return status;
+ }
+ 

@@ -1,0 +1,1399 @@
+Index: drivers/media/dvb/frontends/dvb_dummy_fe.h
+===================================================================
+--- drivers/media/dvb/frontends/dvb_dummy_fe.h	(revision 1)
++++ drivers/media/dvb/frontends/dvb_dummy_fe.h	(working copy)
+@@ -25,8 +25,27 @@
+ #include <linux/dvb/frontend.h>
+ #include "dvb_frontend.h"
+ 
++#if defined(CONFIG_DVB_DUMMY_FE) || (defined(CONFIG_DVB_DUMMY_FE_MODULE) && \
++defined(MODULE))
+ extern struct dvb_frontend* dvb_dummy_fe_ofdm_attach(void);
+ extern struct dvb_frontend* dvb_dummy_fe_qpsk_attach(void);
+ extern struct dvb_frontend* dvb_dummy_fe_qam_attach(void);
++#else
++static inline struct dvb_frontend *dvb_dummy_fe_ofdm_attach(void)
++{
++	printk(KERN_WARNING "%s: driver disabled by Kconfig\n", __func__);
++	return NULL;
++}
++static inline struct dvb_frontend *dvb_dummy_fe_qpsk_attach(void)
++{
++	printk(KERN_WARNING "%s: driver disabled by Kconfig\n", __func__);
++	return NULL;
++}
++static inline struct dvb_frontend *dvb_dummy_fe_qam_attach(void)
++{
++	printk(KERN_WARNING "%s: driver disabled by Kconfig\n", __func__);
++	return NULL;
++}
++#endif /* CONFIG_DVB_DUMMY_FE */
+ 
+ #endif // DVB_DUMMY_FE_H
+Index: drivers/media/dvb/frontends/dib3000.h
+===================================================================
+--- drivers/media/dvb/frontends/dib3000.h	(revision 1)
++++ drivers/media/dvb/frontends/dib3000.h	(working copy)
+@@ -41,9 +41,16 @@
+ 	int (*tuner_pass_ctrl)(struct dvb_frontend *fe, int onoff, u8 pll_ctrl);
+ };
+ 
++#if defined(CONFIG_DVB_DIB3000MB) || (defined(CONFIG_DVB_DIB3000MB_MODULE) && defined(MODULE))
+ extern struct dvb_frontend* dib3000mb_attach(const struct dib3000_config* config,
+ 					     struct i2c_adapter* i2c, struct dib_fe_xfer_ops *xfer_ops);
++#else
++static inline struct dvb_frontend* dib3000mb_attach(const struct dib3000_config* config,
++					     struct i2c_adapter* i2c, struct dib_fe_xfer_ops *xfer_ops)
++{
++	printk(KERN_WARNING "%s: driver disabled by Kconfig\n", __func__);
++	return NULL;
++}
++#endif // CONFIG_DVB_DIB3000MB
+ 
+-extern struct dvb_frontend* dib3000mc_attach(const struct dib3000_config* config,
+-					     struct i2c_adapter* i2c, struct dib_fe_xfer_ops *xfer_ops);
+ #endif // DIB3000_H
+Index: drivers/media/dvb/frontends/bsru6.h
+===================================================================
+--- drivers/media/dvb/frontends/bsru6.h	(revision 1)
++++ drivers/media/dvb/frontends/bsru6.h	(working copy)
+@@ -133,7 +133,7 @@
+ 	.mclk = 88000000UL,
+ 	.invert = 1,
+ 	.skip_reinit = 0,
+-	.lock_output = STV0229_LOCKOUTPUT_1,
++	.lock_output = STV0299_LOCKOUTPUT_1,
+ 	.volt13_op0_op1 = STV0299_VOLT13_OP1,
+ 	.min_delay_ms = 100,
+ 	.set_symbol_rate = alps_bsru6_set_symbol_rate,
+Index: drivers/media/dvb/frontends/cx24110.h
+===================================================================
+--- drivers/media/dvb/frontends/cx24110.h	(revision 1)
++++ drivers/media/dvb/frontends/cx24110.h	(working copy)
+@@ -33,9 +33,29 @@
+ 	u8 demod_address;
+ };
+ 
++static inline int cx24110_pll_write(struct dvb_frontend *fe, u32 val)
++{
++	u8 buf[] = {
++		(u8)((val >> 24) & 0xff),
++		(u8)((val >> 16) & 0xff),
++		(u8)((val >> 8) & 0xff)
++	};
++
++	if (fe->ops.write)
++		return fe->ops.write(fe, buf, 3);
++	return 0;
++}
++
++#if defined(CONFIG_DVB_CX24110) || (defined(CONFIG_DVB_CX24110_MODULE) && defined(MODULE))
+ extern struct dvb_frontend* cx24110_attach(const struct cx24110_config* config,
+ 					   struct i2c_adapter* i2c);
++#else
++static inline struct dvb_frontend* cx24110_attach(const struct cx24110_config* config,
++						  struct i2c_adapter* i2c)
++{
++	printk(KERN_WARNING "%s: driver disabled by Kconfig\n", __func__);
++	return NULL;
++}
++#endif // CONFIG_DVB_CX24110
+ 
+-extern int cx24110_pll_write(struct dvb_frontend* fe, u32 data);
+-
+ #endif // CX24110_H
+Index: drivers/media/dvb/frontends/l64781.h
+===================================================================
+--- drivers/media/dvb/frontends/l64781.h	(revision 1)
++++ drivers/media/dvb/frontends/l64781.h	(working copy)
+@@ -31,8 +31,16 @@
+ 	u8 demod_address;
+ };
+ 
+-
++#if defined(CONFIG_DVB_L64781) || (defined(CONFIG_DVB_L64781_MODULE) && defined(MODULE))
+ extern struct dvb_frontend* l64781_attach(const struct l64781_config* config,
+ 					  struct i2c_adapter* i2c);
++#else
++static inline struct dvb_frontend* l64781_attach(const struct l64781_config* config,
++					  struct i2c_adapter* i2c)
++{
++	printk(KERN_WARNING "%s: driver disabled by Kconfig\n", __func__);
++	return NULL;
++}
++#endif // CONFIG_DVB_L64781
+ 
+ #endif // L64781_H
+Index: drivers/media/dvb/frontends/mt312_priv.h
+===================================================================
+--- drivers/media/dvb/frontends/mt312_priv.h	(revision 1)
++++ drivers/media/dvb/frontends/mt312_priv.h	(working copy)
+@@ -110,6 +110,8 @@
+ 	VIT_ERRPER_H = 83,
+ 	VIT_ERRPER_M = 84,
+ 	VIT_ERRPER_L = 85,
++	HW_CTRL = 84,	/* ZL10313 only */
++	MPEG_CTRL = 85,	/* ZL10313 only */
+ 	VIT_SETUP = 86,
+ 	VIT_REF0 = 87,
+ 	VIT_REF1 = 88,
+@@ -156,7 +158,8 @@
+ 
+ enum mt312_model_id {
+ 	ID_VP310 = 1,
+-	ID_MT312 = 3
++	ID_MT312 = 3,
++	ID_ZL10313 = 5,
+ };
+ 
+ #endif				/* DVB_FRONTENDS_MT312_PRIV */
+Index: drivers/media/dvb/frontends/dib3000mb_priv.h
+===================================================================
+--- drivers/media/dvb/frontends/dib3000mb_priv.h	(revision 1)
++++ drivers/media/dvb/frontends/dib3000mb_priv.h	(working copy)
+@@ -13,6 +13,99 @@
+ #ifndef __DIB3000MB_PRIV_H_INCLUDED__
+ #define __DIB3000MB_PRIV_H_INCLUDED__
+ 
++/* info and err, taken from usb.h, if there is anything available like by default. */
++#define err(format, arg...)  printk(KERN_ERR     "dib3000: " format "\n" , ## arg)
++#define info(format, arg...) printk(KERN_INFO    "dib3000: " format "\n" , ## arg)
++#define warn(format, arg...) printk(KERN_WARNING "dib3000: " format "\n" , ## arg)
++
++/* handy shortcuts */
++#define rd(reg) dib3000_read_reg(state,reg)
++
++#define wr(reg,val) if (dib3000_write_reg(state,reg,val)) \
++	{ err("while sending 0x%04x to 0x%04x.",val,reg); return -EREMOTEIO; }
++
++#define wr_foreach(a,v) { int i; \
++	if (sizeof(a) != sizeof(v)) \
++		err("sizeof: %zu %zu is different",sizeof(a),sizeof(v));\
++	for (i=0; i < sizeof(a)/sizeof(u16); i++) \
++		wr(a[i],v[i]); \
++	}
++
++#define set_or(reg,val) wr(reg,rd(reg) | val)
++
++#define set_and(reg,val) wr(reg,rd(reg) & val)
++
++/* debug */
++
++#ifdef CONFIG_DVB_DIBCOM_DEBUG
++#define dprintk(level,args...) \
++    do { if ((debug & level)) { printk(args); } } while (0)
++#else
++#define dprintk(args...) do { } while (0)
++#endif
++
++/* mask for enabling a specific pid for the pid_filter */
++#define DIB3000_ACTIVATE_PID_FILTERING	(0x2000)
++
++/* common values for tuning */
++#define DIB3000_ALPHA_0					(     0)
++#define DIB3000_ALPHA_1					(     1)
++#define DIB3000_ALPHA_2					(     2)
++#define DIB3000_ALPHA_4					(     4)
++
++#define DIB3000_CONSTELLATION_QPSK		(     0)
++#define DIB3000_CONSTELLATION_16QAM		(     1)
++#define DIB3000_CONSTELLATION_64QAM		(     2)
++
++#define DIB3000_GUARD_TIME_1_32			(     0)
++#define DIB3000_GUARD_TIME_1_16			(     1)
++#define DIB3000_GUARD_TIME_1_8			(     2)
++#define DIB3000_GUARD_TIME_1_4			(     3)
++
++#define DIB3000_TRANSMISSION_MODE_2K	(     0)
++#define DIB3000_TRANSMISSION_MODE_8K	(     1)
++
++#define DIB3000_SELECT_LP				(     0)
++#define DIB3000_SELECT_HP				(     1)
++
++#define DIB3000_FEC_1_2					(     1)
++#define DIB3000_FEC_2_3					(     2)
++#define DIB3000_FEC_3_4					(     3)
++#define DIB3000_FEC_5_6					(     5)
++#define DIB3000_FEC_7_8					(     7)
++
++#define DIB3000_HRCH_OFF				(     0)
++#define DIB3000_HRCH_ON					(     1)
++
++#define DIB3000_DDS_INVERSION_OFF		(     0)
++#define DIB3000_DDS_INVERSION_ON		(     1)
++
++#define DIB3000_TUNER_WRITE_ENABLE(a)	(0xffff & (a << 8))
++#define DIB3000_TUNER_WRITE_DISABLE(a)	(0xffff & ((a << 8) | (1 << 7)))
++
++#define DIB3000_REG_MANUFACTOR_ID		(  1025)
++#define DIB3000_I2C_ID_DIBCOM			(0x01b3)
++
++#define DIB3000_REG_DEVICE_ID			(  1026)
++#define DIB3000MB_DEVICE_ID				(0x3000)
++#define DIB3000MC_DEVICE_ID				(0x3001)
++#define DIB3000P_DEVICE_ID				(0x3002)
++
++/* frontend state */
++struct dib3000_state {
++	struct i2c_adapter* i2c;
++
++/* configuration settings */
++	struct dib3000_config config;
++
++	struct dvb_frontend frontend;
++	int timing_offset;
++	int timing_offset_comp_done;
++
++	fe_bandwidth_t last_tuned_bw;
++	u32 last_tuned_freq;
++};
++
+ /* register addresses and some of their default values */
+ 
+ /* restart subsystems */
+Index: drivers/media/dvb/frontends/sp887x.h
+===================================================================
+--- drivers/media/dvb/frontends/sp887x.h	(revision 1)
++++ drivers/media/dvb/frontends/sp887x.h	(working copy)
+@@ -17,7 +17,16 @@
+ 	int (*request_firmware)(struct dvb_frontend* fe, const struct firmware **fw, char* name);
+ };
+ 
++#if defined(CONFIG_DVB_SP887X) || (defined(CONFIG_DVB_SP887X_MODULE) && defined(MODULE))
+ extern struct dvb_frontend* sp887x_attach(const struct sp887x_config* config,
+ 					  struct i2c_adapter* i2c);
++#else
++static inline struct dvb_frontend* sp887x_attach(const struct sp887x_config* config,
++					  struct i2c_adapter* i2c)
++{
++	printk(KERN_WARNING "%s: driver disabled by Kconfig\n", __func__);
++	return NULL;
++}
++#endif // CONFIG_DVB_SP887X
+ 
+ #endif // SP887X_H
+Index: drivers/media/dvb/frontends/zl10353.h
+===================================================================
+--- drivers/media/dvb/frontends/zl10353.h	(revision 1)
++++ drivers/media/dvb/frontends/zl10353.h	(working copy)
+@@ -1,7 +1,7 @@
+ /*
+  *  Driver for Zarlink DVB-T ZL10353 demodulator
+  *
+- *  Copyright (C) 2006 Christopher Pascoe <c.pascoe@itee.uq.edu.au>
++ *  Copyright (C) 2006, 2007 Christopher Pascoe <c.pascoe@itee.uq.edu.au>
+  *
+  *  This program is free software; you can redistribute it and/or modify
+  *  it under the terms of the GNU General Public License as published by
+@@ -29,13 +29,34 @@
+ 	/* demodulator's I2C address */
+ 	u8 demod_address;
+ 
++	/* frequencies in units of 0.1kHz */
++	int adc_clock;	/* default: 450560 (45.056  MHz) */
++	int if2;	/* default: 361667 (36.1667 MHz) */
++
+ 	/* set if no pll is connected to the secondary i2c bus */
+ 	int no_tuner;
++
++	/* set if parallel ts output is required */
++	int parallel_ts;
++
++	/* set if i2c_gate_ctrl disable is required */
++	u8 disable_i2c_gate_ctrl:1;
++
++	/* clock control registers (0x51-0x54) */
++	u8 clock_ctl_1;  /* default: 0x46 */
++	u8 pll_0;        /* default: 0x15 */
+ };
+ 
++#if defined(CONFIG_DVB_ZL10353) || (defined(CONFIG_DVB_ZL10353_MODULE) && defined(MODULE))
+ extern struct dvb_frontend* zl10353_attach(const struct zl10353_config *config,
+ 					   struct i2c_adapter *i2c);
++#else
++static inline struct dvb_frontend* zl10353_attach(const struct zl10353_config *config,
++					   struct i2c_adapter *i2c)
++{
++	printk(KERN_WARNING "%s: driver disabled by Kconfig\n", __func__);
++	return NULL;
++}
++#endif /* CONFIG_DVB_ZL10353 */
+ 
+-extern int zl10353_write(struct dvb_frontend *fe, u8 *ibuf, int ilen);
+-
+ #endif /* ZL10353_H */
+Index: drivers/media/dvb/frontends/zl10353_priv.h
+===================================================================
+--- drivers/media/dvb/frontends/zl10353_priv.h	(revision 1)
++++ drivers/media/dvb/frontends/zl10353_priv.h	(working copy)
+@@ -1,7 +1,7 @@
+ /*
+  *  Driver for Zarlink DVB-T ZL10353 demodulator
+  *
+- *  Copyright (C) 2006 Christopher Pascoe <c.pascoe@itee.uq.edu.au>
++ *  Copyright (C) 2006, 2007 Christopher Pascoe <c.pascoe@itee.uq.edu.au>
+  *
+  *  This program is free software; you can redistribute it and/or modify
+  *  it under the terms of the GNU General Public License as published by
+@@ -16,27 +16,64 @@
+  *
+  *  You should have received a copy of the GNU General Public License
+  *  along with this program; if not, write to the Free Software
+- *  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.=
++ *  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+  */
+ 
+ #ifndef _ZL10353_PRIV_
+ #define _ZL10353_PRIV_
+ 
+-#define ID_ZL10353	0x14
++#define ID_ZL10353	0x14 /* Zarlink ZL10353 */
++#define ID_CE6230	0x18 /* Intel CE6230 */
++#define ID_CE6231	0x19 /* Intel CE6231 */
+ 
++#define msb(x) (((x) >> 8) & 0xff)
++#define lsb(x) ((x) & 0xff)
++
+ enum zl10353_reg_addr {
+-	INTERRUPT_0	= 0x00,
+-	INTERRUPT_1	= 0x01,
+-	INTERRUPT_2	= 0x02,
+-	INTERRUPT_3	= 0x03,
+-	INTERRUPT_4	= 0x04,
+-	INTERRUPT_5	= 0x05,
+-	STATUS_6	= 0x06,
+-	STATUS_7	= 0x07,
+-	STATUS_8	= 0x08,
+-	STATUS_9	= 0x09,
+-	SNR		= 0x10,
+-	CHIP_ID		= 0x7F,
++	INTERRUPT_0        = 0x00,
++	INTERRUPT_1        = 0x01,
++	INTERRUPT_2        = 0x02,
++	INTERRUPT_3        = 0x03,
++	INTERRUPT_4        = 0x04,
++	INTERRUPT_5        = 0x05,
++	STATUS_6           = 0x06,
++	STATUS_7           = 0x07,
++	STATUS_8           = 0x08,
++	STATUS_9           = 0x09,
++	AGC_GAIN_1         = 0x0A,
++	AGC_GAIN_0         = 0x0B,
++	SNR                = 0x10,
++	RS_ERR_CNT_2       = 0x11,
++	RS_ERR_CNT_1       = 0x12,
++	RS_ERR_CNT_0       = 0x13,
++	RS_UBC_1           = 0x14,
++	RS_UBC_0           = 0x15,
++	TPS_RECEIVED_1     = 0x1D,
++	TPS_RECEIVED_0     = 0x1E,
++	TPS_CURRENT_1      = 0x1F,
++	TPS_CURRENT_0      = 0x20,
++	CLOCK_CTL_0        = 0x51,
++	CLOCK_CTL_1        = 0x52,
++	PLL_0              = 0x53,
++	PLL_1              = 0x54,
++	RESET              = 0x55,
++	AGC_TARGET         = 0x56,
++	MCLK_RATIO         = 0x5C,
++	ACQ_CTL            = 0x5E,
++	TRL_NOMINAL_RATE_1 = 0x65,
++	TRL_NOMINAL_RATE_0 = 0x66,
++	INPUT_FREQ_1       = 0x6C,
++	INPUT_FREQ_0       = 0x6D,
++	TPS_GIVEN_1        = 0x6E,
++	TPS_GIVEN_0        = 0x6F,
++	TUNER_GO           = 0x70,
++	FSM_GO             = 0x71,
++	CHIP_ID            = 0x7F,
++	CHAN_STEP_1        = 0xE4,
++	CHAN_STEP_0        = 0xE5,
++	OFDM_LOCK_TIME     = 0xE7,
++	FEC_LOCK_TIME      = 0xE8,
++	ACQ_DELAY          = 0xE9,
+ };
+ 
+ #endif                          /* _ZL10353_PRIV_ */
+Index: drivers/media/dvb/frontends/ves1x93.h
+===================================================================
+--- drivers/media/dvb/frontends/ves1x93.h	(revision 1)
++++ drivers/media/dvb/frontends/ves1x93.h	(working copy)
+@@ -40,7 +40,16 @@
+ 	u8 invert_pwm:1;
+ };
+ 
++#if defined(CONFIG_DVB_VES1X93) || (defined(CONFIG_DVB_VES1X93_MODULE) && defined(MODULE))
+ extern struct dvb_frontend* ves1x93_attach(const struct ves1x93_config* config,
+ 					   struct i2c_adapter* i2c);
++#else
++static inline struct dvb_frontend* ves1x93_attach(const struct ves1x93_config* config,
++					   struct i2c_adapter* i2c)
++{
++	printk(KERN_WARNING "%s: driver disabled by Kconfig\n", __func__);
++	return NULL;
++}
++#endif // CONFIG_DVB_VES1X93
+ 
+ #endif // VES1X93_H
+Index: drivers/media/dvb/frontends/bsbe1.h
+===================================================================
+--- drivers/media/dvb/frontends/bsbe1.h	(revision 1)
++++ drivers/media/dvb/frontends/bsbe1.h	(working copy)
+@@ -1,5 +1,5 @@
+ /*
+- * bsbe1.h - ALPS BSBE1 tuner support (moved from av7110.c)
++ * bsbe1.h - ALPS BSBE1 tuner support
+  *
+  * This program is free software; you can redistribute it and/or
+  * modify it under the terms of the GNU General Public License
+@@ -26,44 +26,24 @@
+ #define BSBE1_H
+ 
+ static u8 alps_bsbe1_inittab[] = {
+-	0x01, 0x15,
+-	0x02, 0x30,
+-	0x03, 0x00,
++	0x01, 0x15,   /* XTAL = 4MHz, VCO = 352 MHz */
++	0x02, 0x30,   /* MCLK = 88 MHz */
++	0x03, 0x00,   /* ACR output 0 */
+ 	0x04, 0x7d,   /* F22FR = 0x7d, F22 = f_VCO / 128 / 0x7d = 22 kHz */
+-	0x05, 0x35,   /* I2CT = 0, SCLT = 1, SDAT = 1 */
+-	0x06, 0x40,   /* DAC not used, set to high impendance mode */
+-	0x07, 0x00,   /* DAC LSB */
++	0x05, 0x05,   /* I2CT = 0, SCLT = 1, SDAT = 1 */
++	0x06, 0x00,   /* DAC output 0 */
+ 	0x08, 0x40,   /* DiSEqC off, LNB power on OP2/LOCK pin on */
+ 	0x09, 0x00,   /* FIFO */
+-	0x0c, 0x51,   /* OP1 ctl = Normal, OP1 val = 1 (LNB Power ON) */
+-	0x0d, 0x82,   /* DC offset compensation = ON, beta_agc1 = 2 */
+-	0x0e, 0x23,   /* alpha_tmg = 2, beta_tmg = 3 */
+-	0x10, 0x3f,   // AGC2  0x3d
+-	0x11, 0x84,
+-	0x12, 0xb9,
+-	0x15, 0xc9,   // lock detector threshold
+-	0x16, 0x00,
+-	0x17, 0x00,
+-	0x18, 0x00,
+-	0x19, 0x00,
+-	0x1a, 0x00,
+-	0x1f, 0x50,
+-	0x20, 0x00,
+-	0x21, 0x00,
+-	0x22, 0x00,
+-	0x23, 0x00,
+-	0x28, 0x00,  // out imp: normal  out type: parallel FEC mode:0
+-	0x29, 0x1e,  // 1/2 threshold
+-	0x2a, 0x14,  // 2/3 threshold
+-	0x2b, 0x0f,  // 3/4 threshold
+-	0x2c, 0x09,  // 5/6 threshold
+-	0x2d, 0x05,  // 7/8 threshold
+-	0x2e, 0x01,
+-	0x31, 0x1f,  // test all FECs
+-	0x32, 0x19,  // viterbi and synchro search
+-	0x33, 0xfc,  // rs control
+-	0x34, 0x93,  // error control
+-	0x0f, 0x92,
++	0x0c, 0x51,   /* OP1/OP0 normal, val = 1 (LNB power on) */
++	0x0d, 0x82,   /* DC offset compensation = on, beta_agc1 = 2 */
++	0x0f, 0x92,   /* AGC1R */
++	0x10, 0x34,   /* AGC2O */
++	0x11, 0x84,   /* TLSR */
++	0x12, 0xb9,   /* CFD */
++	0x15, 0xc9,   /* lock detector threshold */
++	0x28, 0x00,   /* out imp: normal, type: parallel, FEC mode: QPSK */
++	0x33, 0xfc,   /* RS control */
++	0x34, 0x93,   /* count viterbi bit errors per 2E18 bytes */
+ 	0xff, 0xff
+ };
+ 
+@@ -100,11 +80,11 @@
+ 	if ((params->frequency < 950000) || (params->frequency > 2150000))
+ 		return -EINVAL;
+ 
+-	div = (params->frequency + (125 - 1)) / 125; // round correctly
++	div = params->frequency / 1000;
+ 	data[0] = (div >> 8) & 0x7f;
+ 	data[1] = div & 0xff;
+-	data[2] = 0x80 | ((div & 0x18000) >> 10) | 4;
+-	data[3] = (params->frequency > 1530000) ? 0xE0 : 0xE4;
++	data[2] = 0x80 | ((div & 0x18000) >> 10) | 0x1;
++	data[3] = 0xe0;
+ 
+ 	if (fe->ops.i2c_gate_ctrl)
+ 		fe->ops.i2c_gate_ctrl(fe, 1);
+Index: drivers/media/dvb/frontends/stv0297.h
+===================================================================
+--- drivers/media/dvb/frontends/stv0297.h	(revision 1)
++++ drivers/media/dvb/frontends/stv0297.h	(working copy)
+@@ -42,7 +42,16 @@
+ 	u8 stop_during_read:1;
+ };
+ 
++#if defined(CONFIG_DVB_STV0297) || (defined(CONFIG_DVB_STV0297_MODULE) && defined(MODULE))
+ extern struct dvb_frontend* stv0297_attach(const struct stv0297_config* config,
+ 					   struct i2c_adapter* i2c);
++#else
++static inline struct dvb_frontend* stv0297_attach(const struct stv0297_config* config,
++					   struct i2c_adapter* i2c)
++{
++	printk(KERN_WARNING "%s: driver disabled by Kconfig\n", __func__);
++	return NULL;
++}
++#endif // CONFIG_DVB_STV0297
+ 
+ #endif // STV0297_H
+Index: drivers/media/dvb/frontends/lnbp21.h
+===================================================================
+--- drivers/media/dvb/frontends/lnbp21.h	(revision 1)
++++ drivers/media/dvb/frontends/lnbp21.h	(working copy)
+@@ -28,18 +28,48 @@
+ #define _LNBP21_H
+ 
+ /* system register bits */
++/* [RO] 0=OK; 1=over current limit flag */
+ #define LNBP21_OLF	0x01
++/* [RO] 0=OK; 1=over temperature flag (150 C) */
+ #define LNBP21_OTF	0x02
++/* [RW] 0=disable LNB power, enable loopthrough
++	1=enable LNB power, disable loopthrough */
+ #define LNBP21_EN	0x04
++/* [RW] 0=low voltage (13/14V, vert pol)
++	1=high voltage (18/19V,horiz pol) */
+ #define LNBP21_VSEL	0x08
++/* [RW] increase LNB voltage by 1V:
++	0=13/18V; 1=14/19V */
+ #define LNBP21_LLC	0x10
++/* [RW] 0=tone controlled by DSQIN pin
++	1=tone enable, disable DSQIN */
+ #define LNBP21_TEN	0x20
++/* [RW] current limit select:
++	0:Iout=500-650mA Isc=300mA
++	1:Iout=400-550mA Isc=200mA */
+ #define LNBP21_ISEL	0x40
++/* [RW] short-circuit protect:
++	0=pulsed (dynamic) curr limiting
++	1=static curr limiting */
+ #define LNBP21_PCL	0x80
+ 
+ #include <linux/dvb/frontend.h>
+ 
+-/* override_set and override_clear control which system register bits (above) to always set & clear */
+-extern int lnbp21_attach(struct dvb_frontend *fe, struct i2c_adapter *i2c, u8 override_set, u8 override_clear);
++#if defined(CONFIG_DVB_LNBP21) || (defined(CONFIG_DVB_LNBP21_MODULE) \
++							&& defined(MODULE))
++/* override_set and override_clear control which
++ system register bits (above) to always set & clear */
++extern struct dvb_frontend *lnbp21_attach(struct dvb_frontend *fe,
++				struct i2c_adapter *i2c, u8 override_set,
++				u8 override_clear);
++#else
++static inline struct dvb_frontend *lnbp21_attach(struct dvb_frontend *fe,
++				struct i2c_adapter *i2c, u8 override_set,
++				u8 override_clear)
++{
++	printk(KERN_WARNING "%s: driver disabled by Kconfig\n", __func__);
++	return NULL;
++}
++#endif
+ 
+ #endif
+Index: drivers/media/dvb/frontends/stv0299.h
+===================================================================
+--- drivers/media/dvb/frontends/stv0299.h	(revision 1)
++++ drivers/media/dvb/frontends/stv0299.h	(working copy)
+@@ -48,10 +48,10 @@
+ #include <linux/dvb/frontend.h>
+ #include "dvb_frontend.h"
+ 
+-#define STV0229_LOCKOUTPUT_0  0
+-#define STV0229_LOCKOUTPUT_1  1
+-#define STV0229_LOCKOUTPUT_CF 2
+-#define STV0229_LOCKOUTPUT_LK 3
++#define STV0299_LOCKOUTPUT_0  0
++#define STV0299_LOCKOUTPUT_1  1
++#define STV0299_LOCKOUTPUT_CF 2
++#define STV0299_LOCKOUTPUT_LK 3
+ 
+ #define STV0299_VOLT13_OP0 0
+ #define STV0299_VOLT13_OP1 1
+@@ -82,16 +82,37 @@
+ 	/* Is 13v controlled by OP0 or OP1? */
+ 	u8 volt13_op0_op1:1;
+ 
++	/* Turn-off OP0? */
++	u8 op0_off:1;
++
+ 	/* minimum delay before retuning */
+ 	int min_delay_ms;
+ 
+ 	/* Set the symbol rate */
+-	int (*set_symbol_rate)(struct dvb_frontend* fe, u32 srate, u32 ratio);
++	int (*set_symbol_rate)(struct dvb_frontend *fe, u32 srate, u32 ratio);
++
++	/* Set device param to start dma */
++	int (*set_ts_params)(struct dvb_frontend *fe, int is_punctured);
+ };
+ 
+-extern int stv0299_writereg (struct dvb_frontend* fe, u8 reg, u8 data);
++#if defined(CONFIG_DVB_STV0299) || (defined(CONFIG_DVB_STV0299_MODULE) && defined(MODULE))
++extern struct dvb_frontend *stv0299_attach(const struct stv0299_config *config,
++					   struct i2c_adapter *i2c);
++#else
++static inline struct dvb_frontend *stv0299_attach(const struct stv0299_config *config,
++					   struct i2c_adapter *i2c)
++{
++	printk(KERN_WARNING "%s: driver disabled by Kconfig\n", __func__);
++	return NULL;
++}
++#endif // CONFIG_DVB_STV0299
+ 
+-extern struct dvb_frontend* stv0299_attach(const struct stv0299_config* config,
+-					   struct i2c_adapter* i2c);
++static inline int stv0299_writereg(struct dvb_frontend *fe, u8 reg, u8 val) {
++	int r = 0;
++	u8 buf[] = {reg, val};
++	if (fe->ops.write)
++		r = fe->ops.write(fe, buf, 2);
++	return r;
++}
+ 
+ #endif // STV0299_H
+Index: drivers/media/dvb/frontends/cx24123.h
+===================================================================
+--- drivers/media/dvb/frontends/cx24123.h	(revision 1)
++++ drivers/media/dvb/frontends/cx24123.h	(working copy)
+@@ -1,7 +1,7 @@
+ /*
+     Conexant cx24123/cx24109 - DVB QPSK Satellite demod/tuner driver
+ 
+-    Copyright (C) 2005 Steven Toth <stoth@hauppauge.com>
++    Copyright (C) 2005 Steven Toth <stoth@linuxtv.org>
+ 
+     This program is free software; you can redistribute it and/or modify
+     it under the terms of the GNU General Public License as published by
+@@ -23,16 +23,39 @@
+ 
+ #include <linux/dvb/frontend.h>
+ 
+-struct cx24123_config
+-{
++struct cx24123_config {
+ 	/* the demodulator's i2c address */
+ 	u8 demod_address;
+ 
+ 	/* Need to set device param for start_dma */
+-	int (*set_ts_params)(struct dvb_frontend* fe, int is_punctured);
++	int (*set_ts_params)(struct dvb_frontend *fe, int is_punctured);
++
++	/* 0 = LNB voltage normal, 1 = LNB voltage inverted */
++	int lnb_polarity;
++
++	/* this device has another tuner */
++	u8 dont_use_pll;
++	void (*agc_callback) (struct dvb_frontend *);
+ };
+ 
+-extern struct dvb_frontend* cx24123_attach(const struct cx24123_config* config,
+-					   struct i2c_adapter* i2c);
++#if defined(CONFIG_DVB_CX24123) || (defined(CONFIG_DVB_CX24123_MODULE) \
++	&& defined(MODULE))
++extern struct dvb_frontend *cx24123_attach(const struct cx24123_config *config,
++					   struct i2c_adapter *i2c);
++extern struct i2c_adapter *cx24123_get_tuner_i2c_adapter(struct dvb_frontend *);
++#else
++static inline struct dvb_frontend *cx24123_attach(
++	const struct cx24123_config *config, struct i2c_adapter *i2c)
++{
++	printk(KERN_WARNING "%s: driver disabled by Kconfig\n", __func__);
++	return NULL;
++}
++static struct i2c_adapter *
++	cx24123_get_tuner_i2c_adapter(struct dvb_frontend *fe)
++{
++	printk(KERN_WARNING "%s: driver disabled by Kconfig\n", __func__);
++	return NULL;
++}
++#endif
+ 
+ #endif /* CX24123_H */
+Index: drivers/media/dvb/frontends/nxt6000.h
+===================================================================
+--- drivers/media/dvb/frontends/nxt6000.h	(revision 1)
++++ drivers/media/dvb/frontends/nxt6000.h	(working copy)
+@@ -33,7 +33,16 @@
+ 	u8 clock_inversion:1;
+ };
+ 
++#if defined(CONFIG_DVB_NXT6000) || (defined(CONFIG_DVB_NXT6000_MODULE) && defined(MODULE))
+ extern struct dvb_frontend* nxt6000_attach(const struct nxt6000_config* config,
+ 					   struct i2c_adapter* i2c);
++#else
++static inline struct dvb_frontend* nxt6000_attach(const struct nxt6000_config* config,
++					   struct i2c_adapter* i2c)
++{
++	printk(KERN_WARNING "%s: driver disabled by Kconfig\n", __func__);
++	return NULL;
++}
++#endif // CONFIG_DVB_NXT6000
+ 
+ #endif // NXT6000_H
+Index: drivers/media/dvb/frontends/isl6421.h
+===================================================================
+--- drivers/media/dvb/frontends/isl6421.h	(revision 1)
++++ drivers/media/dvb/frontends/isl6421.h	(working copy)
+@@ -39,8 +39,17 @@
+ #define ISL6421_ISEL1	0x20
+ #define ISL6421_DCL	0x40
+ 
++#if defined(CONFIG_DVB_ISL6421) || (defined(CONFIG_DVB_ISL6421_MODULE) && defined(MODULE))
+ /* override_set and override_clear control which system register bits (above) to always set & clear */
+-extern int isl6421_attach(struct dvb_frontend *fe, struct i2c_adapter *i2c, u8 i2c_addr,
++extern struct dvb_frontend *isl6421_attach(struct dvb_frontend *fe, struct i2c_adapter *i2c, u8 i2c_addr,
+ 			  u8 override_set, u8 override_clear);
++#else
++static inline struct dvb_frontend *isl6421_attach(struct dvb_frontend *fe, struct i2c_adapter *i2c, u8 i2c_addr,
++						  u8 override_set, u8 override_clear)
++{
++	printk(KERN_WARNING "%s: driver disabled by Kconfig\n", __func__);
++	return NULL;
++}
++#endif // CONFIG_DVB_ISL6421
+ 
+ #endif
+Index: drivers/media/dvb/frontends/lgdt330x_priv.h
+===================================================================
+--- drivers/media/dvb/frontends/lgdt330x_priv.h	(revision 1)
++++ drivers/media/dvb/frontends/lgdt330x_priv.h	(working copy)
+@@ -51,14 +51,19 @@
+ 	AGC_RFIF_ACC2= 0x3b,
+ 	AGC_STATUS= 0x3f,
+ 	SYNC_STATUS_VSB= 0x43,
+-	EQPH_ERR0= 0x47,
+-	EQ_ERR1= 0x48,
+-	EQ_ERR2= 0x49,
+-	PH_ERR1= 0x4a,
+-	PH_ERR2= 0x4b,
+ 	DEMUX_CONTROL= 0x66,
++	LGDT3302_EQPH_ERR0= 0x47,
++	LGDT3302_EQ_ERR1= 0x48,
++	LGDT3302_EQ_ERR2= 0x49,
++	LGDT3302_PH_ERR1= 0x4a,
++	LGDT3302_PH_ERR2= 0x4b,
+ 	LGDT3302_PACKET_ERR_COUNTER1= 0x6a,
+ 	LGDT3302_PACKET_ERR_COUNTER2= 0x6b,
++	LGDT3303_EQPH_ERR0= 0x6e,
++	LGDT3303_EQ_ERR1= 0x6f,
++	LGDT3303_EQ_ERR2= 0x70,
++	LGDT3303_PH_ERR1= 0x71,
++	LGDT3303_PH_ERR2= 0x72,
+ 	LGDT3303_PACKET_ERR_COUNTER1= 0x8b,
+ 	LGDT3303_PACKET_ERR_COUNTER2= 0x8c,
+ };
+Index: drivers/media/dvb/frontends/sp8870.h
+===================================================================
+--- drivers/media/dvb/frontends/sp8870.h	(revision 1)
++++ drivers/media/dvb/frontends/sp8870.h	(working copy)
+@@ -35,7 +35,16 @@
+ 	int (*request_firmware)(struct dvb_frontend* fe, const struct firmware **fw, char* name);
+ };
+ 
++#if defined(CONFIG_DVB_SP8870) || (defined(CONFIG_DVB_SP8870_MODULE) && defined(MODULE))
+ extern struct dvb_frontend* sp8870_attach(const struct sp8870_config* config,
+ 					  struct i2c_adapter* i2c);
++#else
++static inline struct dvb_frontend* sp8870_attach(const struct sp8870_config* config,
++					  struct i2c_adapter* i2c)
++{
++	printk(KERN_WARNING "%s: driver disabled by Kconfig\n", __func__);
++	return NULL;
++}
++#endif // CONFIG_DVB_SP8870
+ 
+ #endif // SP8870_H
+Index: drivers/media/dvb/frontends/tda8083.h
+===================================================================
+--- drivers/media/dvb/frontends/tda8083.h	(revision 1)
++++ drivers/media/dvb/frontends/tda8083.h	(working copy)
+@@ -35,7 +35,16 @@
+ 	u8 demod_address;
+ };
+ 
++#if defined(CONFIG_DVB_TDA8083) || (defined(CONFIG_DVB_TDA8083_MODULE) && defined(MODULE))
+ extern struct dvb_frontend* tda8083_attach(const struct tda8083_config* config,
+ 					   struct i2c_adapter* i2c);
++#else
++static inline struct dvb_frontend* tda8083_attach(const struct tda8083_config* config,
++					   struct i2c_adapter* i2c)
++{
++	printk(KERN_WARNING "%s: driver disabled by Kconfig\n", __func__);
++	return NULL;
++}
++#endif // CONFIG_DVB_TDA8083
+ 
+ #endif // TDA8083_H
+Index: drivers/media/dvb/frontends/dvb-pll.h
+===================================================================
+--- drivers/media/dvb/frontends/dvb-pll.h	(revision 1)
++++ drivers/media/dvb/frontends/dvb-pll.h	(working copy)
+@@ -8,57 +8,49 @@
+ #include <linux/i2c.h>
+ #include "dvb_frontend.h"
+ 
+-struct dvb_pll_desc {
+-	char *name;
+-	u32  min;
+-	u32  max;
+-	void (*setbw)(u8 *buf, u32 freq, int bandwidth);
+-	int  count;
+-	struct {
+-		u32 limit;
+-		u32 offset;
+-		u32 stepsize;
+-		u8  config;
+-		u8  cb;
+-	} entries[12];
+-};
++#define DVB_PLL_UNDEFINED               0
++#define DVB_PLL_THOMSON_DTT7579         1
++#define DVB_PLL_THOMSON_DTT759X         2
++#define DVB_PLL_LG_Z201                 3
++#define DVB_PLL_UNKNOWN_1               4
++#define DVB_PLL_TUA6010XS               5
++#define DVB_PLL_ENV57H1XD5              6
++#define DVB_PLL_TUA6034                 7
++#define DVB_PLL_TDA665X                 8
++#define DVB_PLL_TDED4                   9
++#define DVB_PLL_TDHU2                  10
++#define DVB_PLL_SAMSUNG_TBMV           11
++#define DVB_PLL_PHILIPS_SD1878_TDA8261 12
++#define DVB_PLL_OPERA1                 13
++#define DVB_PLL_SAMSUNG_DTOS403IH102A  14
++#define DVB_PLL_SAMSUNG_TDTC9251DH0    15
++#define DVB_PLL_SAMSUNG_TBDU18132      16
++#define DVB_PLL_SAMSUNG_TBMU24112      17
++#define DVB_PLL_TDEE4		       18
+ 
+-extern struct dvb_pll_desc dvb_pll_thomson_dtt7579;
+-extern struct dvb_pll_desc dvb_pll_thomson_dtt759x;
+-extern struct dvb_pll_desc dvb_pll_thomson_dtt7610;
+-extern struct dvb_pll_desc dvb_pll_lg_z201;
+-extern struct dvb_pll_desc dvb_pll_microtune_4042;
+-extern struct dvb_pll_desc dvb_pll_thomson_dtt761x;
+-extern struct dvb_pll_desc dvb_pll_unknown_1;
+-
+-extern struct dvb_pll_desc dvb_pll_tua6010xs;
+-extern struct dvb_pll_desc dvb_pll_env57h1xd5;
+-extern struct dvb_pll_desc dvb_pll_tua6034;
+-extern struct dvb_pll_desc dvb_pll_lg_tdvs_h06xf;
+-extern struct dvb_pll_desc dvb_pll_tda665x;
+-extern struct dvb_pll_desc dvb_pll_fmd1216me;
+-extern struct dvb_pll_desc dvb_pll_tded4;
+-
+-extern struct dvb_pll_desc dvb_pll_tuv1236d;
+-extern struct dvb_pll_desc dvb_pll_tdhu2;
+-extern struct dvb_pll_desc dvb_pll_samsung_tbmv;
+-extern struct dvb_pll_desc dvb_pll_philips_sd1878_tda8261;
+-extern struct dvb_pll_desc dvb_pll_philips_td1316;
+-
+-extern struct dvb_pll_desc dvb_pll_thomson_fe6600;
+-
+-extern int dvb_pll_configure(struct dvb_pll_desc *desc, u8 *buf,
+-		      u32 freq, int bandwidth);
+-
+ /**
+  * Attach a dvb-pll to the supplied frontend structure.
+  *
+  * @param fe Frontend to attach to.
+  * @param pll_addr i2c address of the PLL (if used).
+  * @param i2c i2c adapter to use (set to NULL if not used).
+- * @param desc dvb_pll_desc to use.
+- * @return 0 on success, nonzero on failure.
++ * @param pll_desc_id dvb_pll_desc to use.
++ * @return Frontend pointer on success, NULL on failure
+  */
+-extern int dvb_pll_attach(struct dvb_frontend *fe, int pll_addr, struct i2c_adapter *i2c, struct dvb_pll_desc *desc);
++#if defined(CONFIG_DVB_PLL) || (defined(CONFIG_DVB_PLL_MODULE) && defined(MODULE))
++extern struct dvb_frontend *dvb_pll_attach(struct dvb_frontend *fe,
++					   int pll_addr,
++					   struct i2c_adapter *i2c,
++					   unsigned int pll_desc_id);
++#else
++static inline struct dvb_frontend *dvb_pll_attach(struct dvb_frontend *fe,
++					   int pll_addr,
++					   struct i2c_adapter *i2c,
++					   unsigned int pll_desc_id)
++{
++	printk(KERN_WARNING "%s: driver disabled by Kconfig\n", __func__);
++	return NULL;
++}
++#endif
+ 
+ #endif
+Index: drivers/media/dvb/frontends/tda1004x.h
+===================================================================
+--- drivers/media/dvb/frontends/tda1004x.h	(revision 1)
++++ drivers/media/dvb/frontends/tda1004x.h	(working copy)
+@@ -36,9 +36,24 @@
+ 	TDA10046_AGC_IFO_AUTO_NEG,	/* IF AGC only, automatic, negtive */
+ 	TDA10046_AGC_IFO_AUTO_POS,	/* IF AGC only, automatic, positive */
+ 	TDA10046_AGC_TDA827X,		/* IF AGC only, special setup for tda827x */
+-	TDA10046_AGC_TDA827X_GPL,	/* same as above, but GPIOs 0 */
+ };
+ 
++/* Many (hybrid) boards use GPIO 1 and 3
++	GPIO1	analog - dvb switch
++	GPIO3	firmware eeprom address switch
++*/
++enum tda10046_gpio {
++	TDA10046_GPTRI  = 0x00,		/* All GPIOs tristate */
++	TDA10046_GP00   = 0x40,		/* GPIO3=0, GPIO1=0 */
++	TDA10046_GP01   = 0x42,		/* GPIO3=0, GPIO1=1 */
++	TDA10046_GP10   = 0x48,		/* GPIO3=1, GPIO1=0 */
++	TDA10046_GP11   = 0x4a,		/* GPIO3=1, GPIO1=1 */
++	TDA10046_GP00_I = 0x80,		/* GPIO3=0, GPIO1=0, invert in sleep mode*/
++	TDA10046_GP01_I = 0x82,		/* GPIO3=0, GPIO1=1, invert in sleep mode */
++	TDA10046_GP10_I = 0x88,		/* GPIO3=1, GPIO1=0, invert in sleep mode */
++	TDA10046_GP11_I = 0x8a,		/* GPIO3=1, GPIO1=1, invert in sleep mode */
++};
++
+ enum tda10046_if {
+ 	TDA10046_FREQ_3617,		/* original config, 36,166 MHZ */
+ 	TDA10046_FREQ_3613,		/* 36,13 MHZ */
+@@ -46,6 +61,11 @@
+ 	TDA10046_FREQ_052,		/* low IF, 5.1667 MHZ for tda9889 */
+ };
+ 
++enum tda10046_tsout {
++	TDA10046_TS_PARALLEL  = 0x00,	/* parallel transport stream, default */
++	TDA10046_TS_SERIAL    = 0x01,	/* serial transport stream */
++};
++
+ struct tda1004x_config
+ {
+ 	/* the demodulator's i2c address */
+@@ -57,6 +77,9 @@
+ 	/* Does the OCLK signal need inverted? */
+ 	u8 invert_oclk;
+ 
++	/* parallel or serial transport stream */
++	enum tda10046_tsout ts_mode;
++
+ 	/* Xtal frequency, 4 or 16MHz*/
+ 	enum tda10046_xtal xtal_freq;
+ 
+@@ -66,17 +89,61 @@
+ 	/* AGC configuration */
+ 	enum tda10046_agc agc_config;
+ 
++	/* setting of GPIO1 and 3 */
++	enum tda10046_gpio gpio_config;
++
++	/* slave address and configuration of the tuner */
++	u8 tuner_address;
++	u8 antenna_switch;
++
++	/* if the board uses another I2c Bridge (tda8290), its address */
++	u8 i2c_gate;
++
+ 	/* request firmware for device */
+-	/* set this to NULL if the card has a firmware EEPROM */
+ 	int (*request_firmware)(struct dvb_frontend* fe, const struct firmware **fw, char* name);
+ };
+ 
++enum tda1004x_demod {
++	TDA1004X_DEMOD_TDA10045,
++	TDA1004X_DEMOD_TDA10046,
++};
++
++struct tda1004x_state {
++	struct i2c_adapter* i2c;
++	const struct tda1004x_config* config;
++	struct dvb_frontend frontend;
++
++	/* private demod data */
++	enum tda1004x_demod demod_type;
++};
++
++#if defined(CONFIG_DVB_TDA1004X) || (defined(CONFIG_DVB_TDA1004X_MODULE) && defined(MODULE))
+ extern struct dvb_frontend* tda10045_attach(const struct tda1004x_config* config,
+ 					    struct i2c_adapter* i2c);
+ 
+ extern struct dvb_frontend* tda10046_attach(const struct tda1004x_config* config,
+ 					    struct i2c_adapter* i2c);
++#else
++static inline struct dvb_frontend* tda10045_attach(const struct tda1004x_config* config,
++					    struct i2c_adapter* i2c)
++{
++	printk(KERN_WARNING "%s: driver disabled by Kconfig\n", __func__);
++	return NULL;
++}
++static inline struct dvb_frontend* tda10046_attach(const struct tda1004x_config* config,
++					    struct i2c_adapter* i2c)
++{
++	printk(KERN_WARNING "%s: driver disabled by Kconfig\n", __func__);
++	return NULL;
++}
++#endif // CONFIG_DVB_TDA1004X
+ 
+-extern int tda1004x_write_byte(struct dvb_frontend* fe, int reg, int data);
++static inline int tda1004x_writereg(struct dvb_frontend *fe, u8 reg, u8 val) {
++	int r = 0;
++	u8 buf[] = {reg, val};
++	if (fe->ops.write)
++		r = fe->ops.write(fe, buf, 2);
++	return r;
++}
+ 
+ #endif // TDA1004X_H
+Index: drivers/media/dvb/frontends/cx22700.h
+===================================================================
+--- drivers/media/dvb/frontends/cx22700.h	(revision 1)
++++ drivers/media/dvb/frontends/cx22700.h	(working copy)
+@@ -31,7 +31,16 @@
+ 	u8 demod_address;
+ };
+ 
++#if defined(CONFIG_DVB_CX22700) || (defined(CONFIG_DVB_CX22700_MODULE) && defined(MODULE))
+ extern struct dvb_frontend* cx22700_attach(const struct cx22700_config* config,
+ 					   struct i2c_adapter* i2c);
++#else
++static inline struct dvb_frontend* cx22700_attach(const struct cx22700_config* config,
++					   struct i2c_adapter* i2c)
++{
++	printk(KERN_WARNING "%s: driver disabled by Kconfig\n", __func__);
++	return NULL;
++}
++#endif // CONFIG_DVB_CX22700
+ 
+ #endif // CX22700_H
+Index: drivers/media/dvb/frontends/mt312.h
+===================================================================
+--- drivers/media/dvb/frontends/mt312.h	(revision 1)
++++ drivers/media/dvb/frontends/mt312.h	(working copy)
+@@ -28,14 +28,24 @@
+ 
+ #include <linux/dvb/frontend.h>
+ 
+-struct mt312_config
+-{
++struct mt312_config {
+ 	/* the demodulator's i2c address */
+ 	u8 demod_address;
++
++	/* inverted voltage setting */
++	unsigned int voltage_inverted:1;
+ };
+ 
+-struct dvb_frontend* vp310_mt312_attach(const struct mt312_config* config,
+-					struct i2c_adapter* i2c);
++#if defined(CONFIG_DVB_MT312) || (defined(CONFIG_DVB_MT312_MODULE) && defined(MODULE))
++struct dvb_frontend *mt312_attach(const struct mt312_config *config,
++					struct i2c_adapter *i2c);
++#else
++static inline struct dvb_frontend *mt312_attach(
++	const struct mt312_config *config, struct i2c_adapter *i2c)
++{
++	printk(KERN_WARNING "%s: driver disabled by Kconfig\n", __func__);
++	return NULL;
++}
++#endif /* CONFIG_DVB_MT312 */
+ 
+-
+-#endif // MT312_H
++#endif /* MT312_H */
+Index: drivers/media/dvb/frontends/s5h1420.h
+===================================================================
+--- drivers/media/dvb/frontends/s5h1420.h	(revision 1)
++++ drivers/media/dvb/frontends/s5h1420.h	(working copy)
+@@ -1,25 +1,26 @@
+ /*
+-    Driver for S5H1420 QPSK Demodulators
+-
+-    Copyright (C) 2005 Andrew de Quincey <adq_dvb@lidskialf.net>
+-
+-    This program is free software; you can redistribute it and/or modify
+-    it under the terms of the GNU General Public License as published by
+-    the Free Software Foundation; either version 2 of the License, or
+-    (at your option) any later version.
+-
+-    This program is distributed in the hope that it will be useful,
+-    but WITHOUT ANY WARRANTY; without even the implied warranty of
+-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+-
+-    GNU General Public License for more details.
+-
+-    You should have received a copy of the GNU General Public License
+-    along with this program; if not, write to the Free Software
+-    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+-
+-*/
+-
++ * Driver for
++ *    Samsung S5H1420 and
++ *    PnpNetwork PN1010 QPSK Demodulator
++ *
++ * Copyright (C) 2005 Andrew de Quincey <adq_dvb@lidskialf.net>
++ * Copyright (C) 2005-8 Patrick Boettcher <pb@linuxtv.org>
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License as published by
++ * the Free Software Foundation; either version 2 of the License, or
++ * (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ *
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program; if not, write to the Free Software
++ * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
++ */
+ #ifndef S5H1420_H
+ #define S5H1420_H
+ 
+@@ -32,9 +33,29 @@
+ 
+ 	/* does the inversion require inversion? */
+ 	u8 invert:1;
++
++	u8 repeated_start_workaround:1;
++	u8 cdclk_polarity:1; /* 1 == falling edge, 0 == raising edge */
++
++	u8 serial_mpeg:1;
+ };
+ 
+-extern struct dvb_frontend* s5h1420_attach(const struct s5h1420_config* config,
+-	     struct i2c_adapter* i2c);
++#if defined(CONFIG_DVB_S5H1420) || (defined(CONFIG_DVB_S5H1420_MODULE) && defined(MODULE))
++extern struct dvb_frontend *s5h1420_attach(const struct s5h1420_config *config,
++	     struct i2c_adapter *i2c);
++extern struct i2c_adapter *s5h1420_get_tuner_i2c_adapter(struct dvb_frontend *fe);
++#else
++static inline struct dvb_frontend *s5h1420_attach(const struct s5h1420_config *config,
++					   struct i2c_adapter *i2c)
++{
++	printk(KERN_WARNING "%s: driver disabled by Kconfig\n", __func__);
++	return NULL;
++}
+ 
++static inline struct i2c_adapter *s5h1420_get_tuner_i2c_adapter(struct dvb_frontend *fe)
++{
++	return NULL;
++}
++#endif // CONFIG_DVB_S5H1420
++
+ #endif // S5H1420_H
+Index: drivers/media/dvb/frontends/cx22702.h
+===================================================================
+--- drivers/media/dvb/frontends/cx22702.h	(revision 1)
++++ drivers/media/dvb/frontends/cx22702.h	(working copy)
+@@ -7,7 +7,7 @@
+     Copyright (C) 2001-2002 Convergence Integrated Media GmbH
+ 	  Holger Waechtler <holger@convergence.de>
+ 
+-    Copyright (C) 2004 Steven Toth <stoth@hauppauge.com>
++    Copyright (C) 2004 Steven Toth <stoth@linuxtv.org>
+ 
+     This program is free software; you can redistribute it and/or modify
+     it under the terms of the GNU General Public License as published by
+@@ -30,8 +30,7 @@
+ 
+ #include <linux/dvb/frontend.h>
+ 
+-struct cx22702_config
+-{
++struct cx22702_config {
+ 	/* the demodulator's i2c address */
+ 	u8 demod_address;
+ 
+@@ -41,7 +40,19 @@
+ 	u8 output_mode;
+ };
+ 
+-extern struct dvb_frontend* cx22702_attach(const struct cx22702_config* config,
+-					   struct i2c_adapter* i2c);
++#if defined(CONFIG_DVB_CX22702) || (defined(CONFIG_DVB_CX22702_MODULE) \
++	&& defined(MODULE))
++extern struct dvb_frontend *cx22702_attach(
++	const struct cx22702_config *config,
++	struct i2c_adapter *i2c);
++#else
++static inline struct dvb_frontend *cx22702_attach(
++	const struct cx22702_config *config,
++	struct i2c_adapter *i2c)
++{
++	printk(KERN_WARNING "%s: driver disabled by Kconfig\n", __func__);
++	return NULL;
++}
++#endif
+ 
+-#endif // CX22702_H
++#endif
+Index: drivers/media/dvb/frontends/lgdt330x.h
+===================================================================
+--- drivers/media/dvb/frontends/lgdt330x.h	(revision 1)
++++ drivers/media/dvb/frontends/lgdt330x.h	(working copy)
+@@ -52,8 +52,17 @@
+ 	int clock_polarity_flip;
+ };
+ 
++#if defined(CONFIG_DVB_LGDT330X) || (defined(CONFIG_DVB_LGDT330X_MODULE) && defined(MODULE))
+ extern struct dvb_frontend* lgdt330x_attach(const struct lgdt330x_config* config,
+ 					    struct i2c_adapter* i2c);
++#else
++static inline struct dvb_frontend* lgdt330x_attach(const struct lgdt330x_config* config,
++					    struct i2c_adapter* i2c)
++{
++	printk(KERN_WARNING "%s: driver disabled by Kconfig\n", __func__);
++	return NULL;
++}
++#endif // CONFIG_DVB_LGDT330X
+ 
+ #endif /* LGDT330X_H */
+ 
+Index: drivers/media/dvb/frontends/ves1820.h
+===================================================================
+--- drivers/media/dvb/frontends/ves1820.h	(revision 1)
++++ drivers/media/dvb/frontends/ves1820.h	(working copy)
+@@ -41,7 +41,16 @@
+ 	u8 selagc:1;
+ };
+ 
++#if defined(CONFIG_DVB_VES1820) || (defined(CONFIG_DVB_VES1820_MODULE) && defined(MODULE))
+ extern struct dvb_frontend* ves1820_attach(const struct ves1820_config* config,
+ 					   struct i2c_adapter* i2c, u8 pwm);
++#else
++static inline struct dvb_frontend* ves1820_attach(const struct ves1820_config* config,
++					   struct i2c_adapter* i2c, u8 pwm)
++{
++	printk(KERN_WARNING "%s: driver disabled by Kconfig\n", __func__);
++	return NULL;
++}
++#endif // CONFIG_DVB_VES1820
+ 
+ #endif // VES1820_H
+Index: drivers/media/dvb/frontends/or51211.h
+===================================================================
+--- drivers/media/dvb/frontends/or51211.h	(revision 1)
++++ drivers/media/dvb/frontends/or51211.h	(working copy)
+@@ -37,8 +37,17 @@
+ 	void (*sleep)(struct dvb_frontend * fe);
+ };
+ 
++#if defined(CONFIG_DVB_OR51211) || (defined(CONFIG_DVB_OR51211_MODULE) && defined(MODULE))
+ extern struct dvb_frontend* or51211_attach(const struct or51211_config* config,
+ 					   struct i2c_adapter* i2c);
++#else
++static inline struct dvb_frontend* or51211_attach(const struct or51211_config* config,
++					   struct i2c_adapter* i2c)
++{
++	printk(KERN_WARNING "%s: driver disabled by Kconfig\n", __func__);
++	return NULL;
++}
++#endif // CONFIG_DVB_OR51211
+ 
+ #endif // OR51211_H
+ 
+Index: drivers/media/dvb/frontends/mt352.h
+===================================================================
+--- drivers/media/dvb/frontends/mt352.h	(revision 1)
++++ drivers/media/dvb/frontends/mt352.h	(working copy)
+@@ -51,9 +51,23 @@
+ 	int (*demod_init)(struct dvb_frontend* fe);
+ };
+ 
++#if defined(CONFIG_DVB_MT352) || (defined(CONFIG_DVB_MT352_MODULE) && defined(MODULE))
+ extern struct dvb_frontend* mt352_attach(const struct mt352_config* config,
+ 					 struct i2c_adapter* i2c);
++#else
++static inline struct dvb_frontend* mt352_attach(const struct mt352_config* config,
++					 struct i2c_adapter* i2c)
++{
++	printk(KERN_WARNING "%s: driver disabled by Kconfig\n", __func__);
++	return NULL;
++}
++#endif // CONFIG_DVB_MT352
+ 
+-extern int mt352_write(struct dvb_frontend* fe, u8* ibuf, int ilen);
++static inline int mt352_write(struct dvb_frontend *fe, u8 *buf, int len) {
++	int r = 0;
++	if (fe->ops.write)
++		r = fe->ops.write(fe, buf, len);
++	return r;
++}
+ 
+ #endif // MT352_H
+Index: drivers/media/dvb/frontends/bcm3510.h
+===================================================================
+--- drivers/media/dvb/frontends/bcm3510.h	(revision 1)
++++ drivers/media/dvb/frontends/bcm3510.h	(working copy)
+@@ -34,7 +34,16 @@
+ 	int (*request_firmware)(struct dvb_frontend* fe, const struct firmware **fw, char* name);
+ };
+ 
++#if defined(CONFIG_DVB_BCM3510) || (defined(CONFIG_DVB_BCM3510_MODULE) && defined(MODULE))
+ extern struct dvb_frontend* bcm3510_attach(const struct bcm3510_config* config,
+ 					   struct i2c_adapter* i2c);
++#else
++static inline struct dvb_frontend* bcm3510_attach(const struct bcm3510_config* config,
++						  struct i2c_adapter* i2c)
++{
++	printk(KERN_WARNING "%s: driver disabled by Kconfig\n", __func__);
++	return NULL;
++}
++#endif // CONFIG_DVB_BCM3510
+ 
+ #endif
+Index: drivers/media/dvb/frontends/or51132.h
+===================================================================
+--- drivers/media/dvb/frontends/or51132.h	(revision 1)
++++ drivers/media/dvb/frontends/or51132.h	(working copy)
+@@ -34,8 +34,17 @@
+ 	int (*set_ts_params)(struct dvb_frontend* fe, int is_punctured);
+ };
+ 
++#if defined(CONFIG_DVB_OR51132) || (defined(CONFIG_DVB_OR51132_MODULE) && defined(MODULE))
+ extern struct dvb_frontend* or51132_attach(const struct or51132_config* config,
+ 					   struct i2c_adapter* i2c);
++#else
++static inline struct dvb_frontend* or51132_attach(const struct or51132_config* config,
++					   struct i2c_adapter* i2c)
++{
++	printk(KERN_WARNING "%s: driver disabled by Kconfig\n", __func__);
++	return NULL;
++}
++#endif // CONFIG_DVB_OR51132
+ 
+ #endif // OR51132_H
+ 
+Index: drivers/media/dvb/frontends/nxt200x.h
+===================================================================
+--- drivers/media/dvb/frontends/nxt200x.h	(revision 1)
++++ drivers/media/dvb/frontends/nxt200x.h	(working copy)
+@@ -38,15 +38,21 @@
+ 	/* the demodulator's i2c address */
+ 	u8 demod_address;
+ 
+-	/* used to set pll input */
+-	int (*set_pll_input)(u8* buf, int input);
+-
+ 	/* need to set device param for start_dma */
+ 	int (*set_ts_params)(struct dvb_frontend* fe, int is_punctured);
+ };
+ 
++#if defined(CONFIG_DVB_NXT200X) || (defined(CONFIG_DVB_NXT200X_MODULE) && defined(MODULE))
+ extern struct dvb_frontend* nxt200x_attach(const struct nxt200x_config* config,
+ 					   struct i2c_adapter* i2c);
++#else
++static inline struct dvb_frontend* nxt200x_attach(const struct nxt200x_config* config,
++					   struct i2c_adapter* i2c)
++{
++	printk(KERN_WARNING "%s: driver disabled by Kconfig\n", __func__);
++	return NULL;
++}
++#endif // CONFIG_DVB_NXT200X
+ 
+ #endif /* NXT200X_H */
+ 

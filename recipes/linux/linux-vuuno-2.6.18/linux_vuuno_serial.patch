@@ -1,0 +1,20 @@
+Index: include/asm-mips/serial.h
+===================================================================
+--- include/asm-mips/serial.h	(revision 1)
++++ include/asm-mips/serial.h	(working copy)
+@@ -121,10 +121,15 @@
+ 
+ #else
+ /* 3 16550A compatible UARTs */
++#if 0
+ #define BRCM_UART_PORT_DEFNS				\
+ 	_BRCM_16550_INIT(BRCM_SERIAL1_IRQ, BRCM_SERIAL1_BASE),		\
+ 	_BRCM_16550_INIT(BRCM_SERIAL2_IRQ, BRCM_SERIAL2_BASE),      \
+ 	_BRCM_16550_INIT(BRCM_SERIAL3_IRQ, BRCM_SERIAL3_BASE),	
++#else
++#define BRCM_UART_PORT_DEFNS				\
++	_BRCM_16550_INIT(BRCM_SERIAL1_IRQ, BRCM_SERIAL1_BASE),
++#endif
+ #endif  //end SIM
+ 
+ #elif defined(CONFIG_MIPS_BCM7440A0) || defined(CONFIG_MIPS_BCM7325)

@@ -1,0 +1,12 @@
+Index: arch/mips/Kconfig
+===================================================================
+--- arch/mips/Kconfig	(revision 1)
++++ arch/mips/Kconfig	(working copy)
+@@ -429,7 +429,6 @@
+ 	select BRCM_SCM_L2
+ 	select MTD_BRCMNAND
+ 	select MTD_BRCMNAND_VERIFY_WRITE
+-	select MTD_BLOCK_ROMBLOCK
+ 
+ config MIPS_BCM7440BX
+ 	bool "Support for BCM97440Bx with NOR flash"

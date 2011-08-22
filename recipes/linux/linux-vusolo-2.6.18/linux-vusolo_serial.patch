@@ -1,0 +1,17 @@
+Index: include/asm-mips/serial.h
+===================================================================
+--- include/asm-mips/serial.h	(revision 1)
++++ include/asm-mips/serial.h	(working copy)
+@@ -130,8 +130,10 @@
+ #elif defined(CONFIG_MIPS_BCM7440A0) || defined(CONFIG_MIPS_BCM7325)
+ // 7440A0 uses UARTB as default UART.  Hopefully this will be fixed in a later revision.
+ #define BRCM_UART_PORT_DEFNS				\
+-	_BRCM_16550_INIT(BRCM_SERIAL1_IRQ, BRCM_SERIAL1_BASE),      \
+-	_BRCM_16550_INIT(BRCM_SERIAL2_IRQ, BRCM_SERIAL2_BASE),	
++	_BRCM_16550_INIT(BRCM_SERIAL1_IRQ, BRCM_SERIAL1_BASE),
++
++//	_BRCM_16550_INIT(BRCM_SERIAL1_IRQ, BRCM_SERIAL1_BASE),      \
++//	_BRCM_16550_INIT(BRCM_SERIAL2_IRQ, BRCM_SERIAL2_BASE),	
+ 	
+ #elif defined(CONFIG_MIPS_BCM7401B0) || defined(CONFIG_MIPS_BCM7402) || \
+       defined(CONFIG_MIPS_BCM7401C0) || defined(CONFIG_MIPS_BCM7403A0)
