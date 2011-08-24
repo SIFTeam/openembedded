@@ -58,6 +58,7 @@ ENIGMA2_OPTIONAL = " \
 				softcams-enigma2-meta \
 				dvbsnoop \
 				mtd-utils \
+				dvdfs \
 				"
 
 IMAGE_INSTALL += " \
