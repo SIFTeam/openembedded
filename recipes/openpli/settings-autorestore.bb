@@ -1,4 +1,4 @@
-PV = "20110821"
+PV = "20110825"
 PR = "r0"
 SRC_URI = "file://*"
 DESCRIPTION = "Autorecover settings and install packages at first boot from /media/*/backup"
