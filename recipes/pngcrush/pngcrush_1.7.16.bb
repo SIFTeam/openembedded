@@ -5,9 +5,8 @@ PR = "r1"
 
 SRC_URI = "${SOURCEFORGE_MIRROR}/pmt/pngcrush-${PV}.tar.gz;name=src"
 
-SRC_URI[src.md5sum] = "6e843bdaa1291ca072ae9afb4d6a09cc"
-SRC_URI[src.sha256sum] = "644f0e11b9c60f00943063f93f1813d814466c3516a7924db4c90d64eb70af66"
-
+SRC_URI[src.md5sum] = "3dcf459201254300e463c2f29a304978"
+SRC_URI[src.sha256sum] = "291cad915ed4643996815fef2c08c90e30471cf3937b8bf8f9d969f7a06b8e20"
 
 #DEPENDS += "libsdl-net smpeg"
 
