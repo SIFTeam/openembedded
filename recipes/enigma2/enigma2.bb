@@ -132,7 +132,7 @@ FILES_${PN}-dbg += "\
 	/usr/lib/enigma2/python/Plugins/*/*/.debug \
 	"
 
-# Save some space by not installing sources (mytest.py must remain)
+# Save some space by not installing sources (main.py must remain)
 FILES_${PN}-src = "\
 	/usr/lib/enigma2/python/GlobalActions.py \
 	/usr/lib/enigma2/python/Navigation.py \
@@ -143,6 +143,7 @@ FILES_${PN}-src = "\
 	/usr/lib/enigma2/python/e2reactor.py \
 	/usr/lib/enigma2/python/keyids.py \
 	/usr/lib/enigma2/python/keymapparser.py \
+	/usr/lib/enigma2/python/mytest.py \
 	/usr/lib/enigma2/python/skin.py \
 	/usr/lib/enigma2/python/timer.py \
 	/usr/lib/enigma2/python/*/*.py \
