@@ -34,6 +34,7 @@ do_compile () {
 #!/bin/sh
 case "\$1" in
 start)
+	ulimit -s 1024
 	${CAMSTART}
 	;;
 stop)
