@@ -1,4 +1,5 @@
 DESCRIPTION = "enigma2 picons"
+DEPENDS = "pngcrush-native"
 
 PACKAGES_DYNAMIC = "enigma2-plugin-picons-*"
 
@@ -13,6 +14,7 @@ do_install() {
 python populate_packages_prepend() {
 	import os
 	import shutil
+	import re
 	dir = bb.data.getVar('D', d, True)
 	sdir = bb.data.getVar('S', d, True)
 	satnames = bb.data.getVar('PICON_SATNAMES', d, True)
@@ -36,10 +38,18 @@ python populate_packages_prepend() {
 			continue
 		packagename = createPackageName('tv', sat)
 		files = []
-		for file in os.listdir(sdir + "/" + sat + "/tv"):
+		srcdir = os.path.join(sdir, sat, 'tv')
+		path = os.path.join(dir, 'picon')
+		for file in os.listdir(srcdir):
 			if file.endswith(".png"):
-				os.system("cp -a \"" + sdir + "/" + sat + "/tv/" + file + "\" " + dir + "/picon/")
+				fn = os.path.join(srcdir, file)
+				dn = os.path.join(path, file)
+				if os.path.islink(fn):
+					os.rename(fn, dn)
+				else:
+					os.system("pngcrush -quiet -bit_depth 8 '%s' '%s'" % (fn, dn))
 				files.append("/picon/" + file)
+
 		bb.data.setVar('FILES_' + packagename, " ".join(files), d)
 		bb.data.setVar('DESCRIPTION_' + packagename, "TV picon set", d)
 		piconpackages.append(packagename)

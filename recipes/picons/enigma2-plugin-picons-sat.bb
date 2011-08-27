@@ -7,7 +7,7 @@
 # from the same bb file.
 
 PV = "${SRCDATE}"
-PR = "r0"
+PR = "r1"
 
 SRC_URI = "http://downloads.pli-images.org/picons/picons-sat-${SRCDATE}.tar.gz"
 
