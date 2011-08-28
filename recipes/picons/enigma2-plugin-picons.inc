@@ -14,7 +14,7 @@ do_install() {
 }
 
 RESIZE_COMMAND = ""
-RESIZE_COMMAND_dm7025 = "convert %s -resize '70x56!' -colors 128 %s"
+RESIZE_COMMAND_dm7025 = "convert %s -resize '70x53!' -colors 128 %s"
 
 python populate_packages_prepend() {
 	import os
