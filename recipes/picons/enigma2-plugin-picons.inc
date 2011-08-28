@@ -1,9 +1,11 @@
 DESCRIPTION = "enigma2 picons"
 DEPENDS = "pngcrush-native"
+DEPENDS_dm7025 = "pngcrush-native imagemagick-native"
 
 PACKAGES_DYNAMIC = "enigma2-plugin-picons-*"
 
 PACKAGE_ARCH = "all"
+PACKAGE_ARCH_dm7025 = "${MACHINE}"
 
 S = "${WORKDIR}/picons"
 
@@ -11,17 +13,24 @@ do_install() {
 	install -d ${D}/picon
 }
 
+RESIZE_COMMAND = ""
+RESIZE_COMMAND_dm7025 = "convert %s -resize '70x56!' -colors 128 %s"
+
 python populate_packages_prepend() {
 	import os
 	import shutil
 	import re
+	import tempfile
 	dir = bb.data.getVar('D', d, True)
 	sdir = bb.data.getVar('S', d, True)
 	satnames = bb.data.getVar('PICON_SATNAMES', d, True)
 	pnsuffix = bb.data.getVar('PN_SUFFIX', d, True)
+	resize = bb.data.getVar('RESIZE_COMMAND', d, True)
 	if not pnsuffix:
 		pnsuffix = ''
 	piconpackages = []
+	tmpdir = tempfile.mkdtemp()
+	tmpfile = os.path.join(tmpdir, 'tmp.png')
 	for sat in os.listdir(sdir):
 		def createPackageName(type, sat):
 			if sat[-3] == '.':
@@ -47,6 +56,9 @@ python populate_packages_prepend() {
 				if os.path.islink(fn):
 					os.rename(fn, dn)
 				else:
+					if resize:
+						os.system(resize % (fn, tmpfile))
+						fn = tmpfile
 					os.system("pngcrush -quiet -bit_depth 8 '%s' '%s'" % (fn, dn))
 				files.append("/picon/" + file)
 
@@ -65,7 +77,14 @@ python populate_packages_prepend() {
 			piconpackages.append(packagename)
 		except:
 			pass
-
+	try:
+		os.unlink(tmpfile)
+	except:
+		pass
+	try:
+		os.rmdir(tmpdir)
+	except:
+		pass
 	bb.data.setVar('PACKAGES', ' '.join(piconpackages), d)
 	bb.data.setVar('PKGD', dir, d)
 }
