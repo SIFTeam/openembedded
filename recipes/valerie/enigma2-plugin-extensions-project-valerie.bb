@@ -6,7 +6,7 @@ MODULE = "ValerieMediaCenter"
 require valerie.inc
 PR = "r3"
 
-RDEPENDS_${PN} = "python-ctypes valerie-libshowiframe valerie-sync valerie-e2control"
+RDEPENDS_${PN} = "python-ctypes valerie-libshowiframe valerie-e2control"
 RREPLACES_${PN} = "project-valerie"
 RCONFLICTS_${PN} = "project-valerie"
 
