@@ -2,13 +2,14 @@ DESCRIPTION = "Old webinterface (avoid license issues)"
 DEPENDS = "enigma2 python-pyopenssl python-twisted"
 RDEPENDS_${PN} = "python-twisted-web python-pyopenssl python-crypt python-unixadmin aio-grab"
 PACKAGES = "${PN}-src ${PN}"
+RPROVIDES = "enigma2-plugin-extensions-webinterface"
 
 SRCREV = "1f1bfc9149684caccbdfeaed3f8169b6d0213db8"
 inherit gitpkgv
 
 PV = "experimental-git${SRCPV}"
 PKGV = "experimental-git${GITPKGV}"
-PR = "r9"
+PR = "r10"
 
 SRC_URI="git://openpli.git.sourceforge.net/gitroot/openpli/plugins-enigma2;protocol=git \
 	 file://buildonlywebif.patch \
