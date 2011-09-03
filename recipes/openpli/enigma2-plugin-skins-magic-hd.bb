@@ -16,7 +16,7 @@ DESCRIPTION_font-valis-hd = "Valis hd fonts"
 PACKAGES = "skin-magic-hd-common ${EPSM}-hd ${EPSM}-ehd ${EPSM}-hd-lite ${EPSM}-ehd-lite font-valis-hd"
 PROVIDES = "${PN} font-valis-hd skin-magic-hd-common"
 
-SRC_URI = "git://git.assembla.com/openvix.7.git;protocol=git file://pli.png"
+SRC_URI = "git://git.assembla.com/openvix.7.git;protocol=git;branch=experimental file://pli.png"
 
 FILES_skin-magic-hd-common = "/usr/share/enigma2/Magic-HD-Common/"
 FILES_${EPSM}-hd = "/usr/share/enigma2/Magic-HD/"
