@@ -63,4 +63,9 @@ do_install_append() {
           install -m 0755 ${WORKDIR}/simple.script ${D}${sysconfdir}/udhcpc.d/50default
           install -m 0755 ${WORKDIR}/default.script ${D}${datadir}/udhcpc/default.script
     fi
+    
+    # install a 'groups' wrapper script ('groups' is needed by winscp for instance)
+    install -d ${D}${bindir}
+    echo "id -Gn" > ${D}${bindir}/groups
+    chmod +x ${D}${bindir}/groups
 }
