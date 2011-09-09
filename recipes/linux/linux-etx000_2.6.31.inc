@@ -1,3 +1,4 @@
+DESCRIPTION = "Linux kernel for ${MACHINE}"
 LICENSE = "GPL"
 KV = "2.6.31"
 
