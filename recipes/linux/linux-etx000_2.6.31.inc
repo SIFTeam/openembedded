@@ -6,7 +6,7 @@ KV = "2.6.31"
 #PR = "r6"
 #or use MACHINE_KERNEL_PR_append, when a rebuild of external modules is not required
 
-MACHINE_KERNEL_PR_append = ".10"
+MACHINE_KERNEL_PR_append = ".11"
 
 DEPENDS = "mtd-minimal-nand-utils"
 RDEPENDS_kernel-image = "mtd-minimal-nand-utils"
