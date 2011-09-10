@@ -1,0 +1,21 @@
+Index: dvdauthor/src/spuunmux.c
+===================================================================
+--- dvdauthor.orig/src/spuunmux.c
++++ dvdauthor/src/spuunmux.c
+@@ -37,6 +37,7 @@
+ 
+ #include <netinet/in.h>
+ 
++#include <zlib.h>
+ #include <png.h>
+ 
+ #include "rgb.h"
+@@ -483,7 +484,7 @@ static int write_png(char *file_name,str
+     return -1;
+     }
+ 
+-    if (setjmp(png_ptr->jmpbuf)) {
++    if (setjmp(png_jmpbuf(png_ptr))) {
+     png_destroy_write_struct(&png_ptr, &info_ptr);
+     fclose(fp);
+     return -1;
