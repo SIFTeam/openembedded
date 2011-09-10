@@ -5,7 +5,7 @@ BOOTLOGO ?= "openpli-bootlogo"
 
 IMAGE_INSTALL = " \
 				task-base \
-				netkit-base \
+				inetd \
 				vsftpd \
 				util-linux-ng-sfdisk \
 				avahi-daemon \
