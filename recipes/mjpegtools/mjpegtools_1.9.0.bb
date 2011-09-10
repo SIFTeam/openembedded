@@ -2,13 +2,15 @@ DESCRIPTION = "MJPEG video capture/editting/playback MPEG encoding"
 HOMEPAGE = "http://sourceforge.net/projects/mjpeg/"
 SECTION = "optional"
 LICENSE = "GPLv2"
-DEPENDS = "jpeg"
+DEPENDS = "jpeg libpng"
+PR = "r1"
 
 SRC_URI = " \
 	${SOURCEFORGE_MIRROR}/mjpeg/${P}.tar.gz \
 	file://mjpegtools-fix-include.patch \
 	file://mjpegtools-remove-sdl-dependency.patch \
 	file://mjpegtools-v4l-doesnt-mean-x11.patch \
+	file://fixlibpng15.patch \
 	"
 
 SRC_URI[md5sum] = "309a6fcf0900a010d6a9c1e91afc2f5c"
