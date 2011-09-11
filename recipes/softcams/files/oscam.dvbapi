@@ -25,4 +25,12 @@
 #D: 1702		200		# wait 200ms before writing cw on caid 1702
 #I: :002000				# ignore provider 002000 on every channel
 #I: 0					# ignore every caid that was not handled before
+# These dvbapi settings works fine for CDS NL / BE, for other cards see oscam wiki on pli forum or oscam wiki on streamboard forum.
 
+I: 0100    #ignore all old seca providers
+I: 0500    #ignore viaccess
+I: 0622    #ignore old irdeto
+M: 1817:00006A 0100:00006A    #map NL nagracaid 1817:00006A  to seca 0100:00006A
+M: 1818:00006C 0100:00006C    #map BE nagracaid 1818:00006C  to seca 0100:00006C
+P: 1817:00006A		#Prio NL 1817
+P: 1818:00006C		#Prio BE 1818

@@ -8,11 +8,13 @@
 #   CAMSTOP: Command to stop the softcam, default to killall ${CAMNAME}
 # Instead of CAMSTART/CAMSTOP, you can create an init.d script called init.${CAMNAME}
 
-
-DESCRIPTION ?= "Demonstration for cam management."
+DESCRIPTION ?= "${CAMNAME}"
 
 FILES_${PN} = "/usr/bin /etc"
 
+SRC_URI = "file://oscam.*"
+S = "${WORKDIR}/${CAMNAME}"
+INHIBIT_PACKAGE_STRIP = "1"
 
 # no docs, locales etc.
 PACKAGES = "${PN}"
@@ -22,8 +24,10 @@ RDEPENDS += "softcam-support"
 CAMLINK = "/etc/init.d/softcam"
 CAMPATH = "/etc/init.d/softcam.${CAMNAME}"
 
-CAMSTART ?= "exec start-stop-daemon -S -x /usr/bin/${CAMNAME}"
-CAMSTOP  ?= "exec start-stop-daemon -K -R 2 -x /usr/bin/${CAMNAME}"
+CAMSTART = "exec start-stop-daemon -S -x /usr/bin/${CAMNAME} -- -b -r 2 -c /etc/tuxbox/config/${CAMNAME}"
+CAMSTOP ?= "exec start-stop-daemon -K -R 2 -x /usr/bin/${CAMNAME}"
+
+CONFFILES = "/etc/tuxbox/config/${CAMNAME}/oscam.conf /etc/tuxbox/config/${CAMNAME}/oscam.server /etc/tuxbox/config/${CAMNAME}/oscam.srvid /etc/tuxbox/config/${CAMNAME}/oscam.user /etc/tuxbox/config/${CAMNAME}/oscam.ac /etc/tuxbox/config/${CAMNAME}/oscam.cert /etc/tuxbox/config/${CAMNAME}/oscam.dvbapi /etc/tuxbox/config/${CAMNAME}/oscam.guess /etc/tuxbox/config/${CAMNAME}/oscam.ird /etc/tuxbox/config/${CAMNAME}/oscam.pem /etc/tuxbox/config/${CAMNAME}/oscam.provid /etc/tuxbox/config/${CAMNAME}/oscam.services /etc/tuxbox/config/${CAMNAME}/oscam.tiers"
 
 # Generate a simplistic standard init script
 # (sorry for the sleep 1, but start-stop-daemon -R does not work as advertised)
@@ -34,14 +38,11 @@ do_compile () {
 #!/bin/sh
 
 remove_tmp () {
-rm -rf /tmp/.oscam /media/usb/oscam/*
 }\
 
 
 case "\$1" in
 start)
-	remove_tmp
-	sleep 2
 	${CAMSTART}
 	;;
 stop)
@@ -49,8 +50,7 @@ stop)
 	sleep 2
 	killall -9 ${CAMNAME} 2>/dev/null
 	sleep 2
-	remove_tmp
-	sleep 2
+	rm -rf /tmp/.oscam
 	;;
 restart|reload)
 	\$0 stop
@@ -107,3 +107,7 @@ pkg_prerm_prepend () {
 	fi
 }
 
+do_install() {
+	install -d ${D}/etc/tuxbox/config/${CAMNAME}
+	install -m 0644 ${WORKDIR}/oscam.* ${D}/etc/tuxbox/config/${CAMNAME}/
+}
