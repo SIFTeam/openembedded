@@ -13,9 +13,6 @@ OECMAKE_SOURCEPATH = "${WORKDIR}/${MODULE}"
 EXTRA_OEMAKE = "-c ${OECMAKE_BUILDPATH} "
 
 
-
-
-
 SRC_URI = "${URI}"
 # SRC_URI = "svn://streamboard.gmc.to/svn/oscam;module=trunk;proto=http;scmdata=keep;rev=${SRCREV}"
 # SRC_URI = "svn://oscam.ump2002.net/svn/oscam;module=trunk;proto=http;rev=${SRCREV}"

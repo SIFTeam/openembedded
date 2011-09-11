@@ -37,10 +37,6 @@ do_compile () {
 		cat > init.${CAMNAME} << EOF
 #!/bin/sh
 
-remove_tmp () {
-}\
-
-
 case "\$1" in
 start)
 	${CAMSTART}

@@ -5,7 +5,7 @@ RCONFLICTS = "enigma2-plugin-softcams-${CAMNAME}-cs enigma2-plugin-softcams-osca
 PACKAGE_ARCH = "all"
 PN = "enigma2-plugin-softcams-${CAMNAME}"
 PV = "1.10"
-PR = "r3"
+PR = "r4"
 
 require softcamoscam.inc
 
