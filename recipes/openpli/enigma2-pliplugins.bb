@@ -7,8 +7,8 @@ DEPENDS = "nfs-utils ushare twistedsnmp"
 
 RDEPENDS_enigma2-plugin-pli-snmpagent = "enigma2-plugin-pli-bitrate twistedsnmp"
 
-DESCRIPTION_enigma2-plugin-upnp-ushare = "UPnP media server"
-RDEPENDS_enigma2-plugin-upnp-ushare = "ushare"
+DESCRIPTION_enigma2-plugin-extensions-ushare = "UPnP media server"
+RDEPENDS_enigma2-plugin-extensions-ushare = "ushare"
 
 DESCRIPTION_enigma2-plugin-pli-bitrate = "Bitrate viewer"
 DESCRIPTION_enigma2-plugin-pli-newsreader = "RSS reader"
