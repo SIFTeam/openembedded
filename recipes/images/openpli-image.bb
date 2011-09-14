@@ -8,6 +8,7 @@ IMAGE_INSTALL = " \
 				inetd \
 				vsftpd \
 				util-linux-ng-sfdisk \
+				util-linux-ng-blkid \
 				avahi-daemon \
 				fakelocale \
 				timezones-alternative \
