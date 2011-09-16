@@ -1,7 +1,11 @@
 #!/bin/sh
 
-MOUNTPOINT="/media/$MDEV"
-NOTIFYDEVNAME=$MDEV
+notify() {
+	# we don't really depend on the hotplug_e2_helper, but when it exists, call it
+	if [ -x /usr/bin/hotplug_e2_helper ]; then
+		/usr/bin/hotplug_e2_helper $ACTION /block/$MDEV $PHYSDEVPATH
+	fi
+}
 
 case "$ACTION" in
 	add|"")
@@ -27,8 +31,6 @@ case "$ACTION" in
                         # Already mounted
                         exit 0
                 fi
-		# remove old mountpoint symlinks we might have for this device
-		rm -f $MOUNTPOINT
 		# first allow fstab to determine the mountpoint
 		grep -q "/dev/$MDEV" /etc/fstab && mount /dev/$MDEV
 		if [ $? -ne 0 ] ; then
@@ -47,61 +49,21 @@ case "$ACTION" in
 			else
 				DEVICETYPE="usb"
 			fi
-			touch /dev/mdev.$DEVICETYPE
-			DEVSTATE=`cat /dev/mdev.$DEVICETYPE`
-			if [ -z $DEVSTATE ]; then
+			if grep -q " /media/$DEVICETYPE " /proc/mounts || grep -q -w "/media/$DEVICETYPE" /etc/fstab
+			then
+			        # DEVICETYPE already mounted, or in fstab
+				MOUNTPOINT="/media/$MDEV"
+			else
 				MOUNTPOINT="/media/$DEVICETYPE"
-				NOTIFYDEVNAME=$DEVICETYPE
-				echo $MDEV > /dev/mdev.$DEVICETYPE
 			fi
 			mkdir -p $MOUNTPOINT
 			mount -t auto /dev/$MDEV $MOUNTPOINT
-			rm -f /autofs/$MDEV
-			ln -s $MOUNTPOINT /autofs/$MDEV
-		else
-			# we used an fstab entry, try to find out what happened
-			finddevice ()
-			{
-				DEVICETYPE="$1"
-				cat /proc/mounts | grep /media/$DEVICETYPE | grep /dev/$MDEV
-				if [ $? -eq 0 ]; then
-					# we've just mounted our device on /media/$DEVICETYPE
-					NOTIFYDEVNAME=$DEVICETYPE
-					echo $MDEV > /dev/mdev.$DEVICETYPE
-				fi
-			}
-			finddevice "hdd"
-			finddevice "usb"
-			finddevice "cf"
-		fi
-		# we don't really depend on the hotplug_e2_helper, but when it exists, call it
-		if [ -x /usr/bin/hotplug_e2_helper ]; then
-			/usr/bin/hotplug_e2_helper $ACTION /block/$MDEV $PHYSDEVPATH
-		fi
+  		fi
 		;;
-	remove)
-		umount /dev/$MDEV
-		finddevice ()
-		{
-			DEVICETYPE="$1"
-			touch /dev/mdev.$DEVICETYPE
-			DEVSTATE=`cat /dev/mdev.$DEVICETYPE`
-			if [ $DEVSTATE == $MDEV ]; then
-				rm /dev/mdev.$DEVICETYPE
-				NOTIFYDEVNAME=$DEVICETYPE
-			fi
-		}
-		finddevice "hdd"
-		finddevice "usb"
-		finddevice "cf"
-		# in case we had an automatic mountpoint, remove it
-		rmdir $MOUNTPOINT
-		# in case it was a symlink, remove that as well
-		rm -f $MOUNTPOINT
-		rm -f /autofs/$MDEV
-		# we don't really depend on the hotplug_e2_helper, but when it exists, call it
-		if [ -x /usr/bin/hotplug_e2_helper ]; then
-			/usr/bin/hotplug_e2_helper $ACTION /block/$MDEV $PHYSDEVPATH
-		fi
+	*)
+		# Unexpected keyword
+		exit 1
 		;;
 esac
+
+notify

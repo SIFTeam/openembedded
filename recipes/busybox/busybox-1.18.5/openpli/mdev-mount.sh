@@ -1,8 +1,5 @@
 #!/bin/sh
 
-MOUNTPOINT="/media/$MDEV"
-NOTIFYDEVNAME=$MDEV
-
 notify() {
 	# we don't really depend on the hotplug_e2_helper, but when it exists, call it
 	if [ -x /usr/bin/hotplug_e2_helper ]; then
@@ -72,55 +69,23 @@ case "$ACTION" in
 					DEVICETYPE="usb"
 				fi
 			fi
-			touch /dev/mdev.$DEVICETYPE
-			DEVSTATE=`cat /dev/mdev.$DEVICETYPE`
-			if [ -z $DEVSTATE ]; then
+			if grep -q " /media/$DEVICETYPE " /proc/mounts || grep -q -w "/media/$DEVICETYPE" /etc/fstab
+			then
+			        # DEVICETYPE already mounted, or in fstab
+				MOUNTPOINT="/media/$MDEV"
+			else
 				MOUNTPOINT="/media/$DEVICETYPE"
-				NOTIFYDEVNAME=$DEVICETYPE
-				echo $MDEV > /dev/mdev.$DEVICETYPE
 			fi
 			mkdir -p $MOUNTPOINT
 			mount -t auto /dev/$MDEV $MOUNTPOINT
-			rm -f /autofs/$MDEV
-			ln -s $MOUNTPOINT /autofs/$MDEV
-		else
-			# we used an fstab entry, try to find out what happened
-			finddevice ()
-			{
-				DEVICETYPE="$1"
-				cat /proc/mounts | grep /media/$DEVICETYPE | grep /dev/$MDEV
-				if [ $? -eq 0 ]; then
-					# we've just mounted our device on /media/$DEVICETYPE
-					NOTIFYDEVNAME=$DEVICETYPE
-					echo $MDEV > /dev/mdev.$DEVICETYPE
-				fi
-			}
-			finddevice "hdd"
-			finddevice "usb"
-			finddevice "cf"
-			finddevice "mmc1"
+			# Do we really need /autofs?
+			ln -s -f $MOUNTPOINT /autofs/$MDEV
 		fi
 		;;
 	remove)
 		umount /dev/$MDEV
-		finddevice ()
-		{
-			DEVICETYPE="$1"
-			touch /dev/mdev.$DEVICETYPE
-			DEVSTATE=`cat /dev/mdev.$DEVICETYPE`
-			if [ "${DEVSTATE}" == "${MDEV}" ]; then
-				rm /dev/mdev.$DEVICETYPE
-				NOTIFYDEVNAME=$DEVICETYPE
-			fi
-		}
-		finddevice "hdd"
-		finddevice "usb"
-		finddevice "cf"
-		finddevice "mmc1"
-		# remove automatic mountpoint (if not empty...)
-		rmdir $MOUNTPOINT
-		# in case it was a symlink, remove that as well
-		rm -f $MOUNTPOINT
+		# remove automatic mountpoint or symlink (if empty)
+		rmdir /media/$MDEV || rm -f /media/$MDEV
 		rm -f /autofs/$MDEV
 		;;
 	*)
