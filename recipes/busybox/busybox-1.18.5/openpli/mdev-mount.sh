@@ -15,8 +15,6 @@ case "$ACTION" in
 			# Already mounted
 			exit 0
 		fi
-		# remove old mountpoint symlinks we might have for this device
-		rm -f $MOUNTPOINT
 		DEVBASE=`expr substr $MDEV 1 3`
 		# check for "please don't mount it" file
 		if [ -f "/dev/nomount.${DEVBASE}" ] ; then
@@ -40,8 +38,8 @@ case "$ACTION" in
 			fi
 		fi
 		# first allow fstab to determine the mountpoint
-		mount /dev/$MDEV
-		if [ $? -ne 0 ] ; then
+		if ! mount /dev/$MDEV
+		then
 			# no fstab entry, use automatic mountpoint
 			REMOVABLE=`cat /sys/block/$DEVBASE/removable`
 			MODEL=`cat /sys/block/$DEVBASE/device/model`
