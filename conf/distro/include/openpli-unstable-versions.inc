@@ -55,7 +55,7 @@ RYTECSETTINGS_SRCDATE ?= "20110912"
 SRCDATE_enigma2-plugin-settings-rytec-13e19e23e28e ?= "${RYTECSETTINGS_SRCDATE}"
 SRCDATE_enigma2-plugin-settings-rytec-motor ?= "${RYTECSETTINGS_SRCDATE}"
 
-HENKSAT_SRCDATE ?= "20110609"
+HENKSAT_SRCDATE ?= "20110919"
 SRCDATE_enigma2-plugin-settings-henksat-19e ?= "${HENKSAT_SRCDATE}"
 SRCDATE_enigma2-plugin-settings-henksat-13e-19e ?= "${HENKSAT_SRCDATE}"
 SRCDATE_enigma2-plugin-settings-henksat-19e-23e ?= "${HENKSAT_SRCDATE}"
