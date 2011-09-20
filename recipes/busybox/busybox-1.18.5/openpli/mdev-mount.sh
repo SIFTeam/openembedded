@@ -76,15 +76,12 @@ case "$ACTION" in
 			fi
 			mkdir -p $MOUNTPOINT
 			mount -t auto /dev/$MDEV $MOUNTPOINT
-			# Do we really need /autofs?
-			ln -s -f $MOUNTPOINT /autofs/$MDEV
 		fi
 		;;
 	remove)
 		umount /dev/$MDEV
 		# remove automatic mountpoint or symlink (if empty)
 		rmdir /media/$MDEV || rm -f /media/$MDEV
-		rm -f /autofs/$MDEV
 		;;
 	*)
 		# Unexpected keyword
