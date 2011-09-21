@@ -8,7 +8,7 @@ RREPLACES_${PN} = "et9000-fpupdate"
 PV = "1.0"
 PR = "r3"
 
-FPVERSION = "11"
+FPVERSION = "13"
 
 SRC_URI = " \
 	http://www.et-view.com/download/fpupdate-${PV}.zip \
