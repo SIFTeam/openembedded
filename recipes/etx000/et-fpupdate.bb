@@ -5,13 +5,15 @@ PRIORITY = "optional"
 RCONFLICTS_${PN} = "et9000-fpupdate"
 RREPLACES_${PN} = "et9000-fpupdate"
 
-PV = "1.0"
 PR = "r3"
 
 FPVERSION = "13"
+FPUPDATE = "1.0"
+
+PV = "${FPVERSION}"
 
 SRC_URI = " \
-	http://www.et-view.com/download/fpupdate-${PV}.zip \
+	http://www.et-view.com/download/fpupdate-${FPUPDATE}.zip \
 	http://www.et-view.com/download/avrmain-${MACHINE}-${FPVERSION}.hex \
 	"
 S = "${WORKDIR}"
