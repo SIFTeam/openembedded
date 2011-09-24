@@ -53,6 +53,7 @@ gst-plugin-icydemux.* \
 gst-plugin-id3demux.* \
 gst-plugin-imagefreeze.* \
 gst-plugin-interleave.* \
+gst-plugin-isomp4.* \
 gst-plugin-jack.* \
 gst-plugin-jpeg.* \
 gst-plugin-level.* \
