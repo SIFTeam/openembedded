@@ -12,7 +12,7 @@ DEPENDS_openpli += "gst-plugins-base"
 RCONFLICTS_gst-plugin-mpegdemux = "gst-plugin-fluendo-mpegdemux"
 RREPLACES_gst-plugin-mpegdemux = "gst-plugin-fluendo-mpegdemux"
 
-PR = "${INC_PR}.0"
+PR = "${INC_PR}.1"
 
 do_configure_prepend() {
     sed -i -e s:docs::g Makefile.am
@@ -33,6 +33,10 @@ EXTRA_OECONF_openpli += " \
 		--disable-mplex \
 		--disable-librfb \
 		--disable-vdpau \
+		--disable-examples \
+		--disable-sdltest \
+		--disable-curl \
+		--disable-rsvg \
 "
 
 PACKAGES_DYNAMIC = "\
