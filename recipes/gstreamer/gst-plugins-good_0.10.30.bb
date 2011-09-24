@@ -13,7 +13,7 @@ DEPENDS += "hal pulseaudio speex libsoup-2.4 flac gst-plugins-base openssl popt 
 DEPENDS_openpli += "libsoup-2.4 flac gst-plugins-base"
 
 # cairo needs X11
-EXTRA_OECONF += "--disable-cairo"
+EXTRA_OECONF_openpli += "--disable-cairo"
 
 PACKAGES =+ "gst-plugin-gconfelements"
 FILES_gst-plugin-gconfelements += "${sysconfdir}/gconf"
