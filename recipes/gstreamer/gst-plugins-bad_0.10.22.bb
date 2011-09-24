@@ -41,7 +41,6 @@ gst-plugin-adpcmenc.* \
 gst-plugin-aiff.* \
 gst-plugin-apexsink.* \
 gst-plugin-asfmux.* \
-gst-plugin-audioparsersbad.* \
 gst-plugin-autoconvert.* \
 gst-plugin-bayer.* \
 gst-plugin-bz2.* \

@@ -29,6 +29,7 @@ gst-plugin-alphacolor.* \
 gst-plugin-annodex.* \
 gst-plugin-apetag.* \
 gst-plugin-audiofx.* \
+gst-plugin-audioparsers.* \
 gst-plugin-auparse.* \
 gst-plugin-autodetect.* \
 gst-plugin-avi.* \

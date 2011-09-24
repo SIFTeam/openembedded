@@ -15,7 +15,7 @@ RDEPENDS_${PN} = "python-codecs python-core python-lang python-re python-threadi
 	gst-plugin-wavparse python-netclient gst-plugin-mpegstream \
 	gst-plugin-flac gst-plugin-mpegdemux gst-plugin-dvdsub \
 	gst-plugin-souphttpsrc gst-plugin-mpegaudioparse gst-plugin-subparse \
-	gst-plugin-apetag gst-plugin-icydemux gst-plugin-autodetect gst-plugin-audioparsersbad \
+	gst-plugin-apetag gst-plugin-icydemux gst-plugin-autodetect gst-plugin-audioparsers \
 	python-twisted-core python-elementtree python-compression \
 	python-utf8-hack \
 	enigma2-fonts \
