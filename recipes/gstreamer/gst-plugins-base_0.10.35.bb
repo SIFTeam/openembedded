@@ -9,7 +9,7 @@ SRC_URI_append_openpli = "\
 	file://1e0ddb12aa1c2b13c4bc4a13712ebd7f06a6346e.patch \
 "
 
-PR = "${INC_PR}.0"
+PR = "${INC_PR}.1"
 
 PROVIDES += "gst-plugins"
 
@@ -27,7 +27,8 @@ def get_gstreamer_fpu_setting(bb, d):
 
 # Needs a udev that enabled gudev, which isn't the default
 EXTRA_OECONF += "--with-gudev --disable-gnome_vfs ${@get_gstreamer_fpu_setting(bb, d)}"
-EXTRA_OECONF_openpli += "--disable-theora -disable-gnome_vfs --disable-pango --with-audioresample-format=int"
+EXTRA_OECONF_openpli += "--disable-theora -disable-gnome_vfs --disable-pango --with-audioresample-format=int \
+			--disable-examples --disable-oggtest --disable-vorbistest --disable-freetypetest --disable-x"
 
 do_configure_prepend() {
 	sed -i -e s:QtGui:NoQtGui:g ${S}/configure.ac
