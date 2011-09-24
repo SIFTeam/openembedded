@@ -40,7 +40,7 @@ RDEPENDS_${PN} += "${@base_contains("MACHINE_FEATURES", "alsa", "gst-plugin-alsa
 # proper hdtv hardware should be able to playback these codecs (hmm, what about DVD/CD?)
 # and rtsp support is not expected to be useful without h264 decoder
 RDEPENDS_${PN} += "${@base_contains("MACHINE_FEATURES", "hdtv", "\
-	gst-plugin-avi gst-plugin-matroska gst-plugin-qtdemux \
+	gst-plugin-avi gst-plugin-matroska gst-plugin-isomp4 \
 	gst-plugin-udp gst-plugin-rtsp gst-plugin-rtp gst-plugin-rtpmanager \
 	gst-plugin-cdxaparse gst-plugin-cdio gst-plugin-vcdsrc", "", d)}"
 
