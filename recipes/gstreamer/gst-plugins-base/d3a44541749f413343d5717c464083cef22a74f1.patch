@@ -1,0 +1,704 @@
+From d3a44541749f413343d5717c464083cef22a74f1 Mon Sep 17 00:00:00 2001
+From: Sebastian Dröge <sebastian.droege@collabora.co.uk>
+Date: Tue, 15 Mar 2011 11:51:04 +0000
+Subject: playbin2/playsink: Decide if A/V caps are raw only inside playsink
+
+Before playbin2 would use different selectors for raw audio and
+compressed audio (and the same for video) and used different
+pads from playsink. This made the involved logic much more
+complex and was not implemented completely in playsink, which
+made it impossible to support files with a compressed and
+uncompressed stream that is support by the sink.
+
+playbin2 handles raw/non-raw streams the same now and the
+decision is left to playsink, which now can also handle
+caps changes from raw to non-raw and the other way around.
+
+Fixes bug #632788.
+---
+diff --git a/gst/playback/gstplaybin2.c b/gst/playback/gstplaybin2.c
+index 5f0f964..c46f110 100644
+--- a/gst/playback/gstplaybin2.c
++++ b/gst/playback/gstplaybin2.c
+@@ -1,5 +1,6 @@
+ /* GStreamer
+  * Copyright (C) <2007> Wim Taymans <wim.taymans@gmail.com>
++ * Copyright (C) <2011> Sebastian Dröge <sebastian.droege@collabora.co.uk>
+  *
+  * This library is free software; you can redistribute it and/or
+  * modify it under the terms of the GNU Library General Public
+@@ -271,6 +272,14 @@ struct _GstSourceSelect
+ #define GST_SOURCE_GROUP_LOCK(group) (g_mutex_lock (GST_SOURCE_GROUP_GET_LOCK(group)))
+ #define GST_SOURCE_GROUP_UNLOCK(group) (g_mutex_unlock (GST_SOURCE_GROUP_GET_LOCK(group)))
+ 
++enum
++{
++  PLAYBIN_STREAM_AUDIO = 0,
++  PLAYBIN_STREAM_VIDEO,
++  PLAYBIN_STREAM_TEXT,
++  PLAYBIN_STREAM_LAST
++};
++
+ /* a structure to hold the objects for decoding a uri and the subtitle uri
+  */
+ struct _GstSourceGroup
+@@ -319,7 +328,7 @@ struct _GstSourceGroup
+   GList *stream_changed_pending;
+ 
+   /* selectors for different streams */
+-  GstSourceSelect selector[GST_PLAY_SINK_TYPE_LAST];
++  GstSourceSelect selector[PLAYBIN_STREAM_LAST];
+ };
+ 
+ #define GST_PLAY_BIN_GET_LOCK(bin) (&((GstPlayBin*)(bin))->lock)
+@@ -1089,30 +1098,25 @@ init_group (GstPlayBin * playbin, GstSourceGroup * group)
+   /* If you add any items to these lists, check that media_list[] is defined
+    * above to be large enough to hold MAX(items)+1, so as to accomodate a
+    * NULL terminator (set when the memory is zeroed on allocation) */
+-  group->selector[0].media_list[0] = "audio/x-raw-";
+-  group->selector[0].type = GST_PLAY_SINK_TYPE_AUDIO_RAW;
+-  group->selector[0].channels = group->audio_channels;
+-  group->selector[1].media_list[0] = "audio/";
+-  group->selector[1].type = GST_PLAY_SINK_TYPE_AUDIO;
+-  group->selector[1].channels = group->audio_channels;
+-  group->selector[2].media_list[0] = "text/";
+-  group->selector[2].media_list[1] = "application/x-subtitle";
+-  group->selector[2].media_list[2] = "application/x-ssa";
+-  group->selector[2].media_list[3] = "application/x-ass";
+-  group->selector[2].media_list[4] = "video/x-dvd-subpicture";
+-  group->selector[2].media_list[5] = "subpicture/";
+-  group->selector[2].media_list[6] = "subtitle/";
+-  group->selector[2].get_media_caps = gst_subtitle_overlay_create_factory_caps;
+-  group->selector[2].type = GST_PLAY_SINK_TYPE_TEXT;
+-  group->selector[2].channels = group->text_channels;
+-  group->selector[3].media_list[0] = "video/x-raw-";
+-  group->selector[3].type = GST_PLAY_SINK_TYPE_VIDEO_RAW;
+-  group->selector[3].channels = group->video_channels;
+-  group->selector[4].media_list[0] = "video/";
+-  group->selector[4].type = GST_PLAY_SINK_TYPE_VIDEO;
+-  group->selector[4].channels = group->video_channels;
+-
+-  for (n = 0; n < GST_PLAY_SINK_TYPE_LAST; n++) {
++  group->selector[PLAYBIN_STREAM_AUDIO].media_list[0] = "audio/";
++  group->selector[PLAYBIN_STREAM_AUDIO].type = GST_PLAY_SINK_TYPE_AUDIO;
++  group->selector[PLAYBIN_STREAM_AUDIO].channels = group->audio_channels;
++  group->selector[PLAYBIN_STREAM_VIDEO].media_list[0] = "video/";
++  group->selector[PLAYBIN_STREAM_VIDEO].type = GST_PLAY_SINK_TYPE_VIDEO;
++  group->selector[PLAYBIN_STREAM_VIDEO].channels = group->video_channels;
++  group->selector[PLAYBIN_STREAM_TEXT].media_list[0] = "text/";
++  group->selector[PLAYBIN_STREAM_TEXT].media_list[1] = "application/x-subtitle";
++  group->selector[PLAYBIN_STREAM_TEXT].media_list[2] = "application/x-ssa";
++  group->selector[PLAYBIN_STREAM_TEXT].media_list[3] = "application/x-ass";
++  group->selector[PLAYBIN_STREAM_TEXT].media_list[4] = "video/x-dvd-subpicture";
++  group->selector[PLAYBIN_STREAM_TEXT].media_list[5] = "subpicture/";
++  group->selector[PLAYBIN_STREAM_TEXT].media_list[6] = "subtitle/";
++  group->selector[PLAYBIN_STREAM_TEXT].get_media_caps =
++      gst_subtitle_overlay_create_factory_caps;
++  group->selector[PLAYBIN_STREAM_TEXT].type = GST_PLAY_SINK_TYPE_TEXT;
++  group->selector[PLAYBIN_STREAM_TEXT].channels = group->text_channels;
++
++  for (n = 0; n < PLAYBIN_STREAM_LAST; n++) {
+     GstSourceSelect *select = &group->selector[n];
+     select->sinkpad_delayed_event = NULL;
+     select->sinkpad_data_probe = 0;
+@@ -1124,7 +1128,7 @@ free_group (GstPlayBin * playbin, GstSourceGroup * group)
+ {
+   int n;
+ 
+-  for (n = 0; n < GST_PLAY_SINK_TYPE_LAST; n++) {
++  for (n = 0; n < PLAYBIN_STREAM_LAST; n++) {
+     GstSourceSelect *select = &group->selector[n];
+     if (select->sinkpad && select->sinkpad_data_probe)
+       gst_pad_remove_data_probe (select->sinkpad, select->sinkpad_data_probe);
+@@ -1493,6 +1497,10 @@ gst_play_bin_set_current_video_stream (GstPlayBin * playbin, gint stream)
+   GstPad *sinkpad;
+ 
+   GST_PLAY_BIN_LOCK (playbin);
++
++  GST_DEBUG_OBJECT (playbin, "Changing current video stream %d -> %d",
++      playbin->current_video, stream);
++
+   group = get_group (playbin);
+   if (!(channels = group->video_channels))
+     goto no_channels;
+@@ -1536,6 +1544,10 @@ gst_play_bin_set_current_audio_stream (GstPlayBin * playbin, gint stream)
+   GstPad *sinkpad;
+ 
+   GST_PLAY_BIN_LOCK (playbin);
++
++  GST_DEBUG_OBJECT (playbin, "Changing current audio stream %d -> %d",
++      playbin->current_audio, stream);
++
+   group = get_group (playbin);
+   if (!(channels = group->audio_channels))
+     goto no_channels;
+@@ -1647,6 +1659,10 @@ gst_play_bin_set_current_text_stream (GstPlayBin * playbin, gint stream)
+   GstPad *sinkpad;
+ 
+   GST_PLAY_BIN_LOCK (playbin);
++
++  GST_DEBUG_OBJECT (playbin, "Changing current text stream %d -> %d",
++      playbin->current_text, stream);
++
+   group = get_group (playbin);
+   if (!(channels = group->text_channels))
+     goto no_channels;
+@@ -2306,7 +2322,7 @@ selector_active_pad_changed (GObject * selector, GParamSpec * pspec,
+   GST_PLAY_BIN_LOCK (playbin);
+   group = get_group (playbin);
+ 
+-  for (i = 0; i < GST_PLAY_SINK_TYPE_LAST; i++) {
++  for (i = 0; i < PLAYBIN_STREAM_LAST; i++) {
+     if (selector == G_OBJECT (group->selector[i].selector)) {
+       select = &group->selector[i];
+     }
+@@ -2392,7 +2408,7 @@ array_has_value (const gchar * values[], const gchar * value)
+   gint i;
+ 
+   for (i = 0; values[i]; i++) {
+-    if (g_str_has_prefix (value, values[i]))
++    if (values[i] && g_str_has_prefix (value, values[i]))
+       return TRUE;
+   }
+   return FALSE;
+@@ -2464,7 +2480,7 @@ pad_added_cb (GstElement * decodebin, GstPad * pad, GstSourceGroup * group)
+       GST_DEBUG_PAD_NAME (pad), caps, group);
+ 
+   /* major type of the pad, this determines the selector to use */
+-  for (i = 0; i < GST_PLAY_SINK_TYPE_LAST; i++) {
++  for (i = 0; i < PLAYBIN_STREAM_LAST; i++) {
+     if (array_has_value (group->selector[i].media_list, name)) {
+       select = &group->selector[i];
+       break;
+@@ -2723,7 +2739,7 @@ no_more_pads_cb (GstElement * decodebin, GstSourceGroup * group)
+   GST_PLAY_BIN_SHUTDOWN_LOCK (playbin, shutdown);
+ 
+   GST_SOURCE_GROUP_LOCK (group);
+-  for (i = 0; i < GST_PLAY_SINK_TYPE_LAST; i++) {
++  for (i = 0; i < PLAYBIN_STREAM_LAST; i++) {
+     GstSourceSelect *select = &group->selector[i];
+ 
+     /* check if the specific media type was detected and thus has a selector
+@@ -2786,14 +2802,10 @@ no_more_pads_cb (GstElement * decodebin, GstSourceGroup * group)
+ 
+     GST_SOURCE_GROUP_UNLOCK (group);
+ 
+-    GST_LOG_OBJECT (playbin, "reconfigure sink");
+-    /* we configure the modes if we were the last decodebin to complete. */
+-    gst_play_sink_reconfigure (playbin->playsink);
+-
+     /* signal the other decodebins that they can continue now. */
+     GST_SOURCE_GROUP_LOCK (group);
+     /* unblock all selectors */
+-    for (i = 0; i < GST_PLAY_SINK_TYPE_LAST; i++) {
++    for (i = 0; i < PLAYBIN_STREAM_LAST; i++) {
+       GstSourceSelect *select = &group->selector[i];
+ 
+       /* All streamsynchronizer streams should see stream-changed message,
+@@ -2859,7 +2871,7 @@ shutdown:
+      * instead of a NOT_LINKED error.
+      */
+     GST_SOURCE_GROUP_LOCK (group);
+-    for (i = 0; i < GST_PLAY_SINK_TYPE_LAST; i++) {
++    for (i = 0; i < PLAYBIN_STREAM_LAST; i++) {
+       GstSourceSelect *select = &group->selector[i];
+ 
+       if (select->srcpad) {
+@@ -3457,7 +3469,7 @@ deactivate_group (GstPlayBin * playbin, GstSourceGroup * group)
+ 
+   GST_SOURCE_GROUP_LOCK (group);
+   group->active = FALSE;
+-  for (i = 0; i < GST_PLAY_SINK_TYPE_LAST; i++) {
++  for (i = 0; i < PLAYBIN_STREAM_LAST; i++) {
+     GstSourceSelect *select = &group->selector[i];
+ 
+     GST_DEBUG_OBJECT (playbin, "unlinking selector %s", select->media_list[0]);
+diff --git a/gst/playback/gstplaysink.c b/gst/playback/gstplaysink.c
+index 326baa6..3661af3 100644
+--- a/gst/playback/gstplaysink.c
++++ b/gst/playback/gstplaysink.c
+@@ -1,5 +1,6 @@
+ /* GStreamer
+  * Copyright (C) <2007> Wim Taymans <wim.taymans@gmail.com>
++ * Copyright (C) <2011> Sebastian Dröge <sebastian.droege@collabora.co.uk>
+  *
+  * This library is free software; you can redistribute it and/or
+  * modify it under the terms of the GNU Library General Public
+@@ -149,6 +150,7 @@ struct _GstPlaySink
+   /* audio */
+   GstPad *audio_pad;
+   gboolean audio_pad_raw;
++  gboolean audio_pad_blocked;
+   GstPad *audio_srcpad_stream_synchronizer;
+   GstPad *audio_sinkpad_stream_synchronizer;
+   /* audio tee */
+@@ -159,10 +161,12 @@ struct _GstPlaySink
+   /* video */
+   GstPad *video_pad;
+   gboolean video_pad_raw;
++  gboolean video_pad_blocked;
+   GstPad *video_srcpad_stream_synchronizer;
+   GstPad *video_sinkpad_stream_synchronizer;
+   /* text */
+   GstPad *text_pad;
++  gboolean text_pad_blocked;
+   GstPad *text_srcpad_stream_synchronizer;
+   GstPad *text_sinkpad_stream_synchronizer;
+ 
+@@ -191,31 +195,35 @@ struct _GstPlaySinkClass
+   GstBuffer *(*convert_frame) (GstPlaySink * playsink, GstCaps * caps);
+ };
+ 
+-static GstStaticPadTemplate audiorawtemplate =
+-GST_STATIC_PAD_TEMPLATE ("audio_raw_sink",
++
++static GstStaticPadTemplate audiotemplate =
++GST_STATIC_PAD_TEMPLATE ("audio_sink",
+     GST_PAD_SINK,
+     GST_PAD_REQUEST,
+     GST_STATIC_CAPS_ANY);
+-static GstStaticPadTemplate audiotemplate =
+-GST_STATIC_PAD_TEMPLATE ("audio_sink",
++static GstStaticPadTemplate videotemplate =
++GST_STATIC_PAD_TEMPLATE ("video_sink",
+     GST_PAD_SINK,
+     GST_PAD_REQUEST,
+     GST_STATIC_CAPS_ANY);
+-static GstStaticPadTemplate videorawtemplate =
+-GST_STATIC_PAD_TEMPLATE ("video_raw_sink",
++static GstStaticPadTemplate texttemplate = GST_STATIC_PAD_TEMPLATE ("text_sink",
+     GST_PAD_SINK,
+     GST_PAD_REQUEST,
+     GST_STATIC_CAPS_ANY);
+-static GstStaticPadTemplate videotemplate =
+-GST_STATIC_PAD_TEMPLATE ("video_sink",
++
++/* FIXME 0.11: Remove */
++static GstStaticPadTemplate audiorawtemplate =
++GST_STATIC_PAD_TEMPLATE ("audio_raw_sink",
+     GST_PAD_SINK,
+     GST_PAD_REQUEST,
+     GST_STATIC_CAPS_ANY);
+-static GstStaticPadTemplate texttemplate = GST_STATIC_PAD_TEMPLATE ("text_sink",
++static GstStaticPadTemplate videorawtemplate =
++GST_STATIC_PAD_TEMPLATE ("video_raw_sink",
+     GST_PAD_SINK,
+     GST_PAD_REQUEST,
+     GST_STATIC_CAPS_ANY);
+ 
++
+ /* props */
+ enum
+ {
+@@ -613,6 +621,7 @@ gst_play_sink_get_sink (GstPlaySink * playsink, GstPlaySinkType type)
+   GST_PLAY_SINK_LOCK (playsink);
+   switch (type) {
+     case GST_PLAY_SINK_TYPE_AUDIO:
++    case GST_PLAY_SINK_TYPE_AUDIO_RAW:
+     {
+       GstPlayAudioChain *chain;
+       if ((chain = (GstPlayAudioChain *) playsink->audiochain))
+@@ -621,6 +630,7 @@ gst_play_sink_get_sink (GstPlaySink * playsink, GstPlaySinkType type)
+       break;
+     }
+     case GST_PLAY_SINK_TYPE_VIDEO:
++    case GST_PLAY_SINK_TYPE_VIDEO_RAW:
+     {
+       GstPlayVideoChain *chain;
+       if ((chain = (GstPlayVideoChain *) playsink->videochain))
+@@ -1077,7 +1087,7 @@ try_element (GstPlaySink * playsink, GstElement * element, gboolean unref)
+ }
+ 
+ /* make the element (bin) that contains the elements needed to perform
+- * video display.
++ * video display. Only used for *raw* video streams.
+  *
+  *  +------------------------------------------------------------+
+  *  | vbin                                                       |
+@@ -1378,13 +1388,13 @@ setup_video_chain (GstPlaySink * playsink, gboolean raw, gboolean async)
+ 
+   chain = playsink->videochain;
+ 
++  if (chain->chain.raw != raw)
++    return FALSE;
++
+   /* if the chain was active we don't do anything */
+   if (GST_PLAY_CHAIN (chain)->activated == TRUE)
+     return TRUE;
+ 
+-  if (chain->chain.raw != raw)
+-    return FALSE;
+-
+   /* try to set the sink element to READY again */
+   ret = gst_element_set_state (chain->sink, GST_STATE_READY);
+   if (ret == GST_STATE_CHANGE_FAILURE)
+@@ -1413,6 +1423,7 @@ setup_video_chain (GstPlaySink * playsink, gboolean raw, gboolean async)
+ }
+ 
+ /* make an element for playback of video with subtitles embedded.
++ * Only used for *raw* video streams.
+  *
+  *  +--------------------------------------------+
+  *  | tbin                                       |
+@@ -1910,13 +1921,13 @@ setup_audio_chain (GstPlaySink * playsink, gboolean raw)
+ 
+   chain = playsink->audiochain;
+ 
++  if (chain->chain.raw != raw)
++    return FALSE;
++
+   /* if the chain was active we don't do anything */
+   if (GST_PLAY_CHAIN (chain)->activated == TRUE)
+     return TRUE;
+ 
+-  if (chain->chain.raw != raw)
+-    return FALSE;
+-
+   /* try to set the sink element to READY again */
+   ret = gst_element_set_state (chain->sink, GST_STATE_READY);
+   if (ret == GST_STATE_CHANGE_FAILURE)
+@@ -2849,6 +2860,200 @@ gst_play_sink_convert_frame (GstPlaySink * playsink, GstCaps * caps)
+   return result;
+ }
+ 
++static gboolean
++is_raw_structure (GstStructure * s)
++{
++  const gchar *name;
++
++  name = gst_structure_get_name (s);
++
++  if (g_str_has_prefix (name, "video/x-raw-") ||
++      g_str_has_prefix (name, "audio/x-raw-"))
++    return TRUE;
++  return FALSE;
++}
++
++static gboolean
++is_raw_pad (GstPad * pad)
++{
++  GstPad *peer = gst_pad_get_peer (pad);
++  GstCaps *caps;
++  gboolean raw = TRUE;
++
++  if (!peer)
++    return raw;
++
++  caps = gst_pad_get_negotiated_caps (peer);
++  if (!caps) {
++    guint i, n;
++
++    caps = gst_pad_get_caps_reffed (peer);
++
++    n = gst_caps_get_size (caps);
++    for (i = 0; i < n; i++) {
++      gboolean r = is_raw_structure (gst_caps_get_structure (caps, i));
++
++      if (i == 0) {
++        raw = r;
++      } else if (raw != r) {
++        GST_ERROR_OBJECT (pad,
++            "Caps contains raw and non-raw structures: %" GST_PTR_FORMAT, caps);
++        raw = FALSE;
++        break;
++      }
++    }
++  } else {
++    raw = is_raw_structure (gst_caps_get_structure (caps, 0));
++  }
++  gst_caps_unref (caps);
++  gst_object_unref (peer);
++
++  return raw;
++}
++
++static GstPad *
++get_internally_linked_pad (GstPad * pad)
++{
++  GstIterator *it;
++  GstPad *res = NULL;
++
++  it = gst_pad_iterate_internal_links (pad);
++  if (!it)
++    return NULL;
++
++  gst_iterator_next (it, (gpointer) & res);
++  gst_iterator_free (it);
++
++  return res;
++}
++
++static void
++sinkpad_blocked_cb (GstPad * blockedpad, gboolean blocked, gpointer user_data)
++{
++  GstPlaySink *playsink = (GstPlaySink *) user_data;
++  GstPad *pad;
++
++  GST_PLAY_SINK_LOCK (playsink);
++
++  pad = get_internally_linked_pad (blockedpad);
++  if (pad == playsink->video_pad) {
++    playsink->video_pad_blocked = blocked;
++    GST_DEBUG_OBJECT (pad, "Video pad blocked: %d", blocked);
++  } else if (pad == playsink->audio_pad) {
++    playsink->audio_pad_blocked = blocked;
++    GST_DEBUG_OBJECT (pad, "Audio pad blocked: %d", blocked);
++  } else if (pad == playsink->text_pad) {
++    playsink->text_pad_blocked = blocked;
++    GST_DEBUG_OBJECT (pad, "Text pad blocked: %d", blocked);
++  }
++
++  if (!blocked) {
++    gst_object_unref (pad);
++    GST_PLAY_SINK_UNLOCK (playsink);
++    return;
++  }
++
++  if ((!playsink->video_pad || playsink->video_pad_blocked) &&
++      (!playsink->audio_pad || playsink->audio_pad_blocked) &&
++      (!playsink->text_pad || playsink->text_pad_blocked)) {
++    GST_DEBUG_OBJECT (playsink, "All pads blocked -- reconfiguring");
++
++    if (playsink->video_pad) {
++      playsink->video_pad_raw = is_raw_pad (playsink->video_pad);
++      GST_DEBUG_OBJECT (playsink, "Video pad is raw: %d",
++          playsink->video_pad_raw);
++    }
++
++    if (playsink->audio_pad) {
++      playsink->audio_pad_raw = is_raw_pad (playsink->audio_pad);
++      GST_DEBUG_OBJECT (playsink, "Audio pad is raw: %d",
++          playsink->audio_pad_raw);
++    }
++
++    gst_play_sink_reconfigure (playsink);
++
++    if (playsink->video_pad) {
++      GstPad *opad = get_internally_linked_pad (playsink->video_pad);
++      gst_pad_set_blocked_async_full (opad, FALSE, sinkpad_blocked_cb,
++          gst_object_ref (playsink), (GDestroyNotify) gst_object_unref);
++      gst_object_unref (opad);
++    }
++
++    if (playsink->audio_pad) {
++      GstPad *opad = get_internally_linked_pad (playsink->audio_pad);
++      gst_pad_set_blocked_async_full (opad, FALSE, sinkpad_blocked_cb,
++          gst_object_ref (playsink), (GDestroyNotify) gst_object_unref);
++      gst_object_unref (opad);
++    }
++
++    if (playsink->text_pad) {
++      GstPad *opad = get_internally_linked_pad (playsink->text_pad);
++      gst_pad_set_blocked_async_full (opad, FALSE, sinkpad_blocked_cb,
++          gst_object_ref (playsink), (GDestroyNotify) gst_object_unref);
++      gst_object_unref (opad);
++    }
++  }
++
++  gst_object_unref (pad);
++
++  GST_PLAY_SINK_UNLOCK (playsink);
++}
++
++static void
++caps_notify_cb (GstPad * pad, GParamSpec * unused, GstPlaySink * playsink)
++{
++  gboolean reconfigure = FALSE;
++  GstCaps *caps;
++  gboolean raw;
++
++  g_object_get (pad, "caps", &caps, NULL);
++  if (!caps)
++    return;
++
++  if (pad == playsink->audio_pad) {
++    raw = is_raw_pad (pad);
++    reconfigure = (! !playsink->audio_pad_raw != ! !raw)
++        && playsink->audiochain;
++    GST_DEBUG_OBJECT (pad,
++        "Audio caps changed: raw %d reconfigure %d caps %" GST_PTR_FORMAT, raw,
++        reconfigure, caps);
++  } else if (pad == playsink->video_pad) {
++    raw = is_raw_pad (pad);
++    reconfigure = (! !playsink->video_pad_raw != ! !raw)
++        && playsink->videochain;
++    GST_DEBUG_OBJECT (pad,
++        "Video caps changed: raw %d reconfigure %d caps %" GST_PTR_FORMAT, raw,
++        reconfigure, caps);
++  }
++
++  gst_caps_unref (caps);
++
++  if (reconfigure) {
++    GST_PLAY_SINK_LOCK (playsink);
++    if (playsink->video_pad) {
++      GstPad *opad = get_internally_linked_pad (playsink->video_pad);
++      gst_pad_set_blocked_async_full (opad, TRUE, sinkpad_blocked_cb,
++          gst_object_ref (playsink), (GDestroyNotify) gst_object_unref);
++      gst_object_unref (opad);
++    }
++
++    if (playsink->audio_pad) {
++      GstPad *opad = get_internally_linked_pad (playsink->audio_pad);
++      gst_pad_set_blocked_async_full (opad, TRUE, sinkpad_blocked_cb,
++          gst_object_ref (playsink), (GDestroyNotify) gst_object_unref);
++      gst_object_unref (opad);
++    }
++
++    if (playsink->text_pad) {
++      GstPad *opad = get_internally_linked_pad (playsink->text_pad);
++      gst_pad_set_blocked_async_full (opad, TRUE, sinkpad_blocked_cb,
++          gst_object_ref (playsink), (GDestroyNotify) gst_object_unref);
++      gst_object_unref (opad);
++    }
++    GST_PLAY_SINK_UNLOCK (playsink);
++  }
++}
++
+ /**
+  * gst_play_sink_request_pad
+  * @playsink: a #GstPlaySink
+@@ -2863,7 +3068,6 @@ gst_play_sink_request_pad (GstPlaySink * playsink, GstPlaySinkType type)
+ {
+   GstPad *res = NULL;
+   gboolean created = FALSE;
+-  gboolean raw = FALSE;
+   gboolean activate = TRUE;
+   const gchar *pad_name = NULL;
+ 
+@@ -2872,11 +3076,8 @@ gst_play_sink_request_pad (GstPlaySink * playsink, GstPlaySinkType type)
+   GST_PLAY_SINK_LOCK (playsink);
+   switch (type) {
+     case GST_PLAY_SINK_TYPE_AUDIO_RAW:
+-      pad_name = "audio_raw_sink";
+-      raw = TRUE;
+     case GST_PLAY_SINK_TYPE_AUDIO:
+-      if (pad_name == NULL)
+-        pad_name = "audio_sink";
++      pad_name = "audio_sink";
+       if (!playsink->audio_tee) {
+         GST_LOG_OBJECT (playsink, "creating tee");
+         /* create tee when needed. This element will feed the audio sink chain
+@@ -2902,24 +3103,25 @@ gst_play_sink_request_pad (GstPlaySink * playsink, GstPlaySinkType type)
+         GST_LOG_OBJECT (playsink, "ghosting tee sinkpad");
+         playsink->audio_pad =
+             gst_ghost_pad_new (pad_name, playsink->audio_tee_sink);
++        g_signal_connect (G_OBJECT (playsink->audio_pad), "notify::caps",
++            G_CALLBACK (caps_notify_cb), playsink);
+         created = TRUE;
+       }
+-      playsink->audio_pad_raw = raw;
++      playsink->audio_pad_raw = FALSE;
+       res = playsink->audio_pad;
+       break;
+     case GST_PLAY_SINK_TYPE_VIDEO_RAW:
+-      pad_name = "video_raw_sink";
+-      raw = TRUE;
+     case GST_PLAY_SINK_TYPE_VIDEO:
+-      if (pad_name == NULL)
+-        pad_name = "video_sink";
++      pad_name = "video_sink";
+       if (!playsink->video_pad) {
+         GST_LOG_OBJECT (playsink, "ghosting videosink");
+         playsink->video_pad =
+             gst_ghost_pad_new_no_target (pad_name, GST_PAD_SINK);
++        g_signal_connect (G_OBJECT (playsink->video_pad), "notify::caps",
++            G_CALLBACK (caps_notify_cb), playsink);
+         created = TRUE;
+       }
+-      playsink->video_pad_raw = raw;
++      playsink->video_pad_raw = FALSE;
+       res = playsink->video_pad;
+       break;
+     case GST_PLAY_SINK_TYPE_TEXT:
+@@ -2955,6 +3157,13 @@ gst_play_sink_request_pad (GstPlaySink * playsink, GstPlaySinkType type)
+      * element is 'running' */
+     gst_pad_set_active (res, TRUE);
+     gst_element_add_pad (GST_ELEMENT_CAST (playsink), res);
++    if (type != GST_PLAY_SINK_TYPE_FLUSHING) {
++      GstPad *blockpad = get_internally_linked_pad (res);
++
++      gst_pad_set_blocked_async_full (blockpad, TRUE, sinkpad_blocked_cb,
++          gst_object_ref (playsink), (GDestroyNotify) gst_object_unref);
++      gst_object_unref (blockpad);
++    }
+     if (!activate)
+       gst_pad_set_active (res, activate);
+   }
+@@ -3011,8 +3220,12 @@ gst_play_sink_release_pad (GstPlaySink * playsink, GstPad * pad)
+   GST_PLAY_SINK_LOCK (playsink);
+   if (pad == playsink->video_pad) {
+     res = &playsink->video_pad;
++    g_signal_handlers_disconnect_by_func (playsink->video_pad, caps_notify_cb,
++        playsink);
+   } else if (pad == playsink->audio_pad) {
+     res = &playsink->audio_pad;
++    g_signal_handlers_disconnect_by_func (playsink->audio_pad, caps_notify_cb,
++        playsink);
+   } else if (pad == playsink->text_pad) {
+     res = &playsink->text_pad;
+   } else {
+@@ -3193,6 +3406,40 @@ gst_play_sink_change_state (GstElement * element, GstStateChange transition)
+       ret = GST_STATE_CHANGE_ASYNC;
+       break;
+     case GST_STATE_CHANGE_PAUSED_TO_READY:
++      /* unblock all pads here */
++      GST_PLAY_SINK_LOCK (playsink);
++      if (playsink->video_pad) {
++        GstPad *opad = get_internally_linked_pad (playsink->video_pad);
++        if (gst_pad_is_blocked (opad)) {
++          gst_pad_set_blocked_async_full (opad, FALSE, sinkpad_blocked_cb,
++              gst_object_ref (playsink), (GDestroyNotify) gst_object_unref);
++        }
++        gst_object_unref (opad);
++        playsink->video_pad_blocked = FALSE;
++      }
++
++      if (playsink->audio_pad) {
++        GstPad *opad = get_internally_linked_pad (playsink->audio_pad);
++
++        if (gst_pad_is_blocked (opad)) {
++          gst_pad_set_blocked_async_full (opad, FALSE, sinkpad_blocked_cb,
++              gst_object_ref (playsink), (GDestroyNotify) gst_object_unref);
++        }
++        gst_object_unref (opad);
++        playsink->audio_pad_blocked = FALSE;
++      }
++
++      if (playsink->text_pad) {
++        GstPad *opad = get_internally_linked_pad (playsink->text_pad);
++        if (gst_pad_is_blocked (opad)) {
++          gst_pad_set_blocked_async_full (opad, FALSE, sinkpad_blocked_cb,
++              gst_object_ref (playsink), (GDestroyNotify) gst_object_unref);
++        }
++        gst_object_unref (opad);
++        playsink->text_pad_blocked = FALSE;
++      }
++      GST_PLAY_SINK_UNLOCK (playsink);
++      /* fall through */
+     case GST_STATE_CHANGE_READY_TO_NULL:
+       if (playsink->audiochain && playsink->audiochain->sink_volume) {
+         /* remove our links to the mute and volume elements when they were
+diff --git a/gst/playback/gstplaysink.h b/gst/playback/gstplaysink.h
+index 3ca96d3..6759ea4 100644
+--- a/gst/playback/gstplaysink.h
++++ b/gst/playback/gstplaysink.h
+@@ -41,11 +41,11 @@ G_BEGIN_DECLS
+ 
+ /**
+  * GstPlaySinkType:
+- * @GST_PLAY_SINK_TYPE_AUDIO: A non-raw audio pad
+- * @GST_PLAY_SINK_TYPE_AUDIO_RAW: a raw audio pad
+- * @GST_PLAY_SINK_TYPE_VIDEO: a non-raw video pad
+- * @GST_PLAY_SINK_TYPE_VIDEO_RAW: a raw video pad
+- * @GST_PLAY_SINK_TYPE_TEXT: a raw text pad
++ * @GST_PLAY_SINK_TYPE_AUDIO: an audio pad
++ * @GST_PLAY_SINK_TYPE_AUDIO_RAW: a raw audio pad. Deprecated.
++ * @GST_PLAY_SINK_TYPE_VIDEO: a video pad
++ * @GST_PLAY_SINK_TYPE_VIDEO_RAW: a raw video pad. Deprecated.
++ * @GST_PLAY_SINK_TYPE_TEXT: a text pad
+  * @GST_PLAY_SINK_TYPE_LAST: the last type
+  * @GST_PLAY_SINK_TYPE_FLUSHING: a flushing pad, used when shutting down
+  *
+--
+cgit v0.9
