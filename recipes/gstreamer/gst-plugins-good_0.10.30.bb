@@ -1,6 +1,6 @@
 require gst-plugins.inc
 
-PR = "${INC_PR}.1"
+PR = "${INC_PR}.2"
 
 inherit gconf
 
@@ -12,8 +12,15 @@ RCONFLICTS_gst-plugin-isomp4 = "gst-plugin-qtdemux"
 DEPENDS += "hal pulseaudio speex libsoup-2.4 flac gst-plugins-base openssl popt esound libv4l"
 DEPENDS_openpli += "libsoup-2.4 flac gst-plugins-base"
 
-# cairo needs X11
-EXTRA_OECONF_openpli += "--disable-cairo --disable-x --disable-esd --disable-gdk_pixbuf --disable-shout2test"
+# disable plugins that depend on GTK or X, and examples and tests
+EXTRA_OECONF_openpli += "\
+	--disable-examples \
+	--disable-cairo \
+	--disable-x \
+	--disable-esd \
+	--disable-gdk_pixbuf \
+	--disable-shout2test \
+"
 
 PACKAGES =+ "gst-plugin-gconfelements"
 FILES_gst-plugin-gconfelements += "${sysconfdir}/gconf"
