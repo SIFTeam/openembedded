@@ -62,7 +62,20 @@ fi
 
 echo ${BACKUPDIR} > /tmp/backupdir
 
-[ -s /tmp/fstab ] && cat /tmp/fstab >> /etc/fstab
+if [ -s /tmp/fstab ]
+then
+	cat /tmp/fstab >> /etc/fstab
+	grep '/media/' /tmp/fstab | while read entry
+	do
+	        # echo splits entry on whitespace, cut to get the second entry
+		path=`echo $entry | cut -d ' ' -f 2`
+		if [ ! -d $path ]
+		then
+			echo 'Creating:' $path
+		        mkdir -p $path
+		fi
+	done
+fi
 [ -s /tmp/crontab ] && crontab /tmp/crontab
 
 mergerootpwd()
