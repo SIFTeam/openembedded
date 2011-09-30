@@ -2,10 +2,7 @@ DESCRIPTION = "frontpanel update"
 SECTION = "base"
 PRIORITY = "optional"
 
-RCONFLICTS_${PN} = "et9000-fpupdate"
-RREPLACES_${PN} = "et9000-fpupdate"
-
-PR = "r3"
+PR = "r4"
 
 FPVERSION = "13"
 FPUPDATE = "1.0"
@@ -14,7 +11,7 @@ PV = "${FPVERSION}"
 
 SRC_URI = " \
 	http://www.et-view.com/download/fpupdate-${FPUPDATE}.zip \
-	http://www.et-view.com/download/avrmain-${MACHINE}-${FPVERSION}.hex \
+	http://www.et-view.com/download/avrmain-${MACHINE}-${FPVERSION}.zip \
 	"
 S = "${WORKDIR}"
 
@@ -29,16 +26,17 @@ do_install() {
 	install -d ${D}/${bindir}
 	install -d ${D}/lib/firmware
 	install -m 0755 ${S}/fpupdate ${D}/${bindir}
-	install -m 0644 ${S}/avrmain-${MACHINE}-${FPVERSION}.hex ${D}/lib/firmware/avrmain.hex
+	install -m 0644 ${S}/avrmain-* ${D}/lib/firmware/
 
 	echo "#!/bin/sh" > ${S}/fpupdate.sh
-	echo "if ! [ -f /lib/firmware/avrmain.hex ]; then" >> ${S}/fpupdate.sh
+	echo "boxtype=\`cat /proc/stb/info/boxtype\`" >> ${S}/fpupdate.sh
+	echo "if ! [ -f /lib/firmware/avrmain-\$boxtype.hex ]; then" >> ${S}/fpupdate.sh
 	echo "	exit 0" >> ${S}/fpupdate.sh
 	echo "fi" >> ${S}/fpupdate.sh
 	echo "if ! [ -x ${bindir}/fpupdate ]; then" >> ${S}/fpupdate.sh
 	echo "	exit 0" >> ${S}/fpupdate.sh
 	echo "fi" >> ${S}/fpupdate.sh
-	echo "${bindir}/fpupdate /lib/firmware/avrmain.hex ${FPVERSION} && rm /lib/firmware/avrmain.hex" >> ${S}/fpupdate.sh
+	echo "${bindir}/fpupdate /lib/firmware/avrmain-\$boxtype.hex ${FPVERSION} && rm /lib/firmware/avrmain*.hex" >> ${S}/fpupdate.sh
 
 	install -d ${D}/etc/init.d
 	install -m 0755 ${S}/fpupdate.sh ${D}/etc/init.d/fpupdate

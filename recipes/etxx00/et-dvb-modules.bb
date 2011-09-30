@@ -1,6 +1,9 @@
+DESCRIPTION = "Hardware drivers for ${MACHINE}"
 SECTION = "base"
 PRIORITY = "required"
 LICENSE = "proprietary"
+
+SRCDATE = "20110930"
 
 KV = "2.6.31-3.2"
 PV = "2.6.31-3.2+${SRCDATE}"

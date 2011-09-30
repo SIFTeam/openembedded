@@ -676,7 +676,7 @@ CONFIG_MTD_NAND_IDS=y
 CONFIG_MTD_UBI=y
 CONFIG_MTD_UBI_WL_THRESHOLD=4096
 CONFIG_MTD_UBI_BEB_RESERVE=1
-CONFIG_MTD_UBI_GLUEBI=y
+# CONFIG_MTD_UBI_GLUEBI is not set
 
 #
 # UBI debugging options
@@ -1835,7 +1835,7 @@ CONFIG_TRACING_SUPPORT=y
 # CONFIG_DYNAMIC_DEBUG is not set
 # CONFIG_SAMPLES is not set
 CONFIG_HAVE_ARCH_KGDB=y
-CONFIG_CMDLINE="bmem=130M lpj=203264 ubi.mtd=3 root=ubi0:rootfs rootfstype=ubifs rw console=null"
+CONFIG_CMDLINE="bmem=192M ubi.mtd=2 root=ubi0:rootfs rootfstype=ubifs rw console=null"
 
 #
 # Security options

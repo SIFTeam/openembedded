@@ -6,12 +6,12 @@ KV = "2.6.31"
 #PR = "r6"
 #or use MACHINE_KERNEL_PR_append, when a rebuild of external modules is not required
 
-MACHINE_KERNEL_PR_append = ".11"
+MACHINE_KERNEL_PR_append = ".12"
 
 DEPENDS = "mtd-minimal-nand-utils"
 RDEPENDS_kernel-image = "mtd-minimal-nand-utils"
 
-SRC_URI += "http://www.et-view.com/download/stblinux-2.6.31.tar.gz \
+SRC_URI += "http://www.et-view.com/download/stblinux-2.6.31-20110930.tar.gz \
 	file://${MACHINE}_defconfig \
 	file://disable_uarts.patch \
 	file://linux-2.6.31-fix-proc-cputype.patch \
