@@ -53,6 +53,8 @@ case "$ACTION" in
 					DEVICETYPE="cf"
 				elif [ "$MODEL" == "USB SD Reader   " ]; then
 					DEVICETYPE="mmc1"
+				elif [ "$MODEL" == "USB SD  Reader  " ]; then
+					DEVICETYPE="mmc1"
 				elif [ "$MODEL" == "SD/MMC          " ]; then
 					DEVICETYPE="mmc1"
 				elif [ "$MODEL" == "USB MS Reader   " ]; then
