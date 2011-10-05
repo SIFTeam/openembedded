@@ -1,0 +1,2 @@
+# Delete this file to enable DMA for CF cards
+dma=disable

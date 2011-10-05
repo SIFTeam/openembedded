@@ -5,6 +5,7 @@
 d=/dev/$1
 par=`hdparm -I $d`
 dma=`echo "${par}" | grep 'DMA:'`
+test ! -r /etc/default/dma_mode.$1 || . /etc/default/dma_mode.$1
 if echo -n "${dma}" | grep -q '[mu]dma'
 then
 	# DMA mode is just weird, see http://linux-sxs.org/housekeeping/hdptune.html
