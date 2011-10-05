@@ -6,7 +6,7 @@ LICENSE = "GPL"
 SECTION = "net"
 DEPENDS = "libexif ffmpeg"
 
-INC_PR = "r0"
+INC_PR = "r1"
 
 SRC_URI = "http://downloads.sourceforge.net/project/minidlna/minidlna/${PV}/${PN}_${PV}_src.tar.gz file://init"
 
@@ -15,20 +15,22 @@ CONFFILES_${PN} = "${sysconfdir}/minidlna.conf"
 INITSCRIPT_NAME = "minidlna"
 INITSCRIPT_PARAMS = "defaults 90 10"
 
-inherit autotools update-rc.d
+inherit update-rc.d
 
 CFLAGS_prepend = "-D_GNU_SOURCE -D_FILE_OFFSET_BITS=64 -I${STAGING_INCDIR}/ffmpeg "
 
-do_configure_append() {
+do_configure() {
     sed -i "s:/usr/include:${STAGING_INCDIR}:g" genconfig.sh
     sed -i "s/^CFLAGS =/#CFLAGS =/" Makefile
     sed -i "s/^CC =/#CC =/" Makefile
     sed -i "/^minidlna\:/ s/[$][(]LIBS[)]//" Makefile
     sed -i "s/--mode=0644//" Makefile
     sed -i "s:^media_dir=/opt:media_dir=/media:" minidlna.conf
+    ./genconfig.sh
 }
 
-do_install_append() {
+do_install() {
+    oe_runmake 'DESTDIR=${D}' install
     install -d ${D}${sysconfdir}/init.d/
     install -m 755 ${WORKDIR}/init ${D}${sysconfdir}/init.d/${PN}
 }
