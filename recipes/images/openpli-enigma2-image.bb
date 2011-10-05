@@ -59,6 +59,7 @@ ENIGMA2_OPTIONAL = " \
 				dvbsnoop \
 				mtd-utils \
 				dvdfs \
+				minidlna \
 				"
 
 IMAGE_INSTALL += " \
