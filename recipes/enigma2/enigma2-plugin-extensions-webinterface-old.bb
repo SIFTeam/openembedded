@@ -4,14 +4,13 @@ RDEPENDS_${PN} = "python-twisted-web python-pyopenssl python-crypt python-unixad
 PACKAGES = "${PN}-src ${PN}"
 RPROVIDES = "enigma2-plugin-extensions-webinterface"
 
-SRCREV = "1f1bfc9149684caccbdfeaed3f8169b6d0213db8"
 inherit gitpkgv
 
 PV = "experimental-git${SRCPV}"
 PKGV = "experimental-git${GITPKGV}"
 PR = "r10"
 
-SRC_URI="git://openpli.git.sourceforge.net/gitroot/openpli/plugins-enigma2;protocol=git \
+SRC_URI="git://openpli.git.sourceforge.net/gitroot/openpli/plugins-enigma2;protocol=git;branch=old \
 	 file://buildonlywebif.patch \
 	 file://webiftpm.patch\
 "
