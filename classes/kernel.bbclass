@@ -86,7 +86,7 @@ EXTRA_OEMAKE = ""
 kernel_do_compile() {
 	unset CFLAGS CPPFLAGS CXXFLAGS LDFLAGS MACHINE
 	oe_runmake include/linux/version.h CC="${KERNEL_CC}" LD="${KERNEL_LD}"
-	if [ "${KERNEL_MAJOR_VERSION}" != "2.6" ]; then
+	if [ "${KERNEL_MAJOR_VERSION}" == "2.4" ]; then
 		oe_runmake dep CC="${KERNEL_CC}" LD="${KERNEL_LD}"
 	fi
 	oe_runmake ${KERNEL_IMAGETYPE} CC="${KERNEL_CC}" LD="${KERNEL_LD}"
@@ -118,7 +118,7 @@ kernel_do_install() {
 	install -m 0644 vmlinux ${D}/boot/vmlinux-${KERNEL_VERSION}
 	[ -e Module.symvers ] && install -m 0644 Module.symvers ${D}/boot/Module.symvers-${KERNEL_VERSION}
 	install -d ${D}/etc/modutils
-	if [ "${KERNEL_MAJOR_VERSION}" = "2.6" ]; then
+	if [ "${KERNEL_MAJOR_VERSION}" != "2.4" ]; then
 		install -d ${D}/etc/modprobe.d
 	fi
 	
@@ -432,7 +432,7 @@ python populate_packages_prepend () {
 		# Write out any modconf fragment
 		modconf = bb.data.getVar('module_conf_%s' % basename, d, 1)
 		if modconf:
-			if bb.data.getVar("KERNEL_MAJOR_VERSION", d, 1) == "2.6":
+			if bb.data.getVar("KERNEL_MAJOR_VERSION", d, 1) != "2.4":
 				name = '%s/etc/modprobe.d/%s.conf' % (dvar, basename)
 			else:
 				name = '%s/etc/modutils/%s.conf' % (dvar, basename)
