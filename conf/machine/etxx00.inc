@@ -1,9 +1,8 @@
 MACHINE_ESSENTIAL_EXTRA_RDEPENDS = "\
-	v4l-dvb-module-dvb-core \
 	et-dvb-modules \
 	"
 
-module_autoload_dvb-core = "dvb-core"
+DVBPROVIDER = "kernel"
 
 MACHINE_ESSENTIAL_EXTRA_RRECOMMENDS = "\
 	kernel-module-cdfs \
@@ -11,10 +10,53 @@ MACHINE_ESSENTIAL_EXTRA_RRECOMMENDS = "\
 
 module_autoload_exportfs = "exportfs"
 module_autoload_cdfs = "cdfs"
+
+# WIFI modules
+module_autoload_ath9k_htc = "ath9k_htc"
+module_autoload_carl9170 = "carl9170"
+module_autoload_prism2_usb = "prism2_usb"
 module_autoload_rt73usb = "rt73usb"
 module_autoload_rt2500usb = "rt2500usb"
+module_autoload_rt2800usb = "rt2800usb"
+module_autoload_r8192u_usb = "r8192u_usb"
+module_autoload_rtl8192cu = "rtl8192cu"
 module_autoload_rtl8187 = "rtl8187"
+module_autoload_r8712u = "r8712u"
+module_autoload_w35und = "w35und"
 module_autoload_zd1211rw = "zd1211rw"
+
+# DVB USB modules
+module_autoload_dvb-usb-a800 = "dvb-usb-a800"
+module_autoload_dvb-usb-af9005 = "dvb-usb-af9005"
+module_autoload_dvb-usb-af9015 = "dvb-usb-af9015"
+module_autoload_dvb-usb-anysee = "dvb-usb-anysee"
+module_autoload_dvb-usb-au6610 = "dvb-usb-au6610"
+module_autoload_dvb-usb-az6027 = "dvb-usb-az6027"
+module_autoload_dvb-usb-ce6230 = "dvb-usb-ce6230"
+module_autoload_dvb-usb-cxusb = "dvb-usb-cxusb"
+module_autoload_dvb-usb-cinergyT2 = "dvb-usb-cinergyT2"
+module_autoload_dvb-usb-digitv = "dvb-usb-digitv"
+module_autoload_dvb-usb-dib0700 = "dvb-usb-dib0700"
+module_autoload_dvb-usb-dibusb-mb = "dvb-usb-dibusb-mb"
+module_autoload_dvb-usb-dibusb-mc = "dvb-usb-dibusb-mc"
+module_autoload_dvb-usb-dtv5100 = "dvb-usb-dtv5100"
+module_autoload_dvb-usb-dtt200u = "dvb-usb-dtt200u"
+module_autoload_dvb-usb-dw2102 = "dvb-usb-dw2102"
+module_autoload_dvb-usb-ec168 = "dvb-usb-ec168"
+module_autoload_dvb-usb-friio = "dvb-usb-friio"
+module_autoload_dvb-usb-gl861 = "dvb-usb-gl861"
+module_autoload_dvb-usb-gp8psk = "dvb-usb-gp8psk"
+module_autoload_dvb-usb-m920x = "dvb-usb-m920x"
+module_autoload_dvb-usb-opera = "dvb-usb-opera"
+module_autoload_dvb-usb-technisat-usb2 = "dvb-usb-technisat-usb2"
+module_autoload_dvb-usb-ttusb2 = "dvb-usb-ttusb2"
+module_autoload_dvb-ttusb-budget = "dvb-ttusb-budget"
+module_autoload_dvb-usb-nova-t-usb2 = "dvb-usb-nova-t-usb2"
+module_autoload_dvb-usb-umt-010 = "dvb-usb-umt-010"
+module_autoload_dvb-usb-vp702x = "dvb-usb-vp702x" 
+module_autoload_dvb-usb-vp7045 = "dvb-usb-vp7045"
+module_autoload_smsusb = "smsusb"
+module_autoload_smsdvb = "smsdvb"
 
 MACHINE_EXTRA_RRECOMMENDS = " \
 	gst-plugin-dvbmediasink \
@@ -49,9 +91,9 @@ MACHINE_FEATURES += "32bpp hdtv 3dtv switchoff lpcm textlcd dvbapi5"
 
 CHIPSET = "bcm7413"
 
-MACHINE_KERNEL_PR = "r4"
+MACHINE_KERNEL_PR = "r5"
 
-PREFERRED_VERSION_linux-${MACHINE} = "2.6.31"
+PREFERRED_VERSION_linux-etxx00 = "3.0.3"
 PREFERRED_VERSION_linux-libc-headers = "2.6.31"
 
 OLDEST_KERNEL = "2.6.18"
@@ -61,8 +103,6 @@ TARGET_ARCH = "mipsel"
 GLIBC_EXTRA_OECONF = "--with-tls"
 
 PREFERRED_PROVIDER_virtual/kernel = "linux-etxx00"
-
-PREFERRED_VERSION_madwifi-ng = "r3314-20080131"
 
 PREFERRED_PROVIDER_virtual/showiframe = "et-dvb-tools"
 

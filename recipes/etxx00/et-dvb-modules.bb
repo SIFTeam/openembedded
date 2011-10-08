@@ -3,15 +3,15 @@ SECTION = "base"
 PRIORITY = "required"
 LICENSE = "proprietary"
 
-SRCDATE = "20110930"
+SRCDATE = "20111015"
 
-KV = "2.6.31-3.2"
-PV = "2.6.31-3.2+${SRCDATE}"
-MACHINE_KERNEL_PR_append = ".1"
+KV = "3.0.3"
+PV = "${KV}+${SRCDATE}"
+MACHINE_KERNEL_PR_append = ".0"
 
 RDEPENDS_${PN} = "kernel (${KV}) et-fpupdate"
 
-SRC_URI = "http://www.et-view.com/download/drivers/${MACHINE}-drivers-2.6.31-${SRCDATE}.zip"
+SRC_URI = "http://www.et-view.com/download/drivers/${MACHINE}-drivers-${KV}-${SRCDATE}.zip"
 
 S = "${WORKDIR}"
 
@@ -27,6 +27,6 @@ do_install() {
 	install -d ${D}/${sysconfdir}/modutils
 	for i in tpm modloader modloader2 dvb; do
 		install -m 0755 ${WORKDIR}/$i.ko ${D}/lib/modules/${KV}/extra
-		echo $i >> ${D}/${sysconfdir}/modutils/${MACHINE}
+		echo $i >> ${D}/${sysconfdir}/modutils/_${MACHINE}
 	done
 }
