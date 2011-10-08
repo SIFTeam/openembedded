@@ -1,10 +1,22 @@
 require openpli-image.bb
 
 WIFI_DRIVERS = " \
-				rtl871x \
-				rtl8192cu \
-				rt3070 \
-				${@base_contains("MACHINE_FEATURES", "wifiusblegacy", "rt73", "kernel-module-rt73usb kernel-module-rtl8187 kernel-module-rt2500usb kernel-module-zd1211rw", d)} \
+				${@base_contains("MACHINE_FEATURES", "wifiusblegacy", \
+					"rt73 rt3070 rtl8192cu rtl871x", \
+					" \
+					kernel-module-ath9k-htc \
+					kernel-module-carl9170 \
+					kernel-module-rtl8187 \
+					kernel-module-rtl8192cu \
+					kernel-module-r8712u \
+					kernel-module-rt2500usb \
+					kernel-module-rt2800usb \
+					kernel-module-rt73usb \
+					kernel-module-zd1211rw \
+					firmware-carl9170 \
+					firmware-htc9271 \
+					firmware-rt2870 \
+					", d)} \
 				firmware-rt73 \
 				firmware-rtl8192cu \
 				firmware-rtl8712u \
