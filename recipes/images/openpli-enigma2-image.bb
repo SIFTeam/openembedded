@@ -5,8 +5,10 @@ WIFI_DRIVERS = " \
 				rtl8192cu \
 				rt3070 \
 				${@base_contains("MACHINE_FEATURES", "wifiusblegacy", "rt73", "kernel-module-rt73usb kernel-module-rtl8187 kernel-module-rt2500usb kernel-module-zd1211rw", d)} \
-				rt73-firmware \
-				zd1211-firmware \
+				firmware-rt73 \
+				firmware-rtl8192cu \
+				firmware-rtl8712u \
+				firmware-zd1211 \
 				"
 
 ENIGMA2_PLUGINS = " \
