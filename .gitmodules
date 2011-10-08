@@ -1,0 +1,3 @@
+[submodule "recipes/e2openplugins"]
+	path = recipes/e2openplugins
+	url = git://github.com/E2OpenPlugins/e2openplugins.git
