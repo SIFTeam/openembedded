@@ -69,7 +69,7 @@ case "$ACTION" in
 					DEVICETYPE="usb"
 				fi
 			fi
-			if grep -q " /media/$DEVICETYPE " /proc/mounts || grep -q -w "/media/$DEVICETYPE\s" /etc/fstab
+			if grep -q " /media/$DEVICETYPE " /proc/mounts || grep -q -w "\s/media/$DEVICETYPE\s" /etc/fstab
 			then
 			        # DEVICETYPE already mounted, or in fstab
 				MOUNTPOINT="/media/$MDEV"
