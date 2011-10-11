@@ -62,7 +62,7 @@ int main(int argc, char *argv[], char *envp[])
 	}
 	else
 	{
-		printf("FAILED! Boot JFFS from FLASH\n");
+		printf("FAILED! code: %d. Boot JFFS from FLASH\n", r);
 		execve("/bin/initflash", argv, envp);
 	}
 	perror("Panic! Could not boot anything");

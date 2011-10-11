@@ -4,7 +4,7 @@ PRIORITY = "optional"
 MAINTAINER = "Mike Looijmans <MiLo@pli-images.org>"
 
 PV = "1.0"
-PR = "r4"
+PR = "r5"
 DEPENDS = "klcc-cross"
 
 SRC_URI = "file://boottool-${MACHINE}.c file://root_to_cf.sh"

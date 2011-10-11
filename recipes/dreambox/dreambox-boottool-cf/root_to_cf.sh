@@ -20,6 +20,7 @@ do
 done
 rm -rf /media/tmp/*
 rm -rf /media/var/volatile/*
+[ -d /media/cf/hdd ] || ln -sf media/hdd /media/cf/hdd
 ln -f /boot/bin/initcf /boot/bin/init
 echo "Done... reboot to boot from CF!"
 
