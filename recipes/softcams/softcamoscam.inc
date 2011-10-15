@@ -7,14 +7,13 @@
 #   CAMSTART: Command to start the softcam, default to /usr/bin/${CAMNAME}
 #   CAMSTOP: Command to stop the softcam, default to killall ${CAMNAME}
 # Instead of CAMSTART/CAMSTOP, you can create an init.d script called init.${CAMNAME}
-
+INC_PR = "1"
 DESCRIPTION ?= "${CAMNAME}"
 
 FILES_${PN} = "/usr/bin /etc"
 
 SRC_URI = "file://oscam.*"
 S = "${WORKDIR}/${CAMNAME}"
-INHIBIT_PACKAGE_STRIP = "1"
 
 # no docs, locales etc.
 PACKAGES = "${PN}"
@@ -39,6 +38,7 @@ do_compile () {
 
 case "\$1" in
 start)
+	ulimit -s 512
 	${CAMSTART}
 	;;
 stop)
