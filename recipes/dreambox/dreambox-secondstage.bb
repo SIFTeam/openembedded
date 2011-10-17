@@ -2,8 +2,7 @@ DESCRIPTION = "Dreambox second stage bootloader"
 SECTION = "base"
 PRIORITY = "required"
 MAINTAINER = "Felix Domke <tmbinc@elitedvb.net>"
-PV = "82"
-PV_dm500hd = "83"
+PV = "84"
 PV_dm7025 = "83"
 PV_dm7020 = "35"
 PV_dm600pvr = "66"
@@ -44,8 +43,18 @@ PACKAGE_ARCH := "${MACHINE_ARCH}"
 pkg_postinst() {
 	if [ -d /proc/stb ]; then
 		if [ -f /tmp/writenfi ]; then
-			/tmp/writenfi /tmp/secondstage.nfi;
-			rm /tmp/writenfi /tmp/secondstage.nfi;
+			if [ "$(cat /proc/stb/info/model)" = "dm8000" ]; then
+				/tmp/writenfi /tmp/secondstage.nfi;
+				rm /tmp/writenfi /tmp/secondstage.nfi;
+			else
+				#hack for broken mtd layer in linux kernel 2.6.18-r13.0
+				mv /tmp/writenfi /usr/bin/writenfi;
+				mv /tmp/secondstage.nfi /usr/bin/secondstage.nfi;
+				echo "#!/bin/sh" > /etc/rcS.d/S05UpdateSecondstage;
+				echo "/usr/bin/writenfi /usr/bin/secondstage.nfi || /bin/true" > /etc/rcS.d/S05UpdateSecondstage;
+				echo "rm -f /usr/bin/writenfi /usr/bin/secondstage.nfi /etc/rcS.d/S05UpdateSecondstage" >> /etc/rcS.d/S05UpdateSecondstage;
+				chmod ugo+x /etc/rcS.d/S05UpdateSecondstage;
+			fi
 		fi
 	fi
 }
