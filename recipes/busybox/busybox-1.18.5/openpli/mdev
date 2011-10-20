@@ -10,7 +10,7 @@ echo "/sbin/mdev" >/proc/sys/kernel/hotplug
 
 touch /dev/.udev
 
-mount -t sysfs sysfs /sys
+[ -d "/sys/kernel" ] || mount sysfs /sys -t sysfs
 
 mdev -s
 
