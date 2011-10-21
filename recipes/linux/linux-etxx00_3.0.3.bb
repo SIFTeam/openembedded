@@ -6,7 +6,7 @@ KV = "3.0.3"
 #PR = "r6"
 #or use MACHINE_KERNEL_PR_append, when a rebuild of external modules is not required
 
-MACHINE_KERNEL_PR_append = ".3"
+MACHINE_KERNEL_PR_append = ".4"
 
 DEPENDS = "mtd-minimal-nand-utils"
 RDEPENDS_kernel-image = "mtd-minimal-nand-utils"
@@ -16,6 +16,7 @@ SRC_URI += "http://www.et-view.com/download/linux-${KV}.tar.gz \
 	file://linux-${KV}-fix-proc-cputype.patch \
 	file://linux-3.0-dvb-usb-af9035.patch \
 	file://linux-3.0-tda18218-7mhz-lopass.patch \
+	file://linux-3.0-dvb-usb-a867.patch \
 	"
 
 S = "${WORKDIR}/linux-${KV}"
