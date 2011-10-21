@@ -25,10 +25,13 @@ module_autoload_r8712u = "r8712u"
 module_autoload_w35und = "w35und"
 module_autoload_zd1211rw = "zd1211rw"
 
-# DVB USB modules
+# DVB modules
+module_autoload_dvb-a867 = "dvb-a867"
+module_autoload_em28xx-dvb = "em28xx-dvb"
 module_autoload_dvb-usb-a800 = "dvb-usb-a800"
 module_autoload_dvb-usb-af9005 = "dvb-usb-af9005"
 module_autoload_dvb-usb-af9015 = "dvb-usb-af9015"
+module_autoload_dvb-usb-af9035 = "dvb-usb-af9035"
 module_autoload_dvb-usb-anysee = "dvb-usb-anysee"
 module_autoload_dvb-usb-au6610 = "dvb-usb-au6610"
 module_autoload_dvb-usb-az6027 = "dvb-usb-az6027"
@@ -57,6 +60,10 @@ module_autoload_dvb-usb-vp702x = "dvb-usb-vp702x"
 module_autoload_dvb-usb-vp7045 = "dvb-usb-vp7045"
 module_autoload_smsusb = "smsusb"
 module_autoload_smsdvb = "smsdvb"
+module_autoload_af9033 = "af9033"
+module_autoload_mxl5007t = "mxl5007t"
+module_autoload_tda18218 = "tda18218"
+module_autoload_tua9001 = "tua9001"
 
 MACHINE_EXTRA_RRECOMMENDS = " \
 	gst-plugin-dvbmediasink \
