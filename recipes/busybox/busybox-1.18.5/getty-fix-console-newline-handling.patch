@@ -1,0 +1,15 @@
+--- ~/loginutils/getty.c.orig	2011-10-25 23:58:34.341805927 +0200
++++ ~/loginutils/getty.c	2011-10-25 23:58:34.357805925 +0200
+@@ -516,10 +516,8 @@
+ #endif
+ 
+ 	/* Account for special characters seen in input. */
+-	if (cp->eol == CR) {
+-		tp->c_iflag |= ICRNL;   /* map CR in input to NL */
+-		tp->c_oflag |= ONLCR;   /* map NL in output to CR-NL */
+-	}
++	tp->c_iflag |= ICRNL;   /* map CR in input to NL */
++	tp->c_oflag |= ONLCR;   /* map NL in output to CR-NL */
+ 	tp->c_cc[VERASE] = cp->erase;   /* set erase character */
+ 	tp->c_cc[VKILL] = cp->kill;     /* set kill character */
+ 
