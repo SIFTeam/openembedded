@@ -52,7 +52,7 @@ SRCDATE_enigma2-plugin-picons-sat ?= "20110907"
 SRCDATE_enigma2-plugin-picons-ziggo.casema ?= "20110902"
 SRCDATE_enigma2-plugin-picons-ziggo.tvhome ?= "20110901"
 
-RYTECSETTINGS_SRCDATE ?= "20110926"
+RYTECSETTINGS_SRCDATE ?= "20111007"
 SRCDATE_enigma2-plugin-settings-rytec-13e19e23e28e ?= "${RYTECSETTINGS_SRCDATE}"
 SRCDATE_enigma2-plugin-settings-rytec-motor ?= "${RYTECSETTINGS_SRCDATE}"
 
