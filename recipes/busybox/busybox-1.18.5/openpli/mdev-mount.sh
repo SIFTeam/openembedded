@@ -38,7 +38,7 @@ case "$ACTION" in
 			fi
 		fi
 		# first allow fstab to determine the mountpoint
-		if ! mount /dev/$MDEV
+		if ! mount /dev/$MDEV > /dev/null 2>&1
 		then
 			# no fstab entry, use automatic mountpoint
 			REMOVABLE=`cat /sys/block/$DEVBASE/removable`
