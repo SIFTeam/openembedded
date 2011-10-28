@@ -17,6 +17,7 @@ SRCREV_pn-usbtunerhelper ?= "${AUTOREV}"
 SRCREV_pn-gst-plugin-dvbmediasink ?= "15a323fd769d4546bc454bfd81848aa43d655f3d"
 SRCREV_pn-libtuxtxt ?= "${AUTOREV}"
 SRCREV_pn-tuxtxt-enigma2 ?= "${AUTOREV}"
+SRCREV_pn-libdvbsi++ ?= "bf0c2bb7b326b93713629dbf74f63a0a54ffe59d"
 
 # svn
 SRCREV_pn-tuxbox-common ?= "${AUTOREV}"
@@ -39,7 +40,6 @@ SRCDATE_libtuxbox ?= "20040928"
 SRCDATE_tuxcom-enigma2 ?= "20060123"
 SRCDATE_tuxbox-plugins ?= "20090601"
 SRCDATE_dvbsnoop ?= "20081001"
-SRCDATE_libdvbsi++ ?= "20100126"
 SRCDATE_inadyn-mt ?= "20100519"
 SRCDATE_gst-plugin-dvbmediasink ?= "20101106"
 
