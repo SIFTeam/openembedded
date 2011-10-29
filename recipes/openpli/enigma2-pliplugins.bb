@@ -10,22 +10,6 @@ RDEPENDS_enigma2-plugin-pli-snmpagent = "enigma2-plugin-pli-bitrate twistedsnmp"
 DESCRIPTION_enigma2-plugin-extensions-ushare = "UPnP media server"
 RDEPENDS_enigma2-plugin-extensions-ushare = "ushare"
 
-DESCRIPTION_enigma2-plugin-pli-bitrate = "Bitrate viewer"
-DESCRIPTION_enigma2-plugin-pli-newsreader = "RSS reader"
-
-DESCRIPTION_enigma2-plugin-pli-buienradar = "Buienradar actuele situatie"
-
-DESCRIPTION_enigma2-plugin-pli-nfsserver = "NFS server configuration"
-RDEPENDS_enigma2-plugin-pli-nfsserver = "nfs-utils"
-
-DESCRIPTION_enigma2-plugin-pli-remotecontrolchannel = "Remote control channel selection"
-
-DESCRIPTION_enigma2-plugin-pli-screenposition = "Adjust the screen position"
-PACKAGE_ARCH_enigma2-plugin-pli-screenposition = "${MACHINE_ARCH}"
-
-DESCRIPTION_enigma2-plugin-pli-streaminterface = "Stream webinterface on port 40080"
-RDEPENDS_enigma2-plugin-pli-streaminterface = "python-twisted-web"
-
 inherit gitpkgv
 
 PV = "1.0+git${SRCPV}"
@@ -34,7 +18,6 @@ PR = "r2"
 
 SRC_URI = "git://openpli.git.sourceforge.net/gitroot/openpli/enigma2-plugins;protocol=git \
 		   file://pythonpaths.patch"
-
 
 S = "${WORKDIR}/git"
 
@@ -57,17 +40,9 @@ python populate_packages_prepend () {
 		if files:
 			files += " " + newfiles + " "
 			bb.data.setVar('FILES_' + pn, files, d)
-
-	files_append('enigma2-plugin-pli-newsreader', '/etc/feeds.xml.default')
-	files_append('enigma2-plugin-pli-bitrate', '/usr/bin/bitrate')
-	files_append('enigma2-plugin-pli-ppanel', '/etc/ppanels')
 }
 
 do_install_append() {
-	rm ${D}/usr/lib/enigma2/python/Plugins/PLi/PPanel/url.py
 	find ${D}/usr/lib/enigma2/python/ -name '*.pyc' -exec rm {} \;
 }
 
-pkg_postinst_enigma2-plugin-pli-newsreader() {
-	[ -e $D/etc/feeds.xml ] || mv $D/etc/feeds.xml.default $D/etc/feeds.xml
-}
