@@ -57,6 +57,7 @@ ENIGMA2_OPTIONAL = " \
 				enigma2-skins \
 				enigma2-plugins \
 				enigma2-pliplugins \
+				task-openplugins \
 				enigma2-plugin-extensions-tuxcom \
 				enigma2-plugin-others-nano \
 				enigma2-plugin-extensions-tuxterm \
