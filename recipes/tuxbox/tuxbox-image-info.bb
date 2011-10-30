@@ -16,7 +16,7 @@ do_install () {
 	echo "version=${IMAGE_TYPE}${IMAGE_VERSION}${IMAGE_DATE}" > ${D}/etc/image-version
 	echo "comment=${DISTRO_NAME}" >> ${D}/etc/image-version
 	echo "target=9"  >> ${D}/etc/image-version
-	echo "creator=PLi team (openpli.pli-images.org)" >> ${D}/etc/image-version
-	echo "url=http://openpli.pli-images.org" >> ${D}/etc/image-version
-	echo "catalog=http://openpli.pli-images.org/" >> ${D}/etc/image-version
+	echo "creator=SIFTeam (www.sifteam.eu)" >> ${D}/etc/image-version
+	echo "url=http://www.sifteam.eu" >> ${D}/etc/image-version
+	echo "catalog=http://www.sifteam.eu/" >> ${D}/etc/image-version
 }

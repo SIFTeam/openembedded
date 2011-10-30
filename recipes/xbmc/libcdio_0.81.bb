@@ -3,10 +3,10 @@ LICENSE = "GPLv3+"
 
 PR = "r1"
 
-DEPENDS_openpli = "libcddb"
+DEPENDS_sifteam = "libcddb"
 
 SRC_URI = "http://ftp.gnu.org/gnu/libcdio/libcdio-${PV}.tar.gz"
-SRC_URI_append_openpli = " file://${PN}-${PV}-add-cdtextinfo.patch"
+SRC_URI_append_sifteam = " file://${PN}-${PV}-add-cdtextinfo.patch"
 
 inherit autotools
 

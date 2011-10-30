@@ -19,7 +19,7 @@ do_configure() {
         mv tunables.c.new tunables.c
 }
 
-do_configure_append_openpli() {
+do_configure_append_sifteam() {
         # do not link against libcap
         sed -i '/^#define VSF_SYSDEP_HAVE_LIBCAP$/ d' sysdeputil.c
         sed -i '/libcap/ d' vsf_findlibs.sh
@@ -40,7 +40,7 @@ do_install() {
         install -m 755 ${WORKDIR}/init ${D}${sysconfdir}/init.d/vsftpd
 }
 
-do_install_append_openpli() {
+do_install_append_sifteam() {
 	install -m 500 -d ${D}${localstatedir}/empty
 }
 
@@ -53,7 +53,7 @@ pkg_postinst() {
         mkdir -p ${localstatedir}/share/empty
 }
 
-pkg_postinst_openpli() {
+pkg_postinst_sifteam() {
 }
 
 INITSCRIPT_NAME = "vsftpd"

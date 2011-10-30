@@ -46,7 +46,7 @@ OPTIONAL_PACKAGES += " \
 			ntfs-3g \
 			"
 
-export IMAGE_BASENAME = "openpli"
+export IMAGE_BASENAME = "sifteam"
 IMAGE_LINGUAS = ""
 
 inherit image

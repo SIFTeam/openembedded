@@ -158,12 +158,12 @@ SRC_URI += " \
 RCONFLICTS_${PN} = "dreambox-keymaps"
 RREPLACES_${PN} = "dreambox-keymaps"
 
-do_openpli_preinstall() {
+do_sifteam_preinstall() {
 	install -m 0644 ${WORKDIR}/${RADIOMVI} ${S}/data/radio.mvi
 	install -d ${D}${sysconfdir}/enigma2
 }
 
-addtask openpli_preinstall after do_compile before do_install
+addtask sifteam_preinstall after do_compile before do_install
 
 do_install_append() {
 	install -d ${D}/usr/share/keymaps

@@ -162,7 +162,7 @@ do_install_append_netbook-pro () {
 	mkdir -p ${D}/initrd
 }
 
-do_install_append_openpli() {
+do_install_append_sifteam() {
 	rm -rf ${D}/mnt
 	rm -rf ${D}/hdd
 	ln -sf media/hdd ${D}/hdd

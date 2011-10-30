@@ -215,7 +215,7 @@ RDEPENDS_task-base-alsa = "\
     alsa-utils-alsactl \
     alsa-utils-alsamixer"
 # alsa-mixer device does not work, so don't install mixer tools
-RDEPENDS_task-base-alsa_openpli = ""
+RDEPENDS_task-base-alsa_sifteam = ""
 
 #
 # alsa-states are machine related so can be missing in feed, OSS support is optional

@@ -1,11 +1,11 @@
 require gst-plugins.inc
 
-SRC_URI_append_openpli = " file://dvdsubdec-addproperty-singlebuffer.patch"
+SRC_URI_append_sifteam = " file://dvdsubdec-addproperty-singlebuffer.patch"
 
 PR = "${INC_PR}.0"
 
 DEPENDS += "gst-plugins-base libsidplay"
-DEPENDS_openpli += "gst-plugins-base libsidplay"
+DEPENDS_sifteam += "gst-plugins-base libsidplay"
 
 python() {
 	# Don't build, if we are building an ENTERPRISE distro

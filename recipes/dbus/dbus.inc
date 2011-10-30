@@ -3,7 +3,7 @@ HOMEPAGE = "http://dbus.freedesktop.org"
 SECTION = "base"
 LICENSE = "GPLv2+ AFLv2.1"
 DEPENDS = "expat glib-2.0 virtual/libintl libsm libice virtual/libx11"
-DEPENDS_openpli = "expat glib-2.0 virtual/libintl"
+DEPENDS_sifteam = "expat glib-2.0 virtual/libintl"
 
 INC_PR = "r20"
 
@@ -21,7 +21,7 @@ S = "${WORKDIR}/dbus-${PV}"
 inherit autotools pkgconfig update-rc.d gettext
 
 EXTRA_OECONF_X = "--with-x"
-EXTRA_OECONF_X_openpli = ""
+EXTRA_OECONF_X_sifteam = ""
 
 EXTRA_OECONF = "\
   --disable-qt \

@@ -1,13 +1,13 @@
 require gst-plugins.inc
 
-SRC_URI_append_openpli += "\
+SRC_URI_append_sifteam += "\
 	file://mpegtsdemux-fix-bd-streamtype-detection.diff \
 	file://mpegpsdemux-speedup.diff;striplevel=0 \
 	file://mpegtsmux_indexing_alignment.diff \
 	"
 
 DEPENDS += "opencv orc-native orc libcdaudio gst-plugins-base openssl directfb libmodplug librsvg"
-DEPENDS_openpli += "gst-plugins-base"
+DEPENDS_sifteam += "gst-plugins-base"
 
 RCONFLICTS_gst-plugin-mpegdemux = "gst-plugin-fluendo-mpegdemux"
 RREPLACES_gst-plugin-mpegdemux = "gst-plugin-fluendo-mpegdemux"
@@ -25,7 +25,7 @@ EXTRA_OECONF += " \
         --disable-mplex \
         --disable-vdpau \
 "
-EXTRA_OECONF_openpli += " \
+EXTRA_OECONF_sifteam += " \
 		--disable-apexsink \
 		--disable-dvdnav \
 		--disable-cdaudio \

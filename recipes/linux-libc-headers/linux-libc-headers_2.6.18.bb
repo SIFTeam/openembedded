@@ -16,7 +16,7 @@ SRC_URI_append_mipsel = " file://mips-add-missing-headers.patch \
 DVBAPI3_PATCH = "file://fix-dvb-headers.patch"
 DVBAPI5_PATCH = "file://dvb-api-2.6.18-5.3.patch"
 
-SRC_URI_append_openpli = " file://mips-brcm-add-missing-syscalls.patch \
+SRC_URI_append_sifteam = " file://mips-brcm-add-missing-syscalls.patch \
 				${@base_contains("MACHINE_FEATURES", "dvbapi3", "${DVBAPI3_PATCH}", "", d)} \
 				${@base_contains("MACHINE_FEATURES", "dvbapi5", "${DVBAPI5_PATCH}", "", d)} \
 				"

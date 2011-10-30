@@ -1,4 +1,4 @@
-require openpli-image.bb
+require sifteam-image.bb
 
 WIFI_DRIVERS = " \
 				${@base_contains("MACHINE_FEATURES", "wifiusblegacy", \
@@ -92,4 +92,4 @@ OPTIONAL_PACKAGES += " \
 			${ENIGMA2_OPTIONAL} \
 			"
 
-export IMAGE_BASENAME = "openpli-enigma2"
+export IMAGE_BASENAME = "sifteam-enigma2"

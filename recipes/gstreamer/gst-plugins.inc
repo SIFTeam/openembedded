@@ -4,7 +4,7 @@ require gst-plugins-package.inc
 DESCRIPTION = "Plugins for GStreamer"
 DEPENDS += "libcdio wavpack libvisual gstreamer jack virtual/libsdl libvpx x264 libmms libmusicbrainz schroedinger faac faad2 libmikmod liboil libogg tremor libvorbis"
 DEPENDS += "${@base_conditional('ENTERPRISE_DISTRO', '1', '', 'libmad libid3tag', d)}"
-DEPENDS_openpli = "gstreamer libmikmod liboil libogg tremor libvorbis neon flac libmatroska libcdio libmad libid3tag libdca liba52"
+DEPENDS_sifteam = "gstreamer libmikmod liboil libogg tremor libvorbis neon flac libmatroska libcdio libmad libid3tag libdca liba52"
 
 INC_PR = "r11"
 
@@ -12,7 +12,7 @@ SRC_URI = "http://gstreamer.freedesktop.org/src/${PN}/${PN}-${PV}.tar.bz2;name=a
 
 EXTRA_OECONF += "--enable-introspection=no --disable-aalib --disable-shout2 --x-includes=${STAGING_INCDIR} --x-libraries=${STAGING_LIBDIR} "
 EXTRA_OECONF_append_shr = " --disable-dvdnav "
-EXTRA_OECONF_openpli = "--enable-introspection=no --disable-aalib --disable-shout2 --disable-sdl --disable-x --disable-esd --with-check=no --enable-neon"
+EXTRA_OECONF_sifteam = "--enable-introspection=no --disable-aalib --disable-shout2 --disable-sdl --disable-x --disable-esd --with-check=no --enable-neon"
 
 acpaths = "-I ${S}/common/m4 -I ${S}/m4"
 

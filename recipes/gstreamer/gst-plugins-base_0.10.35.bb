@@ -3,7 +3,7 @@ require gst-plugins.inc
 SRC_URI += " \
             file://ivorbis-thumb.patch \
 "
-SRC_URI_append_openpli = "\
+SRC_URI_append_sifteam = "\
 	file://samihack.patch \
 	file://d3a44541749f413343d5717c464083cef22a74f1.patch \
 	file://1e0ddb12aa1c2b13c4bc4a13712ebd7f06a6346e.patch \
@@ -18,7 +18,7 @@ PROVIDES += "gst-plugins"
 # not get an error if this is not present, just
 # a missing alsa plugin
 DEPENDS += "udev cdparanoia pango libtheora alsa-lib libsm virtual/libx11 freetype gnome-vfs libxv libxrandr gtk+"
-DEPENDS_openpli += "alsa-lib"
+DEPENDS_sifteam += "alsa-lib"
 
 def get_gstreamer_fpu_setting(bb, d):
     if bb.data.getVar('TARGET_FPU', d, 1) in [ 'soft' ]:
@@ -27,7 +27,7 @@ def get_gstreamer_fpu_setting(bb, d):
 
 # Needs a udev that enabled gudev, which isn't the default
 EXTRA_OECONF += "--with-gudev --disable-gnome_vfs ${@get_gstreamer_fpu_setting(bb, d)}"
-EXTRA_OECONF_openpli += "--disable-theora -disable-gnome_vfs --disable-pango --with-audioresample-format=int \
+EXTRA_OECONF_sifteam += "--disable-theora -disable-gnome_vfs --disable-pango --with-audioresample-format=int \
 			--disable-examples --disable-oggtest --disable-vorbistest --disable-freetypetest --disable-x"
 
 do_configure_prepend() {

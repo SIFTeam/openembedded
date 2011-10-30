@@ -15,7 +15,7 @@ SRC_URI = "http://hostap.epitest.fi/releases/wpa_supplicant-${PV}.tar.gz \
 	file://ifupdown.sh \
 	file://functions.sh"
 
-SRC_URI_append_openpli = " \
+SRC_URI_append_sifteam = " \
 	file://driver-zydas.patch \
 	file://driver-ralink.patch \
 	"
@@ -42,7 +42,7 @@ do_configure () {
         fi
 }
 
-do_configure_append_openpli() {
+do_configure_append_sifteam() {
 	echo "CONFIG_DRIVER_RALINK=y" >> .config
 	echo "CONFIG_DRIVER_ZYDAS=y" >> .config
 }

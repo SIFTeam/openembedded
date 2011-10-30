@@ -9,7 +9,7 @@ S = "${WORKDIR}/unionfs-${PV}"
 
 export UCFLAGS = '${CFLAGS} -DNODEBUG -DUNIONFS_VERSION=\\"${PV}\\"'
 CFLAGS = "${BUILD_OPTIMIZATION}"
-CFLAGS_openpli = ""
+CFLAGS_sifteam = ""
 TARGET_CC_ARCH += "${LDFLAGS}"
 
 INC_PR = "r1"

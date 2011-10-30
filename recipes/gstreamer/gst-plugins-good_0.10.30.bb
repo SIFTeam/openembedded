@@ -10,10 +10,10 @@ RREPLACES_gst-plugin-isomp4 = "gst-plugin-qtdemux"
 RCONFLICTS_gst-plugin-isomp4 = "gst-plugin-qtdemux"
 
 DEPENDS += "hal pulseaudio speex libsoup-2.4 flac gst-plugins-base openssl popt esound libv4l"
-DEPENDS_openpli += "libsoup-2.4 flac gst-plugins-base"
+DEPENDS_sifteam += "libsoup-2.4 flac gst-plugins-base"
 
 # disable plugins that depend on GTK or X, and examples and tests
-EXTRA_OECONF_openpli += "\
+EXTRA_OECONF_sifteam += "\
 	--disable-examples \
 	--disable-cairo \
 	--disable-x \
