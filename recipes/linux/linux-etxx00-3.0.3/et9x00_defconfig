@@ -2489,7 +2489,7 @@ CONFIG_HAVE_ARCH_KGDB=y
 # CONFIG_TEST_KSTRTOX is not set
 CONFIG_EARLY_PRINTK=y
 CONFIG_CMDLINE_BOOL=y
-CONFIG_CMDLINE="bmem=192M ubi.mtd=2 root=ubi0:rootfs rootfstype=ubifs rw console=null"
+CONFIG_CMDLINE="bmem=210M ubi.mtd=2 root=ubi0:rootfs rootfstype=ubifs rw console=null"
 CONFIG_CMDLINE_OVERRIDE=y
 
 #
