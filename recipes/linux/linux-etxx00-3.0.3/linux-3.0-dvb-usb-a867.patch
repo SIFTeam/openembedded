@@ -3,9 +3,9 @@ index 4fc22e1..841a82f 100644
 --- a/drivers/media/dvb/dvb-usb/Kconfig
 +++ b/drivers/media/dvb/dvb-usb/Kconfig
 @@ -382,3 +382,11 @@ config DVB_USB_TECHNISAT_USB2
- 	select DVB_STV6110x if !DVB_FE_CUSTOMISE
+ 	depends on DVB_USB
  	help
- 	  Say Y here to support the Technisat USB2 DVB-S/S2 device
+ 	  Say Y here to support the ITE IT9135 based DVB-T USB2.0 receiver
 +
 +config DVB_A867
 +	tristate "Avermedia A867 DVB receiver"
