@@ -38,8 +38,7 @@ case "$ACTION" in
 			fi
 		fi
 		# first allow fstab to determine the mountpoint
-		# Note: we grep first, to avoid that mount complains when the device is not listed in fstab
-		if ! grep -q "/dev/$MDEV\s" /etc/fstab || ! mount /dev/$MDEV
+		if ! mount /dev/$MDEV
 		then
 			# no fstab entry, use automatic mountpoint
 			REMOVABLE=`cat /sys/block/$DEVBASE/removable`
