@@ -94,12 +94,9 @@ MACHINE_FEATURES += "32bpp hdtv 3dtv switchoff lpcm textlcd dvbapi5"
 
 CHIPSET = "bcm7413"
 
-MACHINE_KERNEL_PR = "r5"
+MACHINE_KERNEL_PR = "r6"
 
-PREFERRED_VERSION_linux-etxx00 = "3.0.3"
 PREFERRED_VERSION_linux-libc-headers = "2.6.31"
-
-OLDEST_KERNEL = "2.6.18"
 
 TARGET_ARCH = "mipsel"
 
@@ -113,4 +110,4 @@ require conf/machine/include/tune-mips32.inc
 
 include conf/machine/include/autoload-usbserial.inc
 
-SYSVINIT_ENABLED_GETTYS = ""
+SYSVINIT_ENABLED_GETTYS = "1"

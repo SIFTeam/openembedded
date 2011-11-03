@@ -1,24 +1,21 @@
 DESCRIPTION = "Linux kernel for ${MACHINE}"
 LICENSE = "GPL"
-KV = "2.6.31"
 
-#Don't use PR here, use MACHINE_KERNEL_PR in machine.conf instead
-#PR = "r6"
-#or use MACHINE_KERNEL_PR_append, when a rebuild of external modules is not required
-
-MACHINE_KERNEL_PR_append = ".13"
+MACHINE_KERNEL_PR_append = ".1"
 
 DEPENDS = "mtd-minimal-nand-utils"
 RDEPENDS_kernel-image = "mtd-minimal-nand-utils"
 
-SRC_URI += "http://www.et-view.com/download/stblinux-2.6.31-20110930.tar.gz \
+SRC_URI += "http://www.et-view.com/download/linux-${PV}.tar.gz \
 	file://${MACHINE}_defconfig \
-	file://disable_uarts.patch \
-	file://linux-2.6.31-fix-proc-cputype.patch \
-	file://stblinux-2.6.31-cdfs.patch \
+	file://fix-proc-cputype.patch \
+	file://dvb-usb-af9035.patch \
+	file://dvb-usb-it9135.patch \
+	file://tda18218-7mhz-lopass.patch \
+	file://dvb-usb-a867.patch \
 	"
 
-S = "${WORKDIR}/stblinux-2.6.31"
+S = "${WORKDIR}/linux-${PV}"
 
 inherit kernel
 
