@@ -88,7 +88,7 @@ python populate_packages_prepend () {
 		path = bb.data.getVar("PATH", d, 1)
 		host_prefix = bb.data.getVar("HOST_PREFIX", d, 1) or ""
 
-		cmd = "PATH=\"%s\" %sdepmod -n -a -r -b %s -F %s/boot/System.map-%s %s" % (path, host_prefix, dvar, dvar, kernelver, kernelver_stripped)
+		cmd = "PATH=\"%s\" %sdepmod -n -a -r -b %s %s" % (path, host_prefix, dvar, kernelver_stripped)
 		f = os.popen(cmd, 'r')
 
 		deps = {}
@@ -123,7 +123,12 @@ python populate_packages_prepend () {
 		return deps
 
 	def get_dependencies(file, pattern, format):
-		file = file.replace(bb.data.getVar('PKGD', d, 1) or '', '', 1)
+		prefix = os.path.normpath(os.path.join(
+			os.path.join(bb.data.getVar('PKGD', d, 1) or ''),
+			'lib/modules',
+			bb.data.getVar('KERNEL_VERSION', d, 1)
+		)) + '/'
+		file = file.replace(prefix, '', 1)
 
 		if module_deps.has_key(file):
 			import re
@@ -215,20 +220,16 @@ python populate_packages_prepend () {
 	bb.data.setVar('ALLOW_EMPTY_' + metapkg, "1", d)
 	bb.data.setVar('FILES_' + metapkg, "", d)
 	blacklist = []
+	depchains = (d.getVar("DEPCHAIN_POST", True) or "").split()
 	for l in module_deps.values():
 		for i in l:
 			pkg = module_pattern % legitimize_package_name(re.match(module_regex, os.path.basename(i)).group(1))
 			blacklist.append(pkg)
-	metapkg_rdepends = []
+	metapkg_rrecommends = []
 	packages = bb.data.getVar('PACKAGES', d, 1).split()
 	for pkg in packages[1:]:
-		if not pkg in blacklist and not pkg in metapkg_rdepends:
-			metapkg_rdepends.append(pkg)
-		p = pkg.find('v4l-dvb-module')
-		if p != -1:
-			name = pkg.split('-')[-1]
-			bb.data.setVar('RREPLACES_' + pkg, 'kernel-module-' + name, d)
-			bb.data.setVar('RCONFLICTS_' + pkg, 'kernel-module-' + name, d)
-	bb.data.setVar('RDEPENDS_' + metapkg, ' '.join(metapkg_rdepends), d)
+		if not pkg in blacklist and not pkg in metapkg_rrecommends and not any(pkg.endswith(post) for post in depchains):
+			metapkg_rrecommends.append(pkg)
+	bb.data.setVar('RRECOMMENDS_' + metapkg, ' '.join(metapkg_rrecommends), d)
 	bb.data.setVar('DESCRIPTION_' + metapkg, 'v4l-dvb modules meta package', d)
 }
