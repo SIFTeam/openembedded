@@ -3,10 +3,9 @@ DESCRIPTION = "USB DVB driver for Afatech 9015 chipset"
 DVBPROVIDER ?= "v4l-dvb"
 
 RDEPENDS_${PN} = " \
+	${DVBPROVIDER}-module-dvb-usb-af9015 \
 	${DVBPROVIDER}-module-af9013 \
 	${DVBPROVIDER}-module-dvb-pll \
-	${DVBPROVIDER}-module-dvb-usb \
-	${DVBPROVIDER}-module-dvb-usb-af9015 \
 	${DVBPROVIDER}-module-mc44s803 \
 	${DVBPROVIDER}-module-mt2060 \
 	${DVBPROVIDER}-module-mxl5005s \
@@ -18,6 +17,6 @@ RDEPENDS_${PN} = " \
 	"
 
 PV = "1.0"
-PR = "r1"
+PR = "r2"
 
 ALLOW_EMPTY_${PN} = "1"

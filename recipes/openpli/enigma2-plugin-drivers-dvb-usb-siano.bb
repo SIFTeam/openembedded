@@ -3,14 +3,13 @@ DESCRIPTION = "USB DVB driver for Siano chipset"
 DVBPROVIDER ?= "v4l-dvb"
 
 RDEPENDS_${PN} = " \
-	${DVBPROVIDER}-module-smsmdtv \
 	${DVBPROVIDER}-module-smsusb \
 	${DVBPROVIDER}-module-smsdvb \
 	v4l-dvb-firmware \
 	"
 
 PV = "1.0"
-PR = "r1"
+PR = "r2"
 
 ALLOW_EMPTY_${PN} = "1"
 
