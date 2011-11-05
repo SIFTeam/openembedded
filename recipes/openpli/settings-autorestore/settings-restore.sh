@@ -7,6 +7,9 @@
 BACKUPDIR=/media/hdd
 MACADDR=`cat /sys/class/net/eth0/address | cut -b 1,2,4,5,7,8,10,11,13,14,16,17`
 
+if [ "$1x" == "startx" ] || [ -z "$1" ]
+then
+
 # Best candidate:
 #  If a MAC Address dependent backup was found, use that
 #  Always use the latest version
@@ -44,6 +47,11 @@ if  [ ! -f ${BACKUPDIR}/backup/.timestamp ]
 then
     echo "No valid backup location, aborting auto-restore"
     exit 0
+fi
+
+else
+    # if first arg isn't 'start', its a directory name
+    BACKUPDIR=$1
 fi
 
 if [ -f ${BACKUPDIR}/backup/PLi-AutoBackup${MACADDR}.tar.gz ]
