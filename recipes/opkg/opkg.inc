@@ -5,10 +5,14 @@ LICENSE = "GPLv2"
 SRCREV = "609"
 PV = "0.1.8+svnr${SRCPV}"
 CONFLICTS = "ipkg"
-INC_PR = "r5"
+INC_PR = "r6"
 
 SRC_URI = "svn://opkg.googlecode.com/svn;module=trunk;proto=http \
 	file://configure \
+"
+
+SRC_URI_append_sifteam = " \
+	file://opkg-sifteam.patch \
 "
 
 S = "${WORKDIR}/trunk"

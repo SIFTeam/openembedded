@@ -1,0 +1,372 @@
+diff -ruN opkg.original//libopkg/opkg.c opkg/libopkg/opkg.c
+--- opkg.original//libopkg/opkg.c	2011-11-06 16:09:50.000000000 +0100
++++ opkg/libopkg/opkg.c	2011-11-06 17:17:25.000000000 +0100
+@@ -22,6 +22,7 @@
+ #include <fnmatch.h>
+ 
+ #include "opkg.h"
++#include "opkg_defines.h"
+ #include "opkg_conf.h"
+ 
+ #include "opkg_install.h"
+@@ -29,6 +30,7 @@
+ #include "opkg_download.h"
+ #include "opkg_remove.h"
+ #include "opkg_upgrade.h"
++#include "opkg_message.h"
+ 
+ #include "sprintf_alloc.h"
+ #include "file_util.h"
+@@ -254,6 +256,26 @@
+ 	int i, ndepends;
+ 	char **unresolved = NULL;
+ 
++	/* check if local file */
++	if (strcmp(&package_name[strlen(package_name) - 4], OPKG_PKG_EXTENSION) == 0
++			|| strcmp(&package_name[strlen(package_name) - 4], IPKG_PKG_EXTENSION) == 0
++			|| strcmp(&package_name[strlen(package_name) - 4], DPKG_PKG_EXTENSION) == 0)
++	{
++		pkg_t *tmp = pkg_new();
++		err = pkg_init_from_file(tmp, package_name);
++		if (err)
++			return err;
++	
++		opkg_msg(DEBUG2, "Package %s provided by hand (%s).\n", tmp->name, tmp->local_filename);
++		tmp->provided_by_hand = 1;
++		tmp->dest = conf->default_dest;
++		tmp->state_want = SW_INSTALL;
++		tmp->state_flag |= SF_PREFER;
++		hash_insert_pkg(tmp, 1);
++	
++		package_name = tmp->name;
++	}
++	
+ 	opkg_assert(package_name != NULL);
+ 
+ 	/* ... */
+@@ -391,6 +413,71 @@
+ }
+ 
+ int
++opkg_download_package (const char *package_name, opkg_progress_callback_t progress_callback, void *user_data)
++{
++	int err;
++	char *stripped_filename;
++	opkg_progress_data_t pdata;
++	pkg_t *new;
++	struct _curl_cb_data cb_data;
++	char *url, *local_filename;
++
++	opkg_assert (package_name != NULL);
++
++	/* ... */
++	pkg_info_preinstall_check();
++
++	new = pkg_hash_fetch_best_installation_candidate_by_name(package_name);
++	if (!new)
++	{
++		opkg_msg(ERROR, "Couldn't find package %s\n", package_name);
++		return -1;
++	}
++
++	//new->state_flag |= SF_USER;
++
++	pdata.action = OPKG_DOWNLOAD;
++	pdata.pkg = new;
++
++	progress (pdata, 0);
++
++	if (new->src == NULL)
++	{
++		opkg_msg(ERROR, "Package %s not available from any "
++				"configured src\n", package_name);
++		return -1;
++	}
++
++	sprintf_alloc(&url, "%s/%s", new->src->value, new->filename);
++
++	/* Get the filename part, without any directory */
++	stripped_filename = strrchr(new->filename, '/');
++	if ( ! stripped_filename )
++		stripped_filename = new->filename;
++
++	sprintf_alloc(&local_filename, "/tmp/%s", stripped_filename);
++
++	cb_data.cb = progress_callback;
++	cb_data.progress_data = &pdata;
++	cb_data.user_data = user_data;
++	cb_data.start_range = 0;
++	cb_data.finish_range = 100;
++
++	err = opkg_download(url, local_filename,
++			    (curl_progress_func) curl_progress_cb,
++			    &cb_data);
++
++	free (url);
++	free (local_filename);
++
++	if (err)
++		return -1;
++
++	progress (pdata, 100);
++	return 0;
++}
++
++int
+ opkg_remove_package(const char *package_name,
+ 		opkg_progress_callback_t progress_callback, void *user_data)
+ {
+@@ -527,6 +614,31 @@
+ 	return 0;
+ }
+ 
++// 0 is false .. 1 is true
++int opkg_is_upgradable()
++{
++	struct active_list *head;
++	struct active_list *node;
++	pkg_t *old = NULL, *new = NULL;
++	int ret = 0;
++
++	/* ensure all data is valid */
++	pkg_info_preinstall_check();
++
++	head = prepare_upgrade_list();
++	for (node = active_list_next(head, head); node;
++	     node = active_list_next(head, node)) {
++		old = list_entry(node, pkg_t, list);
++		new = pkg_hash_fetch_best_installation_candidate_by_name(old->name);
++		if (new == NULL)
++			continue;
++		ret = 1;
++		break;
++	}
++	active_list_head_delete(head);
++	return ret;
++}
++
+ int
+ opkg_update_package_lists(opkg_progress_callback_t progress_callback,
+ 			void *user_data)
+diff -ruN opkg.original//libopkg/opkg_cmd.c opkg/libopkg/opkg_cmd.c
+--- opkg.original//libopkg/opkg_cmd.c	2011-11-06 16:09:50.000000000 +0100
++++ opkg/libopkg/opkg_cmd.c	2011-11-06 16:42:24.000000000 +0100
+@@ -43,14 +43,19 @@
+ #include "opkg_configure.h"
+ #include "xsystem.h"
+ 
++static char *status_str[] = { "Not installed", "Unpacked", "Half configured", "Installed", "Half installed", "Config files", "Post inst. failed", "Removal failed", "Last state status"};
++
+ static void
+ print_pkg(pkg_t *pkg)
+ {
+ 	char *version = pkg_version_str_alloc(pkg);
+ 	if (pkg->description)
+-		printf("%s - %s - %s\n", pkg->name, version, pkg->description);
++	{
++		if (strlen(pkg->description) > 59) pkg->description[60] = '\0';
++		printf("%-40s | %-60s | %-6s | %-20s | %-17s\n", pkg->name, pkg->description, pkg->architecture, version, status_str[pkg->state_status-1]);
++	}
+ 	else
+-		printf("%s - %s\n", pkg->name, version);
++		printf("%-40s | %-60s | %-6s | %-20s | %-17s\n", pkg->name, "", pkg->architecture, version, status_str[pkg->state_status-1]);
+ 	free(version);
+ }
+ 
+@@ -582,6 +587,8 @@
+      available = pkg_vec_alloc();
+      pkg_hash_fetch_available(available);
+      pkg_vec_sort(available, pkg_compare_names);
++
++     printf("%-40s | %-60s | %-6s | %-20s | %-17s\n", "Package", "Description", "Arch.", "Version", "Status");
+      for (i=0; i < available->len; i++) {
+ 	  pkg = available->pkgs[i];
+ 	  /* if we have package name or pattern and pkg does not match, then skip it */
+@@ -609,6 +616,8 @@
+      available = pkg_vec_alloc();
+      pkg_hash_fetch_all_installed(available);
+      pkg_vec_sort(available, pkg_compare_names);
++
++     printf("%-40s | %-60s | %-6s | %-20s | %-17s\n", "Package", "Description", "Arch.", "Version", "Status");
+      for (i=0; i < available->len; i++) {
+ 	  pkg = available->pkgs[i];
+ 	  /* if we have package name or pattern and pkg does not match, then skip it */
+diff -ruN opkg.original//libopkg/opkg_conf.h opkg/libopkg/opkg_conf.h
+--- opkg.original//libopkg/opkg_conf.h	2011-11-06 16:09:50.000000000 +0100
++++ opkg/libopkg/opkg_conf.h	2011-11-06 17:27:35.000000000 +0100
+@@ -85,6 +85,8 @@
+      int noaction;
+      int download_only;
+      char *cache;
++     char **special_sections;
++     int special_sections_count;
+ 
+ #ifdef HAVE_SSLCURL
+      /* some options could be used by
+diff -ruN opkg.original//libopkg/opkg.h opkg/libopkg/opkg.h
+--- opkg.original//libopkg/opkg.h	2011-11-06 16:09:50.000000000 +0100
++++ opkg/libopkg/opkg.h	2011-11-06 16:54:00.000000000 +0100
+@@ -47,6 +47,7 @@
+ void opkg_set_option (char *option, void *value);
+ 
+ int opkg_install_package (const char *package_name, opkg_progress_callback_t callback, void *user_data);
++int opkg_download_package (const char *package_name, opkg_progress_callback_t progress_callback, void *user_data);
+ int opkg_remove_package (const char *package_name, opkg_progress_callback_t callback, void *user_data);
+ int opkg_upgrade_package (const char *package_name, opkg_progress_callback_t callback, void *user_data);
+ int opkg_upgrade_all (opkg_progress_callback_t callback, void *user_data);
+@@ -54,6 +55,7 @@
+ 
+ int opkg_list_packages (opkg_package_callback_t callback, void *user_data);
+ int opkg_list_upgradable_packages (opkg_package_callback_t callback, void *user_data);
++int opkg_is_upgradable (void);
+ pkg_t* opkg_find_package (const char *name, const char *version, const char *architecture, const char *repository);
+ 
+ int opkg_repository_accessibility_check(void);
+diff -ruN opkg.original//libopkg/opkg_install.c opkg/libopkg/opkg_install.c
+--- opkg.original//libopkg/opkg_install.c	2011-11-06 16:09:50.000000000 +0100
++++ opkg/libopkg/opkg_install.c	2011-11-06 16:58:42.000000000 +0100
+@@ -496,7 +496,28 @@
+           if ( message )
+                strncpy( message_out,"Upgrading ",strlen("Upgrading ") );
+           else
+-               strncpy( message_out,"Installing ",strlen("Installing ") );
++          {
++             int i;
++             for (i=0; i< conf->special_sections_count; i++) {
++               if (strlen(conf->special_sections[i]) == strlen(pkg->section)) {
++                 if (memcmp(conf->special_sections[i], pkg->section, strlen(conf->special_sections[i])) == 0) {
++                   int j;
++                   pkg_vec_t *available;
++                   available = pkg_vec_alloc();
++                   pkg_hash_fetch_all_installed(available);
++                   for (j=0; j < available->len; j++) {
++                     pkg_t *zpkg = available->pkgs[j];
++                     if ((zpkg->state_status & SS_INSTALLED) && zpkg->section)
++                       if (strlen(conf->special_sections[i]) == strlen(zpkg->section))
++                         if (memcmp(conf->special_sections[i], zpkg->section, strlen(conf->special_sections[i])) == 0)
++                           opkg_remove_pkg(zpkg, 0);
++                   }
++                   pkg_vec_free(available);
++                 }
++               }
++             }
++             strncpy( message_out,"Installing ",strlen("Installing ") );
++          }
+           char *version = pkg_version_str_alloc(pkg);
+ 
+           if(!conf->download_only)
+diff -ruN opkg.original//libopkg/opkg_message.c opkg/libopkg/opkg_message.c
+--- opkg.original//libopkg/opkg_message.c	2011-11-06 16:09:50.000000000 +0100
++++ opkg/libopkg/opkg_message.c	2011-11-06 17:03:44.000000000 +0100
+@@ -58,6 +58,26 @@
+ 	}
+ }
+ 
++static opkg_message_callback_t _callback_message = NULL;
++static opkg_message_callback_t _callback_error = NULL;
++static void *_user_data = NULL;
++
++void
++opkg_message_set_callbacks(opkg_message_callback_t callback_message, opkg_message_callback_t callback_error, void* user_data)
++{
++	_callback_message = callback_message;
++	_callback_error = callback_error;
++	_user_data = user_data;
++}
++
++void
++opkg_message_unset_callbacks()
++{
++	_callback_message = NULL;
++	_callback_error = NULL;
++	_user_data = NULL;
++}
++
+ void
+ print_error_list(void)
+ {
+@@ -81,40 +101,38 @@
+ 	if (conf->verbosity < level)
+ 		return;
+ 
+-	if (conf->opkg_vmessage) {
+-		/* Pass the message to libopkg users. */
+-		va_start (ap, fmt);
+-		conf->opkg_vmessage(level, fmt, ap);
+-		va_end (ap);
+-		return;
+-	}
++	// we use our callbacks wiht libopkg .. at least for now
++	//if (conf->opkg_vmessage) {
++	//	/* Pass the message to libopkg users. */
++	//	va_start (ap, fmt);
++	//	conf->opkg_vmessage(level, fmt, ap);
++	//	va_end (ap);
++	//	return;
++	//}
+ 
+ 	va_start (ap, fmt);
+ 
+ 	if (level == ERROR) {
+ #define MSG_LEN 4096
+ 		char msg[MSG_LEN];
+-		int ret;
+-		ret = vsnprintf(msg, MSG_LEN, fmt, ap);
+-		if (ret < 0) {
+-			fprintf(stderr, "%s: encountered an output or encoding"
+-					" error during vsnprintf.\n",
++		if (vsnprintf(msg, MSG_LEN, fmt, ap) >= MSG_LEN) {
++			fprintf(stderr, "%s: Message truncated!\n",
+ 					__FUNCTION__);
+-			va_end (ap);
+-			exit(EXIT_FAILURE);
+ 		}
+-		if (ret >= MSG_LEN) {
+-			fprintf(stderr, "%s: Message truncated.\n",
+-					__FUNCTION__);
+-		}
+-		push_error_list(msg);
+-	} else {
+-		if (vprintf(fmt, ap) < 0) {
+-			fprintf(stderr, "%s: encountered an output or encoding"
+-					" error during vprintf.\n",
+-					__FUNCTION__);
+-			exit(EXIT_FAILURE);
++		if (_callback_error)
++			_callback_error(msg, _user_data);
++		else
++			push_error_list(msg);
++	} else
++	{
++		if (_callback_message)
++		{
++			char msg[MSG_LEN];
++			vsnprintf(msg, MSG_LEN, fmt, ap);
++			_callback_message(msg, _user_data);
+ 		}
++		else
++			vprintf(fmt, ap);
+ 	}
+ 
+ 	va_end (ap);
+diff -ruN opkg.original//libopkg/opkg_message.h opkg/libopkg/opkg_message.h
+--- opkg.original//libopkg/opkg_message.h	2011-11-06 16:09:50.000000000 +0100
++++ opkg/libopkg/opkg_message.h	2011-11-06 17:04:31.000000000 +0100
+@@ -20,6 +20,8 @@
+ #include <string.h>
+ #include <errno.h>
+ 
++typedef void (*opkg_message_callback_t) (char *message, void *user_data);
++
+ typedef enum {
+ 	ERROR,	/* error conditions */
+ 	NOTICE,	/* normal but significant condition */
+@@ -28,6 +30,8 @@
+ 	DEBUG2,	/* more debug level message */
+ } message_level_t;
+ 
++extern void opkg_message_set_callbacks(opkg_message_callback_t callback_message, opkg_message_callback_t callback_error, void* user_data);
++extern void opkg_message_unset_callbacks();
+ void free_error_list(void);
+ void print_error_list(void);
+ void opkg_message(message_level_t level, const char *fmt, ...)
