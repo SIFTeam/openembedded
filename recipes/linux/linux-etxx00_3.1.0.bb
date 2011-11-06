@@ -1,7 +1,7 @@
 DESCRIPTION = "Linux kernel for ${MACHINE}"
 LICENSE = "GPL"
 
-MACHINE_KERNEL_PR_append = ".2"
+MACHINE_KERNEL_PR_append = ".3"
 
 DEPENDS = "mtd-minimal-nand-utils"
 RDEPENDS_kernel-image = "mtd-minimal-nand-utils"
@@ -14,6 +14,8 @@ SRC_URI += "http://www.et-view.com/download/linux-${PV}.tar.gz \
 	file://tda18218-7mhz-lopass.patch \
 	file://dvb-usb-a867.patch \
 	"
+
+SRC_URI_append_et5x00 = " file://disable_early_fb.patch"
 
 S = "${WORKDIR}/linux-${PV}"
 
