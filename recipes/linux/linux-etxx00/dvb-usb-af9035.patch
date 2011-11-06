@@ -9,7 +9,7 @@ index 22d3ca3..ffa3c94 100644
 +config MEDIA_TUNER_TUA9001
 +       tristate "Infineon OMNITUNE TUA 9001 silicon tuner"
 +       depends on VIDEO_MEDIA && I2C
-+       default m if MEDIA_TUNER_CUSTOMISE
++       default m
 +       help
 +         A driver for the silicon tuner OMNITUNE TUA 9001 from Infineon.
 +
@@ -363,13 +363,14 @@ index e85304c..4fc22e1 100644
  	select DVB_MT312 if !DVB_FE_CUSTOMISE
  	select DVB_ZL10039 if !DVB_FE_CUSTOMISE
  	select DVB_DS3000 if !DVB_FE_CUSTOMISE
-@@ -324,6 +325,14 @@ config DVB_USB_AF9015
+@@ -324,6 +325,15 @@ config DVB_USB_AF9015
  	help
  	  Say Y here to support the Afatech AF9015 based DVB-T USB2.0 receiver
  
 +config DVB_USB_AF9035
 +        tristate "Afatech AF9035 DVB-T USB2.0 support"
 +        depends on DVB_USB
++        default m
 +        select DVB_AF9033
 +        select MEDIA_TUNER_TUA9001  if !MEDIA_TUNER_CUSTOMISE
 +        help
@@ -1767,7 +1768,7 @@ index 44b816f..212c15b 100644
 +config DVB_AF9033
 +	tristate "Afatech AF9033 demodulator"
 +	depends on DVB_CORE && I2C
-+	default m if DVB_FE_CUSTOMISE
++	default m
 +	help
 +	  Say Y when you want to support this frontend.
 +

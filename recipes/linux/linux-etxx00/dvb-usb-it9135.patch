@@ -19,7 +19,7 @@ diff --git a/drivers/media/dvb/dvb-usb/Kconfig b/drivers/media/dvb/dvb-usb/Kconf
 index e85304c..468fe8e 100644
 --- a/drivers/media/dvb/dvb-usb/Kconfig
 +++ b/drivers/media/dvb/dvb-usb/Kconfig
-@@ -373,3 +373,9 @@ config DVB_USB_TECHNISAT_USB2
+@@ -373,3 +373,10 @@ config DVB_USB_TECHNISAT_USB2
  	select DVB_STV6110x if !DVB_FE_CUSTOMISE
  	help
  	  Say Y here to support the Technisat USB2 DVB-S/S2 device
@@ -27,6 +27,7 @@ index e85304c..468fe8e 100644
 +config DVB_USB_IT9135
 +	tristate "ITEtech IT9135 DVB-T USB2.0 support"
 +	depends on DVB_USB
++	default m
 +	help
 +	  Say Y here to support the ITE IT9135 based DVB-T USB2.0 receiver
 diff --git a/drivers/media/dvb/dvb-usb/Makefile b/drivers/media/dvb/dvb-usb/Makefile
