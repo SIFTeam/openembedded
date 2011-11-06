@@ -1,0 +1,15 @@
+#!/bin/sh
+if [ ! -f /etc/settings.mounts ]; then
+  if [ "$(cat /proc/partitions | grep sda1)" != "" ]; then
+    VENDOR=$(cat /sys/block/sda/device/vendor | sed "s/ *$//")
+    MODEL=$(cat /sys/block/sda/device/model | sed "s/ *$//")
+	echo "/media/hdd:$MODEL:$VENDOR:1" > /etc/settings.mounts
+  else
+    touch /etc/settings.mounts
+  fi
+fi
+
+IFS=$'\n'
+for i in $(cat /etc/settings.mounts); do
+  /usr/bin/mountsif "$i"
+done

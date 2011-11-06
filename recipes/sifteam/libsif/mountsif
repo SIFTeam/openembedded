@@ -1,0 +1,22 @@
+#!/bin/sh
+
+MPATH=`echo $1 | cut -d: -f1`
+MMODEL=`echo $1 | cut -d: -f2 | tr -d " "`
+MVENDOR=`echo $1 | cut -d: -f3 | tr -d " "`
+MPARTITION=`echo $1 | cut -d: -f4 | tr -d " "`
+
+for i in /sys/block/sd?
+do
+  VENDOR=`cat $i/device/vendor | tr -d " "`
+  MODEL=`cat $i/device/model | tr -d " "`
+  if [ "$MODEL" = "$MMODEL" ]; then
+    if [ "$VENDOR" = "$MVENDOR" ]; then
+      DEVICE=`echo $i | sed "s/^.*\///"`
+      mount /dev/$DEVICE$MPARTITION $MPATH
+      exit 0
+    fi
+  fi
+  #echo $MODEL:$VENDOR
+done
+
+echo "device not found"

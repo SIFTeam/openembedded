@@ -19,7 +19,7 @@ RDEPENDS_${PN} = "python-codecs python-core python-lang python-re python-threadi
 	python-twisted-core python-elementtree python-compression \
 	python-utf8-hack \
 	enigma2-fonts \
-	glibc-gconv-iso8859-15 ethtool"
+	glibc-gconv-iso8859-15 ethtool libsif"
 
 # DVD playback is integrated, we need the libraries
 RDEPENDS_${PN} += "libdreamdvd"
@@ -84,7 +84,7 @@ inherit gitpkgv
 
 PV = "2.7+git${SRCPV}"
 PKGV = "2.7+git${GITPKGV}"
-PR = "r26"
+PR = "r27"
 
 SRC_URI = "git://openpli.git.sourceforge.net/gitroot/openpli/enigma2;protocol=git"
 # SRC_URI = "git://${HOME}/pli/enigma2;protocol=file"
