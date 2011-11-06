@@ -43,6 +43,9 @@ fi
 ${IPKG} list_installed | cut -d ' ' -f 1 > ${INSTALLED}
 chmod 444 ${INSTALLED}
 
+# when available, bind the console during autoinstall
+[ -f /sys/class/vtconsole/vtcon1/bind ] && echo 1 > /sys/class/vtconsole/vtcon1/bind
+
 if [ -f ${AUTOINSTALL} ]
 then
 	${IPKG} update  
@@ -58,6 +61,9 @@ then
 		fi
 	done
 fi
+
+# done, unbind the console
+[ -f /sys/class/vtconsole/vtcon1/bind ] && echo 0 > /sys/class/vtconsole/vtcon1/bind
 
 # suicide...
 rm -f /etc/rcS.d/S*autoinstall
