@@ -9,12 +9,12 @@ RDEPENDS_${PN} = " \
 	"
 
 PV = "1.0"
-PR = "r2"
+PR = "r3"
 
 ALLOW_EMPTY_${PN} = "1"
 
 do_install() {
-	if [ "$DVBPROVIDER" = "v4l-dvb" ]; then
+	if [ "${DVBPROVIDER}" = "v4l-dvb" ]; then
 		install -d ${D}/etc/modutils
 		echo smsusb > ${D}/etc/modutils/v4l-dvb-usb-siano
 		echo smsdvb >> ${D}/etc/modutils/v4l-dvb-usb-siano
