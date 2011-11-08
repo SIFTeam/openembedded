@@ -1,8 +1,6 @@
 DESCRIPTION = "Firmware for CARL9170"
 LICENCE = "closed"
 
-DEFAULT_PREFERENCE = "-1"
-
 SRC_URI = "file://carl9170-1.fw"
 S = "${WORKDIR}"
 
