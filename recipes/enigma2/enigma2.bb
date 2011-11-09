@@ -86,8 +86,8 @@ PV = "2.7+git${SRCPV}"
 PKGV = "2.7+git${GITPKGV}"
 PR = "r27"
 
-SRC_URI = "git://openpli.git.sourceforge.net/gitroot/openpli/enigma2;protocol=git"
-# SRC_URI = "git://${HOME}/pli/enigma2;protocol=file"
+SRC_URI = "git://github.com/SIFTeam/openembedded.git;protocol=git"
+#SRC_URI = "git://${HOME}/sifteam/enigma2;protocol=file"
 
 S = "${WORKDIR}/git"
 
@@ -168,6 +168,14 @@ addtask sifteam_preinstall after do_compile before do_install
 do_install_append() {
 	install -d ${D}/usr/share/keymaps
 	find ${D}/usr/lib/enigma2/python/ -name '*.pyc' -exec rm {} \;
+	
+	install -d ${D}/etc
+	install -d ${D}/usr/scripts
+	install -d ${D}/${datadir}/enigma2/defaults/
+
+	echo "${MACHINE}" > ${D}/etc/machine
+	
+	cp ${S}/panel.conf ${D}/${datadir}/enigma2/defaults/
 }
 
 # On the 7025, put the enigma files into a zip archive
