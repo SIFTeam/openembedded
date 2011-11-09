@@ -3,19 +3,18 @@ DESCRIPTION = "USB DVB driver for Siano chipset"
 DVBPROVIDER ?= "v4l-dvb"
 
 RDEPENDS_${PN} = " \
-	${DVBPROVIDER}-module-smsmdtv \
 	${DVBPROVIDER}-module-smsusb \
 	${DVBPROVIDER}-module-smsdvb \
 	v4l-dvb-firmware \
 	"
 
 PV = "1.0"
-PR = "r1"
+PR = "r3"
 
 ALLOW_EMPTY_${PN} = "1"
 
 do_install() {
-	if [ "$DVBPROVIDER" = "v4l-dvb" ]; then
+	if [ "${DVBPROVIDER}" = "v4l-dvb" ]; then
 		install -d ${D}/etc/modutils
 		echo smsusb > ${D}/etc/modutils/v4l-dvb-usb-siano
 		echo smsdvb >> ${D}/etc/modutils/v4l-dvb-usb-siano

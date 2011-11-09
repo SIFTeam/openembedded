@@ -5,18 +5,13 @@ EXTRA_OECONF += "--disable-builddir"
 #DEPENDS += "docbook-utils-native"
 
 DEFAULT_PREFERENCE = "0"
-PROVIDES += "virtual/${TARGET_PREFIX}depmod virtual/${TARGET_PREFIX}depmod-2.6 virtual/${TARGET_PREFIX}depmod-3.0"
+PROVIDES += "virtual/${TARGET_PREFIX}depmod"
 
 # Remove the RDEPENDS_${PN} we picked up from the "require";
 # it's simply extraneous for the cross package
 RDEPENDS_${PN} = ""
 
 EXTRA_OECONF_append = " --program-prefix=${TARGET_PREFIX}"
-
-do_install_append () {
-	ln -s ${TARGET_PREFIX}depmod ${D}${bindir}/${TARGET_PREFIX}depmod-2.6
-	ln -s ${TARGET_PREFIX}depmod ${D}${bindir}/${TARGET_PREFIX}depmod-3.0
-}
 
 do_configure_prepend() {
 	sed -i -e /MAN5\ =/d -e /MAN8\ =/d Makefile.am 
