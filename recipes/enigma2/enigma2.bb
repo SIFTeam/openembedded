@@ -86,7 +86,7 @@ PV = "2.7+git${SRCPV}"
 PKGV = "2.7+git${GITPKGV}"
 PR = "r27"
 
-SRC_URI = "git://github.com/SIFTeam/openembedded.git;protocol=git"
+SRC_URI = "git://github.com/SIFTeam/enigma2.git;protocol=git"
 #SRC_URI = "git://${HOME}/sifteam/enigma2;protocol=file"
 
 S = "${WORKDIR}/git"
