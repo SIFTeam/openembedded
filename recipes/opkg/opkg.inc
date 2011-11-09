@@ -2,17 +2,13 @@ DESCRIPTION = "Opkg Package Manager"
 DESCRIPTION_libopkg = "Opkg Package Manager Library"
 SECTION = "base"
 LICENSE = "GPLv2"
-SRCREV = "609"
+SRCREV = "633"
 PV = "0.1.8+svnr${SRCPV}"
 CONFLICTS = "ipkg"
-INC_PR = "r6"
+INC_PR = "r0"
 
 SRC_URI = "svn://opkg.googlecode.com/svn;module=trunk;proto=http \
 	file://configure \
-"
-
-SRC_URI_append_sifteam = " \
-	file://opkg-sifteam.patch \
 "
 
 S = "${WORKDIR}/trunk"
