@@ -25,7 +25,6 @@ WIFI_DRIVERS = " \
 
 ENIGMA2_PLUGINS = " \
 				enigma2-plugin-extensions-ppanel \
-				enigma2-plugin-pli-softcamsetup \
 				enigma2-plugin-extensions-audiosync \
 				enigma2-plugin-extensions-autobackup \
 				enigma2-plugin-systemplugins-positionersetup \
@@ -70,7 +69,6 @@ ENIGMA2_OPTIONAL = " \
 				enigma2-plugin-skins-magic-hd \
 				channelsettings-enigma2-meta \
 				picons-enigma2-meta \
-				softcams-enigma2-meta \
 				dvbsnoop \
 				mtd-utils \
 				dvdfs \
