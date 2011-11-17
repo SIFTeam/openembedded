@@ -1,7 +1,7 @@
 DESCRIPTION = "Linux kernel for ${MACHINE}"
 LICENSE = "GPL"
 
-MACHINE_KERNEL_PR_append = ".4"
+MACHINE_KERNEL_PR_append = ".5"
 
 DEPENDS = "mtd-minimal-nand-utils"
 RDEPENDS_kernel-image = "mtd-minimal-nand-utils"
@@ -16,6 +16,7 @@ SRC_URI += "http://www.et-view.com/download/linux-${PV}.tar.gz \
 	file://PCTV-DVB-S2-stick-460e.patch \
 	file://cxd2820r-enable-LNA-for-DVB-T.patch \
 	file://cxd2820r-changed-condition-to-break-out-from-wait-lock-loop.patch \
+	file://dvb-usb-smsdvb_fix_frontend.patch \
 	"
 
 SRC_URI_append_et5x00 = " file://disable_early_fb.patch"
