@@ -67,8 +67,11 @@ ENIGMA2_OPTIONAL = " \
 				enigma2-plugin-extensions-xmltvimport \
 				enigma2-plugin-extensions-ambx \
 				enigma2-plugin-extensions-project-valerie \
-				enigma2-plugin-skins-magic-hd \
-				enigma2-plugin-skins-pli-hd \
+				${@base_contains("MACHINE_FEATURES", "hdtv", \
+					" \
+					enigma2-plugin-skins-magic-hd \
+					enigma2-plugin-skins-pli-hd \
+					" , "", d)} \
 				channelsettings-enigma2-meta \
 				picons-enigma2-meta \
 				softcams-enigma2-meta \
