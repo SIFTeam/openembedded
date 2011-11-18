@@ -27,9 +27,15 @@ RRECOMMENDS_${PN} = "libdvdcss"
 
 RDEPENDS_${PN} += "${@base_contains("MACHINE_FEATURES", "blindscan", "virtual/blindscanutils" , "", d)}"
 
-# Magic is the default skin, so we should depend on it.
-DEPENDS += "enigma2-plugin-skins-magic"
-RDEPENDS_${PN} += "enigma2-plugin-skins-magic"
+# PLi-HD is the default skin for HD hardware, and Magic for SD hardware
+DEFAULTSKIN = "${@base_contains("MACHINE_FEATURES", "hdtv", \
+					"enigma2-plugin-skins-pli-hd", \
+					"enigma2-plugin-skins-magic", \
+					d)}"
+
+# Depend on the defaultskin
+DEPENDS += "${DEFAULTSKIN}"
+RDEPENDS_${PN} += "${DEFAULTSKIN}"
 
 # We depend on the font which we use for TXT subtitles (defined in skin_subtitles.xml)
 DEPENDS += "font-valis-enigma"
@@ -84,7 +90,7 @@ inherit gitpkgv
 
 PV = "2.7+git${SRCPV}"
 PKGV = "2.7+git${GITPKGV}"
-PR = "r27"
+PR = "r28"
 
 SRC_URI = "git://openpli.git.sourceforge.net/gitroot/openpli/enigma2;protocol=git"
 # SRC_URI = "git://${HOME}/pli/enigma2;protocol=file"
