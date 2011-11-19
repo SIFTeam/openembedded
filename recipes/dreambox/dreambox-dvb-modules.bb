@@ -8,11 +8,11 @@ SRCDATE_dm7020 = "20060622"
 SRCDATE_dm600pvr = "20090430"
 SRCDATE_dm500plus = "20080822"
 SRCDATE_dm7025 = "${@base_contains('PREFERRED_VERSION_linux-${MACHINE}', '2.6.12.6', '20110506', '20100727', d)}"
-SRCDATE_dm500hd = "${@base_contains('PREFERRED_VERSION_linux-${MACHINE}', '2.6.18', '20111109', '20090727', d)}"
-SRCDATE_dm800 = "${@base_contains('PREFERRED_VERSION_linux-${MACHINE}', '2.6.18', '20111109', '20090723', d)}"
-SRCDATE_dm800se = "20111109"
+SRCDATE_dm500hd = "${@base_contains('PREFERRED_VERSION_linux-${MACHINE}', '2.6.18', '20110902', '20090727', d)}"
+SRCDATE_dm800 = "${@base_contains('PREFERRED_VERSION_linux-${MACHINE}', '2.6.18', '20110902', '20090723', d)}"
+SRCDATE_dm800se = "20110902"
 SRCDATE_dm7020hd = "20111109"
-SRCDATE_dm8000 = "${@base_contains('PREFERRED_VERSION_linux-${MACHINE}', '2.6.18', '20111109', '20090820', d)}"
+SRCDATE_dm8000 = "${@base_contains('PREFERRED_VERSION_linux-${MACHINE}', '2.6.18', '20110902', '20090820', d)}"
 
 KV_dm7020 = "2.6.9"
 PV_dm7020 = "${KV}-${SRCDATE}"
@@ -28,19 +28,19 @@ PV_dm7025 = "${KV}-${SRCDATE}"
 GCC_dm7025 = "${@base_contains('PREFERRED_VERSION_linux-${MACHINE}', '2.6.12.6', '-gcc4.4', '', d)}"
 
 KV_dm500hd = "${@base_contains('PREFERRED_VERSION_linux-${MACHINE}', '2.6.18', '2.6.18-7.4-${MACHINE}', '2.6.30-${MACHINE}', d)}"
-PV_dm500hd = "${KV}-${SRCDATE}"
+PV_dm500hd = "${KV}-20111109-revert-${SRCDATE}"
 
 KV_dm800 = "${@base_contains('PREFERRED_VERSION_linux-${MACHINE}', '2.6.18', '2.6.18-7.4-${MACHINE}', '2.6.30-${MACHINE}', d)}"
-PV_dm800 = "${KV}-${SRCDATE}"
+PV_dm800 = "${KV}-20111109-revert-${SRCDATE}"
 
 KV_dm800se = "2.6.18-7.4-${MACHINE}"
-PV_dm800se = "${KV}-${SRCDATE}"
+PV_dm800se = "${KV}-20111109-revert-${SRCDATE}"
 
 KV_dm7020hd = "2.6.18-7.4-${MACHINE}"
 PV_dm7020hd = "${KV}-${SRCDATE}"
 
 KV_dm8000 = "${@base_contains('PREFERRED_VERSION_linux-${MACHINE}', '2.6.18', '2.6.18-7.4-${MACHINE}', '2.6.30-${MACHINE}', d)}"
-PV_dm8000 = "${KV}-${SRCDATE}"
+PV_dm8000 = "${KV}-20111109-revert-${SRCDATE}"
 
 RDEPENDS_${PN} = "kernel (${KV})"
 
