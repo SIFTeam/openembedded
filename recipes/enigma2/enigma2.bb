@@ -92,6 +92,7 @@ SRC_URI = "git://github.com/SIFTeam/enigma2.git;protocol=git"
 S = "${WORKDIR}/git"
 
 FILES_${PN} += "${datadir}/keymaps"
+FILES_${PN} += "/etc"
 FILES_${PN}-meta = "${datadir}/meta"
 PACKAGES =+ "${PN}-src"
 PACKAGES += "${PN}-meta"
@@ -174,6 +175,7 @@ do_install_append() {
 	install -d ${D}/${datadir}/enigma2/defaults/
 
 	echo "${MACHINE}" > ${D}/etc/machine
+	echo "${DISTRO_BRANCH}" > ${D}/etc/branch
 	
 	cp ${S}/panel.conf ${D}/${datadir}/enigma2/defaults/
 }
