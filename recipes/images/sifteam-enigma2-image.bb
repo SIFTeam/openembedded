@@ -58,7 +58,6 @@ ENIGMA2_OPTIONAL = " \
 				enigma2-pliplugins \
 				task-openplugins \
 				enigma2-plugin-extensions-tuxcom \
-				enigma2-plugin-others-nano \
 				enigma2-plugin-extensions-tuxterm \
 				${@base_contains("MACHINE_FEATURES", "usbhost", "enigma2-plugin-drivers-usbserial" , "", d)} \
 				${@base_contains("MACHINE_FEATURES", "dvbapi5", "enigma2-plugin-drivers-dvb-usb-dib0700 enigma2-plugin-drivers-dvb-usb-af9015 enigma2-plugin-drivers-dvb-usb-siano" , "", d)} \
@@ -66,13 +65,18 @@ ENIGMA2_OPTIONAL = " \
 				enigma2-plugin-extensions-xmltvimport \
 				enigma2-plugin-extensions-ambx \
 				enigma2-plugin-extensions-project-valerie \
-				enigma2-plugin-skins-magic-hd \
+				${@base_contains("MACHINE_FEATURES", "hdtv", \
+					" \
+					enigma2-plugin-skins-magic-hd \
+					enigma2-plugin-skins-pli-hd \
+					" , "", d)} \
 				channelsettings-enigma2-meta \
 				picons-enigma2-meta \
 				dvbsnoop \
 				mtd-utils \
 				dvdfs \
 				minidlna \
+				nano \
 				"
 
 IMAGE_INSTALL += " \

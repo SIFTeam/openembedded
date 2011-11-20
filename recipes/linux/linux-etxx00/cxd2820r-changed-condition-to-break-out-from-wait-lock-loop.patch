@@ -1,0 +1,16 @@
+diff --git a/drivers/media/dvb/frontends/cxd2820r_core.c b/drivers/media/dvb/frontends/cxd2820r_core.c
+index 036480f..8a0230a 100644
+--- a/drivers/media/dvb/frontends/cxd2820r_core.c
++++ b/drivers/media/dvb/frontends/cxd2820r_core.c
+@@ -699,7 +699,7 @@ static enum dvbfe_search cxd2820r_search(struct dvb_frontend *fe,
+ 		if (ret)
+ 			goto error;
+ 
+-		if (status & FE_HAS_SIGNAL)
++		if (status & FE_HAS_LOCK)
+ 			break;
+ 	}
+ 
+-- 
+1.7.0.4
+

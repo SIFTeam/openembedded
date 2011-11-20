@@ -3,12 +3,19 @@ SECTION = "devel/python"
 PRIORITY = "optional"
 LICENSE = "MIT"
 SRCNAME = "Cheetah"
-PR = "r1"
+PR = "r2"
 
 SRC_URI = "http://pypi.python.org/packages/source/C/Cheetah/Cheetah-${PV}.tar.gz"
 S = "${WORKDIR}/${SRCNAME}-${PV}"
 
 inherit setuptools
+
+PACKAGES =+ "${PN}-src"
+RDEPENDS_{PN}-src = "${PN}"
+FILES_${PN}-src = " \
+        ${libdir}/${PYTHON_DIR}/site-packages/*/*.py \
+        ${libdir}/${PYTHON_DIR}/site-packages/*/*/*.py \
+        "
 
 RDEPENDS_${PN} = "python-pickle python-pprint"
 

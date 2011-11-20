@@ -3,4 +3,6 @@
 # and set the correct videomode before showing the bootlogo
 [ -f /etc/videomode ] && cat /etc/videomode > /proc/stb/video/videomode
 
-/usr/bin/showiframe /usr/share/bootlogo.mvi
+BOOTLOGO=/usr/share/bootlogo.mvi
+[ -f /etc/enigma2/bootlogo.mvi ] && BOOTLOGO=/etc/enigma2/bootlogo.mvi
+/usr/bin/showiframe ${BOOTLOGO}

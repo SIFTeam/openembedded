@@ -6,7 +6,7 @@ minimal entaglement, and portability, not speed."
 LICENSE = "BSD-ADV"
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
-INC_PR = "r0"
+INC_PR = "r1"
 
 KLIBC_ARCH = '${TARGET_ARCH}'
 KLIBC_ARCH_armeb = 'arm'
@@ -38,6 +38,7 @@ SRC_URI += "file://fstype-sane-vfat-and-jffs2-for-1.5.patch \
             file://socket.h.patch \
             file://isystem.patch \
             file://getrusage.patch \
+            file://0001-define-__aligned_u64.patch \
             "
 SRC_URI_append_dm7025 = "\
 	file://klibc_kexecsyscall_r.patch \

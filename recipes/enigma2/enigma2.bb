@@ -13,7 +13,7 @@ RDEPENDS_${PN} = "python-codecs python-core python-lang python-re python-threadi
 	gst-plugin-id3demux gst-plugin-mad gst-plugin-ogg gst-plugin-playbin \
 	gst-plugin-typefindfunctions gst-plugin-audioconvert gst-plugin-audioresample \
 	gst-plugin-wavparse python-netclient gst-plugin-mpegstream \
-	gst-plugin-flac gst-plugin-mpegdemux gst-plugin-dvdsub \
+	gst-plugin-flac gst-plugin-mpegdemux gst-plugin-flv gst-plugin-dvdsub \
 	gst-plugin-souphttpsrc gst-plugin-mpegaudioparse gst-plugin-subparse \
 	gst-plugin-apetag gst-plugin-icydemux gst-plugin-autodetect gst-plugin-audioparsers \
 	python-twisted-core python-elementtree python-compression \
@@ -27,9 +27,15 @@ RRECOMMENDS_${PN} = "libdvdcss"
 
 RDEPENDS_${PN} += "${@base_contains("MACHINE_FEATURES", "blindscan", "virtual/blindscanutils" , "", d)}"
 
-# Magic is the default skin, so we should depend on it.
-DEPENDS += "enigma2-plugin-skins-magic"
-RDEPENDS_${PN} += "enigma2-plugin-skins-magic"
+# PLi-HD is the default skin for HD hardware, and Magic for SD hardware
+DEFAULTSKIN = "${@base_contains("MACHINE_FEATURES", "hdtv", \
+					"enigma2-plugin-skins-pli-hd", \
+					"enigma2-plugin-skins-magic", \
+					d)}"
+
+# Depend on the defaultskin
+DEPENDS += "${DEFAULTSKIN}"
+RDEPENDS_${PN} += "${DEFAULTSKIN}"
 
 # We depend on the font which we use for TXT subtitles (defined in skin_subtitles.xml)
 DEPENDS += "font-valis-enigma"

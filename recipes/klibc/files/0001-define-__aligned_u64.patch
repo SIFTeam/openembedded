@@ -1,0 +1,35 @@
+From 3b447ceb7a27d8be75fa0bd4c733e5de35d11f72 Mon Sep 17 00:00:00 2001
+From: = <=>
+Date: Wed, 16 Nov 2011 20:57:58 +0100
+Subject: [PATCH] define __aligned_u64 when it has not been defined yet
+
+including linux/types.h will not help; klibc includes kernel sources
+without defining _KERNEL_, so certain types are not available
+---
+ usr/include/net/if_arp.h    |    3 +++
+ usr/include/net/if_packet.h |    3 +++
+ 2 files changed, 6 insertions(+), 0 deletions(-)
+
+diff --git a/usr/include/net/if_arp.h b/usr/include/net/if_arp.h
+index 6261eeb..7a0ef12 100644
+--- a/usr/include/net/if_arp.h
++++ b/usr/include/net/if_arp.h
+@@ -1,3 +1,6 @@
+ /* if_arp.h needs sockaddr */
+ #include <sys/socket.h>
++#ifndef __aligned_u64
++#define __aligned_u64 __u64 __attribute__((aligned(8)))
++#endif
+ #include <linux/if_arp.h>
+diff --git a/usr/include/net/if_packet.h b/usr/include/net/if_packet.h
+index b5e8e0e..16b9ac7 100644
+--- a/usr/include/net/if_packet.h
++++ b/usr/include/net/if_packet.h
+@@ -1 +1,4 @@
++#ifndef __aligned_u64
++#define __aligned_u64 __u64 __attribute__((aligned(8)))
++#endif
+ #include <linux/if_packet.h>
+-- 
+1.7.5.4
+
