@@ -3,7 +3,7 @@ HOMEPAGE = "http://www.eglibc.org/home"
 SECTION = "libs"
 PRIORITY = "required"
 LICENSE = "LGPL"
-INC_PR = "r21"
+INC_PR = "r28"
 # nptl needs unwind support in gcc, which can't be built without glibc.
 DEPENDS = "virtual/${TARGET_PREFIX}gcc-intermediate linux-libc-headers"
 #this leads to circular deps, so lets not add it yet
@@ -50,3 +50,22 @@ do_configure_prepend() {
 # Work around issues with pstage package install order and intermediate steps
 # in the toolchain build.
 do_setscene[deptask] = "do_setscene"
+
+pkg_postinst_nscd() {
+update-rc.d nscd defaults 50
+${sysconfdir}/init.d/nscd start || true
+}
+
+pkg_prerm_nscd() {
+if test "$1" = "upgrade" -o "$1" = "remove"; then
+	${sysconfdir}/init.d/nscd stop || true
+fi
+}
+
+pkg_postrm_nscd() {
+if test "$1" = "remove" -o "$1" = "purge"; then
+	if ! test -e "${sysconfdir}/init.d/nscd"; then
+		update-rc.d nscd remove
+	fi
+fi
+}
