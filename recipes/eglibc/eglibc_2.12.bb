@@ -6,7 +6,7 @@ FILESPATHPKG =. "eglibc-svn:"
 PV = "2.12"
 PR = "${INC_PR}.8"
 PR_append = "+svnr${SRCPV}"
-SRCREV="12323"
+SRCREV="12324"
 EGLIBC_BRANCH="eglibc-2_12"
 SRC_URI = "svn://svn.eglibc.org/branches;module=${EGLIBC_BRANCH};proto=svn \
            file://eglibc-svn-arm-lowlevellock-include-tls.patch \
@@ -17,7 +17,8 @@ SRC_URI = "svn://svn.eglibc.org/branches;module=${EGLIBC_BRANCH};proto=svn \
            file://eglibc-dont-cache-slibdir.patch \
            file://armv4-eabi-compile-fix.patch \
            file://etc/ld.so.conf \
-           file://generate-supported.mk"
+           file://generate-supported.mk \
+           file://nscd-init.patch;striplevel=2"
 S = "${WORKDIR}/${EGLIBC_BRANCH}/libc"
 B = "${WORKDIR}/build-${TARGET_SYS}"
 
