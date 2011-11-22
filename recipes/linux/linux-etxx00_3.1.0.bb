@@ -1,7 +1,7 @@
 DESCRIPTION = "Linux kernel for ${MACHINE}"
 LICENSE = "GPL"
 
-MACHINE_KERNEL_PR_append = ".5"
+MACHINE_KERNEL_PR_append = ".6"
 
 DEPENDS = "mtd-minimal-nand-utils"
 RDEPENDS_kernel-image = "mtd-minimal-nand-utils"
@@ -45,10 +45,12 @@ kernel_do_install_append() {
 }
 
 pkg_postinst_kernel-image () {
-	if [ -d /proc/stb ] ; then
-		flash_eraseall -j /dev/mtd1
-		nandwrite -p /dev/mtd1 /${KERNEL_IMAGEDEST}/${KERNEL_IMAGETYPE}.gz
+	if [ "x$D" == "x" ]; then
+		if [ -f /${KERNEL_IMAGEDEST}/${KERNEL_IMAGETYPE}.gz ] ; then
+			flash_eraseall -j /dev/mtd1
+			nandwrite -p /dev/mtd1 /${KERNEL_IMAGEDEST}/${KERNEL_IMAGETYPE}.gz
+			rm -f /${KERNEL_IMAGEDEST}/${KERNEL_IMAGETYPE}.gz
+		fi
 	fi
-	rm -f /${KERNEL_IMAGEDEST}/${KERNEL_IMAGETYPE}.gz
 	true
 }
