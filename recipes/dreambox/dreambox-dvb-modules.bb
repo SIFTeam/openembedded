@@ -11,7 +11,7 @@ SRCDATE_dm7025 = "${@base_contains('PREFERRED_VERSION_linux-${MACHINE}', '2.6.12
 SRCDATE_dm500hd = "${@base_contains('PREFERRED_VERSION_linux-${MACHINE}', '2.6.18', '20110902', '20090727', d)}"
 SRCDATE_dm800 = "${@base_contains('PREFERRED_VERSION_linux-${MACHINE}', '2.6.18', '20110902', '20090723', d)}"
 SRCDATE_dm800se = "20110902"
-SRCDATE_dm7020hd = "20111109"
+SRCDATE_dm7020hd = "20111121"
 SRCDATE_dm8000 = "${@base_contains('PREFERRED_VERSION_linux-${MACHINE}', '2.6.18', '20110902', '20090820', d)}"
 
 KV_dm7020 = "2.6.9"
