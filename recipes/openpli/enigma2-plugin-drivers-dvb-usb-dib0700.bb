@@ -5,24 +5,16 @@ DVBPROVIDER ?= "v4l-dvb"
 RDEPENDS_${PN} = " \
 	${DVBPROVIDER}-module-dvb-usb-dib0700 \
 	${DVBPROVIDER}-module-dvb-usb-dibusb-common \
-	${DVBPROVIDER}-module-dvb-usb-dibusb-mb \
 	${DVBPROVIDER}-module-dvb-usb-dibusb-mc \
-	${DVBPROVIDER}-module-dib3000mb \
-	${DVBPROVIDER}-module-lgdt3305 \
-	${DVBPROVIDER}-module-mt2060 \
-	${DVBPROVIDER}-module-mt2266 \
-	${DVBPROVIDER}-module-mxl5007t \
-	${DVBPROVIDER}-module-s5h1411 \
-	${DVBPROVIDER}-module-tuner-xc2028 \
-	${DVBPROVIDER}-module-xc5000 \
-	v4l-dvb-firmware \
-	"
-
-RRECOMMENDS_${PN} = " \
-	${DVBPROVIDER}-module-xc4000 \
+	firmware-dvb-usb-dib0700-1.20 \
+	firmware-dvb-usb-dibusb-5.0.0.11 \
+	firmware-dvb-usb-dibusb-6.0.0.8 \
+	firmware-dvb-usb-dibusb-an2235-01 \
+	firmware-xc3028-v27 \
+	firmware-xc3028l-v36 \
 	"
 
 PV = "1.0"
-PR = "r2"
+PR = "r3"
 
 ALLOW_EMPTY_${PN} = "1"

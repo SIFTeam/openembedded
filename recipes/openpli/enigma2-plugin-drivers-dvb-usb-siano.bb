@@ -5,11 +5,11 @@ DVBPROVIDER ?= "v4l-dvb"
 RDEPENDS_${PN} = " \
 	${DVBPROVIDER}-module-smsusb \
 	${DVBPROVIDER}-module-smsdvb \
-	v4l-dvb-firmware \
+	firmware-dvb-siano \
 	"
 
 PV = "1.0"
-PR = "r3"
+PR = "r4"
 
 ALLOW_EMPTY_${PN} = "1"
 
