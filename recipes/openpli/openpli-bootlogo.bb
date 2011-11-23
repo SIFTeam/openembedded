@@ -6,8 +6,8 @@ MAINTAINER = "PLi team"
 
 RDEPENDS_${PN} += "virtual/showiframe"
 
-PV = "1.0"
-PR = "r6"
+PV = "2.1"
+PR = "r0"
 
 S = "${WORKDIR}/"
 
