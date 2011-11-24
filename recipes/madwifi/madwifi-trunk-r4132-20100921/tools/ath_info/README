@@ -1,0 +1,69 @@
+So here is how it works:
+
+First compile...
+
+gcc ath_info.c -o ath_info
+
+then find card's physical address
+
+lspci -v
+
+02:02.0 Ethernet controller: Atheros Communications, Inc. AR5212 802.11abg NIC (rev 01)
+        Subsystem: Fujitsu Limited. Unknown device 1234
+        Flags: bus master, medium devsel, latency 168, IRQ 23
+        Memory at c2000000 (32-bit, non-prefetchable) [size=64K]
+        Capabilities: [44] Power Management version 2
+
+address here is 0xc2000000
+
+load madwifi-ng or madwifi-old if not already loaded (be sure the
+interface is down!)
+
+modprobe ath_pci
+
+OR
+
+call:
+setpci -s 02:02.0 command=0x41f cache_line_size=0x10
+
+to enable access to the PCI device.
+
+and we run the thing...
+
+./ath_info 0xc2000000
+
+In order to change the regdomain to 0, call:
+
+./ath_info -w 0xc2000000 regdomain 0
+
+to change any PCI ID value, say:
+
+./ath_info -w 0xc2000000 <name> X
+
+with <name> ::= pci_dev_id | pci_vendor_id | pci_class |
+                pci_subsys_dev_id | pci_subsys_vendor_id
+
+With newer chipsets (>= AR5004x, i.e. MAC >= AR5213), Atheros introduced
+write protection on the EEPROM.  On a GIGABYTE GN-WI01HT you can set
+GPIO 4 to low to be able to write the EEPROM.  This depends highly on
+the PCB layout, so there may be different GPIO used.  This program
+currently sets GPIO 4 to low for a MAC >= AR5213, but you can override
+this with the -g option:
+
+./ath_info -g 5:0 -w 0xc2000000 regdomain X
+
+would set GPIO 5 to low (and wouldn't touch GPIO 4).  "-g" can be given
+several times.
+
+The write function is currently not tested with 5210 devices.
+
+Use at your own risk, entering a false device address will have really
+nasty results!  Writing wrong values to the PCI ID fields may prevent
+the driver from detecting the card!
+
+Transmitting on illegal frequencies may violate state laws.  Stick to
+the local regulations!
+
+DISCLAIMER:
+The authors are in no case responsible for damaged hardware or violation
+of local laws by operating modified hardware.

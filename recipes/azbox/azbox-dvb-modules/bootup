@@ -1,0 +1,111 @@
+echo "Starting bootup..." > /proc/progress
+
+mknod /dev/mum0 c 126 0
+mknod /dev/em8xxx0 c 127 0
+mknod /dev/sci0 c 253 0
+
+mkdir /dev/dvb/
+mkdir /dev/dvb/adapter0
+mkdir /dev/misc/
+
+chmod 755 /dev/dvb
+chmod 755 /dev/dvb/adapter0
+
+mknod -m 0660 /dev/dvb/adapter0/video0    c 212   0
+mknod -m 0660 /dev/dvb/adapter0/audio0    c 212   1
+mknod -m 0660 /dev/dvb/adapter0/frontend0 c 212   3
+mknod -m 0660 /dev/dvb/adapter0/demux0    c 212   4
+mknod -m 0660 /dev/dvb/adapter0/dvr0      c 212   5
+mknod -m 0660 /dev/dvb/adapter0/ca0       c 212   6
+mknod -m 0660 /dev/dvb/adapter0/net0      c 212   7
+mknod -m 0660 /dev/dvb/adapter0/osd0      c 212   8
+mknod -m 766 /dev/sc0                     c 182   0
+mknod -m 766 /dev/frameyuv                c 60    0
+mknod -m 766 /dev/misc/pvr                c 70    0
+mknod -m 766 /dev/rfmod0                  c 71    0
+
+insmod /lib/modules/2.6.22.19-25-the-ripper/extra/llad.ko
+insmod /lib/modules/2.6.22.19-25-the-ripper/extra/em8xxx.ko
+insmod /lib/modules/2.6.22.19-25-the-ripper/extra/sci.ko
+insmod /lib/modules/2.6.22.19-25-the-ripper/extra/usbserial.ko
+insmod /lib/modules/2.6.22.19-25-the-ripper/extra/ftdi_sio.ko
+
+/usr/bin/set_outports &
+sleep 5
+
+insmod /lib/modules/2.6.22.19-25-the-ripper/extra/smp8634i2c.ko
+insmod /lib/modules/2.6.22.19-25-the-ripper/extra/cx24116.ko
+insmod /lib/modules/2.6.22.19-25-the-ripper/extra/mxl201rf.ko
+insmod /lib/modules/2.6.22.19-25-the-ripper/extra/tda10023.ko
+insmod /lib/modules/2.6.22.19-25-the-ripper/extra/mxl5007t.ko
+insmod /lib/modules/2.6.22.19-25-the-ripper/extra/zl10353.ko
+insmod /lib/modules/2.6.22.19-25-the-ripper/extra/stv6110x.ko
+insmod /lib/modules/2.6.22.19-25-the-ripper/extra/stv090x.ko
+insmod /lib/modules/2.6.22.19-25-the-ripper/extra/nimdetect.ko
+insmod /lib/modules/2.6.22.19-25-the-ripper/extra/smp8634dvb.ko
+
+Model=`cat /proc/model`
+if [ "$Model" = "premium" ] || [ "$Model" = "premium+" ] ; then
+      echo "wifi driver"
+	insmod /lib/modules/2.6.22.19-25-the-ripper/extra/rt61.ko
+fi
+
+echo 10 > /proc/progress
+
+[ -e /dev/dbox/oled0 ] && ln -s /dev/dbox/oled0 /dev/dbox/lcd0
+echo 11 > /proc/progress
+
+mount -t sysfs sysfs /sys
+echo 12 > /proc/progress
+
+depmod -Ae
+echo 13 > /proc/progress
+
+mount -at nonfs,nosmbfs,noncpfs,nocifs
+echo 14 > /proc/progress
+
+swapon -a
+echo 15 > /proc/progress
+
+tar xzf /etc/var.tar.gz -C /
+tar xzf /etc/boot.tar.gz -C /
+echo 16 > /proc/progress
+
+# HDD sleep after 10min
+hdparm -S 120 /dev/discs/disc0/disc
+echo 17 > /proc/progress
+
+# set UDMA66, enable dma
+hdparm -d 1 /dev/discs/disc0/disc
+hdparm -X66 /dev/discs/disc0/disc
+echo 18 > /proc/progress
+
+# accustic management
+hdparm -M 128 /dev/discs/disc0/disc
+echo 19 > /proc/progress
+
+[ -e /etc/dropbear/dropbear_rsa_host_key ] && /usr/bin/showiframe /boot/bootlogo.mvi || /usr/bin/showiframe /boot/bootlogo_wait.mvi
+echo 20 > /proc/progress
+
+hostname -F /etc/hostname
+echo 21 > /proc/progress
+
+[ -e "/etc/sysctl.conf" ] && /sbin/sysctl -p "/etc/sysctl.conf"
+echo 22 > /proc/progress
+
+ldconfig
+echo 23 > /proc/progress
+
+ipkg-cl configure
+echo 24 > /proc/progress
+
+[ -f /etc/shadow ] && /bin/true || touch /etc/shadow
+echo 25 > /proc/progress
+
+[ ! -e /var/keys/ ] && /bin/ln -s /usr/keys/ /var/keys
+[ ! -e /var/scce/ ] && /bin/ln -s /usr/scce/ /var/scce
+[ -f /etc/shadow ] && /bin/true || touch /etc/shadow
+
+Model=`cat /proc/model`
+echo $Model > /proc/progress
+[ -f /etc/shadow ] && /bin/true || touch /etc/shadow

@@ -1,0 +1,1341 @@
+diff -ruN linux-2.6.22.orig/include/linux/dvb/audio.h linux-2.6.22/include/linux/dvb/audio.h
+--- linux-2.6.22.orig/include/linux/dvb/audio.h	2007-07-09 01:32:17.000000000 +0200
++++ linux-2.6.22/include/linux/dvb/audio.h	2011-01-12 00:56:44.000000000 +0100
+@@ -1,87 +1,82 @@
+ /*
+- * audio.h
+- *
+- * Copyright (C) 2000 Ralph  Metzler <ralph@convergence.de>
+- *                  & Marcus Metzler <marcus@convergence.de>
+- *                    for convergence integrated media GmbH
+- *
+- * This program is free software; you can redistribute it and/or
+- * modify it under the terms of the GNU General Lesser Public License
+- * as published by the Free Software Foundation; either version 2.1
+- * of the License, or (at your option) any later version.
+- *
+- * This program is distributed in the hope that it will be useful,
+- * but WITHOUT ANY WARRANTY; without even the implied warranty of
+- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+- * GNU General Public License for more details.
+- *
+- * You should have received a copy of the GNU Lesser General Public License
+- * along with this program; if not, write to the Free Software
+- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+- *
+- */
++* audio.h
++*
++* Copyright (C) 2000 Ralph  Metzler <ralph@convergence.de>
++*                  & Marcus Metzler <marcus@convergence.de>
++*                    for convergence integrated media GmbH
++*
++* This program is free software; you can redistribute it and/or
++* modify it under the terms of the GNU General Lesser Public License
++* as published by the Free Software Foundation; either version 2.1
++* of the License, or (at your option) any later version.
++*
++* This program is distributed in the hope that it will be useful,
++* but WITHOUT ANY WARRANTY; without even the implied warranty of
++* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++* GNU General Public License for more details.
++*
++* You should have received a copy of the GNU Lesser General Public License
++* along with this program; if not, write to the Free Software
++* Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
++*
++*/
+ 
+ #ifndef _DVBAUDIO_H_
+ #define _DVBAUDIO_H_
+ 
+-#ifdef __KERNEL__
+-#include <linux/types.h>
+-#else
+-#include <stdint.h>
+-#endif
+-
++#include <asm/types.h>
+ 
+ typedef enum {
+-	AUDIO_SOURCE_DEMUX, /* Select the demux as the main source */
+-	AUDIO_SOURCE_MEMORY /* Select internal memory as the main source */
++AUDIO_SOURCE_DEMUX, /* Select the demux as the main source */
++AUDIO_SOURCE_MEMORY /* Select internal memory as the main source */
+ } audio_stream_source_t;
+ 
+ 
+ typedef enum {
+-	AUDIO_STOPPED,      /* Device is stopped */
+-	AUDIO_PLAYING,      /* Device is currently playing */
+-	AUDIO_PAUSED        /* Device is paused */
++AUDIO_STOPPED,      /* Device is stopped */
++AUDIO_PLAYING,      /* Device is currently playing */
++AUDIO_PAUSED        /* Device is paused */
+ } audio_play_state_t;
+ 
+ 
+ typedef enum {
+-	AUDIO_STEREO,
+-	AUDIO_MONO_LEFT,
+-	AUDIO_MONO_RIGHT,
+-	AUDIO_MONO,
+-	AUDIO_STEREO_SWAPPED
++AUDIO_STEREO,
++AUDIO_MONO_LEFT,
++AUDIO_MONO_RIGHT,
++AUDIO_MONO,
++AUDIO_STEREO_SWAPPED
+ } audio_channel_select_t;
+ 
+ 
+ typedef struct audio_mixer {
+-	unsigned int volume_left;
+-	unsigned int volume_right;
+-  // what else do we need? bass, pass-through, ...
++unsigned int volume_left;
++unsigned int volume_right;
++// what else do we need? bass, pass-through, ...
+ } audio_mixer_t;
+ 
+ 
+ typedef struct audio_status {
+-	int                    AV_sync_state;  /* sync audio and video? */
+-	int                    mute_state;     /* audio is muted */
+-	audio_play_state_t     play_state;     /* current playback state */
+-	audio_stream_source_t  stream_source;  /* current stream source */
+-	audio_channel_select_t channel_select; /* currently selected channel */
+-	int                    bypass_mode;    /* pass on audio data to */
+-	audio_mixer_t	       mixer_state;    /* current mixer state */
++int                    AV_sync_state;  /* sync audio and video? */
++int                    mute_state;     /* audio is muted */
++audio_play_state_t     play_state;     /* current playback state */
++audio_stream_source_t  stream_source;  /* current stream source */
++audio_channel_select_t channel_select; /* currently selected channel */
++int                    bypass_mode;    /* pass on audio data to */
++audio_mixer_t	       mixer_state;    /* current mixer state */
+ } audio_status_t;                              /* separate decoder hardware */
+ 
+ 
+ typedef
+ struct audio_karaoke{  /* if Vocal1 or Vocal2 are non-zero, they get mixed  */
+-	int vocal1;    /* into left and right t at 70% each */
+-	int vocal2;    /* if both, Vocal1 and Vocal2 are non-zero, Vocal1 gets*/
+-	int melody;    /* mixed into the left channel and */
+-		       /* Vocal2 into the right channel at 100% each. */
+-		       /* if Melody is non-zero, the melody channel gets mixed*/
++int vocal1;    /* into left and right t at 70% each */
++int vocal2;    /* if both, Vocal1 and Vocal2 are non-zero, Vocal1 gets*/
++int melody;    /* mixed into the left channel and */
++/* Vocal2 into the right channel at 100% each. */
++/* if Melody is non-zero, the melody channel gets mixed*/
+ } audio_karaoke_t;     /* into left and right  */
+ 
+ 
+-typedef uint16_t audio_attributes_t;
++typedef __u16 audio_attributes_t;
+ /*   bits: descr. */
+ /*   15-13 audio coding mode (0=ac3, 2=mpeg1, 3=mpeg2ext, 4=LPCM, 6=DTS, */
+ /*   12    multichannel extension */
+@@ -124,17 +119,753 @@
+ #define AUDIO_SET_KARAOKE          _IOW('o', 18, audio_karaoke_t)
+ 
+ /**
+- * AUDIO_GET_PTS
+- *
+- * Read the 33 bit presentation time stamp as defined
+- * in ITU T-REC-H.222.0 / ISO/IEC 13818-1.
+- *
+- * The PTS should belong to the currently played
+- * frame if possible, but may also be a value close to it
+- * like the PTS of the last decoded frame or the last PTS
+- * extracted by the PES parser.
+- */
++* AUDIO_GET_PTS
++*
++* Read the 33 bit presentation time stamp as defined
++* in ITU T-REC-H.222.0 / ISO/IEC 13818-1.
++*
++* The PTS should belong to the currently played
++* frame if possible, but may also be a value close to it
++* like the PTS of the last decoded frame or the last PTS
++* extracted by the PES parser.
++*/
+ #define AUDIO_GET_PTS              _IOR('o', 19, __u64)
+ #define AUDIO_BILINGUAL_CHANNEL_SELECT _IO('o', 20)
+ 
++
++typedef long RMint32;
++typedef unsigned char RMuint8;
++typedef unsigned long RMuint32;
++typedef unsigned short RMuint16; 
++typedef unsigned long long RMuint64;
++
++typedef RMuint16 RMuint16x8[8];		/* array of  8 RMuint16 - used for AudioDecoder LpcmAobParameters */
++typedef RMuint16 RMuint16x6[6];		/* array of  6 RMuint16 - used for AudioDecoder LpcmVobParameters*/
++typedef RMint32  RMuint32x64[64];	/* array of 64 RMuint32 - used for AudioDecoder WMAParameters */
++typedef RMint32  RMint32x5[5];		/* array of  5 RMint32 - used for AudioDecoder WMAParameters */
++
++/** Boolean type */
++typedef unsigned char RMbool;
++#ifndef TRUE
++/** boolean true value.*/
++#define TRUE (RMbool)1
++/** boolean false value.*/
++#define FALSE (RMbool)0
++#endif // TRUE
++
++
++
++/** Specifiy individual codec output mode */
++#define AUDIO_CODEC_OUTPUTMODE_pcmToPP                0
++#define AUDIO_CODEC_OUTPUTMODE_pcmToI2S               1
++#define AUDIO_CODEC_OUTPUTMODE_cmprsdToSPDIF_pcmToPP  2
++#define AUDIO_CODEC_OUTPUTMODE_cmprsdToSPDIF_pcmToI2S 3
++#define AUDIO_CODEC_OUTPUTMODE_cmprsdToI2S            4
++#define AUDIO_CODEC_OUTPUTMODE_pcmMute                8
++
++
++/** Disable SPDIF or selects between uncompressed and compressed.@note @li Some formats such as MPEG and AAC can only play uncompressed. */
++enum OutputSpdif_type {
++/** SPDIF output is disabled. Stream is decoded - when decoder available - and sent to I2S. */
++OutputSpdif_Disable = 0,
++/** SPDIF output is compressed whenever possible (AC3, DTS...). MPEG or AAC will not be sent compressed over SPDIF. Stream is decoded - when decoder available - and sent to I2S. */
++OutputSpdif_Compressed = (1 | (AUDIO_CODEC_OUTPUTMODE_cmprsdToSPDIF_pcmToPP <<4)),
++/** SPDIF output consists in 2 channels PCM. Stream is decoded - when decoder available - and sent to I2S. @note @li Use codec dependent settings for additional options such as surround */
++OutputSpdif_Uncompressed = (3 | (AUDIO_CODEC_OUTPUTMODE_pcmToPP << 4)),
++/** SPDIF output is compressed whenever possible (AC3, DTS...), audio not decoded at all (I2S is blank). */
++OutputSpdif_NoDecodeCompressed = (5 | ((AUDIO_CODEC_OUTPUTMODE_pcmMute | AUDIO_CODEC_OUTPUTMODE_cmprsdToSPDIF_pcmToPP) << 4))
++};
++
++
++enum AudioOutputChannels_type {			        //format: Rear/Surround/Front
++Audio_Out_Ch_C = 0x01,            //   00 0001      (0/0/1)
++Audio_Out_Ch_LR = 0x02,           //   00 0010      (0/0/2)
++Audio_Out_Ch_LCR = 0x03,          //   00 0011      (0/0/3)
++Audio_Out_Ch_LRS = 0x12,          //   01 0010      (0/1/2)
++Audio_Out_Ch_LCRS = 0x13,         //   01 0011      (0/1/3)
++Audio_Out_Ch_LRLsRs = 0x22,       //   10 0010      (0/2/2)
++Audio_Out_Ch_LCRLsRs = 0x23,      //   10 0011      (0/2/3)
++Audio_Out_Ch_LCRLsRsSs = 0x63,    // 1 10 0011      (1/2/3)
++Audio_Out_Ch_LRLsRsLssRss = 0xA2, //10 10 0010      (2/2/2) 
++Audio_Out_Ch_LCRLsRsLssRss = 0xA3 //10 10 0011      (2/2/3)
++};
++
++/** Select the audio codec (Currently supported codecs: PCM, MPEG1 L1/2/3 or AC3).@note @li The audio codec can be selected only in stop mode or before the init command. */
++enum AudioDecoder_Codec_type {
++/** Selects audio AC3 codecs */
++AudioDecoder_Codec_AC3 = 1,
++/** Selects the audio MPEG1 codec. It supports layer 1, 2 and 3 (Also known as mp3) and MPEG2 backward compatible audio layers (Only support for 2 channels). */
++AudioDecoder_Codec_MPEG1 = 2,
++/** Selects the AAC codec. It supports several types of payload formats (see ::RMAudioDecoderPropertyID_AACParameters) */
++AudioDecoder_Codec_AAC = 3,
++/** Select the DVD Audio code. Not supported yet */
++AudioDecoder_Codec_DVDA = 4,
++/** Select the PCM codecs. It supports several types of PCM formats (see ::RMAudioDecoderPropertyID_PcmParameters) */
++AudioDecoder_Codec_PCM = 5,
++/** Supported */
++AudioDecoder_Codec_DTS = 6,
++/** Supported */
++AudioDecoder_Codec_WMA = 7,
++/** Supported */
++AudioDecoder_Codec_WMAPRO = 8,
++/** EVD ExAC supported */
++AudioDecoder_Codec_EXAC = 9,
++/** Supported. */
++AudioDecoder_Codec_ATX = 10,
++/** Compressed WMAPRO over SPDIF. */
++AudioDecoder_Codec_WMAPRO_SPDIF = 11,
++/** Select the PCMX codecs. */
++AudioDecoder_Codec_PCMX = 12,
++/** MPEG-4 BSAC decoder. */
++AudioDecoder_Codec_BSAC = 13,
++/** Test tone generator. */
++AudioDecoder_Codec_TTONE = 14,
++/** DTSHD LBR */
++AudioDecoder_Codec_DTSLBR = 15,
++/**  Group of codecs for speech. G711: input=64Kbps compressed, output=linear PCM, 8KHz. Other codecs to come: G.723, G.729A, GSM.AMR */
++AudioDecoder_Codec_Speech = 0x12,
++};
++
++enum PcmCdaChannelAssign_type {
++// according to C.1-1 table
++// 1st digit after PcmCda represents nchannels
++PcmCda1_C = 0,        // 0x00
++
++PcmCda2_LR,           // 0x01
++PcmCda3_LfRfS,        // 0x02
++PcmCda4_LfRfLsRs,     // 0x03
++PcmCda3_LfRfLfe,      // 0x04
++PcmCda4_LfRfLfeS,     // 0x05
++PcmCda5_LfRfLfeLsRs,  // 0x06
++PcmCda3_LfRfC,        // 0x07
++PcmCda4_LfRfCS,       // 0x08
++PcmCda5_LfRfCLsRs,    // 0x09
++PcmCda4_LfRfCLfe,     // 0x0a
++PcmCda5_LfRfCLfeS,    // 0x0b
++PcmCda6_LfRfCLfeLsRs, // 0x0c
++
++PcmCda5_LfRfLsRsLfe = 0x12,// 0x12
++PcmCda5_LfRfLsRsC,    // 0x13
++PcmCda6_LfRfLsRsCLfe, // 0x14
++PcmCda8_LfRfCLfeLsRsLssRss, //0x15
++};
++
++/* Fl = front left, Fr = front right, Fc = front center,
++Bl = back left,  Br = back right,  Bc = back center,
++Flc = front left of center, Frc = front right of center,
++Sl = side left, Sr = side right
++Lf = low frequency or subwoofer
++*/
++enum WmaproOutputChannels_type {
++Wmapro_1 = 0x10,	/* Wmapro_Fc */
++
++Wmapro_2 = 0x20,	/* Wmapro_FlFr */
++
++Wmapro_3 = 0x30,	/* Wmapro_FlFrFc */
++
++Wmapro_4 = 0x40,	/* Wmapro_FlFrFcBc */
++Wmapro_41 = 0x41,	/* Wmapro_FlFrBlBr */
++
++Wmapro_5 = 0x50,	/* Wmapro_FlFrFcSlSr */
++Wmapro_51 = 0x51,	/* Wmapro_FlFrFcBlBr */
++
++Wmapro_6 = 0x60,	/* Wmapro_FlFrFcLfSlSr */
++Wmapro_61 = 0x61,	/* Wmapro_FlFrFcLfBlBr */
++Wmapro_62 = 0x62,	/* Wmapro_FlFrFcBcSlSr */
++Wmapro_63 = 0x63,	/* Wmapro_FlFrFcBcBlBr */
++
++Wmapro_7 = 0x70,	/* Wmapro_FlFrFcLfBcSlSr */
++Wmapro_71 = 0x71,	/* Wmapro_FlFrFcLfBlBrBc */
++Wmapro_72 = 0x72,	/* Wmapro_FlFrFcBlBrSlSr */
++Wmapro_73 = 0x73,	/* Wmapro_FlFrFcBlBrFlcFrc */
++
++Wmapro_8 = 0x80,	/* Wmapro_FlFrFcLfBlBrSlSr */
++Wmapro_81 = 0x81	/* Wmapro_FlFrFcLfBlBrFlcFrc */
++};
++enum WmaproDynamicRangeControl_type {
++Drc_high,
++Drc_med,
++Drc_low,
++};
++
++enum AACInputFormat {
++ADIF_header = 0,
++ADTS_header = 1,
++DSI_header = 2
++};
++
++enum OutputDualMode_type {
++DualMode_Stereo = 0,
++DualMode_LeftMono,
++DualMode_RightMono,
++DualMode_MixMono
++};
++
++enum TestToneType {
++Ttone_WhiteNoise = 0,
++Ttone_other
++};
++
++enum AudioChannelMask_type {
++Audio_Mask_Disable_All = 0,
++Audio_Mask_L = (1<<0),
++Audio_Mask_C = (1<<2),
++Audio_Mask_R = (1<<1),
++Audio_Mask_Ls = (1<<4),
++Audio_Mask_Rs = (1<<5),
++Audio_Mask_Lfe = (1<<3),
++Audio_Mask_Lb = (1<<6),
++Audio_Mask_Rb = (1<<7)
++};
++
++enum AacOutputChannels_type {
++Aac_C = 0x01,
++Aac_LR = 0x02,
++Aac_LCR = 0x03,
++Aac_LRS = 0x12,
++Aac_LCRS = 0x13,
++Aac_LRLsRs = 0x22,
++Aac_LCRLsRs = 0x23
++};
++
++
++enum Ac3OutputChannels_type {
++Ac3_C = 0x01,
++Ac3_LR = 0x02,
++Ac3_LCR = 0x03,
++Ac3_LRS = 0x12,
++Ac3_LCRS = 0x13,
++Ac3_LRLsRs = 0x22,
++Ac3_LCRLsRs = 0x23
++};
++
++enum AudioOutputSurround20_type {
++SurroundAsStream = 0,	/* surround enabled or disabled as in stream */
++SurroundEnable = 5,
++SurroundDisable = 4
++};
++
++
++enum Ac3CompMode_type {
++CompMode_analog,
++CompMode_digital,
++CompMode_line_out,
++CompMode_RF,
++CompMode_RF_iptv
++};
++
++
++enum DtsOutputChannels_type {
++Dts_C = 0x01,
++Dts_LR = 0x02,
++Dts_LCR = 0x03,
++Dts_LRS = 0x12,
++Dts_LCRS = 0x13,
++Dts_LRLsRs = 0x22,
++Dts_LCRLsRs = 0x23
++};
++
++enum LpcmVobChannelAssign_type {
++// according to C.1-2 table
++// number of chanels and channel assign are specified
++LpcmVob1_C = 0,        // 0x00
++
++LpcmVob2_LR,           // 0x01
++
++LpcmVob3_LfRfS,        // 0x02
++LpcmVob4_LfRfLsRs,     // 0x03
++LpcmVob3_LfRfLfe,      // 0x04
++LpcmVob4_LfRfLfeS,     // 0x05
++LpcmVob5_LfRfLfeLsRs,  // 0x06
++LpcmVob3_LfRfC,        // 0x07
++LpcmVob4_LfRfCS,       // 0x08
++LpcmVob5_LfRfCLsRs,    // 0x09
++LpcmVob4_LfRfCLfe,     // 0x0a
++LpcmVob5_LfRfCLfeS,    // 0x0b
++LpcmVob6_LfRfCLfeLsRs, // 0x0c
++
++LpcmVob5_LRLfRfS,      // 0x0d
++LpcmVob6_LRLfRfLsRs,   // 0x0e
++LpcmVob5_LRLfRfLfe,    // 0x0f
++LpcmVob6_LRLfRfLfeS,   // 0x10
++LpcmVob7_LRLfRfLfeLsRs,// 0x11
++
++LpcmVob5_LRLfRfC,      // 0x12
++LpcmVob6_LRLfRfCS,     // 0x13
++LpcmVob7_LRLfRfCLsRs,  // 0x14
++LpcmVob6_LRLfRfCLfe,   // 0x15
++LpcmVob7_LRLfRfCLfeS,  // 0x16
++LpcmVob8_LRLfRfCLfeLsRs,// 0x17
++LpcmVobVR_DualMono,    //0x18
++};
++
++
++enum LpcmAobChannelAssign_type {
++// according to C.1-1 table
++// 1st digit after LpcmAob represents nchannels GR1, 2nd digit = nchannels GR2
++LpcmAob10_C = 0,        // 0x00
++
++LpcmAob20_LR,           // 0x01
++LpcmAob21_LfRfS,        // 0x02
++LpcmAob22_LfRfLsRs,     // 0x03
++LpcmAob21_LfRfLfe,      // 0x04
++LpcmAob22_LfRfLfeS,     // 0x05
++LpcmAob23_LfRfLfeLsRs,  // 0x06
++LpcmAob21_LfRfC,        // 0x07
++LpcmAob22_LfRfCS,       // 0x08
++LpcmAob23_LfRfCLsRs,    // 0x09
++LpcmAob22_LfRfCLfe,     // 0x0a
++LpcmAob23_LfRfCLfeS,    // 0x0b
++LpcmAob24_LfRfCLfeLsRs, // 0x0c
++
++LpcmAob31_LfRfCS,       // 0x0d
++LpcmAob32_LfRfCLsRs,    // 0x0e
++LpcmAob31_LfRfCLfe,     // 0x0f
++LpcmAob32_LfRfCLfeS,    // 0x10
++LpcmAob33_LfRfCLfeLsRs, // 0x11
++
++LpcmAob41_LfRfLsRsLfe,  // 0x12
++LpcmAob41_LfRfLsRsC,    // 0x13
++LpcmAob42_LfRfLsRsCLfe, // 0x14
++};
++
++
++
++
++
++/* used in RMAudioDecoderPropertyID_SpeechParameters, RMAudioEncoderPropertyID_SpeechParameters */
++enum EMhwlibSpeechSubCodec {
++EMhwlibSpeechSubCodec_G711,
++EMhwlibSpeechSubCodec_AMR,
++};
++
++enum EMhwlibG711CodingMode {
++EMhwlibG711CodingMode_A_law, // A-law (European standard)
++EMhwlibG711CodingMode_u_law, // u-law (US standard)
++};
++
++enum EMhwlibAmrCodingBitRate {
++EMhwlibAMRCodingRate475,  // 4.75kbps
++EMhwlibAMRCodingRate515,  // 5.15kbps
++EMhwlibAMRCodingRate590,  // 5.90kbps
++EMhwlibAMRCodingRate670,  // 6.70kbps
++EMhwlibAMRCodingRate740,  // 7.40kbps
++EMhwlibAMRCodingRate795,  // 7.95kbps
++EMhwlibAMRCodingRate1020, // 10.2kbps
++EMhwlibAMRCodingRate1220, // 12.2kbps
++};
++
++struct AudioDecoder_SpeechParameters_type {
++enum EMhwlibSpeechSubCodec subcodec;
++enum AudioOutputChannels_type OutputChannels;
++RMbool AEC; /* generate audio echo cancelation info */
++union {
++struct {
++enum EMhwlibG711CodingMode mode;
++} g711;
++struct {
++enum EMhwlibAmrCodingBitRate bitrate;
++} amr;
++} params;
++};
++
++
++/** struct Default */
++struct AudioDecoder_PCMXParameters_type {
++/** Member default */
++enum PcmCdaChannelAssign_type ChannelAssign;
++/** Member default range 8 -> 24 */
++RMuint32 BitsPerSample;
++/** Member default */
++RMuint32 SamplingFrequency;
++/** Member default */
++RMbool MsbFirst;
++/** Member default */
++enum OutputDualMode_type OutputDualMode;
++/** Member default */
++enum AudioOutputChannels_type OutputChannels;
++/** Member default */
++RMbool OutputLfe;
++/** Member default */
++RMbool SignedPCM;
++/** Selects between disable, uncompressed and compressed SpdifOutput. */
++enum OutputSpdif_type OutputSpdif;
++/** Member default */
++enum AudioOutputSurround20_type OutputSurround20;
++/** Member default */
++RMuint32 BassMode;
++};
++
++/** struct Default */
++struct AudioDecoder_AACParameters_type {
++/** Member default */
++enum AACInputFormat InputFormat;
++/** Selects between disable, uncompressed and compressed SpdifOutput. */
++enum OutputSpdif_type OutputSpdif;
++/** Member default */
++enum OutputDualMode_type OutputDualMode;
++/** Member default */
++enum AacOutputChannels_type OutputChannels;
++/** Member default */
++RMbool Acmod2DualMode;
++/** Member default */
++RMbool OutputLfe;
++/** Member default */
++enum AudioOutputSurround20_type OutputSurround20;
++/** Member default */
++RMuint32 BassMode;
++};
++
++/** struct Default */
++struct AudioDecoder_DVDAParameters_type {
++/** Member default */
++RMuint32 Chconfig;
++/** Member default */
++RMuint32 DRCenable;
++/** Member default */
++RMuint32 DRCboost;
++/** Member default */
++RMuint32 DRCcut;
++/** Member default */
++RMint32 DRCdialref;
++/** Member default */
++RMbool Lossless;
++/** Selects between disable, uncompressed and compressed SpdifOutput. */
++enum OutputSpdif_type OutputSpdif;
++/** Member default */
++enum OutputDualMode_type OutputDualMode;
++/** Member default */
++enum AudioOutputChannels_type OutputChannels;
++/** Member default */
++RMbool OutputLfe;
++/** Member default */
++enum AudioOutputSurround20_type OutputSurround20;
++/** Member default */
++RMuint32 BassMode;
++};
++
++/** struct Default */
++struct AudioDecoder_TToneParameters_type {
++/** Member default */
++enum TestToneType TToneType;
++/** Member default */
++enum AudioChannelMask_type TToneChannelMask;
++/** Selects between disable, uncompressed and compressed SpdifOutput. */
++enum OutputSpdif_type OutputSpdif;
++/** Member default */
++enum OutputDualMode_type OutputDualMode;
++/** Member default */
++enum AacOutputChannels_type OutputChannels;
++/** Member default */
++RMbool OutputLfe;
++/** Member default */
++RMuint32 BassMode;
++};
++
++/** struct Default */
++struct AudioDecoder_BSACParameters_type {
++/** Member default */
++enum AACInputFormat InputFormat;
++/** Selects between disable, uncompressed and compressed SpdifOutput. */
++enum OutputSpdif_type OutputSpdif;
++/** Member default */
++enum OutputDualMode_type OutputDualMode;
++/** Member default */
++enum AacOutputChannels_type OutputChannels;
++/** Member default */
++RMbool OutputLfe;
++/** Member default */
++enum AudioOutputSurround20_type OutputSurround20;
++/** Member default */
++RMuint32 BassMode;
++};
++
++/** struct Default */
++struct AudioDecoder_ExACParameters_type {
++/** Selects between disable, uncompressed and compressed SpdifOutput. */
++enum OutputSpdif_type OutputSpdif;
++/** Member default */
++enum OutputDualMode_type OutputDualMode;
++/** Member default */
++enum AacOutputChannels_type OutputChannels;
++/** Member default */
++RMbool OutputLfe;
++/** Member default */
++enum AudioOutputSurround20_type OutputSurround20;
++/** Member default */
++RMuint32 BassMode;
++};
++
++/** struct Default */
++struct AudioDecoder_Ac3Parameters_type {
++/** Member default */
++enum OutputDualMode_type OutputDualMode;
++/** Member default */
++enum Ac3OutputChannels_type OutputChannels;
++/** Member default */
++RMbool OutputLfe;
++/** Member default */
++enum AudioOutputSurround20_type OutputSurround20;
++/** Selects between disable, uncompressed and compressed SpdifOutput. */
++enum OutputSpdif_type OutputSpdif;
++/** Member default */
++RMbool Acmod2DualMode;
++/** Member default */
++enum Ac3CompMode_type CompMode;
++/** Member default */
++RMuint32 DynScaleHi;
++/** Member default */
++RMuint32 DynScaleLo;
++/** Member default */
++RMuint32 PcmScale;
++/** Member default */
++RMuint32 BassMode;
++};
++
++/** struct Default */
++struct AudioDecoder_DtsParameters_type {
++/** supported in Postprocessing */
++enum OutputDualMode_type OutputDualMode;
++/** Selects between disable, uncompressed and compressed SpdifOutput. */
++enum OutputSpdif_type OutputSpdif;
++/** Member default */
++enum DtsOutputChannels_type OutputChannels;
++/** Member default */
++RMbool OutputLfe;
++/** Member default */
++enum AudioOutputSurround20_type OutputSurround20;
++/** Member default */
++RMuint32 BassMode;
++/** Member default */
++RMbool dts_CD;
++};
++
++/** struct Default */
++struct AudioDecoder_LpcmVobParameters_type {
++/** Member default */
++enum LpcmVobChannelAssign_type ChannelAssign;
++/** Member default range 8 -> 24 */
++RMuint32 BitsPerSample;
++/** Member default */
++RMuint32 SamplingFrequency;
++/** Member default */
++RMbool DownMix;
++/** Member default */
++RMuint16x8 CoefLR;
++/** Member default */
++enum OutputDualMode_type OutputDualMode;
++/** Member default */
++enum AudioOutputChannels_type OutputChannels;
++/** Member default */
++RMbool OutputLfe;
++/** Member default */
++enum AudioOutputSurround20_type OutputSurround20;
++/** Selects between disable, uncompressed and compressed SpdifOutput. */
++enum OutputSpdif_type OutputSpdif;
++/** Member default */
++RMuint32 BassMode;
++};
++
++/** struct Default */
++struct AudioDecoder_LpcmAobParameters_type {
++/** Member default */
++enum LpcmAobChannelAssign_type ChannelAssign;
++/** Member default range 8 -> 24 */
++RMuint32 BitsPerSampleGroup1;
++/** Member default range 0 -> 24 */
++RMuint32 BitsPerSampleGroup2;
++/** Member default */
++RMuint32 SamplingFrequencyGroup1;
++/** Member default */
++RMuint32 SamplingFrequencyGroup2;
++/** Member default */
++RMbool DownMix;
++/** Member default */
++RMuint16x6 CoefLR;
++/** Member default */
++RMuint32 PhaseLR;
++/** Member default */
++RMuint32 Group2Shift;
++/** Member default */
++enum OutputDualMode_type OutputDualMode;
++/** Member default */
++enum AudioOutputChannels_type OutputChannels;
++/** Member default */
++RMbool OutputLfe;
++/** Member default */
++enum AudioOutputSurround20_type OutputSurround20;
++/** Selects between disable, uncompressed and compressed SpdifOutput. */
++enum OutputSpdif_type OutputSpdif;
++/** Member default */
++RMbool DownSample;
++/** Member default */
++RMuint32 BassMode;
++};
++
++/** struct Default */
++struct AudioDecoder_PcmCdaParameters_type {
++/** Member default */
++enum PcmCdaChannelAssign_type ChannelAssign;
++/** Member default range 8 -> 24 */
++RMuint32 BitsPerSample;
++/** Member default */
++RMuint32 SamplingFrequency;
++/** Member default */
++RMbool MsbFirst;
++/** Member default */
++enum OutputDualMode_type OutputDualMode;
++/** Member default */
++enum AudioOutputChannels_type OutputChannels;
++/** Member default */
++RMbool OutputLfe;
++/** Member default */
++enum AudioOutputSurround20_type OutputSurround20;
++/** Member default */
++RMbool SignedPCM;
++/** Selects between disable, uncompressed and compressed SpdifOutput. */
++enum OutputSpdif_type OutputSpdif;
++/** Member default */
++RMuint32 BassMode;
++};
++
++/** struct Default */
++struct AudioDecoder_LpcmBDParameters_type {
++/** Member default */
++enum PcmCdaChannelAssign_type ChannelAssign;
++/** Member default range 8 -> 24 */
++RMuint32 BitsPerSample;
++/** Member default */
++RMuint32 SamplingFrequency;
++/** Member default */
++enum OutputDualMode_type OutputDualMode;
++/** Member default */
++enum AudioOutputChannels_type OutputChannels;
++/** Member default */
++RMbool OutputLfe;
++/** Member default */
++enum AudioOutputSurround20_type OutputSurround20;
++/** Selects between disable, uncompressed and compressed SpdifOutput. */
++enum OutputSpdif_type OutputSpdif;
++/** Member default */
++RMuint32 BassMode;
++};
++
++/** struct Default */
++struct AudioDecoder_MpegParameters_type {
++/** Member default */
++enum OutputDualMode_type OutputDualMode;
++/** Member default */
++RMbool Acmod2DualMode;
++/** Member default */
++enum AudioOutputChannels_type OutputChannels;
++/** Member default */
++RMbool OutputLfe;
++/** Member default */
++enum AudioOutputSurround20_type OutputSurround20;
++/** Selects between disable, uncompressed and compressed SpdifOutput. */
++enum OutputSpdif_type OutputSpdif;
++/** Member default */
++RMuint32 BassMode;
++};
++
++/** struct Default */
++struct AudioDecoder_WMAParameters_type {
++/** Member default */
++RMuint16 VersionNumber;
++/** Member default */
++RMuint32 SamplingFrequency;
++/** Member default */
++RMuint8 NumberOfChannels;
++/** Member default */
++RMbool OutputLfe;
++/** Member default */
++RMuint32 Bitrate;
++/** Member default */
++RMuint32 PacketSize;
++/** Member default */
++RMuint16 EncoderOptions;
++/** Member default */
++RMuint8 BitsPerSample;
++/** Member default */
++RMuint8 WMAProValidBitsPerSample;
++/** Member default */
++RMuint16 WMAProChannelMask;
++/** Member default */
++RMuint8 WMAProVersionNumber;
++/** Member default */
++enum OutputDualMode_type OutputDualMode;
++/** Selects between disable, uncompressed and compressed SpdifOutput. */
++enum OutputSpdif_type OutputSpdif;
++/** For Wmapro_6 6 channels play on 6 outputs, else 6 channels are downmixed in 2 outputs */
++enum WmaproOutputChannels_type OutputChannels;
++/** Member default */
++enum AudioOutputSurround20_type OutputSurround20;
++/** not yet implemented */
++RMbool ValidDownMixCoef;
++/** not yet implemented */
++RMuint32x64 DownMixCoef;
++/** not yet implemented */
++enum WmaproDynamicRangeControl_type DynamicRangeControl;
++/** not yet implemented */
++RMint32x5 DrcCoef;
++/** Member default */
++RMuint32 BassMode;
++};
++
++/** struct Default */
++struct AudioDecoder_DtslbrParameters_type {
++/** supported in Postprocessing */
++enum OutputDualMode_type OutputDualMode;
++/** Selects between disable, uncompressed and compressed SpdifOutput. */
++enum OutputSpdif_type OutputSpdif;
++/** Member default */
++enum DtsOutputChannels_type OutputChannels;
++/** Member default */
++RMbool OutputLfe;
++/** Member default */
++enum AudioOutputSurround20_type OutputSurround20;
++/** Member default */
++RMuint32 BassMode;
++};
++
++typedef struct audio_eof_status {
++    int     ended;
++} audio_eof_status_t;                             
++
++typedef struct audio_data {
++    enum AudioDecoder_Codec_type Codec;
++    RMuint32 SubCodec;
++    RMuint32 SampleRate;
++    RMuint32 SamplingFrequency;	/* input frequency of the audio stream. Used only for pcm files */
++    RMuint32 OutputChannels;
++    enum OutputSpdif_type Spdif;
++    enum OutputSpdif_type HDMISpdif;
++    struct AudioDecoder_AACParameters_type AACParams;
++    struct AudioDecoder_ExACParameters_type EXACParams;
++    struct AudioDecoder_DVDAParameters_type DVDAParams;
++    struct AudioDecoder_BSACParameters_type BSACParams;
++    struct AudioDecoder_Ac3Parameters_type Ac3Params;
++    struct AudioDecoder_DtsParameters_type DtsParams;
++    struct AudioDecoder_MpegParameters_type MpegParams;
++    struct AudioDecoder_LpcmVobParameters_type LpcmVobParams;
++    struct AudioDecoder_LpcmAobParameters_type LpcmAobParams;
++    struct AudioDecoder_LpcmBDParameters_type LpcmBDParams;
++    struct AudioDecoder_PcmCdaParameters_type PcmCdaParams;
++    struct AudioDecoder_PCMXParameters_type PCMXParams;
++    struct AudioDecoder_WMAParameters_type	WmaParams;
++    struct AudioDecoder_TToneParameters_type TToneParams; 
++    struct AudioDecoder_DtslbrParameters_type LbrParams; 
++    struct AudioDecoder_SpeechParameters_type SpeechParams; 
++} audio_data_t;
++
++#define AUDIO_GET_EOF_STATUS           _IOR('o', 30, audio_eof_status_t)
++#define AUDIO_SET_CODEC       _IOW('o', 31, audio_data_t)
++#define AUDIO_SET_STC       _IO('o', 32)
++#define AUDIO_VIDEO_GET_EOF_STATUS     _IOR('o', 33, video_eof_status_t)
++#define AUDIO_PLAY_STC       _IO('o', 34)
++#define AUDIO_STOP_STC       _IO('o', 35)
++#define AUDIO_SET_STC_TIME			   _IOW('o', 36 , RMuint64)
++#define	AUDIO_GET_STC_TIME			   _IOR('o', 37 , RMuint64)
++
++
+ #endif /* _DVBAUDIO_H_ */
+diff -ruN linux-2.6.22.orig/include/linux/dvb/video.h linux-2.6.22/include/linux/dvb/video.h
+--- linux-2.6.22.orig/include/linux/dvb/video.h	2007-07-09 01:32:17.000000000 +0200
++++ linux-2.6.22/include/linux/dvb/video.h	2010-12-12 21:53:10.000000000 +0100
+@@ -24,15 +24,9 @@
+ #ifndef _DVBVIDEO_H_
+ #define _DVBVIDEO_H_
+ 
+-#include <linux/compiler.h>
+-
+-#ifdef __KERNEL__
+-#include <linux/types.h>
+-#else
++#include <asm/types.h>
+ #include <stdint.h>
+ #include <time.h>
+-#endif
+-
+ 
+ typedef enum {
+ 	VIDEO_FORMAT_4_3,     /* Select 4:3 format */
+@@ -134,12 +128,12 @@
+ #define VIDEO_VSYNC_FIELD_PROGRESSIVE	(3)
+ 
+ struct video_event {
+-	int32_t type;
++	__s32 type;
+ #define VIDEO_EVENT_SIZE_CHANGED	1
+ #define VIDEO_EVENT_FRAME_RATE_CHANGED	2
+ #define VIDEO_EVENT_DECODER_STOPPED 	3
+ #define VIDEO_EVENT_VSYNC 		4
+-	time_t timestamp;
++	__time_t timestamp;
+ 	union {
+ 		video_size_t size;
+ 		unsigned int frame_rate;	/* in frames per 1000sec */
+@@ -158,26 +152,26 @@
+ 
+ 
+ struct video_still_picture {
+-	char __user *iFrame;        /* pointer to a single iframe in memory */
+-	int32_t size;
++	char *iFrame;        /* pointer to a single iframe in memory */
++	__s32 size;
+ };
+ 
+ 
+ typedef
+ struct video_highlight {
+ 	int     active;      /*    1=show highlight, 0=hide highlight */
+-	uint8_t contrast1;   /*    7- 4  Pattern pixel contrast */
++	__u8    contrast1;   /*    7- 4  Pattern pixel contrast */
+ 			     /*    3- 0  Background pixel contrast */
+-	uint8_t contrast2;   /*    7- 4  Emphasis pixel-2 contrast */
++	__u8    contrast2;   /*    7- 4  Emphasis pixel-2 contrast */
+ 			     /*    3- 0  Emphasis pixel-1 contrast */
+-	uint8_t color1;      /*    7- 4  Pattern pixel color */
++	__u8    color1;      /*    7- 4  Pattern pixel color */
+ 			     /*    3- 0  Background pixel color */
+-	uint8_t color2;      /*    7- 4  Emphasis pixel-2 color */
++	__u8    color2;      /*    7- 4  Emphasis pixel-2 color */
+ 			     /*    3- 0  Emphasis pixel-1 color */
+-	uint32_t ypos;       /*   23-22  auto action mode */
++	__u32    ypos;       /*   23-22  auto action mode */
+ 			     /*   21-12  start y */
+ 			     /*    9- 0  end y */
+-	uint32_t xpos;       /*   23-22  button color number */
++	__u32    xpos;       /*   23-22  button color number */
+ 			     /*   21-12  start x */
+ 			     /*    9- 0  end x */
+ } video_highlight_t;
+@@ -191,17 +185,17 @@
+ 
+ typedef struct video_spu_palette {      /* SPU Palette information */
+ 	int length;
+-	uint8_t __user *palette;
++	__u8 *palette;
+ } video_spu_palette_t;
+ 
+ 
+ typedef struct video_navi_pack {
+ 	int length;          /* 0 ... 1024 */
+-	uint8_t data[1024];
++	__u8 data[1024];
+ } video_navi_pack_t;
+ 
+ 
+-typedef uint16_t video_attributes_t;
++typedef __u16 video_attributes_t;
+ /*   bits: descr. */
+ /*   15-14 Video compression mode (0=MPEG-1, 1=MPEG-2) */
+ /*   13-12 TV system (0=525/60, 1=625/50) */
+@@ -275,4 +269,70 @@
+ #define VIDEO_COMMAND     	   _IOWR('o', 59, struct video_command)
+ #define VIDEO_TRY_COMMAND 	   _IOWR('o', 60, struct video_command)
+ 
++
++typedef long RMint32;
++typedef unsigned char RMuint8;
++typedef unsigned long RMuint32;
++typedef unsigned short RMuint16; 
++
++typedef RMuint16 RMuint16x8[8];		/* array of  8 RMuint16 - used for AudioDecoder LpcmAobParameters */
++typedef RMuint16 RMuint16x6[6];		/* array of  6 RMuint16 - used for AudioDecoder LpcmVobParameters*/
++typedef RMint32  RMuint32x64[64];	/* array of 64 RMuint32 - used for AudioDecoder WMAParameters */
++typedef RMint32  RMint32x5[5];		/* array of  5 RMint32 - used for AudioDecoder WMAParameters */
++
++/** Boolean type */
++typedef unsigned char RMbool;
++#ifndef TRUE
++/** boolean true value.*/
++#define TRUE (RMbool)1
++/** boolean false value.*/
++#define FALSE (RMbool)0
++#endif // TRUE
++
++
++
++enum EMhwlibVideoCodec {
++EMhwlibVideoCodec_MPEG2 = 1,
++EMhwlibVideoCodec_MPEG4,
++EMhwlibVideoCodec_MPEG4_Padding,
++EMhwlibVideoCodec_DIVX3,
++EMhwlibVideoCodec_VC1,
++EMhwlibVideoCodec_WMV,
++EMhwlibVideoCodec_H264,
++EMhwlibJPEGCodec,
++EMhwlibDVDSpuCodec,
++EMhwlibBDRLECodec,
++EMhwlibVideoCodec_AVS,
++EMhwlibVideoCodec_H261,
++};
++	    
++	    typedef struct video_data {
++	    enum EMhwlibVideoCodec Codec;
++	    } video_data_t;
++	    
++	    typedef struct video_eof_status {
++	     int     ended;
++	     } video_eof_status_t;
++
++
++/** struct Default */
++struct VideoDecoder_DIVX3VSProp_type {
++    /** Member default */
++	RMuint16 Image_Width;
++	    /** Member default */
++		RMuint16 Image_Height;
++		};
++
++
++#define VIDEO_SET_CODEC     _IOW('o', 80, video_data_t)
++#define VIDEO_GET_EOF_STATUS   _IOR('o', 81, video_eof_status_t)
++#define VIDEO_DIVX_DSI     _IOW('o', 82, struct VideoDecoder_DIVX3VSProp_type)
++#define VIDEO_SET_STC     _IO('o', 83)
++#define VIDEO_STOP_STC     _IO('o', 84)
++#define VIDEO_PLAY_STC     _IO('o', 85)
++#define VIDEO_PAUSE_ALL     _IO('o', 86)
++#define VIDEO_RESUME_ALL    _IO('o', 87)
++#define VIDEO_RESYNC     _IO('o', 88) // -> NOT USED!!!
++#define VIDEO_SET_STC_TIME	   _IOW('o', 89 , unsigned long long)
++#define VIDEO_FRAME_PACKED		_IOW('o', 90 , unsigned long long)
+ #endif /*_DVBVIDEO_H_*/
+diff -ruN linux_kernel_2.6.22.19-19.orig/include/linux/dvb/dmx.h linux_kernel_2.6.22.19-19/include/linux/dvb/dmx.h
+--- linux_kernel_2.6.22.19-19.orig/include/linux/dvb/dmx.h	2008-02-26 10:54:25.000000000 +0100
++++ linux_kernel_2.6.22.19-19/include/linux/dvb/dmx.h	2011-01-23 19:58:58.985899518 +0100
+@@ -39,9 +39,10 @@
+ 	DMX_OUT_DECODER, /* Streaming directly to decoder. */
+ 	DMX_OUT_TAP,     /* Output going to a memory buffer */
+ 			 /* (to be retrieved via the read command).*/
+-	DMX_OUT_TS_TAP   /* Output multiplexed into a new TS  */
++	DMX_OUT_TS_TAP,  /* Output multiplexed into a new TS  */
+ 			 /* (to be retrieved by reading from the */
+ 			 /* logical DVR device).                 */
++	DMX_OUT_TSDEMUX_TAP /* Like TS_TAP but retrieved from the DMX device */
+ } dmx_output_t;
+ 
+ 
+@@ -150,5 +151,7 @@
+ #define DMX_GET_CAPS             _IOR('o', 48, dmx_caps_t)
+ #define DMX_SET_SOURCE           _IOW('o', 49, dmx_source_t)
+ #define DMX_GET_STC              _IOWR('o', 50, struct dmx_stc)
++#define DMX_ADD_PID              _IOW('o', 51, __u16)
++#define DMX_REMOVE_PID           _IOW('o', 52, __u16)
+ 
+ #endif /*_DVBDMX_H_*/
+diff -ruN linux_kernel_2.6.22.19-19.orig/include/linux/dvb/frontend.h linux_kernel_2.6.22.19-19/include/linux/dvb/frontend.h
+--- linux_kernel_2.6.22.19-19.orig/include/linux/dvb/frontend.h	2008-02-26 10:54:25.000000000 +0100
++++ linux_kernel_2.6.22.19-19/include/linux/dvb/frontend.h	2011-01-23 20:04:55.738399610 +0100
+@@ -62,9 +62,12 @@
+ 	FE_CAN_HIERARCHY_AUTO		= 0x100000,
+ 	FE_CAN_8VSB			= 0x200000,
+ 	FE_CAN_16VSB			= 0x400000,
+-	FE_NEEDS_BENDING		= 0x20000000, // not supported anymore, don't use (frontend requires frequency bending)
+-	FE_CAN_RECOVER			= 0x40000000, // frontend can recover from a cable unplug automatically
+-	FE_CAN_MUTE_TS			= 0x80000000  // frontend can stop spurious TS data output
++	FE_HAS_EXTENDED_CAPS		= 0x800000,   /* We need more bitspace for newer APIs, indicate this. */
++	FE_CAN_TURBO_FEC		= 0x8000000,  /* frontend supports "turbo fec modulation" */
++	FE_CAN_2G_MODULATION		= 0x10000000, /* frontend supports "2nd generation modulation" (DVB-S2) */
++	FE_NEEDS_BENDING		= 0x20000000, /* not supported anymore, don't use (frontend requires frequency bending) */
++	FE_CAN_RECOVER			= 0x40000000, /* frontend can recover from a cable unplug automatically */
++	FE_CAN_MUTE_TS			= 0x80000000  /* frontend can stop spurious TS data output */
+ } fe_caps_t;
+ 
+ 
+@@ -120,15 +123,15 @@
+ 
+ 
+ typedef enum fe_status {
+-	FE_HAS_SIGNAL	= 0x01,   /*  found something above the noise level */
+-	FE_HAS_CARRIER	= 0x02,   /*  found a DVB signal  */
+-	FE_HAS_VITERBI	= 0x04,   /*  FEC is stable  */
+-	FE_HAS_SYNC	= 0x08,   /*  found sync bytes  */
+-	FE_HAS_LOCK	= 0x10,   /*  everything's working... */
+-	FE_TIMEDOUT	= 0x20,   /*  no lock within the last ~2 seconds */
+-	FE_REINIT	= 0x40    /*  frontend was reinitialized,  */
+-} fe_status_t;			  /*  application is recommended to reset */
+-				  /*  DiSEqC, tone and parameters */
++	FE_HAS_SIGNAL	= 0x01,   /* found something above the noise level */
++	FE_HAS_CARRIER	= 0x02,   /* found a DVB signal  */
++	FE_HAS_VITERBI	= 0x04,   /* FEC is stable  */
++	FE_HAS_SYNC	= 0x08,   /* found sync bytes  */
++	FE_HAS_LOCK	= 0x10,   /* everything's working... */
++	FE_TIMEDOUT	= 0x20,   /* no lock within the last ~2 seconds */
++	FE_REINIT	= 0x40    /* frontend was reinitialized,  */
++} fe_status_t;			  /* application is recommended to reset */
++				  /* DiSEqC, tone and parameters */
+ 
+ typedef enum fe_spectral_inversion {
+ 	INVERSION_OFF,
+@@ -147,7 +150,9 @@
+ 	FEC_6_7,
+ 	FEC_7_8,
+ 	FEC_8_9,
+-	FEC_AUTO
++	FEC_AUTO,
++	FEC_3_5,
++	FEC_9_10,
+ } fe_code_rate_t;
+ 
+ 
+@@ -160,20 +165,31 @@
+ 	QAM_256,
+ 	QAM_AUTO,
+ 	VSB_8,
+-	VSB_16
++	VSB_16,
++	PSK_8,
++	APSK_16,
++	APSK_32,
++	DQPSK,
+ } fe_modulation_t;
+ 
+ typedef enum fe_transmit_mode {
+ 	TRANSMISSION_MODE_2K,
+ 	TRANSMISSION_MODE_8K,
+-	TRANSMISSION_MODE_AUTO
++	TRANSMISSION_MODE_AUTO,
++	TRANSMISSION_MODE_4K,
++	TRANSMISSION_MODE_1K,
++	TRANSMISSION_MODE_16K,
++	TRANSMISSION_MODE_32K,
+ } fe_transmit_mode_t;
+ 
+ typedef enum fe_bandwidth {
+ 	BANDWIDTH_8_MHZ,
+ 	BANDWIDTH_7_MHZ,
+ 	BANDWIDTH_6_MHZ,
+-	BANDWIDTH_AUTO
++	BANDWIDTH_AUTO,
++	BANDWIDTH_5_MHZ,
++	BANDWIDTH_10_MHZ,
++	BANDWIDTH_1_712_MHZ,
+ } fe_bandwidth_t;
+ 
+ 
+@@ -182,7 +198,10 @@
+ 	GUARD_INTERVAL_1_16,
+ 	GUARD_INTERVAL_1_8,
+ 	GUARD_INTERVAL_1_4,
+-	GUARD_INTERVAL_AUTO
++	GUARD_INTERVAL_AUTO,
++	GUARD_INTERVAL_1_128,
++	GUARD_INTERVAL_19_128,
++	GUARD_INTERVAL_19_256,
+ } fe_guard_interval_t;
+ 
+ 
+@@ -239,6 +258,137 @@
+ 	struct dvb_frontend_parameters parameters;
+ };
+ 
++/* S2API Commands */
++#define DTV_UNDEFINED		0
++#define DTV_TUNE		1
++#define DTV_CLEAR		2
++#define DTV_FREQUENCY		3
++#define DTV_MODULATION		4
++#define DTV_BANDWIDTH_HZ	5
++#define DTV_INVERSION		6
++#define DTV_DISEQC_MASTER	7
++#define DTV_SYMBOL_RATE		8
++#define DTV_INNER_FEC		9
++#define DTV_VOLTAGE		10
++#define DTV_TONE		11
++#define DTV_PILOT		12
++#define DTV_ROLLOFF		13
++#define DTV_DISEQC_SLAVE_REPLY	14
++
++/* Basic enumeration set for querying unlimited capabilities */
++#define DTV_FE_CAPABILITY_COUNT	15
++#define DTV_FE_CAPABILITY	16
++#define DTV_DELIVERY_SYSTEM	17
++
++/* ISDB-T and ISDB-Tsb */
++#define DTV_ISDBT_PARTIAL_RECEPTION	18
++#define DTV_ISDBT_SOUND_BROADCASTING	19
++
++#define DTV_ISDBT_SB_SUBCHANNEL_ID	20
++#define DTV_ISDBT_SB_SEGMENT_IDX	21
++#define DTV_ISDBT_SB_SEGMENT_COUNT	22
++
++#define DTV_ISDBT_LAYERA_FEC			23
++#define DTV_ISDBT_LAYERA_MODULATION		24
++#define DTV_ISDBT_LAYERA_SEGMENT_COUNT		25
++#define DTV_ISDBT_LAYERA_TIME_INTERLEAVING	26
++
++#define DTV_ISDBT_LAYERB_FEC			27
++#define DTV_ISDBT_LAYERB_MODULATION		28
++#define DTV_ISDBT_LAYERB_SEGMENT_COUNT		29
++#define DTV_ISDBT_LAYERB_TIME_INTERLEAVING	30
++
++#define DTV_ISDBT_LAYERC_FEC			31
++#define DTV_ISDBT_LAYERC_MODULATION		32
++#define DTV_ISDBT_LAYERC_SEGMENT_COUNT		33
++#define DTV_ISDBT_LAYERC_TIME_INTERLEAVING	34
++
++#define DTV_API_VERSION		35
++
++#define DTV_CODE_RATE_HP	36
++#define DTV_CODE_RATE_LP	37
++#define DTV_GUARD_INTERVAL	38
++#define DTV_TRANSMISSION_MODE	39
++#define DTV_HIERARCHY		40
++
++#define DTV_ISDBT_LAYER_ENABLED	41
++
++#define DTV_ISDBS_TS_ID		42
++
++#define DTV_DVBT2_PLP_ID	43
++
++#define DTV_MAX_COMMAND				DTV_DVBT2_PLP_ID
++
++typedef enum fe_pilot {
++	PILOT_ON,
++	PILOT_OFF,
++	PILOT_AUTO,
++} fe_pilot_t;
++
++typedef enum fe_rolloff {
++	ROLLOFF_35, /* Implied value in DVB-S, default for DVB-S2 */
++	ROLLOFF_20,
++	ROLLOFF_25,
++	ROLLOFF_AUTO,
++} fe_rolloff_t;
++
++typedef enum fe_delivery_system {
++	SYS_UNDEFINED,
++	SYS_DVBC_ANNEX_AC,
++	SYS_DVBC_ANNEX_B,
++	SYS_DVBT,
++	SYS_DSS,
++	SYS_DVBS,
++	SYS_DVBS2,
++	SYS_DVBH,
++	SYS_ISDBT,
++	SYS_ISDBS,
++	SYS_ISDBC,
++	SYS_ATSC,
++	SYS_ATSCMH,
++	SYS_DMBTH,
++	SYS_CMMB,
++	SYS_DAB,
++	SYS_DVBT2,
++} fe_delivery_system_t;
++
++struct dtv_cmds_h {
++	char	*name;		/* A display name for debugging purposes */
++
++	__u32	cmd;		/* A unique ID */
++
++	/* Flags */
++	__u32	set:1;		/* Either a set or get property */
++	__u32	buffer:1;	/* Does this property use the buffer? */
++	__u32	reserved:30;	/* Align */
++};
++
++struct dtv_property {
++	__u32 cmd;
++	__u32 reserved[3];
++	union {
++		__u32 data;
++		struct {
++			__u8 data[32];
++			__u32 len;
++			__u32 reserved1[3];
++			void *reserved2;
++		} buffer;
++	} u;
++	int result;
++} __attribute__ ((packed));
++
++/* num of properties cannot exceed DTV_IOCTL_MAX_MSGS per ioctl */
++#define DTV_IOCTL_MAX_MSGS 64
++
++struct dtv_properties {
++	__u32 num;
++	struct dtv_property *props;
++};
++
++#define FE_SET_PROPERTY		   _IOW('o', 82, struct dtv_properties)
++#define FE_GET_PROPERTY		   _IOR('o', 83, struct dtv_properties)
++
+ 
+ /**
+  * When set, this flag will disable any zigzagging or other "normal" tuning
+diff -ruN linux_kernel_2.6.22.19-19.orig/include/linux/dvb/version.h linux_kernel_2.6.22.19-19/include/linux/dvb/version.h
+--- linux_kernel_2.6.22.19-19.orig/include/linux/dvb/version.h	2008-02-26 10:54:25.000000000 +0100
++++ linux_kernel_2.6.22.19-19/include/linux/dvb/version.h	2011-01-23 20:05:32.478149415 +0100
+@@ -23,7 +23,7 @@
+ #ifndef _DVBVERSION_H_
+ #define _DVBVERSION_H_
+ 
+-#define DVB_API_VERSION 3
+-#define DVB_API_VERSION_MINOR 2
++#define DVB_API_VERSION 5
++#define DVB_API_VERSION_MINOR 3
+ 
+ #endif /*_DVBVERSION_H_*/
