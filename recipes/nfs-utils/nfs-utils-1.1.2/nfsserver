@@ -28,6 +28,21 @@ test -n "$NFS_STATEDIR" || NFS_STATEDIR=/var/lib/nfs
 # Startup and shutdown functions.
 #  Actual startup/shutdown is at the end of this file.
 #directories
+
+start_proc(){
+	if ! mount | grep  '/proc/fs/nfsd'; then
+		echo -n 'mouting /proc/fs/nfsd: '
+		mount -t nfsd nfsd /proc/fs/nfsd 
+		echo done
+	fi
+}
+stop_proc(){
+	if mount | grep '/proc/fs/nfsd'; then
+		echo -n 'unmouting /proc/fs/nfsd: '
+		umount /proc/fs/nfsd 
+		echo done
+	fi
+}
 create_directories(){
 	echo -n 'creating NFS state directory: '
 	mkdir -p "$NFS_STATEDIR"
@@ -129,6 +144,7 @@ stop_statd(){
 #FIXME: need to create the /var/lib/nfs/... directories
 case "$1" in
 start)	create_directories
+	start_proc
 	start_nfsd "$NFS_SERVERS"
 	start_mountd
 	start_statd
@@ -136,6 +152,7 @@ start)	create_directories
 stop)	exportfs -ua
 	stop_statd
 	stop_mountd
+	stop_proc
 	stop_nfsd;;
 reload)	test -r /etc/exports && exportfs -r;;
 restart)exportfs -ua
