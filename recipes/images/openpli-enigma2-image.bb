@@ -52,7 +52,7 @@ ENIGMA2_PLUGINS = " \
 				${@base_contains("MACHINE_FEATURES", "wifi", "enigma2-plugin-systemplugins-wirelesslan", "", d)} \
 				"
 
-DEPENDS += "enigma2 enigma2-plugins enigma2-pliplugins dreambox-tpm-python"
+DEPENDS += "enigma2 enigma2-plugins enigma2-pliplugins"
 
 ENIGMA2_OPTIONAL = " \
 				enigma2-skins \
