@@ -7,6 +7,12 @@ PR = "r4"
 SRC_URI = "${KERNELORG_MIRROR}/pub/linux/kernel/v2.6/linux-${PV}.tar.bz2 \
            file://procinfo.h"
 
+SRC_URI_azbox = "${KERNELORG_MIRROR}/pub/linux/kernel/v2.6/linux-${PV}.tar.bz2 \
+           file://procinfo.h \
+           file://azbox-dvb-api.patch;patch=1 \
+           file://unifdef.patch;patch=1"
+
+
 S = "${WORKDIR}/linux-${PV}"
 
 do_configure() {
