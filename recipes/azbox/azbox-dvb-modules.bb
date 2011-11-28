@@ -3,17 +3,17 @@ SECTION = "base"
 PRIORITY = "required"
 LICENSE = "proprietary"
 
-SRCDATE = "20110825"
+SRCDATE = "20111117"
 PACKAGE_STRIP = "no"
 
 KV = "2.6.22.19-25-the-ripper"
 PV = "2.6.22.19-25+${SRCDATE}"
-PR = "r2"
+PR = "r40"
 MACHINE_KERNEL_PR_append = ".0"
 
 RDEPENDS = "kernel (${KV})"
 
-SRC_URI = "http://openee.sifteam.eu/azbox/drivers_${SRCDATE}.zip \
+SRC_URI = "http://downloads.sourceforge.net/project/rticoree2/drivers/azboxhd-dvb-modules_20111117.zip \
 	   file://bootup"
 
 S = "${WORKDIR}/drivers_${SRCDATE}"
@@ -26,17 +26,32 @@ do_compile() {
 do_install() {
 	install -d ${D}/etc/init.d
 	install -d ${D}/etc/rcS.d
-	install ${S}/etc/init.d/wifi ${D}/etc/init.d
 	install ${WORKDIR}/bootup ${D}/etc/init.d
 	install ${WORKDIR}/bootup ${D}/etc/rcS.d/S04bootup
-	install -d ${D}/lib/
-	install ${S}/lib/lib*.so ${D}/lib
-	install -d ${D}/lib/firmware
-	install ${S}/lib/firmware/*.fw ${D}/lib/firmware
-	install -d ${D}/usr/bin
-	install ${S}/usr/bin/* ${D}/usr/bin
 	install -d ${D}/lib/modules/${KV}/extra
-	install -m 0755 ${S}/lib/modules/${KV}/extra/*.ko ${D}/lib/modules/${KV}/extra
+	
+	cd ${WORKDIR}/files/modules
+	for f in *.ko; do
+		install -m 0644 ${WORKDIR}/files/modules/$f ${D}/lib/modules/${KV}/extra/$f;
+	done
+	
+	cd ${WORKDIR}/files/lib
+	for f in *; do
+		install -m 0755 ${WORKDIR}/files/lib/$f ${D}/lib/$f;
+	done
+	
+	install -d ${D}/usr/bin
+	cd ${WORKDIR}/files/bin
+	for f in *; do
+		install -m 0755 ${WORKDIR}/files/bin/$f ${D}/usr/bin/$f;
+	done 
+	
+	install -d ${D}/etc/init.d
+	install -m 0755 ${WORKDIR}/files/initd/wifi ${D}/etc/init.d/wifi
+	
+	install -d ${D}/lib/firmware
+	install -m 0644 ${WORKDIR}/files/firmware/dvb-fe-cx24116.fw ${D}/lib/firmware/dvb-fe-cx24116.fw
+
 }
 
 PACKAGE_ARCH := "${MACHINE_ARCH}"
