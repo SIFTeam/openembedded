@@ -1,7 +1,7 @@
 
 IMAGE_PREPROCESS_COMMAND = "create_etc_timestamp"
 
-BOOTLOGO ?= "openpli-bootlogo"
+BOOTLOGO ?= "sifteam-bootlogo"
 
 IMAGE_INSTALL = " \
 				task-base \

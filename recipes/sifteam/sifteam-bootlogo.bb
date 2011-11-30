@@ -1,8 +1,8 @@
-DESCRIPTION = "OpenPLi bootlogo"
+DESCRIPTION = "SifTeam bootlogo"
 SECTION = "base"
 PRIORITY = "required"
 LICENSE = "proprietary"
-MAINTAINER = "PLi team"
+MAINTAINER = "SifTeam"
 
 RDEPENDS_${PN} += "virtual/showiframe"
 
