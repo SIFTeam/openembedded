@@ -1,9 +1,9 @@
 diff --git a/drivers/media/dvb/dvb-usb/Kconfig b/drivers/media/dvb/dvb-usb/Kconfig
-index 4fc22e1..841a82f 100644
+index bd6e53e..6825c46 100644
 --- a/drivers/media/dvb/dvb-usb/Kconfig
 +++ b/drivers/media/dvb/dvb-usb/Kconfig
-@@ -382,3 +382,12 @@ config DVB_USB_TECHNISAT_USB2
- 	depends on DVB_USB
+@@ -391,3 +391,12 @@ config DVB_USB_IT9135
+ 	default m
  	help
  	  Say Y here to support the ITE IT9135 based DVB-T USB2.0 receiver
 +
@@ -16,12 +16,12 @@ index 4fc22e1..841a82f 100644
 +
 +		To compile this driver as a module, choose M here
 diff --git a/drivers/media/dvb/dvb-usb/Makefile b/drivers/media/dvb/dvb-usb/Makefile
-index 4e1d137..c5badf1 100644
+index afa8709..929fb4e 100644
 --- a/drivers/media/dvb/dvb-usb/Makefile
 +++ b/drivers/media/dvb/dvb-usb/Makefile
-@@ -98,6 +98,13 @@ obj-$(CONFIG_DVB_USB_TECHNISAT_USB2) += dvb-usb-technisat-usb2.o
- dvb-usb-af9035-objs = af9035.o
- obj-$(CONFIG_DVB_USB_AF9035) += dvb-usb-af9035.o
+@@ -101,6 +101,13 @@ obj-$(CONFIG_DVB_USB_AF9035) += dvb-usb-af9035.o
+ dvb-usb-it9135-objs := it9135.o it9135-fe.o
+ obj-$(CONFIG_DVB_USB_IT9135) += dvb-usb-it9135.o
  
 +dvb-a867-objs := a867_af903x-core.o a867_af903x-devices.o a867_af903x-drv.o \
 +			a867_af903x-fe.o a867_af903x-tuner.o a867_cmd.o a867_standard.o \
@@ -35,7 +35,7 @@ index 4e1d137..c5badf1 100644
  EXTRA_CFLAGS += -Idrivers/media/common/tuners
 diff --git a/drivers/media/dvb/dvb-usb/a867_Afa_AF9007.c b/drivers/media/dvb/dvb-usb/a867_Afa_AF9007.c
 new file mode 100644
-index 0000000..0e626db
+index 0000000..0d65cf9
 --- /dev/null
 +++ b/drivers/media/dvb/dvb-usb/a867_Afa_AF9007.c
 @@ -0,0 +1,50 @@
@@ -91,7 +91,7 @@ index 0000000..0e626db
 +};
 diff --git a/drivers/media/dvb/dvb-usb/a867_Afa_AF9007.h b/drivers/media/dvb/dvb-usb/a867_Afa_AF9007.h
 new file mode 100644
-index 0000000..4a6dd09
+index 0000000..7f41742
 --- /dev/null
 +++ b/drivers/media/dvb/dvb-usb/a867_Afa_AF9007.h
 @@ -0,0 +1,39 @@
@@ -136,7 +136,7 @@ index 0000000..4a6dd09
 +
 diff --git a/drivers/media/dvb/dvb-usb/a867_Afa_AF9007_Script.h b/drivers/media/dvb/dvb-usb/a867_Afa_AF9007_Script.h
 new file mode 100644
-index 0000000..fef7d39
+index 0000000..7da168b
 --- /dev/null
 +++ b/drivers/media/dvb/dvb-usb/a867_Afa_AF9007_Script.h
 @@ -0,0 +1,93 @@
@@ -235,7 +235,7 @@ index 0000000..fef7d39
 +
 diff --git a/drivers/media/dvb/dvb-usb/a867_Common.h b/drivers/media/dvb/dvb-usb/a867_Common.h
 new file mode 100644
-index 0000000..7204d45
+index 0000000..d6e6fe2
 --- /dev/null
 +++ b/drivers/media/dvb/dvb-usb/a867_Common.h
 @@ -0,0 +1,259 @@
@@ -500,7 +500,7 @@ index 0000000..7204d45
 +} MXL5005_ControlName ;
 diff --git a/drivers/media/dvb/dvb-usb/a867_Maxlinear_MXL5007.c b/drivers/media/dvb/dvb-usb/a867_Maxlinear_MXL5007.c
 new file mode 100644
-index 0000000..00990d0
+index 0000000..1bc1d33
 --- /dev/null
 +++ b/drivers/media/dvb/dvb-usb/a867_Maxlinear_MXL5007.c
 @@ -0,0 +1,203 @@
@@ -549,8 +549,8 @@ index 0000000..00990d0
 +UINT32 MxL_I2C_Write(UINT8 DeviceAddr, void* pArray, UINT32 ByteCount, struct mxl5007t_config* myTuner)
 +{
 +    Dword error = Error_NO_ERROR;                /* Status to be returned */
-+    Byte buffer[25];
-+    Byte i;
++    // Byte buffer[25];
++    // Byte i;
 +	Byte* pData;
 +	pData = (Byte*)pArray;
 +    
@@ -669,7 +669,7 @@ index 0000000..00990d0
 +	IN  Word			bandwidth,
 +	IN  Dword			frequency
 +) {
-+	Dword status = 0;       
++	// Dword status = 0;       
 +
 +	deb_data("MxL5007 Set");
 +	if(	a867_mxl5007t_set_params(MxL5007_TunerConfig.state, (enum mxl5007t_bw_mhz) (bandwidth / 1000), frequency * 1000) ) {
@@ -709,7 +709,7 @@ index 0000000..00990d0
 +
 diff --git a/drivers/media/dvb/dvb-usb/a867_Maxlinear_MXL5007.h b/drivers/media/dvb/dvb-usb/a867_Maxlinear_MXL5007.h
 new file mode 100644
-index 0000000..dc65d61
+index 0000000..46f6fb5
 --- /dev/null
 +++ b/drivers/media/dvb/dvb-usb/a867_Maxlinear_MXL5007.h
 @@ -0,0 +1,60 @@
@@ -775,7 +775,7 @@ index 0000000..dc65d61
 +
 diff --git a/drivers/media/dvb/dvb-usb/a867_Maxlinear_MXL5007_Script.h b/drivers/media/dvb/dvb-usb/a867_Maxlinear_MXL5007_Script.h
 new file mode 100644
-index 0000000..b6babc4
+index 0000000..c5daff6
 --- /dev/null
 +++ b/drivers/media/dvb/dvb-usb/a867_Maxlinear_MXL5007_Script.h
 @@ -0,0 +1,64 @@
@@ -845,7 +845,7 @@ index 0000000..b6babc4
 +};
 diff --git a/drivers/media/dvb/dvb-usb/a867_af903x-core.c b/drivers/media/dvb/dvb-usb/a867_af903x-core.c
 new file mode 100644
-index 0000000..4b607b6
+index 0000000..8d784b1
 --- /dev/null
 +++ b/drivers/media/dvb/dvb-usb/a867_af903x-core.c
 @@ -0,0 +1,253 @@
@@ -1031,7 +1031,7 @@ index 0000000..4b607b6
 +static int af903x_suspend(struct usb_interface *intf, pm_message_t message)
 +{
 +	int error;
-+	deb_data("Enter %s Function, message=0x%x\n",__FUNCTION__, message);
++	deb_data("Enter %s Function, message=0x%ux\n",__FUNCTION__, message.event);
 +	error = DL_ApCtrl(0);
 +	if (error) deb_data("DL_ApCtrl error : 0x%x\n", error);
 +
@@ -1064,7 +1064,7 @@ index 0000000..4b607b6
 +#if LINUX_VERSION_CODE <=  KERNEL_VERSION(2,6,15)
 +	.owner = THIS_MODULE,
 +#endif
-+	.name       = "dvb_usb_A867",
++	.name       = "dvb-usb-a867",
 +	.probe      = af903x_probe,
 +	.disconnect = dvb_usb_device_exit,
 +	.id_table   = af903x_usb_id_table,
@@ -1104,7 +1104,7 @@ index 0000000..4b607b6
 +MODULE_LICENSE("GPL");
 diff --git a/drivers/media/dvb/dvb-usb/a867_af903x-devices.c b/drivers/media/dvb/dvb-usb/a867_af903x-devices.c
 new file mode 100644
-index 0000000..5b8244d
+index 0000000..1a96402
 --- /dev/null
 +++ b/drivers/media/dvb/dvb-usb/a867_af903x-devices.c
 @@ -0,0 +1,257 @@
@@ -1114,7 +1114,7 @@ index 0000000..5b8244d
 +module_param_named(hwpid,dvb_usb_af903x_hwpid, int, 0644); 
 +MODULE_PARM_DESC(debug, "set hw pid filter.(disable=0, enable=1)" DVB_USB_DEBUG_STATUS);
 +
-+static u16 gSWPIDTable[32];
++//static u16 gSWPIDTable[32];
 +static int gTblUsed = 0;
 +
 +static int af903x_download_firmware(struct usb_device *udev, const struct firmware *fw)
@@ -1367,16 +1367,25 @@ index 0000000..5b8244d
 +int af903x_device_count = ARRAY_SIZE(af903x_properties);
 diff --git a/drivers/media/dvb/dvb-usb/a867_af903x-drv.c b/drivers/media/dvb/dvb-usb/a867_af903x-drv.c
 new file mode 100644
-index 0000000..192db01
+index 0000000..3a030a8
 --- /dev/null
 +++ b/drivers/media/dvb/dvb-usb/a867_af903x-drv.c
-@@ -0,0 +1,1215 @@
+@@ -0,0 +1,1238 @@
 +#include "a867_af903x.h"
++//#include "a867_firmware.h"
++#include "a867_ofdm.h"
++
++#define true 1
++#define false 0
 +
 +#define FW_VER         0x08060000
-+int dvb_usb_af903x_debug = 255; // enable all level by default
++int dvb_usb_af903x_debug = 0; // disable all level by default
 +module_param_named(debug,dvb_usb_af903x_debug, int, 0644);
-+MODULE_PARM_DESC(debug, "set debugging level.(info=1,deb_fw=2,deb_fwdata=4,deb_data=8)" DVB_USB_DEBUG_STATUS);
++MODULE_PARM_DESC(debug, "set debugging level (info=1, deb_fw=2, deb_fwdata=4, deb_data=8 (or-able)), default=0");
++
++int dvb_usb_af903x_snrdb = 0; // output SNR 16bit format
++module_param_named(snrdb,dvb_usb_af903x_snrdb, int, 0644);
++MODULE_PARM_DESC(snrdb, "set SNR format (16bit=0, dB decibel=1), default=0");
 +
 +struct usb_device *udevs = NULL;
 +struct usb_interface *uintfs = NULL;
@@ -1534,7 +1543,7 @@ index 0000000..192db01
 +    
 +	PDEVICE_CONTEXT pdc = (PDEVICE_CONTEXT)handle;
 +
-+	Bool bLock = true;
++	//Bool bLock = true;
 +
 +	deb_data("- Enter %s Function -\n ",__FUNCTION__);
 +	deb_data("       ucSlaveDemod = %d, Freq= %d, BW=%d\n", ucSlaveDemod, dwFreq, ucBw);
@@ -1841,7 +1850,7 @@ index 0000000..192db01
 +	
 +		if(pdc->architecture == Architecture_PIP)
 +		{
-+			if(pdc->fc[0].tunerinfo.bTunerInited == false && pdc->fc[1].tunerinfo.bTunerInited == false) 
++			if(pdc->fc[0].tunerinfo.bTunerInited == 0 && pdc->fc[1].tunerinfo.bTunerInited == 0) 
 +           	{                                
 +               	if(pdc->bTunerPowerOff == false) 
 +               	{
@@ -2256,6 +2265,20 @@ index 0000000..192db01
 +	return dwError;
 +}
 +
++DWORD DL_GetSignalQuality(u16 *squality)
++{
++	DWORD dwError = Error_NO_ERROR;
++	BYTE    ucSlaveDemod=0;
++	Byte 	str;
++	deb_data("- Enter %s Function -\n",__FUNCTION__);	 	
++
++	dwError = Demodulator_getSignalQuality((Demodulator*) &PDC->Demodulator, ucSlaveDemod, &str);
++
++	if( squality ) *squality = str;
++
++	return dwError;
++}
++
 +
 +DWORD DL_GetChannelStat(u32 *ber, u32 *berbits, u32 *ubc)
 +{
@@ -2353,7 +2376,7 @@ index 0000000..192db01
 +{
 +        DWORD dwError = Error_NO_ERROR;
 +	BYTE    ucSlaveDemod=0;
-+	Bool bLock;
++	//Bool bLock;
 +
 +	down(&PDC->powerLock);
 +
@@ -2573,7 +2596,7 @@ index 0000000..192db01
 +
 +        	if (bBoot)
 +        	{
-+			Bool bLock;
++			//Bool bLock;
 +            		error = DRV_ApCtrl(PDC, filterIdx, false);
 +            		if (error) deb_data("%d: DRV_ApCtrl Fail!\n", filterIdx);
 +        	} 
@@ -2586,13 +2609,12 @@ index 0000000..192db01
 +	return (error);
 +}
 +//EXPORT_SYMBOL(Device_init);
-\ No newline at end of file
 diff --git a/drivers/media/dvb/dvb-usb/a867_af903x-fe.c b/drivers/media/dvb/dvb-usb/a867_af903x-fe.c
 new file mode 100644
-index 0000000..bd38907
+index 0000000..09cce05
 --- /dev/null
 +++ b/drivers/media/dvb/dvb-usb/a867_af903x-fe.c
-@@ -0,0 +1,793 @@
+@@ -0,0 +1,862 @@
 +#include <linux/sched.h>
 +#include <linux/list.h>
 +#include <linux/module.h>
@@ -2628,13 +2650,14 @@ index 0000000..bd38907
 +	int locked;
 +};
 +
-+int test_map_snr(u32 snr_data, u32 *snr)
++int test_map_snr(u32 snr_data, u16 *snr, u16 *maxsnr)
 +{
 +	Dword error = 0;
 +	Dword snr_value = 0;
 +	Byte constellation = 0;
 +	Byte transmission_mode = 0;
 +
++	*maxsnr = 0;
 +	*snr = 0;
 +
 +    /** Get constellation type */
@@ -2648,14 +2671,17 @@ index 0000000..bd38907
 +    if (error) goto exit;
 +
 +	// Adjust snr data by transmission mode
-+	if(transmission_mode == 0)		snr_value = snr_data * 4;
-+	else if(transmission_mode ==2)	snr_value = snr_data * 2;
-+	else							snr_value = snr_data;
++	if (transmission_mode == 0)
++		snr_value = snr_data * 4;
++	else if (transmission_mode == 2)	
++		snr_value = snr_data * 2;
++	else
++		snr_value = snr_data;
 +
 +   if( constellation == 0) //Constellation_QPSK
-+    {
++   {
 +           if(snr_value < 0xB4771)    *snr = 0;
-+           else if(snr_value < 0xC1AED)           *snr = 1;
++           else if(snr_value < 0xC1AED)   *snr = 1;
 +           else if(snr_value < 0xD0D27)   *snr = 2;
 +           else if(snr_value < 0xE4D19)   *snr = 3;
 +           else if(snr_value < 0xE5DA8)   *snr = 4;
@@ -2678,6 +2704,7 @@ index 0000000..bd38907
 +           else if(snr_value < 0x190AF1)   *snr = 21;
 +           else if(snr_value < 0x191451)   *snr = 22;
 +           else   *snr = 23;
++	   *maxsnr = 23;
 +    }
 +    else if ( constellation == 1) //Constellation_16QAM
 +    {
@@ -2708,6 +2735,7 @@ index 0000000..bd38907
 +           else if(snr_value < 0xC6C31)   *snr = 24;
 +           else if(snr_value < 0xC7925)   *snr = 25;
 +           else    *snr = 26;
++	   *maxsnr = 26;
 +    }
 +    else if ( constellation == 2) //Constellation_64QAM
 +    {
@@ -2741,6 +2769,7 @@ index 0000000..bd38907
 +           else if(snr_value < 0x59FEB)   *snr = 27;
 +           else if(snr_value < 0x5BF38)   *snr = 28;
 +           else    *snr = 29;
++	   *maxsnr = 29;
 +    }
 +	
 +	
@@ -2756,8 +2785,7 @@ index 0000000..bd38907
 +	Dword dwError = 0;
 +	Byte str_dbm = 0;
 +
-+
-+	// Read StrengthDBM
++   // Read StrengthDBM
 +    dwError = Standard_readRegister ((Demodulator *)&PDC->Demodulator, PDC->Map.RF_SW_HOST, Processor_OFDM, est_rf_level_dbm, &str_dbm);
 +    if(dwError) {
 +	    deb_data("%s error, ret=0x%x\n", __FUNCTION__, dwError);
@@ -2811,6 +2839,7 @@ index 0000000..bd38907
 +
 +
 +
++/* unused
 +static int af903x_set_bandwidth(struct dvb_frontend *demod, u8 bw_idx)
 +{
 +	struct af903xm_state *state = demod->demodulator_priv;
@@ -2823,6 +2852,7 @@ index 0000000..bd38907
 +
 +	return 0;
 +}
++*/
 +
 +static void af903x_set_channel(struct af903x_ofdm_channel *ch)
 +{
@@ -2936,8 +2966,8 @@ index 0000000..bd38907
 +	case BANDWIDTH_6_MHZ: bw=6; break;
 +
 +	case 6: 
-+	case 7:
-+	case 8:
++	//case 7:
++	//case 8:
 +		bw = fep->u.ofdm.bandwidth;
 +		deb_data("- %s wrong bw value: %d -\n",__FUNCTION__, fep->u.ofdm.bandwidth);
 +		break;
@@ -2965,12 +2995,11 @@ index 0000000..bd38907
 +
 +static int af903x_read_status(struct dvb_frontend *fe, fe_status_t *stat)
 +{
-+	DWORD dwError;
++	//DWORD dwError;
 +	Bool bLock;
 +	struct af903xm_state *state = fe->demodulator_priv;
-+	u32	snr_data;
-+	u32 str_dbm_data;
-+	u32 snr;
++	//u32	snr_data;
++	//u32 str_dbm_data;
 +
 +	deb_data("- Enter %s Function -\n",__FUNCTION__);
 +	*stat = 0;
@@ -3021,8 +3050,8 @@ index 0000000..bd38907
 +static int af903x_read_ubc(struct dvb_frontend *fe, u32* ucblocks)
 +{
 +	struct af903xm_state *state = fe->demodulator_priv;
-+	DWORD dwError;
-+	Bool bLock;
++	//DWORD dwError;
++	//Bool bLock;
 +
 +	deb_data("- Enter %s Function -\n",__FUNCTION__);	
 +
@@ -3048,9 +3077,9 @@ index 0000000..bd38907
 +static int af903x_read_ber(struct dvb_frontend *fe, u32 *ber)
 +{
 +	struct af903xm_state *state = fe->demodulator_priv;
-+	DWORD dwError;
-+	u32 berbits;
-+	Bool bLock;
++	//DWORD dwError;
++	//u32 berbits;
++	//Bool bLock;
 +	deb_data("- Enter %s Function -\n",__FUNCTION__);	
 +
 +#if !USE_MONITOR_TH
@@ -3071,11 +3100,44 @@ index 0000000..bd38907
 +	return 0;
 +}
 +
++
++static int af903x_read_signal_strength(struct dvb_frontend *fe, u16 *strength)
++{
++	DWORD dwError;
++	Bool bLock;
++	Byte value;
++
++	deb_data("- Enter %s Function -\n",__FUNCTION__);	
++
++	dwError = Standard_readRegister ((Demodulator *)&PDC->Demodulator, PDC->Map.RF_SW_HOST, Processor_OFDM, signal_strength, &value);
++	//dwError = DL_GetSignalStrength(strength);
++	if( dwError ) {
++		deb_data("- Function %s error reading signal strength -\n",__FUNCTION__);	
++		*strength = 0;
++		return 1;
++	}
++
++	dwError = DL_GetLocked(&bLock);
++	if( dwError ) {
++		deb_data("- Function %s error reading signal quality : lost lock -\n",__FUNCTION__);	
++		*strength = 0;
++		return 1;
++	}
++	
++	deb_data("- Exit %s Function, signal strength (0-100)=%d -\n",__FUNCTION__, value);	
++
++	// 16 bit output
++	*strength = value * (0xffff / 100);
++
++	return 0;
++}
++
++/*
 +static int af903x_read_signal_strength(struct dvb_frontend *fe, u16 *strength)
 +{
 +	struct af903xm_state *state = fe->demodulator_priv;
-+	DWORD dwError;
-+	Bool bLock;
++	//DWORD dwError;
++	// Bool bLock;
 +	deb_data("- Enter %s Function -\n",__FUNCTION__);	
 +
 +#if !USE_MONITOR_TH
@@ -3094,34 +3156,62 @@ index 0000000..bd38907
 +	deb_data("- Exit %s Function, strength=%d -\n",__FUNCTION__, strength? *strength:-1);	
 +	return 0;
 +}
++*/
 +
 +static int af903x_read_snr(struct dvb_frontend* fe, u16 *snr)
 +{
-+#if !ENABLE_READ_REG
-+	*snr = 0x0000;
-+	return -ENOSYS;
-+#else
-+	Byte value = 0;
-+	Dword addr = 0;
++	Byte value_7_0 = 0;
++	Byte value_15_8 = 0;
++	Byte value_23_16 = 0;
++	//Dword addr = 0;
 +	Dword dwError = 0;
++	u32 snr_val=0;
++	u16 snr_max=0;
++	u16 snr_16bit = 0;
 +
-+	printk("Regiter Addr: 0x%x", *snr);
++	*snr = 0;
 +
-+	addr = *snr;
++	deb_data("- Enter %s Function -\n",__FUNCTION__);
 +
-+    dwError = Standard_readRegister ((Demodulator *)&PDC->Demodulator, PDC->Map.RF_SW_HOST, Processor_OFDM, addr, &value);
++	dwError = Standard_readRegister ((Demodulator *)&PDC->Demodulator, PDC->Map.RF_SW_HOST, Processor_OFDM, qnt_vbc_err_7_0, &value_7_0);
 +	if(dwError)	{
-+		printk("Read Register fail!! \n");
-+		*snr = 0xffff;
-+		return 0;
++		deb_data("- Function %s  qnt_vbc_err_7_0 register read fail ! -\n",__FUNCTION__);
++		return 1;
 +	}
 +
-+	*snr = value;
++	dwError = Standard_readRegister ((Demodulator *)&PDC->Demodulator, PDC->Map.RF_SW_HOST, Processor_OFDM, qnt_vbc_err_15_8, &value_15_8);
++	if(dwError)	{
++		deb_data("- Function %s  qnt_vbc_err_15_8 register read fail ! -\n",__FUNCTION__);
++		return 1;
++	}
++
++	dwError = Standard_readRegister ((Demodulator *)&PDC->Demodulator, PDC->Map.RF_SW_HOST, Processor_OFDM, qnt_vbc_err_23_16, &value_23_16);
++	if(dwError)	{
++		deb_data("- Function %s  qnt_vbc_err_23_16 register read fail ! -\n",__FUNCTION__);
++		return 1;
++	}
++
++	snr_val = (value_23_16 << 16) + (value_15_8 << 8) + value_7_0;
++	deb_data("- Function %s SNR row val 0x%x -\n",__FUNCTION__,snr_val);
++
++	dwError = test_map_snr(snr_val, snr, &snr_max);
++	if(dwError)	{
++		deb_data("- Function %s  map_snr fail ! -\n",__FUNCTION__);
++		*snr = 0;
++		return 1;
++	}
++	snr_16bit = (0xffff / snr_max) * *snr;
++	deb_data("- Exit %s SNR %d dB , %d 16bit -\n",__FUNCTION__,*snr,snr_16bit);
++
++	if (dvb_usb_af903x_snrdb == 0)
++		*snr = snr_16bit;
 +
 +	return 0;
-+#endif
++
 +}
-+//
++
++
++
 +static void af903x_release(struct dvb_frontend *demod)
 +{
 +	struct af903xm_state *st = demod->demodulator_priv;
@@ -3159,6 +3249,7 @@ index 0000000..bd38907
 +	.read_ber             = af903x_read_ber,
 +	.read_signal_strength = af903x_read_signal_strength,
 +	.read_snr             = af903x_read_snr,
++//	.read_snr             = af903x_read_signal_quality,
 +	.read_ucblocks	      = af903x_read_ubc,
 +};
 +
@@ -3294,7 +3385,7 @@ index 0000000..bd38907
 +#endif
 +	while(!state->thread_should_stop && !signal_pending(current)) {
 +	
-+		DWORD dwError;
++		//DWORD dwError;
 +		u32 ber, berbits, ucblocks;
 +		u16 strength;
 +
@@ -3388,7 +3479,7 @@ index 0000000..bd38907
 +
 diff --git a/drivers/media/dvb/dvb-usb/a867_af903x-ioctl.h b/drivers/media/dvb/dvb-usb/a867_af903x-ioctl.h
 new file mode 100644
-index 0000000..4fba322
+index 0000000..14b6df9
 --- /dev/null
 +++ b/drivers/media/dvb/dvb-usb/a867_af903x-ioctl.h
 @@ -0,0 +1,29 @@
@@ -3423,7 +3514,7 @@ index 0000000..4fba322
 +#endif /* _AF903X-IOCTL_H_ */
 diff --git a/drivers/media/dvb/dvb-usb/a867_af903x-tuner.c b/drivers/media/dvb/dvb-usb/a867_af903x-tuner.c
 new file mode 100644
-index 0000000..f6573f5
+index 0000000..62520c9
 --- /dev/null
 +++ b/drivers/media/dvb/dvb-usb/a867_af903x-tuner.c
 @@ -0,0 +1,92 @@
@@ -3521,10 +3612,10 @@ index 0000000..f6573f5
 +
 diff --git a/drivers/media/dvb/dvb-usb/a867_af903x.h b/drivers/media/dvb/dvb-usb/a867_af903x.h
 new file mode 100644
-index 0000000..3ba5b5a
+index 0000000..150403a
 --- /dev/null
 +++ b/drivers/media/dvb/dvb-usb/a867_af903x.h
-@@ -0,0 +1,290 @@
+@@ -0,0 +1,301 @@
 + 
 +#ifndef _AF903X_H_
 +#define _AF903X_H_
@@ -3544,11 +3635,11 @@ index 0000000..3ba5b5a
 +#endif
 +#include <linux/usb.h>
 +#include <asm/uaccess.h>
-+#include <dvb-usb.h>
++#include "dvb-usb.h"
 +#include "a867_af903x-ioctl.h"
 +#include "a867_demodulator.h"
 +#include "a867_userdef.h"
-+#include "a867_firmware.h"
++//#include "a867_firmware.h"
 +#include "a867_type.h"
 +#include "a867_Common.h"
 +#include "a867_debug.h"
@@ -3557,7 +3648,9 @@ index 0000000..3ba5b5a
 +#define ENABLE_HW_PID 0
 +
 +
-+#define ENABLE_READ_REG 0
++//enable snr reading register , default = 0
++#define ENABLE_READ_REG 1
++
 +
 +#define SUPPORT_AF903X_EVB	0
 +
@@ -3601,6 +3694,8 @@ index 0000000..3ba5b5a
 +
 +
 +extern int dvb_usb_af903x_debug;
++extern int dvb_usb_af903x_snrdb;
++/*
 +#if CONFIG_DVB_USB_DEBUG
 +#define avprintk(dbg, lvl, fmt, args...) \
 +		do { \
@@ -3614,8 +3709,14 @@ index 0000000..3ba5b5a
 +#define deb_fw(fmt, args...)     avprintk(dvb_usb_af903x_debug,0x02,fmt, ## args)
 +#define deb_fwdata(fmt, args...) avprintk(dvb_usb_af903x_debug,0x04,fmt, ## args)
 +#define deb_data(fmt, args...)   avprintk(dvb_usb_af903x_debug,0x08,fmt, ## args)
++*/
 +//#define deb_data(args...)   printk(KERN_NOTICE args)
 +
++#define deb_force(args...) printk(KERN_DEBUG args);
++#define deb_info(args...) if (dvb_usb_af903x_debug & 1) printk(KERN_DEBUG args);
++#define deb_fw(args...) if (dvb_usb_af903x_debug & 2) printk(KERN_DEBUG args);
++#define deb_fwdata(args...)   if (dvb_usb_af903x_debug & 4) printk(KERN_DEBUG args);
++#define deb_data(args...)   if (dvb_usb_af903x_debug & 8) printk(KERN_DEBUG args);
 +
 +typedef struct _GPIO_MAPPINGS {
 +	unsigned short  I2C_SLAVE_ADDR;
@@ -3804,6 +3905,7 @@ index 0000000..3ba5b5a
 +extern DWORD DL_ReSetInterval(void);
 +extern DWORD DL_GetChannelStat(u32 *ber, u32 *berbits, u32 *ubc);
 +extern DWORD DL_GetSignalStrength(u16 *strength);
++extern DWORD DL_GetSignalQuality(u16 *strength);
 +extern DWORD DL_GetLocked(Bool *bLock);
 +extern DWORD DL_MonitorReception(Bool *bLock);
 +extern DWORD DL_IsPsbOverflow(void *handle, Byte ucSlaveDemod, Bool *bPsvOverflow);
@@ -3817,14 +3919,14 @@ index 0000000..3ba5b5a
 +
 diff --git a/drivers/media/dvb/dvb-usb/a867_aver_version.h b/drivers/media/dvb/dvb-usb/a867_aver_version.h
 new file mode 100644
-index 0000000..d3a7254
+index 0000000..c321316
 --- /dev/null
 +++ b/drivers/media/dvb/dvb-usb/a867_aver_version.h
 @@ -0,0 +1 @@
 +#define DRIVER_VER "1.0.27"
 diff --git a/drivers/media/dvb/dvb-usb/a867_cmd.c b/drivers/media/dvb/dvb-usb/a867_cmd.c
 new file mode 100644
-index 0000000..473f886
+index 0000000..3f6007e
 --- /dev/null
 +++ b/drivers/media/dvb/dvb-usb/a867_cmd.c
 @@ -0,0 +1,1005 @@
@@ -4835,7 +4937,7 @@ index 0000000..473f886
 +};
 diff --git a/drivers/media/dvb/dvb-usb/a867_cmd.h b/drivers/media/dvb/dvb-usb/a867_cmd.h
 new file mode 100644
-index 0000000..a24eabb
+index 0000000..d7cb1f6
 --- /dev/null
 +++ b/drivers/media/dvb/dvb-usb/a867_cmd.h
 @@ -0,0 +1,246 @@
@@ -5087,7 +5189,7 @@ index 0000000..a24eabb
 +
 diff --git a/drivers/media/dvb/dvb-usb/a867_compat.h b/drivers/media/dvb/dvb-usb/a867_compat.h
 new file mode 100644
-index 0000000..92367eb
+index 0000000..d043287
 --- /dev/null
 +++ b/drivers/media/dvb/dvb-usb/a867_compat.h
 @@ -0,0 +1,503 @@
@@ -5596,7 +5698,7 @@ index 0000000..92367eb
 + */
 diff --git a/drivers/media/dvb/dvb-usb/a867_debug.h b/drivers/media/dvb/dvb-usb/a867_debug.h
 new file mode 100644
-index 0000000..70d98f4
+index 0000000..bda23fe
 --- /dev/null
 +++ b/drivers/media/dvb/dvb-usb/a867_debug.h
 @@ -0,0 +1,4 @@
@@ -5606,7 +5708,7 @@ index 0000000..70d98f4
 +
 diff --git a/drivers/media/dvb/dvb-usb/a867_demodulator.c b/drivers/media/dvb/dvb-usb/a867_demodulator.c
 new file mode 100644
-index 0000000..28187b6
+index 0000000..9192004
 --- /dev/null
 +++ b/drivers/media/dvb/dvb-usb/a867_demodulator.c
 @@ -0,0 +1,540 @@
@@ -6152,7 +6254,7 @@ index 0000000..28187b6
 +}
 diff --git a/drivers/media/dvb/dvb-usb/a867_demodulator.h b/drivers/media/dvb/dvb-usb/a867_demodulator.h
 new file mode 100644
-index 0000000..bed4f68
+index 0000000..323cb2b
 --- /dev/null
 +++ b/drivers/media/dvb/dvb-usb/a867_demodulator.h
 @@ -0,0 +1,1495 @@
@@ -7653,7 +7755,7 @@ index 0000000..bed4f68
 +#endif
 diff --git a/drivers/media/dvb/dvb-usb/a867_demodulatorextend.c b/drivers/media/dvb/dvb-usb/a867_demodulatorextend.c
 new file mode 100644
-index 0000000..5326145
+index 0000000..594a303
 --- /dev/null
 +++ b/drivers/media/dvb/dvb-usb/a867_demodulatorextend.c
 @@ -0,0 +1,607 @@
@@ -8266,7 +8368,7 @@ index 0000000..5326145
 +}
 diff --git a/drivers/media/dvb/dvb-usb/a867_demodulatorextend.h b/drivers/media/dvb/dvb-usb/a867_demodulatorextend.h
 new file mode 100644
-index 0000000..6bb179f
+index 0000000..20d508f
 --- /dev/null
 +++ b/drivers/media/dvb/dvb-usb/a867_demodulatorextend.h
 @@ -0,0 +1,1326 @@
@@ -9598,7 +9700,7 @@ index 0000000..6bb179f
 +#endif
 diff --git a/drivers/media/dvb/dvb-usb/a867_error.h b/drivers/media/dvb/dvb-usb/a867_error.h
 new file mode 100644
-index 0000000..81311bd
+index 0000000..234c03a
 --- /dev/null
 +++ b/drivers/media/dvb/dvb-usb/a867_error.h
 @@ -0,0 +1,141 @@
@@ -9745,10 +9847,10 @@ index 0000000..81311bd
 +
 diff --git a/drivers/media/dvb/dvb-usb/a867_firmware.h b/drivers/media/dvb/dvb-usb/a867_firmware.h
 new file mode 100644
-index 0000000..d108d63
+index 0000000..1562dfa
 --- /dev/null
 +++ b/drivers/media/dvb/dvb-usb/a867_firmware.h
-@@ -0,0 +1,10866 @@
+@@ -0,0 +1,10867 @@
 +// This file is automatically generated. Do not edit.
 +
 +#ifndef __FIRMWARE_H__
@@ -9756,6 +9858,7 @@ index 0000000..d108d63
 +#define __FIRMWARE_H__
 +
 +
++/* moved to a867_ofdm.h
 +
 +#define DVB_LL_VERSION1 10
 +
@@ -9774,7 +9877,7 @@ index 0000000..d108d63
 +#define DVB_OFDM_VERSION3 6
 +
 +#define DVB_OFDM_VERSION4 251
-+
++*/
 +
 +
 +#include "a867_type.h"
@@ -20617,7 +20720,7 @@ index 0000000..d108d63
 +
 diff --git a/drivers/media/dvb/dvb-usb/a867_inttype.h b/drivers/media/dvb/dvb-usb/a867_inttype.h
 new file mode 100644
-index 0000000..bb7d27e
+index 0000000..303ae70
 --- /dev/null
 +++ b/drivers/media/dvb/dvb-usb/a867_inttype.h
 @@ -0,0 +1,41 @@
@@ -20664,7 +20767,7 @@ index 0000000..bb7d27e
 +
 diff --git a/drivers/media/dvb/dvb-usb/a867_iocontrol.h b/drivers/media/dvb/dvb-usb/a867_iocontrol.h
 new file mode 100644
-index 0000000..b775a9a
+index 0000000..a38a1e5
 --- /dev/null
 +++ b/drivers/media/dvb/dvb-usb/a867_iocontrol.h
 @@ -0,0 +1,738 @@
@@ -21408,10 +21511,10 @@ index 0000000..b775a9a
 +#endif
 diff --git a/drivers/media/dvb/dvb-usb/a867_mxl5007t.c b/drivers/media/dvb/dvb-usb/a867_mxl5007t.c
 new file mode 100644
-index 0000000..8fb9621
+index 0000000..29b397a
 --- /dev/null
 +++ b/drivers/media/dvb/dvb-usb/a867_mxl5007t.c
-@@ -0,0 +1,683 @@
+@@ -0,0 +1,698 @@
 +/*
 + *  mxl5007t.c - driver for the MaxLinear MxL5007T silicon tuner
 + *
@@ -21855,6 +21958,7 @@ index 0000000..8fb9621
 +	return ret;
 +}
 +
++/* unused
 +static int mxl5007t_read_reg(struct mxl5007t_state *state, u8 reg, u8 *val)
 +{
 +	int ret = MxL_I2C_Read(state->config->I2C_Addr, reg, val, state->config);
@@ -21865,6 +21969,8 @@ index 0000000..8fb9621
 +	}
 +	return ret;
 +}
++
++*/
 +
 +static int mxl5007t_soft_reset(struct mxl5007t_state *state)
 +{
@@ -21918,6 +22024,7 @@ index 0000000..8fb9621
 +
 +/* ------------------------------------------------------------------------- */
 +
++/* unused
 +static int mxl5007t_synth_lock_status(struct mxl5007t_state *state,
 +				      int *rf_locked, int *ref_locked)
 +{
@@ -21939,7 +22046,7 @@ index 0000000..8fb9621
 +fail:
 +	return ret;
 +}
-+
++*/
 +
 +/* ------------------------------------------------------------------------- */
 +
@@ -21967,22 +22074,26 @@ index 0000000..8fb9621
 +
 +/* ------------------------------------------------------------------------- */
 +
++/* unused
 +static int mxl5007t_init(struct mxl5007t_state *state)
 +{
 +	int ret;
 +
-+	/* wake from standby */
++	// wake from standby 
 +	ret = mxl5007t_write_reg(state, 0x01, 0x01);
 +	mxl_fail(ret);
 +
 +	return ret;
 +}
 +
++*/
++
++/* unused
 +static int mxl5007t_sleep(struct mxl5007t_state *state)
 +{
 +	int ret;
 +
-+	/* enter standby mode */
++	// enter standby mode 
 +	ret = mxl5007t_write_reg(state, 0x01, 0x00);
 +	mxl_fail(ret);
 +	ret = mxl5007t_write_reg(state, 0x0f, 0x00);
@@ -21990,20 +22101,26 @@ index 0000000..8fb9621
 +
 +	return ret;
 +}
++*/
 +
 +/* ------------------------------------------------------------------------- */
 +
++/* unused
 +static int mxl5007t_get_frequency(struct mxl5007t_state *state, u32 *frequency)
 +{
 +	*frequency = state->frequency;
 +	return 0;
 +}
 +
++*/
++
++/* unused
 +static int mxl5007t_get_bandwidth(struct mxl5007t_state *state, u32 *bandwidth)
 +{
 +	*bandwidth = state->bandwidth;
 +	return 0;
 +}
++*/
 +
 +void a867_mxl5007t_release(struct mxl5007t_state *state)
 +{
@@ -22016,6 +22133,7 @@ index 0000000..8fb9621
 +	}
 +}
 +
++/* unused
 +static int mxl5007t_get_chip_id(struct mxl5007t_state *state)
 +{
 +	char *name;
@@ -22060,7 +22178,7 @@ index 0000000..8fb9621
 +	state->chip_id = MxL_UNKNOWN_ID;
 +	return ret;
 +}
-+
++*/
 +
 +void a867_mxl5007t_attach(struct mxl5007t_config *cfg)
 +{
@@ -22097,7 +22215,7 @@ index 0000000..8fb9621
 + */
 diff --git a/drivers/media/dvb/dvb-usb/a867_mxl5007t.h b/drivers/media/dvb/dvb-usb/a867_mxl5007t.h
 new file mode 100644
-index 0000000..ab14f6f
+index 0000000..fae1059
 --- /dev/null
 +++ b/drivers/media/dvb/dvb-usb/a867_mxl5007t.h
 @@ -0,0 +1,135 @@
@@ -22236,9 +22354,33 @@ index 0000000..ab14f6f
 + * End:
 + */
 +
+diff --git a/drivers/media/dvb/dvb-usb/a867_ofdm.h b/drivers/media/dvb/dvb-usb/a867_ofdm.h
+new file mode 100644
+index 0000000..30df3f2
+--- /dev/null
++++ b/drivers/media/dvb/dvb-usb/a867_ofdm.h
+@@ -0,0 +1,18 @@
++
++#define DVB_LL_VERSION1 10
++
++#define DVB_LL_VERSION2 10
++
++#define DVB_LL_VERSION3 3
++
++#define DVB_LL_VERSION4 0
++
++
++#define DVB_OFDM_VERSION1 4
++
++#define DVB_OFDM_VERSION2 21
++
++#define DVB_OFDM_VERSION3 6
++
++#define DVB_OFDM_VERSION4 251
++
 diff --git a/drivers/media/dvb/dvb-usb/a867_register.h b/drivers/media/dvb/dvb-usb/a867_register.h
 new file mode 100644
-index 0000000..a75130d
+index 0000000..76e4795
 --- /dev/null
 +++ b/drivers/media/dvb/dvb-usb/a867_register.h
 @@ -0,0 +1,13519 @@
@@ -35763,10 +35905,10 @@ index 0000000..a75130d
 +#define reg_p_dmb_sw_reset_lsb 0
 diff --git a/drivers/media/dvb/dvb-usb/a867_standard.c b/drivers/media/dvb/dvb-usb/a867_standard.c
 new file mode 100644
-index 0000000..5c08be5
+index 0000000..8b4f4b3
 --- /dev/null
 +++ b/drivers/media/dvb/dvb-usb/a867_standard.c
-@@ -0,0 +1,4663 @@
+@@ -0,0 +1,4668 @@
 +#include "a867_standard.h"
 +//#include <math.h>
 +#include "a867_cmd.h"
@@ -36741,7 +36883,7 @@ index 0000000..5c08be5
 +) {
 +    Dword error = Error_NO_ERROR;
 +    short volt;
-+    Dword dwUpVoltX100 = 330;
++    //Dword dwUpVoltX100 = 330;
 +
 +    deb_info("Enter %s -\n", __FUNCTION__);
 +    input = input & 0x03FF;
@@ -36863,7 +37005,7 @@ index 0000000..5c08be5
 +    IN  Demodulator*    demodulator
 +) {
 +    Dword error = Error_NO_ERROR;
-+    Byte temp = 0;
++    //Byte temp = 0;
 +
 +    deb_info("Enter %s -\n", __FUNCTION__);
 +    error = Standard_writeRegisterBits (demodulator, 0, Processor_OFDM, p_reg_aagc_top_th_dis, reg_aagc_top_th_dis_pos, reg_aagc_top_th_dis_len, 0x00);
@@ -37777,7 +37919,7 @@ index 0000000..5c08be5
 +    Dword error = Error_NO_ERROR;
 +    Word beginScript;
 +    Word endScript;
-+    Byte adcType = 0;
++    //Byte adcType = 0;
 +    Byte i;
 +    Word j;
 +	Byte value;
@@ -39014,7 +39156,7 @@ index 0000000..5c08be5
 +        error = Error_DRIVER_INVALID;
 +    }
 +#else
-+    Dword warning = Error_NO_ERROR;
++    //Dword warning = Error_NO_ERROR;
 +    Ganymede* ganymede;
 +    Byte i;
 +
@@ -39044,6 +39186,11 @@ index 0000000..5c08be5
 +
 +    /** Enter sub mode */
 +    switch (streamType) {
++
++	case StreamType_NONE : 
++		goto exit;
++		break;
++
 +        case StreamType_DVBT_DATAGRAM :
 +            if ((ganymede->busId == Bus_USB) || (ganymede->busId == Bus_USB11)) {
 +                error = Standard_writeRegisterBits (demodulator, 0, Processor_OFDM, p_mp2if_mpeg_ser_mode, mp2if_mpeg_ser_mode_pos, mp2if_mpeg_ser_mode_len, 0);
@@ -39870,7 +40017,7 @@ index 0000000..5c08be5
 +    Ganymede* ganymede;
 +    Dword length = 0;
 +    Byte value;
-+    Bool ready = False;
++    // Bool ready = False;
 +
 +    deb_info("Enter %s -\n", __FUNCTION__);
 +    ganymede = (Ganymede*) demodulator;
@@ -40432,7 +40579,7 @@ index 0000000..5c08be5
 +}
 diff --git a/drivers/media/dvb/dvb-usb/a867_standard.h b/drivers/media/dvb/dvb-usb/a867_standard.h
 new file mode 100644
-index 0000000..21afcfd
+index 0000000..6001dbf
 --- /dev/null
 +++ b/drivers/media/dvb/dvb-usb/a867_standard.h
 @@ -0,0 +1,1142 @@
@@ -41580,7 +41727,7 @@ index 0000000..21afcfd
 +
 diff --git a/drivers/media/dvb/dvb-usb/a867_type.h b/drivers/media/dvb/dvb-usb/a867_type.h
 new file mode 100644
-index 0000000..06b1eef
+index 0000000..d57d36e
 --- /dev/null
 +++ b/drivers/media/dvb/dvb-usb/a867_type.h
 @@ -0,0 +1,968 @@
@@ -42554,7 +42701,7 @@ index 0000000..06b1eef
 +#endif
 diff --git a/drivers/media/dvb/dvb-usb/a867_usb-urb.c b/drivers/media/dvb/dvb-usb/a867_usb-urb.c
 new file mode 100644
-index 0000000..6218da6
+index 0000000..5caec20
 --- /dev/null
 +++ b/drivers/media/dvb/dvb-usb/a867_usb-urb.c
 @@ -0,0 +1,247 @@
@@ -42807,7 +42954,7 @@ index 0000000..6218da6
 +}
 diff --git a/drivers/media/dvb/dvb-usb/a867_usb2impl.c b/drivers/media/dvb/dvb-usb/a867_usb2impl.c
 new file mode 100644
-index 0000000..7eda102
+index 0000000..23b0629
 --- /dev/null
 +++ b/drivers/media/dvb/dvb-usb/a867_usb2impl.c
 @@ -0,0 +1,171 @@
@@ -42984,7 +43131,7 @@ index 0000000..7eda102
 +#endif
 diff --git a/drivers/media/dvb/dvb-usb/a867_usb2impl.h b/drivers/media/dvb/dvb-usb/a867_usb2impl.h
 new file mode 100644
-index 0000000..6a3e135
+index 0000000..34b8fe1
 --- /dev/null
 +++ b/drivers/media/dvb/dvb-usb/a867_usb2impl.h
 @@ -0,0 +1,38 @@
@@ -43028,7 +43175,7 @@ index 0000000..6a3e135
 +
 diff --git a/drivers/media/dvb/dvb-usb/a867_user.c b/drivers/media/dvb/dvb-usb/a867_user.c
 new file mode 100644
-index 0000000..ec33c06
+index 0000000..7e75f05
 --- /dev/null
 +++ b/drivers/media/dvb/dvb-usb/a867_user.c
 @@ -0,0 +1,236 @@
@@ -43270,7 +43417,7 @@ index 0000000..ec33c06
 +}
 diff --git a/drivers/media/dvb/dvb-usb/a867_user.h b/drivers/media/dvb/dvb-usb/a867_user.h
 new file mode 100644
-index 0000000..19e2d85
+index 0000000..464f521
 --- /dev/null
 +++ b/drivers/media/dvb/dvb-usb/a867_user.h
 @@ -0,0 +1,155 @@
@@ -43431,7 +43578,7 @@ index 0000000..19e2d85
 +#endif
 diff --git a/drivers/media/dvb/dvb-usb/a867_userdef.h b/drivers/media/dvb/dvb-usb/a867_userdef.h
 new file mode 100644
-index 0000000..dfea67d
+index 0000000..c4be11d
 --- /dev/null
 +++ b/drivers/media/dvb/dvb-usb/a867_userdef.h
 @@ -0,0 +1,25 @@
@@ -43462,7 +43609,7 @@ index 0000000..dfea67d
 +#endif // _USERDEF_H_
 diff --git a/drivers/media/dvb/dvb-usb/a867_variable.h b/drivers/media/dvb/dvb-usb/a867_variable.h
 new file mode 100644
-index 0000000..a353af0
+index 0000000..53d6fbc
 --- /dev/null
 +++ b/drivers/media/dvb/dvb-usb/a867_variable.h
 @@ -0,0 +1,260 @@
@@ -43545,9 +43692,9 @@ index 0000000..a353af0
 +//----------------------------------------------
 +//statistic performance..
 +
-+#define qnt_vbc_err_7_0                     0x002c
-+#define qnt_vbc_err_15_8                    0x002d
-+#define qnt_vbc_err_23_16                   0x002e
++#define qnt_vbc_err_7_0                     0x002c  //snr
++#define qnt_vbc_err_15_8                    0x002d  //snr
++#define qnt_vbc_err_23_16                   0x002e  //snr
 +#define r_qnt_vbc_sframe_num                0x002f
 +#define tpsd_const                          0x0030
 +#define tpsd_txmod                          0x0031
@@ -43728,28 +43875,10 @@ index 0000000..a353af0
 +#endif
 diff --git a/drivers/media/dvb/dvb-usb/a867_version.h b/drivers/media/dvb/dvb-usb/a867_version.h
 new file mode 100644
-index 0000000..b28428a
+index 0000000..c3d3ddd
 --- /dev/null
 +++ b/drivers/media/dvb/dvb-usb/a867_version.h
 @@ -0,0 +1,3 @@
 +#define Version_NUMBER		0x0200
 +#define Version_DATE		0x20080314
 +#define Version_BUILD		0x01
--- 
-1.7.0.4
-diff --git a/drivers/media/dvb/dvb-usb/a867_af903x.h b/drivers/media/dvb/dvb-usb/a867_af903x.h
-index 3ba5b5a..c90cf30 100644
---- a/drivers/media/dvb/dvb-usb/a867_af903x.h
-+++ b/drivers/media/dvb/dvb-usb/a867_af903x.h
-@@ -17,7 +17,7 @@
- #endif
- #include <linux/usb.h>
- #include <asm/uaccess.h>
--#include <dvb-usb.h>
-+#include "dvb-usb.h"
- #include "a867_af903x-ioctl.h"
- #include "a867_demodulator.h"
- #include "a867_userdef.h"
--- 
-1.7.0.4
-
