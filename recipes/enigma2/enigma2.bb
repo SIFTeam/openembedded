@@ -155,17 +155,13 @@ FILES_${PN}-src = "\
 	/usr/lib/enigma2/python/*/*/*.py \
 	/usr/lib/enigma2/python/*/*/*/*.py \
 	"
-RADIOMVI = "${@base_contains("MACHINE_FEATURES", "hdtv", "radio-hd.mvi" , "radio.mvi", d)}"
-
-SRC_URI += " \
-	file://${RADIOMVI} \
-	"
+RADIOMVI = "${@base_contains("MACHINE_FEATURES", "hdtv", "radio-hd.mvi" , "radio-sd.mvi", d)}"
 
 RCONFLICTS_${PN} = "dreambox-keymaps"
 RREPLACES_${PN} = "dreambox-keymaps"
 
 do_openpli_preinstall() {
-	install -m 0644 ${WORKDIR}/${RADIOMVI} ${S}/data/radio.mvi
+	ln -f ${S}/data/${RADIOMVI} ${S}/data/radio.mvi
 	install -d ${D}${sysconfdir}/enigma2
 }
 
