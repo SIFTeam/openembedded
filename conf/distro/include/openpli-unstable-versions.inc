@@ -18,6 +18,7 @@ SRCREV_pn-gst-plugin-dvbmediasink ?= "15a323fd769d4546bc454bfd81848aa43d655f3d"
 SRCREV_pn-libtuxtxt ?= "${AUTOREV}"
 SRCREV_pn-tuxtxt-enigma2 ?= "${AUTOREV}"
 SRCREV_pn-libdvbsi++ ?= "bf0c2bb7b326b93713629dbf74f63a0a54ffe59d"
+SRCREV_pn-gst-plugin-subsink ?= "${AUTOREV}"
 
 # svn
 SRCREV_pn-tuxbox-common ?= "${AUTOREV}"
