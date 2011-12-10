@@ -68,7 +68,7 @@ SRCDATE_enigma2-plugin-settings-henksat-rotating ?= "${HENKSAT_SRCDATE}"
 SRCDATE_enigma2-plugin-settings-henksat-7e-13e-19e-23e-28e-42e ?= "${HENKSAT_SRCDATE}"
 SRCDATE_enigma2-plugin-settings-henksat-13e-19e-23e-28e-4.8e-0.8w ?= "${HENKSAT_SRCDATE}"
 
-HANS_SRCDATE ?= "20111115"
+HANS_SRCDATE ?= "20111210"
 SRCDATE_enigma2-plugin-settings-hans-19e-23e ?= "${HANS_SRCDATE}"
 SRCDATE_enigma2-plugin-settings-hans-13e-19e-23e-28e ?= "${HANS_SRCDATE}"
 SRCDATE_enigma2-plugin-settings-hans-13e-19e-23e-28e-rotating ?= "${HANS_SRCDATE}"
