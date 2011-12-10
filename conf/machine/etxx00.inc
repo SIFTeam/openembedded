@@ -26,9 +26,9 @@ module_autoload_w35und = "w35und"
 module_autoload_zd1211rw = "zd1211rw"
 
 # DVB modules
-module_autoload_dvb-a867 = "dvb-a867"
 module_autoload_em28xx-dvb = "em28xx-dvb"
 module_autoload_dvb-usb-a800 = "dvb-usb-a800"
+module_autoload_dvb-usb-a867 = "dvb-usb-a867"
 module_autoload_dvb-usb-af9005 = "dvb-usb-af9005"
 module_autoload_dvb-usb-af9015 = "dvb-usb-af9015"
 module_autoload_dvb-usb-af9035 = "dvb-usb-af9035"
