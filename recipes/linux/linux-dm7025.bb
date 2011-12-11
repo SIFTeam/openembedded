@@ -5,8 +5,7 @@ PN = "linux-dm7025"
 KV = "2.6.12"
 PV = "2.6.12.6"
 
-#Don't use PR here, use MACHINE_KERNEL_PR in machine.conf instead
-#PR = "r0"
+MACHINE_KERNEL_PR_append = ".1"
 
 DEPENDS = "zlib-native zlib"
 

@@ -12,7 +12,7 @@ def get_modules_extension(bb, d):
 KV = "2.6.18-7.3"
 PV = "${KV}"
 
-SRCDATE = "20111114"
+SRCDATE = "20111122"
 
 RDEPENDS = "kernel (${KV}) kernel-module-firmware-class kernel-module-input kernel-module-evdev kernel-module-i2c-core kernel-module-snd kernel-module-snd-pcm"
 MACHINE_KERNEL_PR_append = ".${SRCDATE}.1"

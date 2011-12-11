@@ -16,6 +16,7 @@ RDEPENDS_${PN} = "python-codecs python-core python-lang python-re python-threadi
 	gst-plugin-flac gst-plugin-mpegdemux gst-plugin-flv gst-plugin-dvdsub \
 	gst-plugin-souphttpsrc gst-plugin-mpegaudioparse gst-plugin-subparse \
 	gst-plugin-apetag gst-plugin-icydemux gst-plugin-autodetect gst-plugin-audioparsers \
+	gst-plugin-subsink \
 	python-twisted-core python-elementtree python-compression \
 	python-numbers python-terminal python-textutils \
 	python-utf8-hack \
@@ -91,7 +92,7 @@ inherit gitpkgv
 
 PV = "2.7+git${SRCPV}"
 PKGV = "2.7+git${GITPKGV}"
-PR = "r30"
+PR = "r31"
 
 SRC_URI = "git://github.com/SIFTeam/enigma2.git;protocol=git"
 #SRC_URI = "git://${HOME}/sifteam/enigma2;protocol=file"
@@ -158,17 +159,13 @@ FILES_${PN}-src = "\
 	/usr/lib/enigma2/python/*/*/*.py \
 	/usr/lib/enigma2/python/*/*/*/*.py \
 	"
-RADIOMVI = "${@base_contains("MACHINE_FEATURES", "hdtv", "radio-hd.mvi" , "radio.mvi", d)}"
-
-SRC_URI += " \
-	file://${RADIOMVI} \
-	"
+RADIOMVI = "${@base_contains("MACHINE_FEATURES", "hdtv", "radio-hd.mvi" , "radio-sd.mvi", d)}"
 
 RCONFLICTS_${PN} = "dreambox-keymaps"
 RREPLACES_${PN} = "dreambox-keymaps"
 
 do_sifteam_preinstall() {
-	install -m 0644 ${WORKDIR}/${RADIOMVI} ${S}/data/radio.mvi
+	ln -f ${S}/data/${RADIOMVI} ${S}/data/radio.mvi
 	install -d ${D}${sysconfdir}/enigma2
 }
 

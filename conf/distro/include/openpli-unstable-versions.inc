@@ -18,6 +18,7 @@ SRCREV_pn-gst-plugin-dvbmediasink ?= "15a323fd769d4546bc454bfd81848aa43d655f3d"
 SRCREV_pn-libtuxtxt ?= "${AUTOREV}"
 SRCREV_pn-tuxtxt-enigma2 ?= "${AUTOREV}"
 SRCREV_pn-libdvbsi++ ?= "bf0c2bb7b326b93713629dbf74f63a0a54ffe59d"
+SRCREV_pn-gst-plugin-subsink ?= "${AUTOREV}"
 
 # svn
 SRCREV_pn-tuxbox-common ?= "${AUTOREV}"
@@ -67,7 +68,7 @@ SRCDATE_enigma2-plugin-settings-henksat-rotating ?= "${HENKSAT_SRCDATE}"
 SRCDATE_enigma2-plugin-settings-henksat-7e-13e-19e-23e-28e-42e ?= "${HENKSAT_SRCDATE}"
 SRCDATE_enigma2-plugin-settings-henksat-13e-19e-23e-28e-4.8e-0.8w ?= "${HENKSAT_SRCDATE}"
 
-HANS_SRCDATE ?= "20111115"
+HANS_SRCDATE ?= "20111210"
 SRCDATE_enigma2-plugin-settings-hans-19e-23e ?= "${HANS_SRCDATE}"
 SRCDATE_enigma2-plugin-settings-hans-13e-19e-23e-28e ?= "${HANS_SRCDATE}"
 SRCDATE_enigma2-plugin-settings-hans-13e-19e-23e-28e-rotating ?= "${HANS_SRCDATE}"
