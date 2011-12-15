@@ -19,7 +19,7 @@ RDEPENDS_${PN} = "python-codecs python-core python-lang python-re python-threadi
 	gst-plugin-subsink \
 	python-twisted-core python-elementtree python-compression \
 	python-numbers python-terminal python-textutils \
-	python-utf8-hack \
+	python-utf8-hack python-shell \
 	enigma2-fonts \
 	glibc-gconv-iso8859-15 ethtool libemu"
 
