@@ -1,7 +1,7 @@
 DESCRIPTION = "CCcam ${PV} softcam"
 
 PN = "enigma2-plugin-softcams-cccam"
-PV = "2.2.1"
+PV = "2.3.0"
 PR = "r0"
 
 SRC_URI = "http://downloads.pli-images.org/softcams/CCcam-${PV}.zip \
@@ -9,7 +9,7 @@ SRC_URI = "http://downloads.pli-images.org/softcams/CCcam-${PV}.zip \
 
 CAMNAME = "CCcam"
 
-S = "${WORKDIR}"
+S = "${WORKDIR}/CCcam-${PV}"
 
 require softcam.inc
 
@@ -24,5 +24,5 @@ do_install() {
 	install -d ${D}/etc
 	install -m 0644 ${S}/CCcam.cfg ${D}/etc/CCcam.cfg
 	install -d ${D}/etc/ppanels
-	install -m 0644 ${S}/CCcam.xml ${D}/etc/ppanels/CCcam.xml
+	install -m 0644 ${WORKDIR}/CCcam.xml ${D}/etc/ppanels/CCcam.xml
 }
