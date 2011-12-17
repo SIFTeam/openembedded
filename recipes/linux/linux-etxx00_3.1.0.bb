@@ -1,7 +1,7 @@
 DESCRIPTION = "Linux kernel for ${MACHINE}"
 LICENSE = "GPL"
 
-MACHINE_KERNEL_PR_append = ".11"
+MACHINE_KERNEL_PR_append = ".12"
 
 DEPENDS = "mtd-minimal-nand-utils"
 RDEPENDS_kernel-image = "mtd-minimal-nand-utils"
@@ -20,6 +20,7 @@ SRC_URI += "http://www.et-view.com/download/linux-${PV}.tar.gz \
 	file://dvb-usb-rtl2832.patch \
 	file://cxd2820r-output-full-range-SNR.patch \
 	file://xc3028-fix-center-frequency.patch \
+	file://cinergy_s2_usb_r2.patch \
 	"
 
 SRC_URI_append_et5x00 = " file://disable_early_fb.patch"
