@@ -18,10 +18,9 @@ IMAGE_INSTALL = " \
 IMAGE_INSTALL += " \
 	mdev-static-devices \
 	enigma2 \
-        enigma2-streamproxy \
-        tuxbox-common \
-        libavahi-client \
-        settings-autorestore \
+	tuxbox-common \
+	libavahi-client \
+	settings-autorestore \
 	enigma2-plugin-softcams-cccam \
 	"
 

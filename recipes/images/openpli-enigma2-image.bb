@@ -85,7 +85,6 @@ ENIGMA2_OPTIONAL = " \
 IMAGE_INSTALL += " \
 				enigma2 \
 				${ENIGMA2_PLUGINS} \
-				enigma2-streamproxy \
 				aio-grab \
 				tuxbox-common \
 				libavahi-client \
