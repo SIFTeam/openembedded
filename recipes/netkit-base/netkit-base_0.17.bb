@@ -2,7 +2,7 @@ SECTION = "base"
 DESCRIPTION = "netkit-base includes the inetd daemon."
 LICENSE = "BSD"
 RPROVIDES_${PN} = "inetd"
-PR = "r3"
+PR = "r4"
 
 SRC_URI = "ftp://ftp.uk.linux.org/pub/linux/Networking/netkit/netkit-base-${PV}.tar.gz \
            file://configure.patch \

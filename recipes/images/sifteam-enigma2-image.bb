@@ -60,7 +60,7 @@ ENIGMA2_OPTIONAL = " \
 				enigma2-plugin-extensions-tuxcom \
 				enigma2-plugin-extensions-tuxterm \
 				${@base_contains("MACHINE_FEATURES", "usbhost", "enigma2-plugin-drivers-usbserial" , "", d)} \
-				${@base_contains("MACHINE_FEATURES", "dvbapi5", "enigma2-plugin-drivers-dvb-usb-dib0700 enigma2-plugin-drivers-dvb-usb-af9015 enigma2-plugin-drivers-dvb-usb-siano" , "", d)} \
+				${@base_contains("MACHINE_FEATURES", "dvbapi5", "dvb-usb-drivers-meta" , "", d)} \
 				enigma2-plugin-security-firewall \
 				enigma2-plugin-extensions-xmltvimport \
 				enigma2-plugin-extensions-ambx \
@@ -82,7 +82,6 @@ ENIGMA2_OPTIONAL = " \
 IMAGE_INSTALL += " \
 				enigma2 \
 				${ENIGMA2_PLUGINS} \
-				enigma2-streamproxy \
 				aio-grab \
 				tuxbox-common \
 				libavahi-client \
