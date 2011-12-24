@@ -6,9 +6,9 @@ LICENSE = "proprietary"
 SRCDATE = "20111117"
 PACKAGE_STRIP = "no"
 
-KV = "2.6.22.19-25-the-ripper"
+KV = "2.6.22.19-25-opensat"
 PV = "2.6.22.19-25+${SRCDATE}"
-PR = "r40"
+PR = "r41"
 MACHINE_KERNEL_PR_append = ".0"
 
 RDEPENDS = "kernel (${KV})"

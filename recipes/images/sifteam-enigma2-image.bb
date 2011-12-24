@@ -63,7 +63,7 @@ ENIGMA2_OPTIONAL = " \
 				${@base_contains("MACHINE_FEATURES", "dvbapi5", "dvb-usb-drivers-meta" , "", d)} \
 				enigma2-plugin-security-firewall \
 				enigma2-plugin-extensions-xmltvimport \
-				enigma2-plugin-extensions-ambx \
+#                                ${@base_contains("CHIPSET", "smp8634", "" , "enigma2-plugin-extensions-ambx", d)} \
 				enigma2-plugin-extensions-project-valerie \
 				${@base_contains("MACHINE_FEATURES", "hdtv", \
 					" \
