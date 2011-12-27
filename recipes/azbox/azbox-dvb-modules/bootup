@@ -24,6 +24,7 @@ mknod -m 766 /dev/frameyuv                c 60    0
 mknod -m 766 /dev/misc/pvr                c 70    0
 mknod -m 766 /dev/rfmod0                  c 71    0
 
+
 insmod /lib/modules/2.6.22.19-25-opensat/extra/llad.ko
 insmod /lib/modules/2.6.22.19-25-opensat/extra/em8xxx.ko
 insmod /lib/modules/2.6.22.19-25-opensat/extra/sci.ko
@@ -42,14 +43,7 @@ insmod /lib/modules/2.6.22.19-25-opensat/extra/zl10353.ko
 insmod /lib/modules/2.6.22.19-25-opensat/extra/stv6110x.ko
 insmod /lib/modules/2.6.22.19-25-opensat/extra/stv090x.ko
 insmod /lib/modules/2.6.22.19-25-opensat/extra/nimdetect.ko
-insmod /lib/modules/2.6.22.19-25-opensat/extra/smp8634dvb.ko
-
-Model=`cat /proc/model`
-if [ "$Model" = "premium" ] || [ "$Model" = "premium+" ] ; then
-      echo "wifi driver"
-	insmod /lib/modules/2.6.22.19-25-opensat/extra/rt61.ko
-fi
-
+insmod /lib/modules/2.6.22.19-25-opensat/extra/863xdvb.ko
 echo 10 > /proc/progress
 
 [ -e /dev/dbox/oled0 ] && ln -s /dev/dbox/oled0 /dev/dbox/lcd0
@@ -107,5 +101,5 @@ echo 25 > /proc/progress
 [ -f /etc/shadow ] && /bin/true || touch /etc/shadow
 
 Model=`cat /proc/model`
-echo $Model > /proc/progress
+echo $Model > /proc/progress[ ! -e /var/keys/ ] && /bin/ln -s /usr/keys/ /var/keys
 [ -f /etc/shadow ] && /bin/true || touch /etc/shadow

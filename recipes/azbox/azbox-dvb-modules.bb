@@ -3,17 +3,17 @@ SECTION = "base"
 PRIORITY = "required"
 LICENSE = "proprietary"
 
-SRCDATE = "20111117"
+SRCDATE = "20111208"
 PACKAGE_STRIP = "no"
 
 KV = "2.6.22.19-25-opensat"
 PV = "2.6.22.19-25+${SRCDATE}"
-PR = "r42"
+PR = "r43"
 MACHINE_KERNEL_PR_append = ".0"
 
 RDEPENDS = "kernel (${KV})"
 
-SRC_URI = "http://downloads.sourceforge.net/project/rticoree2/drivers/azboxhd-dvb-modules_20111117.zip \
+SRC_URI = "http://openee.sifteam.eu/azbox/azboxhd-dvb-modules_2011208.zip  \
 	   file://bootup"
 
 S = "${WORKDIR}/drivers_${SRCDATE}"
