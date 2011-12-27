@@ -3,7 +3,7 @@ LICENSE = "GPL"
 KV = "2.6.22.19"
 PV = "2.6.22.19"
 
-MACHINE_KERNEL_PR_append = "40"
+MACHINE_KERNEL_PR_append = "41"
 
 SRC_URI += "http://openee.sifteam.eu/azbox/linux-2.6.22-AZBOXHD.tar.gz \
 	http://openee.sifteam.eu/azbox/zbimage-linux-xrpc_20111117.zip \

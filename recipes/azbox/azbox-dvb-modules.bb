@@ -8,7 +8,7 @@ PACKAGE_STRIP = "no"
 
 KV = "2.6.22.19-25-opensat"
 PV = "2.6.22.19-25+${SRCDATE}"
-PR = "r41"
+PR = "r42"
 MACHINE_KERNEL_PR_append = ".0"
 
 RDEPENDS = "kernel (${KV})"
