@@ -4,17 +4,12 @@ PRIORITY = "required"
 LICENSE = "proprietary"
 
 
-def get_modules_extension(bb, d):
-	if bb.data.getVar('GLIBC_ADDONS', d, 1) in ['nptl']:
-		return "-gcc4.1"
-	return ""
-
-KV = "2.6.18-7.3"
+KV = "3.1.1"
 PV = "${KV}"
 
-SRCDATE = "20111122"
+SRCDATE = "20111229"
 
-RDEPENDS = "kernel (${KV}) kernel-module-firmware-class kernel-module-input kernel-module-evdev kernel-module-i2c-core kernel-module-snd kernel-module-snd-pcm"
+RDEPENDS = "kernel (${KV})" 
 MACHINE_KERNEL_PR_append = ".${SRCDATE}.1"
 
 VUPLUS_KERNEL_GCC = "4.4.3"
