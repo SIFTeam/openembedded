@@ -1,4 +1,5 @@
 SRCREV = "${AUTOREV}"
+SRCREV = "6145"
 MODULE = "trunk"
 OSCAMBIN = "oscam-experimental"
 OSCAMDEPENS = "openssl"
