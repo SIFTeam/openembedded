@@ -55,6 +55,7 @@ module_autoload_smsusb = "smsdvb smsusb"
 MACHINE_EXTRA_RRECOMMENDS = " \
 	vuplus-shutdown \
 	gst-plugin-dvbmediasink \
+	ntfs-3g \
 	"
 
 IMAGE_FSTYPES ?= "ubi"
