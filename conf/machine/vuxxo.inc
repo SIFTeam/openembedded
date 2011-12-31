@@ -2,6 +2,8 @@
 #take care when you do changes on MACHINE_ESSENTIAL_EXTRA_RDEPENDS/RRECOMMENDS you have to increment the recipes/tasks/task-boot.bb PR
 MACHINE_ESSENTIAL_EXTRA_RDEPENDS += "kernel vuplus-dvb-modules"
 
+DVBPROVIDER = "kernel"
+
 #WiFi
 module_autoload_ath9k_htc = "ath9k_htc"
 module_autoload_carl9170 = "carl9170"
