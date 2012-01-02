@@ -1,6 +1,6 @@
 require linux-vuplus-3.1.1.inc
 
-MACHINE_KERNEL_PR_append = ".2"
+MACHINE_KERNEL_PR_append = ".3"
 
 SRC_URI += "\
         file://linux_3.1.1_vusolo.patch;striplevel=1 \
