@@ -1,14 +1,18 @@
 DESCRIPTION = "Linux kernel for azbox hd"
 LICENSE = "GPL"
-KV = "2.6.22.19"
-PV = "2.6.22.19"
+KV = "2.6.22"
+PV = "2.6.22"
 
-MACHINE_KERNEL_PR_append = "44"
+#Don't use PR here, use MACHINE_KERNEL_PR in machine.conf instead
+#PR = "r6"
+#or use MACHINE_KERNEL_PR_append, when a rebuild of external modules is not required
 
-SRC_URI += "http://openee.sifteam.eu/azbox/linux-2.6.22-AZBOXHD.tar.gz \
-	http://openee.sifteam.eu/azbox/zbimage-linux-xrpc_20111117.zip \
-	file://azbox_defconfig \
-	file://azboxme_defconfig"
+PR = "r2"
+
+SRC_URI += "http://downloads.sourceforge.net/project/rticoree2/kernel/azboxhd-linux-2.6.22.tar.gz \
+	http://downloads.sourceforge.net/project/rticoree2/kernel/zbimage-linux-xrpc-2.6.22.zip \
+	file://azboxhd_defconfig \
+	file://tangofreq.patch;pnum=1"
 
 S = "${WORKDIR}/linux-2.6.22.19"
 
@@ -40,11 +44,6 @@ do_install_append () {
 }
 
 pkg_postinst_kernel-image () {
-	if [ -e /boot/zbimage-linux-xrpc ]; then
-		echo "updating kernel... please DON'T turn off or reboot the decoder"
-		dd if=/boot/zbimage-linux-xrpc of=/dev/mtd4
-		echo "update completed"
-		rm /boot/zbimage-linux-xrpc
-	fi
+	[ -e /boot/zbimage-linux-xrpc ] && rm /boot/zbimage-linux-xrpc
 	true
 }

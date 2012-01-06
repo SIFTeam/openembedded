@@ -1,0 +1,71 @@
+echo "Starting bootup..." > /proc/progress
+
+mknod /dev/mum0 c 126 0
+mknod /dev/em8xxx0 c 127 0
+mknod /dev/sci0 c 253 0
+
+mkdir /dev/dvb/
+mkdir /dev/dvb/adapter0
+mkdir /dev/misc/
+
+chmod 755 /dev/dvb
+chmod 755 /dev/dvb/adapter0
+
+mknod -m 0660 /dev/dvb/adapter0/video0    c 212   0
+mknod -m 0660 /dev/dvb/adapter0/audio0    c 212   1
+mknod -m 0660 /dev/dvb/adapter0/frontend0 c 212   3
+mknod -m 0660 /dev/dvb/adapter0/demux0    c 212   4
+mknod -m 0660 /dev/dvb/adapter0/dvr0      c 212   5
+mknod -m 0660 /dev/dvb/adapter0/ca0       c 212   6
+mknod -m 0660 /dev/dvb/adapter0/net0      c 212   7
+mknod -m 0660 /dev/dvb/adapter0/osd0      c 212   8
+mknod -m 766 /dev/sc0                     c 182   0
+mknod -m 766 /dev/frameyuv                c 60    0
+mknod -m 766 /dev/misc/pvr                c 70    0
+mknod -m 766 /dev/rfmod0                  c 71    0
+
+/usr/bin/set_outports_old &
+sleep 3;
+
+insmod /lib/modules/2.6.22.19-44-opensat/extra/smp8655i2c.ko
+insmod /lib/modules/2.6.22.19-44-opensat/extra/avl2108.ko
+insmod /lib/modules/2.6.22.19-44-opensat/extra/nimdetect.ko
+insmod /lib/modules/2.6.22.19-44-opensat/extra/smp8655dvb.ko
+echo 10 > /proc/progress
+
+something=`cat /proc/getdate`
+date -s $something
+
+depmod -Ae
+
+mount -at nonfs,nosmbfs,noncpfs,nocifs
+
+swapon -a
+echo 15 > /proc/progress
+
+tar xzf /etc/var.tar.gz -C /
+
+# HDD sleep after 10min
+hdparm -S 120 /dev/sda
+
+# accustic management
+hdparm -M 128 /dev/sda
+
+[ -e /etc/dropbear/dropbear_rsa_host_key ] && /usr/bin/showiframe /boot/bootlogo.mvi || /usr/bin/showiframe /boot/bootlogo_wait.mvi
+echo 20 > /proc/progress
+
+hostname -F /etc/hostname
+
+[ -e "/etc/sysctl.conf" ] && /sbin/sysctl -p "/etc/sysctl.conf"
+
+#ldconfig
+
+ipkg-cl configure
+
+[ -f /etc/shadow ] && /bin/true || touch /etc/shadow
+
+[ ! -e /var/keys/ ] && /bin/ln -s /usr/keys/ /var/keys
+[ ! -e /var/scce/ ] && /bin/ln -s /usr/scce/ /var/scce
+
+Model=`cat /proc/model`
+echo $Model > /proc/progress

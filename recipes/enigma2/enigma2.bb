@@ -92,11 +92,12 @@ inherit gitpkgv
 
 PV = "2.7+git${SRCPV}"
 PKGV = "2.7+git${GITPKGV}"
-PR = "r31"
+PR = "r32"
 
 SRC_URI = "git://github.com/SIFTeam/enigma2.git;protocol=git"
 #SRC_URI = "git://${HOME}/sifteam/enigma2;protocol=file"
-SRC_URI_azbox = "git://github.com/SIFTeam/enigma2.git;protocol=git;branch=azbox"
+SRC_URI_azboxhd = "git://github.com/SIFTeam/enigma2.git;protocol=git;branch=azbox"
+SRC_URI_azboxme = "git://github.com/SIFTeam/enigma2.git;protocol=git;branch=azbox"
 
 S = "${WORKDIR}/git"
 
