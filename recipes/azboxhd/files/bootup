@@ -24,25 +24,25 @@ mknod -m 766 /dev/frameyuv                c 60    0
 mknod -m 766 /dev/misc/pvr                c 70    0
 mknod -m 766 /dev/rfmod0                  c 71    0
 
-insmod /lib/modules/2.6.22.19-25-the-ripper/extra/llad.ko
-insmod /lib/modules/2.6.22.19-25-the-ripper/extra/em8xxx.ko
-insmod /lib/modules/2.6.22.19-25-the-ripper/extra/sci.ko
-insmod /lib/modules/2.6.22.19-25-the-ripper/extra/usbserial.ko
-insmod /lib/modules/2.6.22.19-25-the-ripper/extra/ftdi_sio.ko
+insmod /lib/modules/2.6.22.19-25-opensat/extra/llad.ko
+insmod /lib/modules/2.6.22.19-25-opensat/extra/em8xxx.ko
+insmod /lib/modules/2.6.22.19-25-opensat/extra/sci.ko
+insmod /lib/modules/2.6.22.19-25-opensat/extra/usbserial.ko
+insmod /lib/modules/2.6.22.19-25-opensat/extra/ftdi_sio.ko
 
 /usr/bin/set_outports &
 sleep 5
 
-insmod /lib/modules/2.6.22.19-25-the-ripper/extra/smp8634i2c.ko
-insmod /lib/modules/2.6.22.19-25-the-ripper/extra/cx24116.ko
-insmod /lib/modules/2.6.22.19-25-the-ripper/extra/mxl201rf.ko
-insmod /lib/modules/2.6.22.19-25-the-ripper/extra/tda10023.ko
-insmod /lib/modules/2.6.22.19-25-the-ripper/extra/mxl5007t.ko
-insmod /lib/modules/2.6.22.19-25-the-ripper/extra/zl10353.ko
-insmod /lib/modules/2.6.22.19-25-the-ripper/extra/stv6110x.ko
-insmod /lib/modules/2.6.22.19-25-the-ripper/extra/stv090x.ko
-insmod /lib/modules/2.6.22.19-25-the-ripper/extra/nimdetect.ko
-insmod /lib/modules/2.6.22.19-25-the-ripper/extra/smp8634dvb.ko
+insmod /lib/modules/2.6.22.19-25-opensat/extra/smp8634i2c.ko
+insmod /lib/modules/2.6.22.19-25-opensat/extra/cx24116.ko
+insmod /lib/modules/2.6.22.19-25-opensat/extra/mxl201rf.ko
+insmod /lib/modules/2.6.22.19-25-opensat/extra/tda10023.ko
+insmod /lib/modules/2.6.22.19-25-opensat/extra/mxl5007t.ko
+insmod /lib/modules/2.6.22.19-25-opensat/extra/zl10353.ko
+insmod /lib/modules/2.6.22.19-25-opensat/extra/stv6110x.ko
+insmod /lib/modules/2.6.22.19-25-opensat/extra/stv090x.ko
+insmod /lib/modules/2.6.22.19-25-opensat/extra/nimdetect.ko
+insmod /lib/modules/2.6.22.19-25-opensat/extra/863xdvb.ko
 echo 10 > /proc/progress
 
 [ -e /dev/dbox/oled0 ] && ln -s /dev/dbox/oled0 /dev/dbox/lcd0

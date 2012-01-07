@@ -3,19 +3,19 @@ SECTION = "base"
 PRIORITY = "required"
 LICENSE = "proprietary"
 
-SRCDATE = "20111117"
+SRCDATE = "20111220"
 
-KV = "2.6.22.19-25-the-ripper"
-PV = "2.6.22.19-25-the-ripper-${SRCDATE}"
+KV = "2.6.22.19-25-opensat"
+PV = "2.6.22.19-25-opensat-${SRCDATE}"
 
-PR = "r1"
+PR = "r0"
 
 RDEPENDS = "kernel (${KV})"
 
 DEPENDS = " module-init-tools"
 RDEPENDS_append = " module-init-tools-depmod"
 
-SRC_URI = "http://downloads.sourceforge.net/project/rticoree2/drivers/azboxhd-dvb-modules_${SRCDATE}.zip \
+SRC_URI = "http://openee.sifteam.eu/azbox/azboxhd-dvb-modules_${SRCDATE}.zip \
            file://bootup"
 
 S = "${WORKDIR}"
