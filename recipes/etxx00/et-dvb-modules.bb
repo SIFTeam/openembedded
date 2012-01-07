@@ -4,7 +4,7 @@ PRIORITY = "required"
 LICENSE = "proprietary"
 
 KV = "3.1.0"
-SRCDATE = "20111212"
+SRCDATE = "20120106"
 
 PV = "${KV}+${SRCDATE}"
 MACHINE_KERNEL_PR_append = ".0"
