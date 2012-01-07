@@ -7,7 +7,7 @@ LICENSE = "proprietary"
 KV = "3.1.1"
 PV = "${KV}"
 
-SRCDATE = "20120102"
+SRCDATE = "20120104"
 
 RDEPENDS = "kernel (${KV})" 
 MACHINE_KERNEL_PR_append = ".${SRCDATE}.1"
