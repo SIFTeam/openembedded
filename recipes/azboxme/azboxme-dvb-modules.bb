@@ -3,19 +3,19 @@ SECTION = "base"
 PRIORITY = "required"
 LICENSE = "proprietary"
 
-SRCDATE = "20111001"
+SRCDATE = "20111211"
 
 KV = "2.6.22.19-44-opensat"
 PV = "2.6.22.19-44-opensat-${SRCDATE}"
 
-PR = "r0"
+PR = "r1"
 
 RDEPENDS = "kernel (${KV})"
 
 DEPENDS = " module-init-tools"
 RDEPENDS_append = " module-init-tools-depmod"
 
-SRC_URI = "file://azboxme-dvb-modules_20111001.zip \
+SRC_URI = "http://openee.sifteam.eu/azbox/azboxme-dvb-modules_${SRCDATE}.zip \
            file://bootup"
 
 S = "${WORKDIR}"

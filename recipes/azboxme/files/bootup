@@ -30,7 +30,7 @@ sleep 3;
 insmod /lib/modules/2.6.22.19-44-opensat/extra/smp8655i2c.ko
 insmod /lib/modules/2.6.22.19-44-opensat/extra/avl2108.ko
 insmod /lib/modules/2.6.22.19-44-opensat/extra/nimdetect.ko
-insmod /lib/modules/2.6.22.19-44-opensat/extra/smp8655dvb.ko
+insmod /lib/modules/2.6.22.19-44-opensat/extra/865xdvb.ko
 echo 10 > /proc/progress
 
 something=`cat /proc/getdate`
