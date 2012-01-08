@@ -92,7 +92,7 @@ inherit gitpkgv
 
 PV = "2.7+git${SRCPV}"
 PKGV = "2.7+git${GITPKGV}"
-PR = "r32"
+PR = "r33"
 
 SRC_URI = "git://github.com/SIFTeam/enigma2.git;protocol=git"
 #SRC_URI = "git://${HOME}/sifteam/enigma2;protocol=file"
@@ -131,6 +131,8 @@ EXTRA_OECONF = "\
 	STAGING_LIBDIR=${STAGING_LIBDIR} \
 	"
 
+EXTRA_OECONF_append_azboxhd = " --with-azboxhd"
+EXTRA_OECONF_append_azboxme = " --with-azboxme"
 EXTRA_OECONF_append_dm7025 = " --with-oldpvr"
 
 # Swig generated 200k enigma.py file has no purpose for end users
