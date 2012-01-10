@@ -17,5 +17,6 @@ MACHINE_FEATURES += "kernel26 textlcd"
 
 PREFERRED_PROVIDER_virtual/kernel = "linux-${MACHINE}"
 PREFERRED_PROVIDER_xserver = "xserver-kdrive"
+PREFERRED_PROVIDER_virtual/showiframe = "dreambox-dvb-tools-v3"
 
 require conf/machine/include/tune-mips32.inc
