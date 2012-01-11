@@ -34,7 +34,7 @@ do_generate_toolchain_file_append() {
 EXTRA_OECMAKE += "\
 	-DOSCAM_SYSTEM_NAME=Tuxbox \
 	-DWEBIF=1 \
-	-DWITH_STAPI=1 \
+	-DWITH_STAPI=0 \
 	-DHAVE_LIBUSB=0 \
 	-${SSL} \
 	-${PCSC} \
