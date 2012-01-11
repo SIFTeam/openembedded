@@ -2,7 +2,7 @@ DESCRIPTION = "Old webinterface (avoid license issues)"
 DEPENDS = "enigma2 python-pyopenssl python-twisted"
 RDEPENDS_${PN} = "python-twisted-web python-pyopenssl python-crypt python-unixadmin aio-grab"
 PACKAGES = "${PN}-src ${PN}"
-RPROVIDES = "enigma2-plugin-extensions-webinterface"
+RPROVIDES_${PN} = "enigma2-plugin-extensions-webinterface"
 
 inherit gitpkgv
 
