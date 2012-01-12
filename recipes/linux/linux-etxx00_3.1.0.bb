@@ -1,7 +1,7 @@
 DESCRIPTION = "Linux kernel for ${MACHINE}"
 LICENSE = "GPL"
 
-MACHINE_KERNEL_PR_append = ".14"
+MACHINE_KERNEL_PR_append = ".15"
 
 DEPENDS = "mtd-minimal-nand-utils"
 RDEPENDS_kernel-image = "mtd-minimal-nand-utils"
@@ -18,6 +18,7 @@ SRC_URI += "http://www.et-view.com/download/linux-${PV}.tar.gz \
 	file://cxd2820r-changed-condition-to-break-out-from-wait-lock-loop.patch \
 	file://dvb-usb-smsdvb_fix_frontend.patch \
 	file://dvb-usb-rtl2832.patch \
+	file://rtl2832-added-new-Terratec-sticks.patch \
 	file://cxd2820r-output-full-range-SNR.patch \
 	file://xc3028-fix-center-frequency.patch \
 	file://cinergy_s2_usb_r2.patch \
