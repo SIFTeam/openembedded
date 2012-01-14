@@ -96,7 +96,7 @@ MACHINE_FEATURES += "32bpp hdtv 3dtv switchoff lpcm textlcd dvbapi5"
 
 CHIPSET = "bcm7413"
 
-MACHINE_KERNEL_PR = "r6"
+MACHINE_KERNEL_PR = "r7"
 
 PREFERRED_VERSION_linux-libc-headers = "2.6.31"
 
