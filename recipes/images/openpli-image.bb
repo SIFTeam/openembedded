@@ -20,6 +20,8 @@ IMAGE_INSTALL = " \
 				e2fsprogs-e2fsck \
 				nfs-utils-client \
 				kernel-params \
+				hdparm \
+				sdparm \
 				"
 
 OPTIONAL_PACKAGES ?= ""
@@ -41,7 +43,6 @@ OPTIONAL_PACKAGES += " \
 			libdca \
 			dvd+rw-tools dvdauthor cdrkit \
 			smartmontools \
-			hdparm \
 			rsync \
 			ntfs-3g \
 			"
