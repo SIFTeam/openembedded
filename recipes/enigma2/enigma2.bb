@@ -92,7 +92,7 @@ inherit gitpkgv
 
 PV = "2.7+git${SRCPV}"
 PKGV = "2.7+git${GITPKGV}"
-PR = "r36"
+PR = "r37"
 
 SRC_URI = "git://github.com/SIFTeam/enigma2.git;protocol=git"
 #SRC_URI = "git://${HOME}/sifteam/enigma2;protocol=file"
@@ -103,6 +103,7 @@ S = "${WORKDIR}/git"
 
 FILES_${PN} += "${datadir}/keymaps"
 FILES_${PN} += "/etc"
+FILES_${PN} += "/usr/scripts"
 FILES_${PN}-meta = "${datadir}/meta"
 PACKAGES =+ "${PN}-src"
 PACKAGES += "${PN}-meta"
