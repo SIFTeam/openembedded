@@ -7,12 +7,12 @@ PV = "2.6.22"
 #PR = "r6"
 #or use MACHINE_KERNEL_PR_append, when a rebuild of external modules is not required
 
-PR = "r3"
+PR = "r5"
 
 SRC_URI += "http://downloads.sourceforge.net/project/rticoree2/kernel/azboxhd-linux-2.6.22.tar.gz \
-	http://openee.sifteam.eu/azbox/zbimage-linux-xrpc-2.6.22.19_25.zip \
+	http://openee.sifteam.eu/azbox/zbimage-linux-xrpc-2.6.22.19_25_sysctl2.zip \
 	file://azboxhd_defconfig \
-	file://tangofreq.patch;pnum=1"
+	file://tangofreq.patch;striplevel=1"
 
 S = "${WORKDIR}/linux-2.6.22.19"
 
