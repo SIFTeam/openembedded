@@ -3,12 +3,12 @@ SECTION = "base"
 PRIORITY = "required"
 MAINTAINER = "PLi team"
 PV = "1.0"
-PR = "r0"
+PR = "r1"
 
 SRC_URI = "file://skin_box.xml"
 
 PACKAGES = "${PN}"
-FILES = "/usr/share/enigma2"
+FILES_${PN} = "/usr/share/enigma2"
 PACKAGE_ARCH = "all"
 S = "${WORKDIR}"
 
