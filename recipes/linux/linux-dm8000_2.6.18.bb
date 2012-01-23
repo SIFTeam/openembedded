@@ -1,6 +1,6 @@
 require linux-opendreambox-2.6.18.inc
 
-MACHINE_KERNEL_PR_append = "${PR_INC}.1"
+MACHINE_KERNEL_PR_append = "${PR_INC}.2"
 
 RDEPENDS_${PN} += "dreambox-secondstage (>=83)"
 

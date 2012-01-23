@@ -48,7 +48,7 @@ SRCDATE_gst-plugin-dvbmediasink ?= "20101106"
 SRCDATE_squashfs-tools-native = "20100319"
 
 # others
-SRCDATE_enigma2-plugin-extensions-xmltvimport-rytec ?= "20111005"
+SRCDATE_enigma2-plugin-extensions-xmltvimport-rytec ?= "20120123"
 SRCDATE_enigma2-plugin-picons-sat ?= "20110907"
 SRCDATE_enigma2-plugin-picons-ziggo.casema ?= "20110902"
 SRCDATE_enigma2-plugin-picons-ziggo.tvhome ?= "20110901"
@@ -68,7 +68,7 @@ SRCDATE_enigma2-plugin-settings-henksat-rotating ?= "${HENKSAT_SRCDATE}"
 SRCDATE_enigma2-plugin-settings-henksat-7e-13e-19e-23e-28e-42e ?= "20110919"
 SRCDATE_enigma2-plugin-settings-henksat-13e-19e-23e-28e-4.8e-0.8w ?= "${HENKSAT_SRCDATE}"
 
-HANS_SRCDATE ?= "20111210"
+HANS_SRCDATE ?= "20120112"
 SRCDATE_enigma2-plugin-settings-hans-19e-23e ?= "${HANS_SRCDATE}"
 SRCDATE_enigma2-plugin-settings-hans-13e-19e-23e-28e ?= "${HANS_SRCDATE}"
 SRCDATE_enigma2-plugin-settings-hans-13e-19e-23e-28e-rotating ?= "${HANS_SRCDATE}"

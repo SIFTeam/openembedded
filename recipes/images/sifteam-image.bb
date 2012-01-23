@@ -20,6 +20,7 @@ IMAGE_INSTALL = " \
 				e2fsprogs-e2fsck \
 				nfs-utils-client \
 				kernel-params \
+				sdparm \
 				"
 
 OPTIONAL_PACKAGES ?= ""

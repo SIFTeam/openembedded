@@ -7,10 +7,10 @@ LICENSE = "proprietary"
 KV = "3.1.1"
 PV = "${KV}"
 
-SRCDATE = "20120104"
+SRCDATE = "20120118"
 
 RDEPENDS = "kernel (${KV})" 
-MACHINE_KERNEL_PR_append = ".${SRCDATE}.1"
+MACHINE_KERNEL_PR_append = ".${SRCDATE}.2"
 
 VUPLUS_KERNEL_GCC = "4.4.3"
 DOWNLOADMACHINE = "${MACHINE}"
@@ -35,7 +35,7 @@ do_install() {
     done
     install -d ${D}/${sysconfdir}/modutils
     for i in `ls | grep \\.ko | sed -e 's/.ko//g'`; do
-        echo $i >> ${D}/${sysconfdir}/modutils/dvb_vuplus
+        echo $i >> ${D}/${sysconfdir}/modutils/_vuplus
     done
 
 }

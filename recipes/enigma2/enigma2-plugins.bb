@@ -30,7 +30,15 @@ inherit autotools
 
 S = "${WORKDIR}/git"
 
-DEPENDS = "enigma2 python-pyopenssl python-gdata streamripper python-mutagen python-twisted python-daap dvdbackup \
+DEPENDS = "enigma2 \
+	python-pyopenssl \
+	python-gdata \
+	streamripper \
+	python-mutagen \
+	python-twisted \
+	python-daap \
+	dvdbackup \
+	libcddb \
         ${@base_contains("MACHINE_FEATURES", "tpm", "" , "enigma2-plugin-extensions-webinterface-old", d)} \
 	"
 

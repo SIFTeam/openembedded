@@ -1,8 +1,55 @@
+driver for af9035 devices;
+added support for kernel 3.2;
+fixed SNR report in Enigma2/Kaffeine: SNR is now
+scaled in the full 0-65536 range; the snrdb module
+parameter of the af9033 demodulator enables the SNR output
+in dBx10 as before;
+modified frontend driver to work directly with the DVBv5
+data structure, as required in new kernel/v4l versions;
+added missing select directives for tuners tda18218 and mxl5007T
+in dvb-usb/Kconfig (this should fix the dependency problems reported
+by several users);
+use C99-style initializers with symbolic names for each index
+in the USB table af9035_usb_table;
+imported USB VID/PID from the proprietary Avermedia A867 driver
+(disabled by default, it can be enabled with the ENABLE_A867_DEVICES
+define);
+added support for the Terratec Cinergy T 2 stick; 
+
+From: Gianluca Gennari <gennarone@gmail.com>
+---
+ drivers/media/common/tuners/Kconfig        |    7 +
+ drivers/media/common/tuners/Makefile       |    1 +
+ drivers/media/common/tuners/tua9001.c      |  286 +
+ drivers/media/common/tuners/tua9001.h      |   46 +
+ drivers/media/common/tuners/tua9001_priv.h |   53 +
+ drivers/media/dvb/dvb-usb/Kconfig          |   12 +
+ drivers/media/dvb/dvb-usb/Makefile         |    4 +
+ drivers/media/dvb/dvb-usb/af9035.c         | 1268 ++++
+ drivers/media/dvb/dvb-usb/af9035.h         |  187 +
+ drivers/media/dvb/dvb-usb/dvb-usb-ids.h    |   18 +
+ drivers/media/dvb/frontends/Kconfig        |    7 +
+ drivers/media/dvb/frontends/Makefile       |    1 +
+ drivers/media/dvb/frontends/af9033.c       | 1957 +++++
+ drivers/media/dvb/frontends/af9033.h       |  100 +
+ drivers/media/dvb/frontends/af9033_priv.h  |  383 +
+ drivers/media/dvb/frontends/af9033_reg.h   |11006 ++++++++++++++++++++++++++++
+ 16 files changed, 15336 insertions(+), 0 deletions(-)
+ create mode 100644 drivers/media/common/tuners/tua9001.c
+ create mode 100644 drivers/media/common/tuners/tua9001.h
+ create mode 100644 drivers/media/common/tuners/tua9001_priv.h
+ create mode 100644 drivers/media/dvb/dvb-usb/af9035.c
+ create mode 100644 drivers/media/dvb/dvb-usb/af9035.h
+ create mode 100644 drivers/media/dvb/frontends/af9033.c
+ create mode 100644 drivers/media/dvb/frontends/af9033.h
+ create mode 100644 drivers/media/dvb/frontends/af9033_priv.h
+ create mode 100644 drivers/media/dvb/frontends/af9033_reg.h
+
 diff --git a/drivers/media/common/tuners/Kconfig b/drivers/media/common/tuners/Kconfig
-index 22d3ca3..ffa3c94 100644
+index 996302a..303a27c 100644
 --- a/drivers/media/common/tuners/Kconfig
 +++ b/drivers/media/common/tuners/Kconfig
-@@ -187,6 +187,13 @@ config MEDIA_TUNER_TDA18218
+@@ -197,6 +197,13 @@ config MEDIA_TUNER_TDA18218
  	help
  	  NXP TDA18218 silicon tuner driver.
  
@@ -17,10 +64,10 @@ index 22d3ca3..ffa3c94 100644
  	tristate "NXP TDA18212 silicon tuner"
  	depends on VIDEO_MEDIA && I2C
 diff --git a/drivers/media/common/tuners/Makefile b/drivers/media/common/tuners/Makefile
-index 2cb4f53..fd540d7 100644
+index 20d24fc..afd8d7f 100644
 --- a/drivers/media/common/tuners/Makefile
 +++ b/drivers/media/common/tuners/Makefile
-@@ -25,6 +25,7 @@ obj-$(CONFIG_MEDIA_TUNER_MXL5007T) += mxl5007t.o
+@@ -26,6 +26,7 @@ obj-$(CONFIG_MEDIA_TUNER_MXL5007T) += mxl5007t.o
  obj-$(CONFIG_MEDIA_TUNER_MC44S803) += mc44s803.o
  obj-$(CONFIG_MEDIA_TUNER_MAX2165) += max2165.o
  obj-$(CONFIG_MEDIA_TUNER_TDA18218) += tda18218.o
@@ -30,10 +77,10 @@ index 2cb4f53..fd540d7 100644
  EXTRA_CFLAGS += -Idrivers/media/dvb/dvb-core
 diff --git a/drivers/media/common/tuners/tua9001.c b/drivers/media/common/tuners/tua9001.c
 new file mode 100644
-index 0000000..716f77f
+index 0000000..9db9362
 --- /dev/null
 +++ b/drivers/media/common/tuners/tua9001.c
-@@ -0,0 +1,206 @@
+@@ -0,0 +1,286 @@
 +/*
 + * Infineon TUA 9001 silicon tuner driver
 + *
@@ -55,8 +102,19 @@ index 0000000..716f77f
 + */
 +
 +#include <linux/slab.h>         /* for kzalloc/kfree */
++#include <linux/version.h>
 +#include "tua9001.h"
 +#include "tua9001_priv.h"
++
++#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3,3,0)) || ((defined V4L2_VERSION) && (V4L2_VERSION >= 197120))
++/* all DVB frontend drivers now work directly with the DVBv5
++ * structure. This warrants that all drivers will be
++ * getting/setting frontend parameters on a consistent way, in
++ * order to avoid copying data from/to the DVBv3 structs
++ * without need.
++ */
++#define V4L2_ONLY_DVB_V5
++#endif
 +
 +static int debug;
 +module_param(debug, int, 0644);
@@ -124,6 +182,74 @@ index 0000000..716f77f
 +	return ret;
 +}
 +
++#ifdef V4L2_ONLY_DVB_V5
++static int tua9001_set_params(struct dvb_frontend *fe)
++{
++	struct dtv_frontend_properties *params = &fe->dtv_property_cache;
++	struct tua9001_priv *priv = fe->tuner_priv;
++	int ret;
++	u16 val;
++	u32 freq;
++	u8 i;
++	struct regdesc data[2];
++
++	switch (params->bandwidth_hz) {
++#if 0
++	case 5000000:
++		val  = 0x3000;
++		break;
++#endif
++	case 6000000:
++		val  = 0x2000;
++		break;
++	case 7000000:
++		val  = 0x1000;
++		break;
++	case 8000000:
++	default:
++		val  = 0x0000;
++		break;
++	}
++
++	data[0].reg = 0x04;
++	data[0].val = val;
++
++freq = params->frequency;
++
++#define OFFSET 150000000
++freq = freq - OFFSET;
++freq  = freq/1000;
++freq  = 48 * freq;
++freq  = freq/1000;
++
++val = freq;
++
++	data[1].reg = 0x1f;
++	data[1].val = val;
++
++
++	deb_info("%s: freq:%d bw:%d freq tuner:%d val:%d\n", __func__,
++		params->frequency, params->bandwidth_hz, priv->frequency,
++		val);
++
++	if (fe->ops.i2c_gate_ctrl)
++		fe->ops.i2c_gate_ctrl(fe, 1); /* open i2c-gate */
++
++	for (i = 0; i < ARRAY_SIZE(data); i++) {
++		ret = tua9001_writereg(priv, data[i].reg, data[i].val);
++		if (ret)
++			break;
++	}
++
++	if (fe->ops.i2c_gate_ctrl)
++		fe->ops.i2c_gate_ctrl(fe, 0); /* close i2c-gate */
++
++	if (ret)
++		deb_info("%s: failed:%d\n", __func__, ret);
++
++	return ret;
++}
++#else
 +static int tua9001_set_params(struct dvb_frontend *fe,
 +	struct dvb_frontend_parameters *params)
 +{
@@ -190,6 +316,7 @@ index 0000000..716f77f
 +
 +	return ret;
 +}
++#endif
 +
 +static int tua9001_get_frequency(struct dvb_frontend *fe, u32 *frequency)
 +{
@@ -352,10 +479,10 @@ index 0000000..7588df1
 +
 +#endif
 diff --git a/drivers/media/dvb/dvb-usb/Kconfig b/drivers/media/dvb/dvb-usb/Kconfig
-index e85304c..4fc22e1 100644
+index 5d73dec..ea387af 100644
 --- a/drivers/media/dvb/dvb-usb/Kconfig
 +++ b/drivers/media/dvb/dvb-usb/Kconfig
-@@ -267,6 +267,7 @@ config DVB_USB_DW2102
+@@ -268,6 +268,7 @@ config DVB_USB_DW2102
  	select DVB_CX24116 if !DVB_FE_CUSTOMISE
  	select DVB_SI21XX if !DVB_FE_CUSTOMISE
  	select DVB_TDA10023 if !DVB_FE_CUSTOMISE
@@ -363,7 +490,7 @@ index e85304c..4fc22e1 100644
  	select DVB_MT312 if !DVB_FE_CUSTOMISE
  	select DVB_ZL10039 if !DVB_FE_CUSTOMISE
  	select DVB_DS3000 if !DVB_FE_CUSTOMISE
-@@ -324,6 +325,15 @@ config DVB_USB_AF9015
+@@ -325,6 +326,17 @@ config DVB_USB_AF9015
  	help
  	  Say Y here to support the Afatech AF9015 based DVB-T USB2.0 receiver
  
@@ -373,6 +500,8 @@ index e85304c..4fc22e1 100644
 +        default m
 +        select DVB_AF9033
 +        select MEDIA_TUNER_TUA9001  if !MEDIA_TUNER_CUSTOMISE
++	select MEDIA_TUNER_TDA18218 if !MEDIA_TUNER_CUSTOMISE
++	select MEDIA_TUNER_MXL5007T if !MEDIA_TUNER_CUSTOMISE
 +        help
 +          Say Y here to support the Afatech AF9035 based DVB-T USB2.0 receiver
 +
@@ -400,10 +529,10 @@ index 4bac13d..4e1d137 100644
  EXTRA_CFLAGS += -Idrivers/media/common/tuners
 diff --git a/drivers/media/dvb/dvb-usb/af9035.c b/drivers/media/dvb/dvb-usb/af9035.c
 new file mode 100644
-index 0000000..854a933
+index 0000000..5f30344
 --- /dev/null
 +++ b/drivers/media/dvb/dvb-usb/af9035.c
-@@ -0,0 +1,1126 @@
+@@ -0,0 +1,1268 @@
 +/*
 + * Afatech AF9035 DVB USB driver
 + *
@@ -433,6 +562,18 @@ index 0000000..854a933
 +#include "tua9001.h"
 +#include "mxl5007t.h"
 +#include "tda18218.h"
++#include <linux/version.h>
++
++#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3,2,0)) || ((defined V4L2_VERSION) && (V4L2_VERSION >= 196608))
++#define V4L2_REFACTORED_MFE_CODE
++#endif
++
++/*
++ * enable devices supported by the Avemedia A867 proprietary driver;
++ * some of this devices may use an unsupported tuner type (AF9007),
++ * so they may not work; probably those devices belong to the A333 family;
++ */
++//#define ENABLE_A867_DEVICES
 +
 +static int dvb_usb_af9035_debug;
 +module_param_named(debug, dvb_usb_af9035_debug, int, 0644);
@@ -1015,13 +1156,21 @@ index 0000000..854a933
 +	for (i = 0; i < af9035_properties_count; i++) {
 +		/* USB1.1 set smaller buffersize and disable 2nd adapter */
 +		if (udev->speed == USB_SPEED_FULL) {
++#ifdef V4L2_REFACTORED_MFE_CODE
++			af9035_properties[i].adapter[0].fe[0].stream.u.bulk.buffersize
++#else
 +			af9035_properties[i].adapter[0].stream.u.bulk.buffersize
++#endif
 +				= TS_USB11_MAX_PACKET_SIZE;
 +			/* disable 2nd adapter because we don't have
 +			   PID-filters */
 +			af9035_config.dual_mode = 0;
 +		} else {
++#ifdef V4L2_REFACTORED_MFE_CODE
++			af9035_properties[i].adapter[0].fe[0].stream.u.bulk.buffersize
++#else
 +			af9035_properties[i].adapter[0].stream.u.bulk.buffersize
++#endif
 +				= TS_USB20_FRAME_SIZE;
 +		}
 +	}
@@ -1120,14 +1269,27 @@ index 0000000..854a933
 +	if (ret)
 +		err("eeprom read failed:%d", ret);
 +
-+	if (le16_to_cpu(udev->descriptor.idVendor) == USB_VID_AVERMEDIA &&
-+	    (le16_to_cpu(udev->descriptor.idProduct) == USB_PID_AVERMEDIA_A825 ||
-+             le16_to_cpu(udev->descriptor.idProduct) == USB_PID_AVERMEDIA_A835 ||
-+             le16_to_cpu(udev->descriptor.idProduct) == USB_PID_AVERMEDIA_B835)) {
-+		deb_info("%s: AverMedia A825/A835/B835: overriding config\n", __func__);
-+		/* set correct IF */
-+		for (i = 0; i < af9035_properties[0].num_adapters; i++) {
-+			af9035_af9033_config[i].if_freq = 4570000;
++	if (le16_to_cpu(udev->descriptor.idVendor) == USB_VID_AVERMEDIA) {
++		switch (le16_to_cpu(udev->descriptor.idProduct)) {
++		case USB_PID_AVERMEDIA_A825:
++		case USB_PID_AVERMEDIA_A835:
++		case USB_PID_AVERMEDIA_B835:
++		case USB_PID_AVERMEDIA_A333:
++		case USB_PID_AVERMEDIA_B867:
++		case USB_PID_AVERMEDIA_1867:
++		case USB_PID_AVERMEDIA_0337:
++		case USB_PID_AVERMEDIA_A867:
++		case USB_PID_AVERMEDIA_0867:
++		case USB_PID_AVERMEDIA_F337:
++		case USB_PID_AVERMEDIA_3867:
++			deb_info("%s: AverMedia A825/A835/B835/A333/A867: overriding config\n", __func__);
++			/* set correct IF */
++			for (i = 0; i < af9035_properties[0].num_adapters; i++) {
++				af9035_af9033_config[i].if_freq = 4570000;
++			}
++			break;
++		default:
++			break;
 +		}
 +	}
 +
@@ -1195,10 +1357,17 @@ index 0000000..854a933
 +static int af9035_af9033_frontend_attach(struct dvb_usb_adapter *adap)
 +{
 +	/* attach demodulator */
++#ifdef V4L2_REFACTORED_MFE_CODE
++	adap->fe_adap[0].fe = dvb_attach(af9033_attach, &af9035_af9033_config[adap->id],
++		&adap->dev->i2c_adap);
++
++	return adap->fe_adap[0].fe == NULL ? -ENODEV : 0;
++#else
 +	adap->fe = dvb_attach(af9033_attach, &af9035_af9033_config[adap->id],
 +		&adap->dev->i2c_adap);
 +
 +	return adap->fe == NULL ? -ENODEV : 0;
++#endif
 +}
 +
 +static struct tua9001_config af9035_tua9001_config[] = {
@@ -1269,7 +1438,11 @@ index 0000000..854a933
 +				 reg_top_gpiot2_o_pos, reg_top_gpiot2_o_len, 1);
 +		}
 +
++#ifdef V4L2_REFACTORED_MFE_CODE
++		ret = dvb_attach(tua9001_attach, adap->fe_adap[0].fe, &adap->dev->i2c_adap,
++#else
 +		ret = dvb_attach(tua9001_attach, adap->fe, &adap->dev->i2c_adap,
++#endif
 +			&af9035_tua9001_config[adap->id]) == NULL ? -ENODEV : 0;
 +
 +		break;
@@ -1322,7 +1495,11 @@ index 0000000..854a933
 +				1);
 +		}
 +
++#ifdef V4L2_REFACTORED_MFE_CODE
++		ret = dvb_attach(mxl5007t_attach, adap->fe_adap[0].fe, &adap->dev->i2c_adap,
++#else
 +		ret = dvb_attach(mxl5007t_attach, adap->fe, &adap->dev->i2c_adap,
++#endif
 +			af9035_af9033_config[adap->id].tuner_address,
 +			&af9035_mxl5007t_config[adap->id]) == NULL ? -ENODEV : 0;
 +
@@ -1358,7 +1535,11 @@ index 0000000..854a933
 +                           reg_top_gpiot2_o_pos, reg_top_gpiot2_o_len, 1);
 +                   }
 +
++#ifdef V4L2_REFACTORED_MFE_CODE
++                   ret = dvb_attach(tda18218_attach, adap->fe_adap[0].fe, &adap->dev->i2c_adap,
++#else
 +                   ret = dvb_attach(tda18218_attach, adap->fe, &adap->dev->i2c_adap,
++#endif
 +                           &af9035_tda18218_config) == NULL ? -ENODEV : 0;
 +                   break;
 +	default:
@@ -1370,17 +1551,69 @@ index 0000000..854a933
 +	return ret;
 +}
 +
++enum af9035_usb_table_entry {
++	AFATECH_AF9035_1000,
++	AFATECH_AF9035_1001,
++	AFATECH_AF9035_1002,
++	AFATECH_AF9035_1003,
++	AFATECH_AF9035_9035,
++	TERRATEC_CINERGY_T_STICK,
++	TERRATEC_CINERGY_T_STICK_2,
++	AVERMEDIA_TWINSTAR,
++	AVERMEDIA_VOLAR_HD,
++	AVERMEDIA_VOLAR_HD_PRO,
++#ifdef ENABLE_A867_DEVICES
++	AVERMEDIA_A333,
++	AVERMEDIA_B867,
++	AVERMEDIA_1867,
++	AVERMEDIA_0337,
++	AVERMEDIA_A867,
++	AVERMEDIA_0867,
++	AVERMEDIA_F337,
++	AVERMEDIA_3867,
++#endif
++};
++
 +static struct usb_device_id af9035_usb_table[] = {
-+/*  0 */{USB_DEVICE(USB_VID_AFATECH,   USB_PID_AFATECH_AF9035_1000)},
-+	{USB_DEVICE(USB_VID_AFATECH,   USB_PID_AFATECH_AF9035_1001)},
-+	{USB_DEVICE(USB_VID_AFATECH,   USB_PID_AFATECH_AF9035_1002)},
-+	{USB_DEVICE(USB_VID_AFATECH,   USB_PID_AFATECH_AF9035_1003)},
-+	{USB_DEVICE(USB_VID_AFATECH,   USB_PID_AFATECH_AF9035_9035)},
-+/*  5 */{USB_DEVICE(USB_VID_TERRATEC,  USB_PID_TERRATEC_CINERGY_T_STICK)},
-+/*  6 */{USB_DEVICE(USB_VID_AVERMEDIA, USB_PID_AVERMEDIA_A825)},
-+/*  7 */{USB_DEVICE(USB_VID_AVERMEDIA, USB_PID_AVERMEDIA_A835)},
-+        {USB_DEVICE(USB_VID_AVERMEDIA, USB_PID_AVERMEDIA_B835)},
-+	{0},
++	[AFATECH_AF9035_1000] = {USB_DEVICE(USB_VID_AFATECH,
++				USB_PID_AFATECH_AF9035_1000)},
++	[AFATECH_AF9035_1001] = {USB_DEVICE(USB_VID_AFATECH,
++				USB_PID_AFATECH_AF9035_1001)},
++	[AFATECH_AF9035_1002] = {USB_DEVICE(USB_VID_AFATECH,
++				USB_PID_AFATECH_AF9035_1002)},
++	[AFATECH_AF9035_1003] = {USB_DEVICE(USB_VID_AFATECH,
++				USB_PID_AFATECH_AF9035_1003)},
++	[AFATECH_AF9035_9035] = {USB_DEVICE(USB_VID_AFATECH,
++				USB_PID_AFATECH_AF9035_9035)},
++	[TERRATEC_CINERGY_T_STICK] = {USB_DEVICE(USB_VID_TERRATEC,
++				USB_PID_TERRATEC_CINERGY_T_STICK)},
++	[TERRATEC_CINERGY_T_STICK_2] = {USB_DEVICE(USB_VID_TERRATEC,
++				USB_PID_TERRATEC_CINERGY_T_STICK_2)},
++	[AVERMEDIA_TWINSTAR] = {USB_DEVICE(USB_VID_AVERMEDIA,
++				USB_PID_AVERMEDIA_A825)},
++	[AVERMEDIA_VOLAR_HD] = {USB_DEVICE(USB_VID_AVERMEDIA,
++				USB_PID_AVERMEDIA_A835)},
++	[AVERMEDIA_VOLAR_HD_PRO] = {USB_DEVICE(USB_VID_AVERMEDIA,
++				USB_PID_AVERMEDIA_B835)},
++#ifdef ENABLE_A867_DEVICES
++	[AVERMEDIA_A333] = {USB_DEVICE(USB_VID_AVERMEDIA,
++				USB_PID_AVERMEDIA_A333)},
++	[AVERMEDIA_B867] = {USB_DEVICE(USB_VID_AVERMEDIA,
++				USB_PID_AVERMEDIA_B867)},
++	[AVERMEDIA_1867] = {USB_DEVICE(USB_VID_AVERMEDIA,
++				USB_PID_AVERMEDIA_1867)},
++	[AVERMEDIA_0337] = {USB_DEVICE(USB_VID_AVERMEDIA,
++				USB_PID_AVERMEDIA_0337)},
++	[AVERMEDIA_A867] = {USB_DEVICE(USB_VID_AVERMEDIA,
++				USB_PID_AVERMEDIA_A867)},
++	[AVERMEDIA_0867] = {USB_DEVICE(USB_VID_AVERMEDIA,
++				USB_PID_AVERMEDIA_0867)},
++	[AVERMEDIA_F337] = {USB_DEVICE(USB_VID_AVERMEDIA,
++				USB_PID_AVERMEDIA_F337)},
++	[AVERMEDIA_3867] = {USB_DEVICE(USB_VID_AVERMEDIA,
++				USB_PID_AVERMEDIA_3867)},
++#endif
++	{ },
 +};
 +
 +MODULE_DEVICE_TABLE(usb, af9035_usb_table);
@@ -1398,6 +1631,10 @@ index 0000000..854a933
 +
 +		.adapter = {
 +			{
++#ifdef V4L2_REFACTORED_MFE_CODE
++			.num_frontends = 1,
++			.fe = {{
++#endif
 +				.frontend_attach =
 +					af9035_af9033_frontend_attach,
 +				.tuner_attach = af9035_tuner_attach,
@@ -1406,8 +1643,15 @@ index 0000000..854a933
 +					.count = 4,
 +					.endpoint = 0x84,
 +				},
++#ifdef V4L2_REFACTORED_MFE_CODE
++			}},
++#endif
 +			},
 +			{
++#ifdef V4L2_REFACTORED_MFE_CODE
++			.num_frontends = 1,
++			.fe = {{
++#endif
 +				.frontend_attach =
 +					af9035_af9033_frontend_attach,
 +				.tuner_attach = af9035_tuner_attach,
@@ -1422,6 +1666,9 @@ index 0000000..854a933
 +						}
 +					}
 +				},
++#ifdef V4L2_REFACTORED_MFE_CODE
++			}},
++#endif
 +			}
 +		},
 +
@@ -1429,36 +1676,60 @@ index 0000000..854a933
 +
 +		.i2c_algo = &af9035_i2c_algo,
 +
++#ifdef ENABLE_A867_DEVICES
++		.num_device_descs = 6,
++#else
 +		.num_device_descs = 4,
++#endif
 +		.devices = {
 +			{
 +				.name = "Afatech AF9035 DVB-T USB2.0 stick",
-+				.cold_ids = {&af9035_usb_table[0],
-+					     &af9035_usb_table[1],
-+					     &af9035_usb_table[2],
-+					     &af9035_usb_table[3],
-+					     &af9035_usb_table[4], NULL},
++				.cold_ids = {&af9035_usb_table[AFATECH_AF9035_1000],
++					     &af9035_usb_table[AFATECH_AF9035_1001],
++					     &af9035_usb_table[AFATECH_AF9035_1002],
++					     &af9035_usb_table[AFATECH_AF9035_1003],
++					     &af9035_usb_table[AFATECH_AF9035_9035], NULL},
 +				.warm_ids = {NULL},
 +			},
 +			{
 +				.name = "TerraTec Cinergy T Stick",
-+				.cold_ids = {&af9035_usb_table[5], NULL},
++				.cold_ids = {&af9035_usb_table[TERRATEC_CINERGY_T_STICK],
++					     &af9035_usb_table[TERRATEC_CINERGY_T_STICK_2], NULL},
 +				.warm_ids = {NULL},
 +			},
 +			{
 +				.name = "Avermedia TwinStar",
-+				.cold_ids = {&af9035_usb_table[6], NULL},
++				.cold_ids = {&af9035_usb_table[AVERMEDIA_TWINSTAR], NULL},
 +				.warm_ids = {NULL},
-+                        },
-+                        {
-+                                .name = "Avermedia AverTV Volar HD & HD PRO (A835)",
-+                                .cold_ids = {&af9035_usb_table[7],
-+                                             &af9035_usb_table[8], NULL},
-+                                .warm_ids = {NULL},
 +			},
++			{
++				.name = "Avermedia AverTV Volar HD & HD PRO (A835)",
++				.cold_ids = {&af9035_usb_table[AVERMEDIA_VOLAR_HD],
++					     &af9035_usb_table[AVERMEDIA_VOLAR_HD_PRO], NULL},
++				.warm_ids = {NULL},
++			},
++#ifdef ENABLE_A867_DEVICES
++			{
++				.name = "Avermedia A333",
++				.cold_ids = {&af9035_usb_table[AVERMEDIA_A333],
++					     &af9035_usb_table[AVERMEDIA_B867], NULL},
++				.warm_ids = {NULL},
++			},
++			{
++				.name = "Avermedia A867",
++				.cold_ids = {&af9035_usb_table[AVERMEDIA_1867],
++					     &af9035_usb_table[AVERMEDIA_0337],
++					     &af9035_usb_table[AVERMEDIA_A867],
++					     &af9035_usb_table[AVERMEDIA_0867],
++					     &af9035_usb_table[AVERMEDIA_F337],
++					     &af9035_usb_table[AVERMEDIA_3867], NULL},
++				.warm_ids = {NULL},
++			},
++#endif
 +		}
 +	},
 +};
++
 +static int af9035_usb_probe(struct usb_interface *intf,
 +			    const struct usb_device_id *id)
 +{
@@ -1724,7 +1995,7 @@ index 0000000..7c0c971
 +
 +#endif
 diff --git a/drivers/media/dvb/dvb-usb/dvb-usb-ids.h b/drivers/media/dvb/dvb-usb/dvb-usb-ids.h
-index 21b1549..c4685eb 100644
+index 2a79b8f..7043d05 100644
 --- a/drivers/media/dvb/dvb-usb/dvb-usb-ids.h
 +++ b/drivers/media/dvb/dvb-usb/dvb-usb-ids.h
 @@ -74,6 +74,11 @@
@@ -1739,29 +2010,38 @@ index 21b1549..c4685eb 100644
  #define USB_PID_TREKSTOR_DVBT				0x901b
  #define USB_VID_ALINK_DTU				0xf170
  #define USB_PID_ANSONIC_DVBT_USB			0x6000
-@@ -209,6 +214,9 @@
+@@ -209,6 +214,17 @@
  #define USB_PID_AVERMEDIA_A850T				0x850b
  #define USB_PID_AVERMEDIA_A805				0xa805
  #define USB_PID_AVERMEDIA_A815M				0x815a
-+#define USB_PID_AVERMEDIA_A825                         0x0825
-+#define USB_PID_AVERMEDIA_A835                         0xa835
-+#define USB_PID_AVERMEDIA_B835                         0xb835
++#define USB_PID_AVERMEDIA_A825				0x0825
++#define USB_PID_AVERMEDIA_A835				0xa835
++#define USB_PID_AVERMEDIA_B835				0xb835
++#define USB_PID_AVERMEDIA_A333				0xa333
++#define USB_PID_AVERMEDIA_B867				0xb867
++#define USB_PID_AVERMEDIA_1867				0x1867
++#define USB_PID_AVERMEDIA_0337				0x0337
++#define USB_PID_AVERMEDIA_A867				0xa867
++#define USB_PID_AVERMEDIA_0867				0x0867
++#define USB_PID_AVERMEDIA_F337				0xf337
++#define USB_PID_AVERMEDIA_3867				0x3867
  #define USB_PID_TECHNOTREND_CONNECT_S2400               0x3006
  #define USB_PID_TECHNOTREND_CONNECT_CT3650		0x300d
  #define USB_PID_TERRATEC_CINERGY_DT_XS_DIVERSITY	0x005a
-@@ -218,6 +226,7 @@
+@@ -218,6 +234,8 @@
  #define USB_PID_TERRATEC_CINERGY_T_EXPRESS		0x0062
  #define USB_PID_TERRATEC_CINERGY_T_XXS			0x0078
  #define USB_PID_TERRATEC_CINERGY_T_XXS_2		0x00ab
 +#define USB_PID_TERRATEC_CINERGY_T_STICK		0x0093
++#define USB_PID_TERRATEC_CINERGY_T_STICK_2		0x00aa
  #define USB_PID_TERRATEC_T3				0x10a0
  #define USB_PID_TERRATEC_T5				0x10a1
  #define USB_PID_PINNACLE_EXPRESSCARD_320CX		0x022e
 diff --git a/drivers/media/dvb/frontends/Kconfig b/drivers/media/dvb/frontends/Kconfig
-index 44b816f..212c15b 100644
+index 32e08e3..02256b4 100644
 --- a/drivers/media/dvb/frontends/Kconfig
 +++ b/drivers/media/dvb/frontends/Kconfig
-@@ -369,6 +369,13 @@ config DVB_AF9013
+@@ -390,6 +390,13 @@ config DVB_AF9013
  	help
  	  Say Y when you want to support this frontend.
  
@@ -1776,10 +2056,10 @@ index 44b816f..212c15b 100644
  	tristate "E3C EC100"
  	depends on DVB_CORE && I2C
 diff --git a/drivers/media/dvb/frontends/Makefile b/drivers/media/dvb/frontends/Makefile
-index 2f3a6f7..8dc10b4 100644
+index 6a6ba05..9fa99c4 100644
 --- a/drivers/media/dvb/frontends/Makefile
 +++ b/drivers/media/dvb/frontends/Makefile
-@@ -71,6 +71,7 @@ obj-$(CONFIG_DVB_LGS8GXX) += lgs8gxx.o
+@@ -72,6 +72,7 @@ obj-$(CONFIG_DVB_LGS8GXX) += lgs8gxx.o
  obj-$(CONFIG_DVB_ATBM8830) += atbm8830.o
  obj-$(CONFIG_DVB_DUMMY_FE) += dvb_dummy_fe.o
  obj-$(CONFIG_DVB_AF9013) += af9013.o
@@ -1789,10 +2069,10 @@ index 2f3a6f7..8dc10b4 100644
  obj-$(CONFIG_DVB_STV0288) += stv0288.o
 diff --git a/drivers/media/dvb/frontends/af9033.c b/drivers/media/dvb/frontends/af9033.c
 new file mode 100644
-index 0000000..0da292a
+index 0000000..747931f
 --- /dev/null
 +++ b/drivers/media/dvb/frontends/af9033.c
-@@ -0,0 +1,1668 @@
+@@ -0,0 +1,1957 @@
 +/*
 + * Afatech AF9033 demodulator driver
 + *
@@ -1819,13 +2099,27 @@ index 0000000..0da292a
 +
 +#include "dvb_frontend.h"
 +#include <linux/slab.h>         /* for kzalloc/kfree */
++#include <linux/version.h>
 +#include "af9033_priv.h"
 +#include "af9033.h"
 +#include "af9033_reg.h"
 +
++#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3,3,0)) || ((defined V4L2_VERSION) && (V4L2_VERSION >= 197120))
++/* all DVB frontend drivers now work directly with the DVBv5
++ * structure. This warrants that all drivers will be
++ * getting/setting frontend parameters on a consistent way, in
++ * order to avoid copying data from/to the DVBv3 structs
++ * without need.
++ */
++#define V4L2_ONLY_DVB_V5
++#endif
++
 +static int af9033_debug;
 +module_param_named(debug, af9033_debug, int, 0644);
 +MODULE_PARM_DESC(debug, "Turn on/off frontend debugging (default:off).");
++static int af9033_snrdb;
++module_param_named(snrdb, af9033_snrdb, int, 0644);
++MODULE_PARM_DESC(snrdb, "Turn on/off SNR output as dBx10 (default:off).");
 +
 +struct af9033_state {
 +	struct i2c_adapter *i2c;
@@ -1961,7 +2255,11 @@ index 0000000..0da292a
 +	return r;
 +}
 +
++#ifdef V4L2_ONLY_DVB_V5
++static int af9033_set_coeff(struct af9033_state *state, u32 bw)
++#else
 +static int af9033_set_coeff(struct af9033_state *state, fe_bandwidth_t bw)
++#endif
 +{
 +	int ret = 0;
 +	u8 tmp, i = 0;
@@ -1978,6 +2276,13 @@ index 0000000..0da292a
 +	u16 uninitialized_var(fftindex_bfsfcw_ratio);
 +	deb_info("%s: adc_clock:%d bw:%d\n", __func__,
 +		state->config.adc_clock, bw);
++
++#ifdef V4L2_ONLY_DVB_V5
++#define BANDWIDTH_5_MHZ 5000000
++#define BANDWIDTH_6_MHZ 6000000
++#define BANDWIDTH_7_MHZ 7000000
++#define BANDWIDTH_8_MHZ 8000000
++#endif
 +
 +	switch (state->config.adc_clock) {
 +	case 20156250:
@@ -2437,6 +2742,13 @@ index 0000000..0da292a
 +		return ret;
 +	}
 +
++#ifdef V4L2_ONLY_DVB_V5
++#undef BANDWIDTH_5_MHZ
++#undef BANDWIDTH_6_MHZ
++#undef BANDWIDTH_7_MHZ
++#undef BANDWIDTH_8_MHZ
++#endif
++
 +	/* adc multiplier */
 +	ret = af9033_read_reg(state, OFDM, api_adcx2, &tmp);
 +	if (ret)
@@ -2540,7 +2852,7 @@ index 0000000..0da292a
 +		sizeof(buf));
 +}
 +
-+static int af9033_set_freq_ctrl(struct af9033_state *state, fe_bandwidth_t bw)
++static int af9033_set_freq_ctrl(struct af9033_state *state)
 +{
 +	int ret;
 +	u8 buf[3], tmp;
@@ -2852,6 +3164,103 @@ index 0000000..0da292a
 +	return ret;
 +}
 +
++#ifdef V4L2_ONLY_DVB_V5
++static int af9033_set_frontend(struct dvb_frontend *fe)
++{
++	struct dtv_frontend_properties *params = &fe->dtv_property_cache;
++	struct af9033_state *state = fe->demodulator_priv;
++	int ret;
++	u8 tmp;
++	deb_info("%s: freq:%d bw:%d\n", __func__, params->frequency,
++		params->bandwidth_hz);
++
++	state->frequency = params->frequency;
++
++	/* program tuner */
++	if (fe->ops.tuner_ops.set_params)
++		fe->ops.tuner_ops.set_params(fe);
++
++	/* program CFOE coefficients */
++	ret = af9033_set_coeff(state, params->bandwidth_hz);
++	if (ret)
++		goto error;
++
++	/* program frequency control */
++	ret = af9033_set_freq_ctrl(state);
++	if (ret)
++		goto error;
++
++	/* program bandwidth */
++	switch (params->bandwidth_hz) {
++	case 6000000:
++		tmp = 0;
++		break;
++	case 7000000:
++		tmp = 1;
++		break;
++	case 8000000:
++		tmp = 2;
++		break;
++#if 0 /* keep */
++	case 5000000:
++		tmp = 3;
++		break;
++#endif
++	default:
++		deb_info("%s: invalid bandwidth\n", __func__);
++		return -EINVAL;
++	}
++	ret = af9033_write_reg_bits(state, OFDM, g_reg_bw, reg_bw_pos,
++		reg_bw_len, tmp);
++	if (ret)
++		goto error;
++
++	/* clear easy mode flag */
++	ret = af9033_write_reg(state, OFDM, api_Training_Mode, 0x00);
++	if (ret)
++		goto error;
++
++	/* clear empty channel flag */
++	ret = af9033_write_reg(state, OFDM, api_empty_channel_status, 0x00);
++	if (ret)
++		goto error;
++
++	/* clear MPEG2 lock flag */
++	ret = af9033_write_reg_bits(state, OFDM, r_mp2if_sync_byte_locked,
++		mp2if_sync_byte_locked_pos, mp2if_sync_byte_locked_len, 0x00);
++	if (ret)
++		goto error;
++
++	/* set frequency band
++	    174 -  230 MHz VHF     band = 0x00
++	    350 -  900 MHz UHF     band = 0x01
++	   1670 - 1680 MHz L-BAND  band = 0x02
++	   otherwise               band = 0xff */
++	/* TODO: are both min/max ranges really required... */
++	if ((state->frequency >= 174000000) && (state->frequency <= 230000000))
++		tmp = 0x00; /* VHF */
++	else if ((state->frequency >= 350000000) && (state->frequency <= 900000000))
++		tmp = 0x01; /* UHF */
++	else if ((state->frequency >= 1670000000) && (state->frequency <= 1680000000))
++		tmp = 0x02; /* L-BAND */
++	else
++		tmp = 0xff;
++
++	ret = af9033_write_reg(state, OFDM, api_FreBand, tmp);
++	if (ret)
++		goto error;
++
++	/* trigger ofsm */
++	ret = af9033_write_reg(state, OFDM, api_trigger_ofsm, 0);
++	if (ret)
++		goto error;
++error:
++	if (ret)
++		deb_info("%s: failed:%d\n", __func__, ret);
++
++	return ret;
++}
++#else
 +static int af9033_set_frontend(struct dvb_frontend *fe,
 +	struct dvb_frontend_parameters *params)
 +{
@@ -2873,7 +3282,7 @@ index 0000000..0da292a
 +		goto error;
 +
 +	/* program frequency control */
-+	ret = af9033_set_freq_ctrl(state, params->u.ofdm.bandwidth);
++	ret = af9033_set_freq_ctrl(state);
 +	if (ret)
 +		goto error;
 +
@@ -2947,6 +3356,7 @@ index 0000000..0da292a
 +
 +	return ret;
 +}
++#endif
 +
 +static int af9033_get_tune_settings(struct dvb_frontend *fe,
 +	struct dvb_frontend_tune_settings *fesettings)
@@ -2958,6 +3368,156 @@ index 0000000..0da292a
 +	return 0;
 +}
 +
++#ifdef V4L2_ONLY_DVB_V5
++static int af9033_get_frontend(struct dvb_frontend *fe)
++{
++	struct dtv_frontend_properties *p = &fe->dtv_property_cache;
++	struct af9033_state *state = fe->demodulator_priv;
++	int ret;
++	u8 buf[8];
++	deb_info("%s\n", __func__);
++#define TRANSMISSION_MODE  (g_reg_tpsd_txmod - g_reg_tpsd_txmod)
++#define GUARD_INTERVAL     (g_reg_tpsd_gi    - g_reg_tpsd_txmod)
++#define HIERARCHY          (g_reg_tpsd_hier  - g_reg_tpsd_txmod)
++#define CONSTELLATION      (g_reg_tpsd_const - g_reg_tpsd_txmod)
++#define BANDWIDTH          (g_reg_bw         - g_reg_tpsd_txmod)
++#define PRIORITY           (g_reg_dec_pri    - g_reg_tpsd_txmod)
++#define CODE_RATE_HP       (g_reg_tpsd_hpcr  - g_reg_tpsd_txmod)
++#define CODE_RATE_LP       (g_reg_tpsd_lpcr  - g_reg_tpsd_txmod)
++
++	/* read all needed registers */
++	ret = af9033_read_regs(state, OFDM, g_reg_tpsd_txmod, buf, sizeof(buf));
++	if (ret)
++		goto error;
++
++	deb_info("%s: ", __func__);
++	debug_dump(buf, sizeof(buf), deb_info);
++
++	switch ((buf[CONSTELLATION] >> 0) & 3) {
++	case 0:
++		p->modulation = QPSK;
++		break;
++	case 1:
++		p->modulation = QAM_16;
++		break;
++	case 2:
++		p->modulation = QAM_64;
++		break;
++	}
++
++	switch ((buf[TRANSMISSION_MODE] >> 0) & 3) {
++	case 0:
++		p->transmission_mode = TRANSMISSION_MODE_2K;
++		break;
++	case 1:
++		p->transmission_mode = TRANSMISSION_MODE_8K;
++		break;
++#if 0 /* keep */
++	case 2:
++		p->transmission_mode = TRANSMISSION_MODE_4K;
++		break;
++#endif
++	}
++
++	switch ((buf[GUARD_INTERVAL] >> 0) & 3) {
++	case 0:
++		p->guard_interval = GUARD_INTERVAL_1_32;
++		break;
++	case 1:
++		p->guard_interval = GUARD_INTERVAL_1_16;
++		break;
++	case 2:
++		p->guard_interval = GUARD_INTERVAL_1_8;
++		break;
++	case 3:
++		p->guard_interval = GUARD_INTERVAL_1_4;
++		break;
++	}
++
++	switch ((buf[HIERARCHY] >> 0) & 7) {
++	case 0:
++		p->hierarchy = HIERARCHY_NONE;
++		break;
++	case 1:
++		p->hierarchy = HIERARCHY_1;
++		break;
++	case 2:
++		p->hierarchy = HIERARCHY_2;
++		break;
++	case 3:
++		p->hierarchy = HIERARCHY_4;
++		break;
++	}
++
++	switch ((buf[CODE_RATE_HP] >> 0) & 7) {
++	case 0:
++		p->code_rate_HP = FEC_1_2;
++		break;
++	case 1:
++		p->code_rate_HP = FEC_2_3;
++		break;
++	case 2:
++		p->code_rate_HP = FEC_3_4;
++		break;
++	case 3:
++		p->code_rate_HP = FEC_5_6;
++		break;
++	case 4:
++		p->code_rate_HP = FEC_7_8;
++		break;
++	case 5:
++		p->code_rate_HP = FEC_NONE;
++		break;
++	}
++
++	switch ((buf[CODE_RATE_LP] >> 0) & 7) {
++	case 0:
++		p->code_rate_LP = FEC_1_2;
++		break;
++	case 1:
++		p->code_rate_LP = FEC_2_3;
++		break;
++	case 2:
++		p->code_rate_LP = FEC_3_4;
++		break;
++	case 3:
++		p->code_rate_LP = FEC_5_6;
++		break;
++	case 4:
++		p->code_rate_LP = FEC_7_8;
++		break;
++	case 5:
++		p->code_rate_LP = FEC_NONE;
++		break;
++	}
++
++	switch ((buf[BANDWIDTH] >> 0) & 3) {
++	case 0:
++		p->bandwidth_hz = 6000000;
++		break;
++	case 1:
++		p->bandwidth_hz = 7000000;
++		break;
++	case 2:
++		p->bandwidth_hz = 8000000;
++		break;
++#if 0 /* keep */
++	case 3:
++		p->bandwidth_hz = 5000000;
++		break;
++#endif
++	}
++
++	p->inversion = INVERSION_AUTO;
++	p->frequency = state->frequency;
++
++error:
++	if (ret)
++		deb_info("%s: failed:%d\n", __func__, ret);
++
++	return ret;
++}
++#else
 +static int af9033_get_frontend(struct dvb_frontend *fe,
 +	struct dvb_frontend_parameters *p)
 +{
@@ -3106,6 +3666,7 @@ index 0000000..0da292a
 +
 +	return ret;
 +}
++#endif
 +
 +static int af9033_update_ber_ucblocks(struct dvb_frontend *fe)
 +{
@@ -3222,6 +3783,9 @@ index 0000000..0da292a
 +		}
 +	}
 +	deb_info("%s: snr_val:%x snr:%x\n", __func__, snr_val, state->snr);
++
++	if (len && !af9033_snrdb)
++		state->snr = (0xffff / (snr_table[len - 1].snr * 10)) * state->snr;
 +
 +error:
 +	return ret;
@@ -3420,9 +3984,14 @@ index 0000000..0da292a
 +EXPORT_SYMBOL(af9033_attach);
 +
 +static struct dvb_frontend_ops af9033_ops = {
++#ifdef V4L2_ONLY_DVB_V5
++	.delsys = { SYS_DVBT },
++#endif
 +	.info = {
 +		.name = "Afatech AF9033 DVB-T",
++#ifndef V4L2_ONLY_DVB_V5
 +		.type = FE_OFDM,
++#endif
 +		.frequency_min =  44250000,
 +		.frequency_max = 867250000,
 +		.frequency_stepsize = 62500,
@@ -14968,3 +15537,6 @@ index 0000000..078276c
 +#define reg_p_dmb_sw_reset_lsb 0
 +
 +#endif
+-- 
+1.7.0.4
+

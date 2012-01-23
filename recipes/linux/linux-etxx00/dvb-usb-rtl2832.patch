@@ -36719,10 +36719,10 @@ index 0000000..abeea77
 +#endif
 diff --git a/drivers/media/dvb/dvb-usb/rtl2832u.c b/drivers/media/dvb/dvb-usb/rtl2832u.c
 new file mode 100644
-index 0000000..6e7eac0
+index 0000000..1787943
 --- /dev/null
 +++ b/drivers/media/dvb/dvb-usb/rtl2832u.c
-@@ -0,0 +1,1794 @@
+@@ -0,0 +1,1821 @@
 +#include <linux/module.h>
 +#include <linux/version.h>
 +
@@ -37545,8 +37545,7 @@ index 0000000..6e7eac0
 +	{ USB_DEVICE(USB_VID_GTEK, USB_PID_GTEK_WARM_A683)},		// 59
 +
 +	{ USB_DEVICE(USB_VID_LEADTEK, USB_PID_LEADTEK_WARM_1)},		// 60			
-+	{ USB_DEVICE(USB_VID_LEADTEK, USB_PID_LEADTEK_WARM_2)},		// 61
-+	{ USB_DEVICE(USB_VID_LEADTEK, USB_PID_LEADTEK_WARM_3)},		
++	{ USB_DEVICE(USB_VID_LEADTEK, USB_PID_LEADTEK_WARM_2)},		// 61	
 +
 +	{ USB_DEVICE(USB_VID_YUAN, USB_PID_YUAN_WARM)},			//62
 +        { USB_DEVICE(USB_VID_YUAN, USB_PID_YUAN_WARM80)},		//63
@@ -37563,8 +37562,14 @@ index 0000000..6e7eac0
 +	{ USB_DEVICE(USB_VID_COMPRO, USB_PID_COMPRO_WARM_9530)},	// 73  71																						//------rtl2832u_6th_properties(6)
 +	{ USB_DEVICE(USB_VID_COMPRO,  USB_PID_COMPRO_WARM_9520)},	// 74
 +	
-+	{ USB_DEVICE(USB_VID_GOLDENBRIDGE, USB_PID_GOLDENBRIDGE_WARM)},	//75	
-+													
++	{ USB_DEVICE(USB_VID_GOLDENBRIDGE, USB_PID_GOLDENBRIDGE_WARM)},	//75
++
++	{ USB_DEVICE(USB_VID_LEADTEK, USB_PID_LEADTEK_WARM_3)},		// 76
++
++	{ USB_DEVICE(USB_VID_TERRATEC, USB_PID_TERRATEC_00D3)},		// 77
++	{ USB_DEVICE(USB_VID_TERRATEC, USB_PID_TERRATEC_00D4)},		// 78
++	{ USB_DEVICE(USB_VID_TERRATEC, USB_PID_TERRATEC_00E0)},		// 79
++
 +	{ 0 },
 +};
 +
@@ -37927,7 +37932,7 @@ index 0000000..6e7eac0
 +		.rc_interval  = RT_RC_POLLING_INTERVAL_TIME_MS,		
 +	},
 +	
-+	.num_device_descs = 9,
++	.num_device_descs = 12,
 +	.devices = {
 +		{ .name = "DK DONGLE",
 +		  .cold_ids = { NULL, NULL },
@@ -37974,8 +37979,25 @@ index 0000000..6e7eac0
 +		  .cold_ids = { NULL, NULL },
 +		  .warm_ids = { &rtl2832u_usb_table[35], NULL },
 +		},				
-+		
-+		
++
++		{
++		  .name = "Terratec Cinergy T Stick RC (Rev.3)",
++		  .cold_ids = { NULL, NULL },
++		  .warm_ids = { &rtl2832u_usb_table[77], NULL },
++		},
++
++		{
++		  .name = "Terratec Cinergy T Stick BLACK (Rev.2)",
++		  .cold_ids = { NULL, NULL },
++		  .warm_ids = { &rtl2832u_usb_table[78], NULL },
++		},
++
++		{
++		  .name = "Terratec Noxon DAB Stick (Rev.2)",
++		  .cold_ids = { NULL, NULL },
++		  .warm_ids = { &rtl2832u_usb_table[79], NULL },
++		},
++
 +	}
 +};
 +
@@ -38247,7 +38269,7 @@ index 0000000..6e7eac0
 +		.rc_interval  = RT_RC_POLLING_INTERVAL_TIME_MS,		
 +	},
 +	
-+	.num_device_descs = 9,
++	.num_device_descs = 10,
 +	.devices = {
 +		{ .name = "DVB-T TV Stick",
 +		  .cold_ids = { NULL, NULL },
@@ -38287,6 +38309,11 @@ index 0000000..6e7eac0
 +		  .name ="USB DVB-T Device",
 +		  .cold_ids = { NULL, NULL },
 +		  .warm_ids = { &rtl2832u_usb_table[62], NULL },
++		},
++		{
++		  .name ="Leadtek USB DVB-T Device",
++		  .cold_ids = { NULL, NULL },
++		  .warm_ids = { &rtl2832u_usb_table[76], NULL },
 +		},
 +
 +		{ NULL },				
@@ -38519,10 +38546,10 @@ index 0000000..6e7eac0
 +
 diff --git a/drivers/media/dvb/dvb-usb/rtl2832u.h b/drivers/media/dvb/dvb-usb/rtl2832u.h
 new file mode 100644
-index 0000000..a6b5d77
+index 0000000..531644f
 --- /dev/null
 +++ b/drivers/media/dvb/dvb-usb/rtl2832u.h
-@@ -0,0 +1,274 @@
+@@ -0,0 +1,277 @@
 +#ifndef _RTL2832U_H_
 +#define _RTL2832U_H_
 +
@@ -38572,6 +38599,9 @@ index 0000000..a6b5d77
 +#endif
 +#define	USB_PID_TERRATEC_00A9					0x00A9
 +#define	USB_PID_TERRATEC_00B3					0x00B3
++#define	USB_PID_TERRATEC_00D3					0x00D3
++#define	USB_PID_TERRATEC_00D4					0x00D4
++#define	USB_PID_TERRATEC_00E0					0x00E0
 +
 +#ifndef USB_VID_AZUREWAVE_2
 +	#define	USB_VID_AZUREWAVE_2					0x13D3
@@ -100561,3 +100591,6 @@ index 0000000..dbfbce6
 +
 +
 +#endif
+-- 
+1.7.0.4
+
