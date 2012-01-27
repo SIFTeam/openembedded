@@ -1,7 +1,7 @@
 #
 # Automatically generated make config: don't edit
 # Linux kernel version: 2.6.18-7.4
-# Sun Jan 22 19:18:21 2012
+# Fri Jan 27 17:55:54 2012
 #
 CONFIG_MIPS=y
 
@@ -298,7 +298,7 @@ CONFIG_STOP_MACHINE=y
 #
 # Block layer
 #
-# CONFIG_LBD is not set
+CONFIG_LBD=y
 # CONFIG_BLK_DEV_IO_TRACE is not set
 # CONFIG_LSF is not set
 
