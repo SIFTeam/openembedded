@@ -42,11 +42,13 @@ case "$ACTION" in
 		then
 			# no fstab entry, use automatic mountpoint
 			REMOVABLE=`cat /sys/block/$DEVBASE/removable`
-			MODEL=`cat /sys/block/$DEVBASE/device/model`
-			if [ "${REMOVABLE}" -eq "0" ]; then
-				# mount the first non-removable device on /media/hdd
+			readlink -fn /sys/block/$DEVBASE/device | grep -qs 'pci'
+			EXTERNAL=$?
+			if [ "${REMOVABLE}" -eq "0" -a $EXTERNAL -eq 0 ]; then
+				# mount the first non-removable internal device on /media/hdd
 				DEVICETYPE="hdd"
 			else
+				MODEL=`cat /sys/block/$DEVBASE/device/model`
 				if [ "$MODEL" == "USB CF Reader   " ]; then
 					DEVICETYPE="cf"
 				elif [ "$MODEL" == "Compact Flash   " ]; then
