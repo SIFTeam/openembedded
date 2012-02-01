@@ -41,11 +41,13 @@ kernel_do_install_append() {
 }
 
 pkg_postinst_kernel-image () {
-        if [ -d /proc/stb ] ; then
-                flash_eraseall -j /dev/mtd1
-                nandwrite -p /dev/mtd1 /${KERNEL_IMAGEDEST}/${KERNEL_IMAGETYPE}.gz
+        if [ "x$D" == "x" ]; then
+                if [ -f /${KERNEL_IMAGEDEST}/${KERNEL_IMAGETYPE}.gz ] ; then
+                        flash_eraseall -j /dev/mtd1
+                        nandwrite -p /dev/mtd1 /${KERNEL_IMAGEDEST}/${KERNEL_IMAGETYPE}.gz
+                        rm -f /${KERNEL_IMAGEDEST}/${KERNEL_IMAGETYPE}.gz
+                fi
         fi
-        rm -f /${KERNEL_IMAGEDEST}/${KERNEL_IMAGETYPE}.gz
         true
 }
 
