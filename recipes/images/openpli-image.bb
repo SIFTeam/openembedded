@@ -45,6 +45,7 @@ OPTIONAL_PACKAGES += " \
 			hdparm \
 			rsync \
 			ntfs-3g \
+			mpd \
 			"
 
 export IMAGE_BASENAME = "openpli"
