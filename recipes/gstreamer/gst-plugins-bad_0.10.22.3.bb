@@ -12,7 +12,7 @@ DEPENDS_sifteam += "gst-plugins-base"
 RCONFLICTS_gst-plugin-mpegdemux = "gst-plugin-fluendo-mpegdemux"
 RREPLACES_gst-plugin-mpegdemux = "gst-plugin-fluendo-mpegdemux"
 
-PR = "${INC_PR}.2"
+PR = "${INC_PR}.3"
 
 do_configure_prepend() {
     sed -i -e s:docs::g Makefile.am
@@ -66,6 +66,7 @@ gst-plugin-faac.* \
 gst-plugin-faad.* \
 gst-plugin-fbdevsink.* \
 gst-plugin-festival.* \
+gst-plugin-fragmented.* \
 gst-plugin-freeze.* \
 gst-plugin-frei0r.* \
 gst-plugin-gaudieffects.* \
@@ -88,6 +89,7 @@ gst-plugin-modplug.* \
 gst-plugin-mpeg4videoparse.* \
 gst-plugin-mpegdemux.* \
 gst-plugin-mpegpsmux.* \
+gst-plugin-mpegtsdemux.* \
 gst-plugin-mpegtsmux.* \
 gst-plugin-mpegvideoparse.* \
 gst-plugin-mve.* \
