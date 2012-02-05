@@ -16,7 +16,7 @@ RDEPENDS_${PN} = "python-codecs python-core python-lang python-re python-threadi
 	gst-plugin-flac gst-plugin-mpegdemux gst-plugin-flv gst-plugin-dvdsub \
 	gst-plugin-souphttpsrc gst-plugin-mpegaudioparse gst-plugin-subparse \
 	gst-plugin-apetag gst-plugin-icydemux gst-plugin-autodetect gst-plugin-audioparsers \
-	gst-plugin-subsink \
+	gst-plugin-subsink gst-plugin-fragmented gst-plugin-mpegtsdemux \
 	python-twisted-core python-elementtree python-compression \
 	python-numbers python-terminal python-textutils \
 	python-utf8-hack python-shell \
@@ -92,7 +92,7 @@ inherit gitpkgv
 
 PV = "2.7+git${SRCPV}"
 PKGV = "2.7+git${GITPKGV}"
-PR = "r37"
+PR = "r38"
 
 SRC_URI = "git://github.com/SIFTeam/enigma2.git;protocol=git"
 #SRC_URI = "git://${HOME}/sifteam/enigma2;protocol=file"
