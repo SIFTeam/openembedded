@@ -1,0 +1,52 @@
+diff -Naur linux-2.6.18/drivers/usb/serial.orig/ftdi_sio.c linux-2.6.18//drivers/usb/serial/ftdi_sio.c
+--- linux-2.6.18/drivers/usb/serial.orig//ftdi_sio.c	2006-09-20 05:42:06.000000000 +0200
++++ linux-2.6.18//drivers/usb/serial/ftdi_sio.c	2012-02-04 13:11:08.000000000 +0100
+@@ -507,6 +507,7 @@
+ 	{ USB_DEVICE(FTDI_VID, FTDI_THORLABS_PID) },
+ 	{ USB_DEVICE(TESTO_VID, TESTO_USB_INTERFACE_PID) },
+ 	{ USB_DEVICE(FTDI_VID, FTDI_GAMMA_SCOUT_PID) },
++	{ USB_DEVICE(FTDI_VID, FTDI_TRIPLEREADER) },
+ 	{ },					/* Optional parameter entry */
+ 	{ }					/* Terminating entry */
+ };
+@@ -977,10 +978,15 @@
+		/* Determine interface code. */
+		inter = serial->interface->altsetting->desc.bInterfaceNumber;
+		if (inter == 0) {
+-			priv->interface = PIT_SIOA;
+-		} else {
+-			priv->interface = PIT_SIOB;
++			priv->interface = INTERFACE_A;
++		} else  if (inter == 1) {
++			priv->interface = INTERFACE_B;
++		} else  if (inter == 2) {
++			priv->interface = INTERFACE_C;
++		} else  if (inter == 3) {
++			priv->interface = INTERFACE_D;
+		}
++
+ 		/* BM-type devices have a bug where bcdDevice gets set
+ 		 * to 0x200 when iSerialNumber is 0.  */
+ 		if (version < 0x500) {
+diff -Naur linux-2.6.18/drivers/usb/serial.orig/ftdi_sio.h linux-2.6.18//drivers/usb/serial/ftdi_sio.h
+--- linux-2.6.18/drivers/usb/serial.orig//ftdi_sio.h	2006-09-20 05:42:06.000000000 +0200
++++ linux-2.6.18//drivers/usb/serial/ftdi_sio.h	2012-02-04 13:18:39.000000000 +0100
+@@ -495,12 +495,12 @@
+  *
+  */
+ 
+-/* Port Identifier Table */
+-#define PIT_DEFAULT 		0 /* SIOA */
+-#define PIT_SIOA		1 /* SIOA */
+-/* The device this driver is tested with one has only one port */
+-#define PIT_SIOB		2 /* SIOB */
+-#define PIT_PARALLEL		3 /* Parallel */
++/* Interface indices for FT2232, FT2232H and FT4232H devices */
++#define INTERFACE_A		1
++#define INTERFACE_B		2
++#define INTERFACE_C		3
++#define INTERFACE_D		4
++#define FTDI_TRIPLEREADER			0x6011
+ 
+ /* FTDI_SIO_RESET */
+ #define FTDI_SIO_RESET_REQUEST FTDI_SIO_RESET
