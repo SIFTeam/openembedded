@@ -5,7 +5,7 @@ PACKAGES_DYNAMIC = "enigma2-plugin-pli-.*"
 
 DEPENDS = "nfs-utils ushare twistedsnmp"
 
-RDEPENDS_enigma2-plugin-pli-snmpagent = "enigma2-plugin-pli-bitrate twistedsnmp"
+RDEPENDS_enigma2-plugin-pli-snmpagent = "enigma2-plugin-extensions-bitrate twistedsnmp"
 
 DESCRIPTION_enigma2-plugin-extensions-ushare = "UPnP media server"
 RDEPENDS_enigma2-plugin-extensions-ushare = "ushare"
@@ -14,7 +14,7 @@ inherit gitpkgv
 
 PV = "1.0+git${SRCPV}"
 PKGV = "1.0+git${GITPKGV}"
-PR = "r2"
+PR = "r3"
 
 SRC_URI = "git://openpli.git.sourceforge.net/gitroot/openpli/enigma2-plugins;protocol=git \
 		   file://pythonpaths.patch"

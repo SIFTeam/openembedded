@@ -2,7 +2,7 @@ DESCRIPTION = "A cross platform audio library"
 LICENSE = "GPL"
 HOMEPAGE = "http://www.xiph.org/ao/"
 SECTION = "libs/multimedia"
-DEPENDS = "alsa-lib pulseaudio"
+DEPENDS = "alsa-lib"
 PROVIDES = "libao-alsa libao-alsa-plugin"
 PR = "r1"
 
@@ -18,7 +18,7 @@ EXTRA_OECONF = "\
   --enable-alsa09 \
   --disable-arts \
   --disable-nas \
-  --enable-pulse \
+  --disable-pulse \
 "
 
 PACKAGES =+ "${PN}-alsa ${PN}-alsa-dev ${PN}-pulse ${PN}-pulse-dev ${PN}-oss ${PN}-oss-dev"

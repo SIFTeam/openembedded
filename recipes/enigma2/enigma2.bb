@@ -57,13 +57,6 @@ RDEPENDS_${PN} += "${@["gst-plugin-ivorbisdec","gst-plugin-vorbis"][bb.data.getV
 
 RDEPENDS_enigma2_append_dm7020 = " gst-plugin-ossaudio"
 
-# FPU hardware should be able to downmix DTS
-RRECOMMENDS_${PN} += "${@["","gst-plugin-dtsdec"][bb.data.getVar("TARGET_FPU",d,1) == 'hard']}"
-
-# 'forward depends' - no two providers can have the same PACKAGES_DYNAMIC, however both
-# enigma2 and enigma2-plugins produce enigma2-plugin-*.
-#DEPENDS += "enigma2-plugins"
-#PACKAGES_DYNAMIC = "enigma2-plugin-*"
 
 DESCRIPTION_append_enigma2-plugin-extensions-cutlisteditor = "enables you to cut your movies."
 RDEPENDS_enigma2-plugin-extensions-cutlisteditor = "aio-grab"
