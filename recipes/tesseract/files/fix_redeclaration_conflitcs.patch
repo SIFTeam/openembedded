@@ -1,0 +1,26 @@
+diff -ruN tesseract-1.0.orig/ccmain/tfacep.h tesseract-1.0/ccmain/tfacep.h
+--- tesseract-1.0.orig/ccmain/tfacep.h	2006-06-17 00:17:03.000000000 +0200
++++ tesseract-1.0/ccmain/tfacep.h	2011-05-29 17:00:01.000000000 +0200
+@@ -103,7 +103,7 @@
+   //extern int                                    enable_assoc;
+   //extern int                                    chop_enable;
+   //extern int                                    permute_only_top;
+-  extern int display_ratings;
++  //extern int display_ratings;
+ 
+ };
+ 
+diff -ruN tesseract-1.0.orig/cutil/globals.h tesseract-1.0/cutil/globals.h
+--- tesseract-1.0.orig/cutil/globals.h	2006-06-17 00:17:07.000000000 +0200
++++ tesseract-1.0/cutil/globals.h	2011-05-29 16:55:53.000000000 +0200
+@@ -43,8 +43,8 @@
+ extern int debugs[MAXPROC];      /*debug flags */
+ extern int plots[MAXPROC];       /*plot flags */
+ extern int corners[4];           /*corners of scan window */
+-extern int optind;               /*option index */
+-extern char *optarg;             /*option argument */
++//extern int optind;               /*option index */
++//extern char *optarg;             /*option argument */
+                                  /*image file name */
+ extern char imagefile[FILENAMESIZE];
+                                  /* main directory */
