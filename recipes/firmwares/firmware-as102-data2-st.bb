@@ -2,7 +2,9 @@ require linux-firmware.inc
 
 DESCRIPTION = "Firmware for as102_data2_st"
 
-SRCREV = "46c66487a85cd05a4acbd5eb4828f72783d1be4c"
+SRCREV = "61a66a03697b3cdc04e244688fa716aa13b3bf12"
+
+PR = "r1"
 
 do_install() {
 	install -d ${D}${base_libdir}/firmware
