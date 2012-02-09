@@ -4,7 +4,7 @@ require linux-opendreambox.inc
 
 SRCREV = "ac6cc9511a5f70eaa584c63fc5c3de33cae1d0e7"
 # When changing SRCREV without incrementing MACHINE_KERNEL_PR, increment INCREMENTAL_PR instead, to force a package version increment
-INCREMENTAL_PR = "3"
+INCREMENTAL_PR = "4"
 
 PR_INC = "+git${INCREMENTAL_PR}+${SRCREV}"
 
@@ -21,6 +21,7 @@ SRC_URI += " http://trappist.elis.ugent.be/~mronsse/cdfs/download/cdfs-2.6.18.ta
 	file://stblinux-2.6.18-fixed-brcmnand-buffer-overflow.patch \
 	file://stblinux-2.6.18-brcmnand-fixed-dm7020hd-oob-write-op.patch \
 	file://linux-2.6.18-Makefile.patch \
+	file://linux-2.6.18-ftdi_triplereader.patch \
 	"
 
 do_configure_prepend() {
