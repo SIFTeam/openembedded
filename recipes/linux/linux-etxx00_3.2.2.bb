@@ -1,7 +1,7 @@
 DESCRIPTION = "Linux kernel for ${MACHINE}"
 LICENSE = "GPL"
 
-MACHINE_KERNEL_PR_append = ".5"
+MACHINE_KERNEL_PR_append = ".5.2"
 
 DEPENDS = "mtd-minimal-nand-utils"
 RDEPENDS_kernel-image = "mtd-minimal-nand-utils"
@@ -9,6 +9,7 @@ RDEPENDS_kernel-image = "mtd-minimal-nand-utils"
 SRC_URI += "http://www.et-view.com/download/linux-${PV}.tar.gz \
 	file://${MACHINE}_defconfig \
 	file://fix-proc-cputype.patch \
+	file://iosched-slice_idle-1.patch \
 	file://add-dmx-source-timecode.patch \
 	file://dvb-usb-af9035.patch \
 	file://tda18218-7mhz-lopass.patch \
