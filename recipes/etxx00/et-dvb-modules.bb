@@ -3,8 +3,8 @@ SECTION = "base"
 PRIORITY = "required"
 LICENSE = "proprietary"
 
-KV = "3.1.0"
-SRCDATE = "20120107"
+KV = "3.2.2"
+SRCDATE = "20120204"
 
 PV = "${KV}+${SRCDATE}"
 MACHINE_KERNEL_PR_append = ".0"

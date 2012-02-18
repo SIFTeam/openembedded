@@ -50,7 +50,7 @@ module_autoload_dvb-usb-ec168 = "dvb-usb-ec168"
 module_autoload_dvb-usb-friio = "dvb-usb-friio"
 module_autoload_dvb-usb-gl861 = "dvb-usb-gl861"
 module_autoload_dvb-usb-gp8psk = "dvb-usb-gp8psk"
-module_autoload_dvb-usb-it9135 = "dvb-usb-it9135"
+module_autoload_dvb-usb-it913x = "dvb-usb-it913x"
 module_autoload_dvb-usb-m920x = "dvb-usb-m920x"
 module_autoload_dvb-usb-opera = "dvb-usb-opera"
 module_autoload_dvb-usb-rtl2832 = "dvb-usb-rtl2832"
@@ -96,7 +96,7 @@ MACHINE_FEATURES += "32bpp hdtv 3dtv switchoff lpcm textlcd dvbapi5"
 
 CHIPSET = "bcm7413"
 
-MACHINE_KERNEL_PR = "r6"
+MACHINE_KERNEL_PR = "r7"
 
 PREFERRED_VERSION_linux-libc-headers = "2.6.31"
 

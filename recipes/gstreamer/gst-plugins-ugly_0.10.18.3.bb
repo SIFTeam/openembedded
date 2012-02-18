@@ -6,7 +6,7 @@ SRC_URI = "http://gstreamer.freedesktop.org/src/${PN}/pre/${PN}-${PV}.tar.bz2;na
 PR = "${INC_PR}.0"
 
 DEPENDS += "gst-plugins-base libsidplay"
-DEPENDS_sifteam += "gst-plugins-base libsidplay"
+DEPENDS_sifteam += "gst-plugins-base libsidplay opencore-amr"
 
 python() {
 	# Don't build, if we are building an ENTERPRISE distro
