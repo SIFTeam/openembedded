@@ -60,7 +60,6 @@ ENIGMA2_OPTIONAL = " \
 				enigma2-plugin-extensions-tuxcom \
 				enigma2-plugin-extensions-tuxterm \
 				${@base_contains("MACHINE_FEATURES", "usbhost", "enigma2-plugin-drivers-usbserial" , "", d)} \
-				${@base_contains("MACHINE_FEATURES", "dvbapi5", "dvb-usb-drivers-meta" , "", d)} \
 				enigma2-plugin-security-firewall \
 				enigma2-plugin-extensions-xmltvimport \
 #                                ${@base_contains("CHIPSET", "smp8634", "" , "enigma2-plugin-extensions-ambx", d)} \
@@ -77,6 +76,7 @@ ENIGMA2_OPTIONAL = " \
 				dvdfs \
 				minidlna \
 				nano \
+				sifteam-firmwares \
 				"
 
 IMAGE_INSTALL += " \
