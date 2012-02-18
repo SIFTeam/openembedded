@@ -3,7 +3,7 @@ LICENSE = "APL + others"
 
 DEPENDS = "tiff"
 
-SRC_URI = "${SOURCEFORGE_MIRROR}/${PN}-ocr/${P}.tar.gz"
+SRC_URI = "${SOURCEFORGE_MIRROR}/${PN}-ocr/${P}.tar.gz file://fix_redeclaration_conflitcs.patch;patch=1"
 
 inherit autotools pkgconfig
 
