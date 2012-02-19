@@ -8,7 +8,7 @@ SRCDATE = "20111220"
 KV = "2.6.22.19-25-opensat"
 PV = "2.6.22.19-25-opensat-${SRCDATE}"
 
-PR = "r3"
+PR = "r5"
 
 RDEPENDS = "kernel (${KV})"
 
@@ -70,7 +70,7 @@ do_install_mipsel() {
 
 pkg_postinst_azboxhd-dvb-modules () {
 	if [ -d /proc/stb ]; then
-		depmod -ae
+		depmod -a
 		update-modules
 	fi
 	true
