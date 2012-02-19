@@ -8,7 +8,7 @@ SRCDATE = "20120125"
 KV = "2.6.22.19-44-opensat"
 PV = "2.6.22.19-44-opensat-${SRCDATE}"
 
-PR = "r9"
+PR = "r10"
 
 RDEPENDS = "kernel (${KV})"
 
