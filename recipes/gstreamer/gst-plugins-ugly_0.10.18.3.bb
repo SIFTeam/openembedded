@@ -31,4 +31,6 @@ gst-plugin-mpegstream.* \
 gst-plugin-rmdemux.* \
 gst-plugin-sid.* \
 gst-plugin-x264.* \
+gst-plugin-amrnb.* \
+gst-plugin-amrwbdec.* \
 "
