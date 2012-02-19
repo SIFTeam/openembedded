@@ -1,8 +1,6 @@
 require gst-plugins.inc
 
 SRC_URI = "http://gstreamer.freedesktop.org/src/${PN}/pre/${PN}-${PV}.tar.bz2;name=archive \
-	file://mpegpsdemux-speedup.patch \
-	file://mpegtsmux_indexing_alignment.patch \
 	file://hlsdemux_reset_mediasequence.patch \
 	"
 
@@ -12,7 +10,7 @@ DEPENDS_sifteam += "gst-plugins-base"
 RCONFLICTS_gst-plugin-mpegdemux = "gst-plugin-fluendo-mpegdemux"
 RREPLACES_gst-plugin-mpegdemux = "gst-plugin-fluendo-mpegdemux"
 
-PR = "${INC_PR}.3"
+PR = "${INC_PR}.5"
 
 do_configure_prepend() {
     sed -i -e s:docs::g Makefile.am
