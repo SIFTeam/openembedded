@@ -34,7 +34,7 @@ ENIGMA2_PLUGINS = " \
 				enigma2-plugin-systemplugins-satfinder \
 				enigma2-plugin-systemplugins-videotune \
 				enigma2-plugin-extensions-mediascanner \
-				${@base_contains("MACHINE_FEATURES", "tpm", "enigma2-plugin-extensions-webinterface" , "", d)} \
+				enigma2-plugin-extensions-openwebif \
 				enigma2-plugin-extensions-graphmultiepg \
 				enigma2-plugin-systemplugins-skinselector \
 				enigma2-plugin-extensions-pictureplayer \
