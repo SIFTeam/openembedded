@@ -3,7 +3,7 @@ require gst-plugins.inc
 SRC_URI = "http://gstreamer.freedesktop.org/src/${PN}/pre/${PN}-${PV}.tar.bz2;name=archive"
 #SRC_URI_append_sifteam = " file://dvdsubdec-addproperty-singlebuffer.patch"
 
-PR = "${INC_PR}.0"
+PR = "${INC_PR}.1"
 
 DEPENDS += "gst-plugins-base libsidplay"
 DEPENDS_sifteam += "gst-plugins-base libsidplay opencore-amr"
