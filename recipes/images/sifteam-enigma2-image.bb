@@ -37,7 +37,6 @@ ENIGMA2_PLUGINS = " \
 				enigma2-plugin-extensions-graphmultiepg \
 				enigma2-plugin-systemplugins-skinselector \
 				enigma2-plugin-extensions-pictureplayer \
-				enigma2-plugin-extensions-mediaplayer \
 				${@base_contains("MACHINE_FEATURES", "mediacenter", "enigma2-plugin-extensions-mediacenter", "enigma2-plugin-extensions-mediaplayer", d)} \
 				enigma2-plugin-systemplugins-networkbrowser \
 				enigma2-plugin-systemplugins-fastscan \
