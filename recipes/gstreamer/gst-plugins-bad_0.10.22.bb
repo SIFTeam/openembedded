@@ -7,12 +7,12 @@ SRC_URI_append_openpli += "\
 	"
 
 DEPENDS += "opencv orc-native orc libcdaudio gst-plugins-base openssl directfb libmodplug librsvg"
-DEPENDS_openpli += "gst-plugins-base"
+DEPENDS_openpli += "gst-plugins-base librtmp"
 
 RCONFLICTS_gst-plugin-mpegdemux = "gst-plugin-fluendo-mpegdemux"
 RREPLACES_gst-plugin-mpegdemux = "gst-plugin-fluendo-mpegdemux"
 
-PR = "${INC_PR}.1"
+PR = "${INC_PR}.2"
 
 do_configure_prepend() {
     sed -i -e s:docs::g Makefile.am
