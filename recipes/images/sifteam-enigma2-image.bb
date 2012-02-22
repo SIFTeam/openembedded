@@ -51,6 +51,10 @@ ENIGMA2_PLUGINS = " \
 				${@base_contains("MACHINE_FEATURES", "wifi", "enigma2-plugin-systemplugins-wirelesslan", "", d)} \
 				"
 
+ENIGMA2_PLUGINS_append_azboxhd = " \
+				enigma2-plugin-extensions-rtiled \
+				"
+
 DEPENDS += "enigma2 enigma2-plugins enigma2-pliplugins"
 
 ENIGMA2_OPTIONAL = " \
