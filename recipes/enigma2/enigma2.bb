@@ -20,7 +20,7 @@ RDEPENDS_${PN} = "python-codecs python-core python-lang python-re python-threadi
 	gst-plugin-amrwbdec gst-plugin-amrnb \
 	python-twisted-core python-elementtree python-compression \
 	python-numbers python-terminal python-textutils \
-	python-utf8-hack python-shell \
+	python-utf8-hack python-shell python-twisted-web \
 	enigma2-fonts \
 	glibc-gconv-iso8859-15 ethtool libemu"
 
@@ -86,7 +86,7 @@ inherit gitpkgv
 
 PV = "2.7+git${SRCPV}"
 PKGV = "2.7+git${GITPKGV}"
-PR = "r39"
+PR = "r40"
 
 SRC_URI = "git://github.com/SIFTeam/enigma2.git;protocol=git"
 #SRC_URI = "git://${HOME}/sifteam/enigma2;protocol=file"
