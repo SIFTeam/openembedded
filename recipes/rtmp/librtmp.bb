@@ -1,6 +1,8 @@
 DESCRIPTION = "librtmp Real-Time Messaging Protocol API"
 LICENSE = "LGPL"
 
+DEPENDS = "openssl"
+
 inherit gitpkgv
 
 PKGV = "2.4+git${GITPKGV}"
