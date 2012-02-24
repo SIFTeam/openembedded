@@ -1,5 +1,0 @@
-#!/bin/sh
-mknod /dev/mum0 c 126 0
-mknod /dev/em8xxx0 c 127 0
-/usr/bin/set_outports_old &
-sleep 3

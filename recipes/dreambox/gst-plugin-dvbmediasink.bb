@@ -8,12 +8,14 @@ inherit gitpkgv
 
 PV = "0.10.0+git${SRCPV}"
 PKGV = "0.10.0+git${GITPKGV}"
-PR = "r1"
+PR = "r2"
 
 inherit autotools pkgconfig
 
 SRC_URI = "git://schwerkraft.elitedvb.net/dvbmediasink/dvbmediasink.git;protocol=git \
-		   file://getdecodertime.patch"
+		   file://getdecodertime.patch \
+		   file://0001-fix-filedescriptor-logic.patch \
+		   "
 
 S = "${WORKDIR}/git"
 

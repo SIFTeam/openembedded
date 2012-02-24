@@ -1,6 +1,6 @@
 # azboxhd.inc
 
-MACHINE_FEATURES += "wifi alsa pci kernel26 usbhost nl80211 wifiusblegacy hdtv textlcd"
+MACHINE_FEATURES += "wifi alsa pci kernel26 usbhost nl80211 wifiusblegacy hdtv textlcd mediacenter"
 
 TARGET_ARCH = "mipsel"
 TARGET_FPU ?= "soft"

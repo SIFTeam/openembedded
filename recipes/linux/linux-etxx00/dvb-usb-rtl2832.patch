@@ -1,23 +1,26 @@
 diff --git a/drivers/media/dvb/dvb-usb/Kconfig b/drivers/media/dvb/dvb-usb/Kconfig
-index 3b327f7..8d7a5dc 100644
+index 0701bad..890e3e0 100644
 --- a/drivers/media/dvb/dvb-usb/Kconfig
 +++ b/drivers/media/dvb/dvb-usb/Kconfig
-@@ -399,3 +399,10 @@ config DVB_USB_A867
- 	help
+@@ -356,6 +356,13 @@ config DVB_USB_A867
  	  Choose Y or M here if you have an Avermedia A867 device
  	  To compile this driver as a module, choose M here
-+
+ 
 +config DVB_USB_RTL2832
 +	tristate "Realtek RTL2832 DVB-T USB2.0 support"
 +	depends on DVB_USB
 +	default m
 +	help
-+  	  Say Y or M to support Realtek RTL2832 DVB-T driver
++		Say Y or M to support Realtek RTL2832 DVB-T driver
++
+ config DVB_USB_CE6230
+ 	tristate "Intel CE6230 DVB-T USB2.0 support"
+ 	depends on DVB_USB && EXPERIMENTAL
 diff --git a/drivers/media/dvb/dvb-usb/Makefile b/drivers/media/dvb/dvb-usb/Makefile
-index 31a22e0..5fbe7ab 100644
+index 4745905..834c2b2 100644
 --- a/drivers/media/dvb/dvb-usb/Makefile
 +++ b/drivers/media/dvb/dvb-usb/Makefile
-@@ -107,6 +107,18 @@ dvb-usb-a867-objs := a867_af903x-core.o a867_af903x-devices.o a867_af903x-drv.o
+@@ -115,6 +115,18 @@ dvb-usb-a867-objs := a867_af903x-core.o a867_af903x-devices.o a867_af903x-drv.o
  			a867_user.o a867_mxl5007t.o a867_Maxlinear_MXL5007.o a867_Afa_AF9007.o
  obj-$(CONFIG_DVB_USB_A867) += dvb-usb-a867.o
  
@@ -33,9 +36,9 @@ index 31a22e0..5fbe7ab 100644
 +			rtl2832u_ioctl.o nim_rtl2832_fc0013.o tuner_fc0013.o
 +obj-$(CONFIG_DVB_USB_RTL2832) += dvb-usb-rtl2832.o
 +
- EXTRA_CFLAGS += -Idrivers/media/dvb/dvb-core/ -Idrivers/media/dvb/frontends/
+ ccflags-y += -Idrivers/media/dvb/dvb-core/ -Idrivers/media/dvb/frontends/
  # due to tuner-xc3028
- EXTRA_CFLAGS += -Idrivers/media/common/tuners
+ ccflags-y += -Idrivers/media/common/tuners
 diff --git a/drivers/media/dvb/dvb-usb/demod_rtl2832.c b/drivers/media/dvb/dvb-usb/demod_rtl2832.c
 new file mode 100644
 index 0000000..f367f7f
@@ -24833,7 +24836,7 @@ index 0000000..d8af754
 +
 diff --git a/drivers/media/dvb/dvb-usb/nim_rtl2832_fc2580.c b/drivers/media/dvb/dvb-usb/nim_rtl2832_fc2580.c
 new file mode 100644
-index 0000000..0903602
+index 0000000..09036021
 --- /dev/null
 +++ b/drivers/media/dvb/dvb-usb/nim_rtl2832_fc2580.c
 @@ -0,0 +1,343 @@
@@ -100592,5 +100595,5 @@ index 0000000..dbfbce6
 +
 +#endif
 -- 
-1.7.0.4
+1.7.5.4
 

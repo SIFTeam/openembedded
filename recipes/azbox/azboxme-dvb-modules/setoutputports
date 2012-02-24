@@ -1,0 +1,3 @@
+#!/bin/sh
+/usr/bin/set_outports_old &
+sleep 3

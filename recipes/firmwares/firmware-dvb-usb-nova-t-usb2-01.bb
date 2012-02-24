@@ -2,7 +2,7 @@ require linux-firmware.inc
 
 DESCRIPTION = "Firmware for dvb-usb-nova-t-usb2-01.fw"
 
-SRCREV = "13f0b6bda7b567d29c747196aa65ad82b18651ca"
+SRCREV = "2716dd2183038fde8274bb9796a4f70f4dc37efe"
 
 do_install() {
 	install -d ${D}${base_libdir}/firmware

@@ -1,12 +1,11 @@
 diff --git a/drivers/media/dvb/dvb-usb/Kconfig b/drivers/media/dvb/dvb-usb/Kconfig
-index bd6e53e..3b327f7 100644
+index 385ffa5..0701bad 100644
 --- a/drivers/media/dvb/dvb-usb/Kconfig
 +++ b/drivers/media/dvb/dvb-usb/Kconfig
-@@ -391,3 +391,11 @@ config DVB_USB_IT9135
- 	default m
+@@ -348,6 +348,14 @@ config DVB_USB_AF9035
  	help
- 	  Say Y here to support the ITE IT9135 based DVB-T USB2.0 receiver
-+
+ 	  Say Y here to support the Afatech AF9035 based DVB-T USB2.0 receiver
+ 
 +config DVB_USB_A867
 +	tristate "Avermedia A867 DVB receiver"
 +	depends on DVB_USB
@@ -14,13 +13,17 @@ index bd6e53e..3b327f7 100644
 +	help
 +	  Choose Y or M here if you have an Avermedia A867 device
 +	  To compile this driver as a module, choose M here
++
+ config DVB_USB_CE6230
+ 	tristate "Intel CE6230 DVB-T USB2.0 support"
+ 	depends on DVB_USB && EXPERIMENTAL
 diff --git a/drivers/media/dvb/dvb-usb/Makefile b/drivers/media/dvb/dvb-usb/Makefile
-index afa8709..31a22e0 100644
+index f8b1013..4745905 100644
 --- a/drivers/media/dvb/dvb-usb/Makefile
 +++ b/drivers/media/dvb/dvb-usb/Makefile
-@@ -101,6 +101,12 @@ obj-$(CONFIG_DVB_USB_AF9035) += dvb-usb-af9035.o
- dvb-usb-it9135-objs := it9135.o it9135-fe.o
- obj-$(CONFIG_DVB_USB_IT9135) += dvb-usb-it9135.o
+@@ -109,6 +109,12 @@ obj-$(CONFIG_DVB_USB_MXL111SF) += mxl111sf-tuner.o
+ dvb-usb-af9035-objs = af9035.o
+ obj-$(CONFIG_DVB_USB_AF9035) += dvb-usb-af9035.o
  
 +dvb-usb-a867-objs := a867_af903x-core.o a867_af903x-devices.o a867_af903x-drv.o \
 +			a867_af903x-fe.o a867_af903x-tuner.o a867_cmd.o a867_standard.o \
@@ -28,9 +31,9 @@ index afa8709..31a22e0 100644
 +			a867_user.o a867_mxl5007t.o a867_Maxlinear_MXL5007.o a867_Afa_AF9007.o
 +obj-$(CONFIG_DVB_USB_A867) += dvb-usb-a867.o
 +
- EXTRA_CFLAGS += -Idrivers/media/dvb/dvb-core/ -Idrivers/media/dvb/frontends/
+ ccflags-y += -Idrivers/media/dvb/dvb-core/ -Idrivers/media/dvb/frontends/
  # due to tuner-xc3028
- EXTRA_CFLAGS += -Idrivers/media/common/tuners
+ ccflags-y += -Idrivers/media/common/tuners
 diff --git a/drivers/media/dvb/dvb-usb/a867_Afa_AF9007.c b/drivers/media/dvb/dvb-usb/a867_Afa_AF9007.c
 new file mode 100644
 index 0000000..0d65cf9
@@ -3941,7 +3944,7 @@ index 0000000..150403a
 +
 diff --git a/drivers/media/dvb/dvb-usb/a867_aver_version.h b/drivers/media/dvb/dvb-usb/a867_aver_version.h
 new file mode 100644
-index 0000000..c321316
+index 0000000..c3213169
 --- /dev/null
 +++ b/drivers/media/dvb/dvb-usb/a867_aver_version.h
 @@ -0,0 +1 @@
@@ -43904,3 +43907,6 @@ index 0000000..c3d3ddd
 +#define Version_NUMBER		0x0200
 +#define Version_DATE		0x20080314
 +#define Version_BUILD		0x01
+-- 
+1.7.5.4
+

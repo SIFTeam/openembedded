@@ -1,5 +1,5 @@
 DESCRIPTION = "Enigma2 is an experimental, but useful framebuffer-based frontend for DVB functions"
-MAINTAINER = "Felix Domke <tmbinc@elitedvb.net>"
+MAINTAINER = "OpenPLi team <info@openpli.org>"
 DEMUXTOOL = "${@["replex","projectx"][bb.data.getVar("TARGET_FPU",d,1) == 'hard']}"
 DEPENDS = "jpeg libungif libmad libpng libsigc++-1.2 gettext-native \
 	dreambox-dvbincludes freetype libdvbsi++ python python-twisted swig-native  \
@@ -17,9 +17,10 @@ RDEPENDS_${PN} = "python-codecs python-core python-lang python-re python-threadi
 	gst-plugin-souphttpsrc gst-plugin-mpegaudioparse gst-plugin-subparse \
 	gst-plugin-apetag gst-plugin-icydemux gst-plugin-autodetect gst-plugin-audioparsers \
 	gst-plugin-subsink gst-plugin-fragmented gst-plugin-mpegtsdemux \
+	gst-plugin-amrwbdec gst-plugin-amrnb \
 	python-twisted-core python-elementtree python-compression \
 	python-numbers python-terminal python-textutils \
-	python-utf8-hack python-shell \
+	python-utf8-hack python-shell python-twisted-web \
 	enigma2-fonts \
 	glibc-gconv-iso8859-15 ethtool libemu"
 
@@ -85,7 +86,7 @@ inherit gitpkgv
 
 PV = "2.7+git${SRCPV}"
 PKGV = "2.7+git${GITPKGV}"
-PR = "r38"
+PR = "r40"
 
 SRC_URI = "git://github.com/SIFTeam/enigma2.git;protocol=git"
 #SRC_URI = "git://${HOME}/sifteam/enigma2;protocol=file"

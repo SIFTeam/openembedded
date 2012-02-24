@@ -3,12 +3,12 @@ SECTION = "base"
 PRIORITY = "required"
 LICENSE = "proprietary"
 
-SRCDATE = "20111220"
+SRCDATE = "20120221"
 
 KV = "2.6.22.19-25-opensat"
 PV = "2.6.22.19-25-opensat-${SRCDATE}"
 
-PR = "r2"
+PR = "r5"
 
 RDEPENDS = "kernel (${KV})"
 
@@ -16,6 +16,7 @@ DEPENDS = " module-init-tools"
 RDEPENDS_append = " module-init-tools-depmod"
 
 SRC_URI = "http://openee.sifteam.eu/azbox/azboxhd-dvb-modules_${SRCDATE}.zip \
+           file://staticdevices.tar.gz.install \
            file://setoutputports"
 
 S = "${WORKDIR}"
@@ -57,23 +58,19 @@ do_install_mipsel() {
 	install -m 0755 ${WORKDIR}/files/initd/wifi ${D}/etc/init.d/wifi
 	install -m 0755 ${WORKDIR}/setoutputports ${D}/etc/init.d/setoutputports
 	
+	install -d ${D}/etc/mdev
+	install -m 0755 ${WORKDIR}/staticdevices.tar.gz.install ${D}/etc/mdev/staticdevices.tar.gz
+	
 	install -d ${D}/etc/rcS.d
 	ln -s ../init.d/setoutputports ${D}/etc/rcS.d/S19setoutputports
 	
 	install -d ${D}/lib/firmware
 	install -m 0644 ${WORKDIR}/files/firmware/dvb-fe-cx24116.fw ${D}/lib/firmware/dvb-fe-cx24116.fw
-
-	cd ${WORKDIR}/files/
-	if [ -f settings ];
-	then
-		install -d ${D}/etc/enigma2
-		install -m 0644 ${WORKDIR}/files/settings ${D}/etc/enigma2/settings;
-	fi
 }
 
 pkg_postinst_azboxhd-dvb-modules () {
 	if [ -d /proc/stb ]; then
-		depmod -ae
+		depmod -a
 		update-modules
 	fi
 	true

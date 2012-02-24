@@ -32,11 +32,12 @@ ENIGMA2_PLUGINS = " \
 				enigma2-plugin-systemplugins-satfinder \
 				enigma2-plugin-systemplugins-videotune \
 				enigma2-plugin-extensions-mediascanner \
-				${@base_contains("MACHINE_FEATURES", "tpm", "enigma2-plugin-extensions-webinterface" , "", d)} \
+				enigma2-plugin-systemplugins-crossepg \
+				enigma2-plugin-extensions-openwebif \
 				enigma2-plugin-extensions-graphmultiepg \
 				enigma2-plugin-systemplugins-skinselector \
 				enigma2-plugin-extensions-pictureplayer \
-				enigma2-plugin-extensions-mediaplayer \
+				${@base_contains("MACHINE_FEATURES", "mediacenter", "enigma2-plugin-extensions-mediacenter", "enigma2-plugin-extensions-mediaplayer", d)} \
 				enigma2-plugin-systemplugins-networkbrowser \
 				enigma2-plugin-systemplugins-fastscan \
 				enigma2-plugin-systemplugins-osdpositionsetup \
@@ -50,6 +51,10 @@ ENIGMA2_PLUGINS = " \
 				${@base_contains("MACHINE_FEATURES", "wifi", "enigma2-plugin-systemplugins-wirelesslan", "", d)} \
 				"
 
+ENIGMA2_PLUGINS_append_azboxhd = " \
+				enigma2-plugin-extensions-rtiled \
+				"
+
 DEPENDS += "enigma2 enigma2-plugins enigma2-pliplugins"
 
 ENIGMA2_OPTIONAL = " \
@@ -60,7 +65,6 @@ ENIGMA2_OPTIONAL = " \
 				enigma2-plugin-extensions-tuxcom \
 				enigma2-plugin-extensions-tuxterm \
 				${@base_contains("MACHINE_FEATURES", "usbhost", "enigma2-plugin-drivers-usbserial" , "", d)} \
-				${@base_contains("MACHINE_FEATURES", "dvbapi5", "dvb-usb-drivers-meta" , "", d)} \
 				enigma2-plugin-security-firewall \
 				enigma2-plugin-extensions-xmltvimport \
 #                                ${@base_contains("CHIPSET", "smp8634", "" , "enigma2-plugin-extensions-ambx", d)} \
@@ -77,6 +81,7 @@ ENIGMA2_OPTIONAL = " \
 				dvdfs \
 				minidlna \
 				nano \
+				sifteam-firmwares \
 				"
 
 IMAGE_INSTALL += " \

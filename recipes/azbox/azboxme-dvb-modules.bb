@@ -8,7 +8,7 @@ SRCDATE = "20120125"
 KV = "2.6.22.19-44-opensat"
 PV = "2.6.22.19-44-opensat-${SRCDATE}"
 
-PR = "r8"
+PR = "r10"
 
 RDEPENDS = "kernel (${KV})"
 
@@ -16,7 +16,7 @@ DEPENDS = " module-init-tools"
 RDEPENDS_append = " module-init-tools-depmod"
 
 SRC_URI = "http://openee.sifteam.eu/azbox/azboxme-dvb-modules_${SRCDATE}.zip \
-	   file://staticdevices.tar.gz.install \
+           file://staticdevices.tar.gz.install \
            file://setoutputports"
 
 S = "${WORKDIR}"
@@ -54,13 +54,6 @@ do_install_mipsel() {
 	install -d ${D}/lib/firmware
 	install -m 0644 ${WORKDIR}/files/firmware/dvb-fe-avl2108.fw ${D}/lib/firmware/dvb-fe-avl2108.fw
 
-	cd ${WORKDIR}/files/
-	if [ -f settings ];
-	then
-		install -d ${D}/etc/enigma2
-		install -m 0644 ${WORKDIR}/files/settings ${D}/etc/enigma2/settings;
-	fi
-	
 	install -d ${D}/etc/init.d
 	install -m 0755 ${WORKDIR}/setoutputports ${D}/etc/init.d/setoutputports
 
