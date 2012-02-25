@@ -2,5 +2,9 @@
 insmod /lib/modules/2.6.22.19-25-opensat/extra/llad.ko
 insmod /lib/modules/2.6.22.19-25-opensat/extra/em8xxx.ko
 
+mknod /dev/mum0 c 126 0
+mknod /dev/em8xxx0 c 127 0
+sleep 2
+
 /usr/bin/set_outports &
 sleep 5
