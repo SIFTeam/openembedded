@@ -86,12 +86,12 @@ inherit gitpkgv
 
 PV = "2.7+git${SRCPV}"
 PKGV = "2.7+git${GITPKGV}"
-PR = "r41"
+PR = "r44"
 
-SRC_URI = "git://github.com/SIFTeam/enigma2.git;protocol=git"
-#SRC_URI = "git://${HOME}/sifteam/enigma2;protocol=file"
-SRC_URI_azboxhd = "git://github.com/SIFTeam/enigma2.git;protocol=git;branch=azbox"
-SRC_URI_azboxme = "git://github.com/SIFTeam/enigma2.git;protocol=git;branch=azbox"
+SRC_URI = "git://github.com/SIFTeam/enigma2.git;protocol=git file://swap"
+#SRC_URI = "git://${HOME}/sifteam/enigma2;protocol=file file://swap"
+SRC_URI_azboxhd = "git://github.com/SIFTeam/enigma2.git;protocol=git;branch=azbox file://swap"
+SRC_URI_azboxme = "git://github.com/SIFTeam/enigma2.git;protocol=git;branch=azbox file://swap"
 
 S = "${WORKDIR}/git"
 
@@ -174,11 +174,17 @@ do_install_append() {
 	find ${D}/usr/lib/enigma2/python/ -name '*.pyc' -exec rm {} \;
 	
 	install -d ${D}/etc
+	install -d ${D}/etc/init.d
+	install -d ${D}/etc/rcS.d
 	install -d ${D}/usr/scripts
 	install -d ${D}/${datadir}/enigma2/defaults/
 
 	echo "${MACHINE}" > ${D}/etc/machine
 	echo "${DISTRO_BRANCH}" > ${D}/etc/branch
+	
+	cp ${WORKDIR}/swap ${D}/etc/init.d/swap
+	chmod +x ${D}/etc/init.d/swap
+	ln -s ../init.d/swap ${D}/etc/rcS.d/S60swap
 	
 	cp ${S}/panel.conf ${D}/${datadir}/enigma2/defaults/
 }
