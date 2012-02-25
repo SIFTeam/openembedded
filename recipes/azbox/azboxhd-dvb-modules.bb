@@ -3,12 +3,12 @@ SECTION = "base"
 PRIORITY = "required"
 LICENSE = "proprietary"
 
-SRCDATE = "20120221"
+SRCDATE = "20120225"
 
 KV = "2.6.22.19-25-opensat"
 PV = "2.6.22.19-25-opensat-${SRCDATE}"
 
-PR = "r5"
+PR = "r0"
 
 RDEPENDS = "kernel (${KV})"
 
@@ -38,7 +38,7 @@ do_install_mipsel() {
 	for f in llad em8xxx; do
 		install -m 0644 ${WORKDIR}/files/modules/$f.ko ${D}/lib/modules/${KV}/extra/$f.ko
 	done
-	for f in sci usbserial ftdi_sio smp8634i2c cx24116 mxl201rf tda10023 mxl5007t zl10353 stv6110x stv090x nimdetect  863xdvb; do
+	for f in sci usbserial ftdi_sio smp8634i2c cx24116 mxl201rf tda10023 mxl5007t zl10353 stv6110x stv090x nimdetect  863xdvb rt61; do
 		install -m 0644 ${WORKDIR}/files/modules/$f.ko ${D}/lib/modules/${KV}/extra/$f.ko
 		echo $f >> ${D}/${sysconfdir}/modutils/_${MACHINE}
 	done
