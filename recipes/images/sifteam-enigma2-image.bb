@@ -93,7 +93,6 @@ IMAGE_INSTALL += " \
 				libavahi-client \
 				settings-autorestore \
 				${@base_contains("MACHINE_FEATURES", "wifi", "${WIFI_DRIVERS}", "", d)} \
-				nscd \
 				"
 
 OPTIONAL_PACKAGES += " \
