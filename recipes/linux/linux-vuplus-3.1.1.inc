@@ -2,7 +2,7 @@ CRIPTION = "Linux kernel for vuplus"
 LICENSE = "GPL"
 KV = "3.1.1"
 
-SRCREV = "r3"
+SRCREV = "r2"
 
 MODULE = "linux-3.1.1"
 
