@@ -34,6 +34,7 @@ ENIGMA2_PLUGINS = " \
 				enigma2-plugin-extensions-mediascanner \
 				enigma2-plugin-systemplugins-crossepg \
 				enigma2-plugin-extensions-openwebif \
+				enigma2-plugin-extensions-lcnscanner \
 				enigma2-plugin-extensions-graphmultiepg \
 				enigma2-plugin-systemplugins-skinselector \
 				enigma2-plugin-extensions-pictureplayer \
@@ -92,7 +93,6 @@ IMAGE_INSTALL += " \
 				libavahi-client \
 				settings-autorestore \
 				${@base_contains("MACHINE_FEATURES", "wifi", "${WIFI_DRIVERS}", "", d)} \
-				nscd \
 				"
 
 OPTIONAL_PACKAGES += " \

@@ -5,12 +5,12 @@ SRC_URI = "http://gstreamer.freedesktop.org/src/${PN}/pre/${PN}-${PV}.tar.bz2;na
 	"
 
 DEPENDS += "opencv orc-native orc libcdaudio gst-plugins-base openssl directfb libmodplug librsvg"
-DEPENDS_sifteam += "gst-plugins-base"
+DEPENDS_sifteam += "gst-plugins-base librtmp"
 
 RCONFLICTS_gst-plugin-mpegdemux = "gst-plugin-fluendo-mpegdemux"
 RREPLACES_gst-plugin-mpegdemux = "gst-plugin-fluendo-mpegdemux"
 
-PR = "${INC_PR}.5"
+PR = "${INC_PR}.6"
 
 do_configure_prepend() {
     sed -i -e s:docs::g Makefile.am

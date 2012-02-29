@@ -3,7 +3,7 @@ DEPENDS = "python-native db gdbm openssl readline sqlite3 tcl zlib\
            ${@base_contains('DISTRO_FEATURES', 'tk', 'tk', '', d)}"
 DEPENDS_sharprom = "python-native db readline zlib gdbm openssl"
 # set to .0 on every increase of INC_PR
-PR = "${INC_PR}.5"
+PR = "${INC_PR}.6"
 
 SRC_URI = "\
   http://www.python.org/ftp/python/${PV}/Python-${PV}.tar.bz2 \
@@ -129,6 +129,14 @@ FILES_${PN}-dev += "\
 
 # catch debug extensions (isn't that already in python-core-dbg?)
 FILES_${PN}-dbg += "${libdir}/python${PYTHON_MAJMIN}/lib-dynload/.debug"
+
+# catch lib2to3 stuff
+PACKAGES += "${PN}-2to3"
+FILES_${PN}-2to3 = "${libdir}/python${PYTHON_MAJMIN}/lib2to3"
+
+# catch wsgiref stuff
+PACKAGES += "${PN}-wsgiref"
+FILES_${PN}-wsgiref = "${libdir}/python${PYTHON_MAJMIN}/wsgiref.* ${libdir}/python${PYTHON_MAJMIN}/wsgiref"
 
 # catch all the rest (unsorted)
 PACKAGES += "${PN}-misc"
