@@ -1,7 +1,7 @@
 DESCRIPTION = "Linux kernel for ${MACHINE}"
 LICENSE = "GPL"
 
-MACHINE_KERNEL_PR_append = ".5.3"
+MACHINE_KERNEL_PR_append = ".6"
 
 DEPENDS = "mtd-minimal-nand-utils"
 RDEPENDS_kernel-image = "mtd-minimal-nand-utils"
@@ -25,6 +25,7 @@ SRC_URI += "http://www.et-view.com/download/linux-${PV}.tar.gz \
 	file://dvb-as102-driver-updates.patch \
 	file://dvb-usb-it913x-patch-collection.patch \
 	file://em28xx-reworked-device-probing-to-get-max-dvb-iso-packet-size.patch \
+	file://em28xx-pre-allocate-DVB-iso-transfer-buffers.patch \
 	"
 
 SRC_URI_append_et5x00 = " file://disable_early_fb.patch"

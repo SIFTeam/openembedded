@@ -1,8 +1,208 @@
+driver for RTL28XX devices;
+supports several demodulators (RTL2832, RTL2836, RTL2840)
+and 10 different tuners;
+
+many thanks to Ambrosa who got the driver from Realtek and
+ported it on kernels 3.0.x and 3.1.x;
+
+thanks to Hans-Frieder Vogt for the patch to support the 3.2 kernel;
+
+added define to manage refactored RC code on recent v4l
+versions together with old kernels (2.6.x);
+modified frontend driver to work directly with the DVBv5
+data structure, as required in new kernels >= 3.3 as well as the
+current media_build tree;
+
+in the end, this patch will apply directly on all kernels >= 3.0.0
+and can be applied also to the current media_build tree so it will
+work on all kernels >= 2.6.31 (some little manual editing of the
+dvb-usb Makefile and Kconfig files may be required to apply the patch);
+
+fixed GetSignalStrength function so that the signal strength is not
+capped anymore to about 39%;
+
+added definition of a new Leadteck USB stick:
+- Leadtek WinFast DTV Dongle Mini [ID 0413:6a03]
+(thanks to djnice);
+
+added definition of 3 new Terratec USB sticks:
+- TERRATEC Cinergy T Stick RC (Rev.3) [ID 0ccd:00d3]
+- TERRATEC Cinergy T Stick BLACK (Rev.2) [ID 0ccd:00d4]
+- TERRATEC NOXON DAB Stick (Rev.2) [ID 0ccd:00e0] 
+(thanks to CyBoardR);
+
+From: Gianluca Gennari <gennarone@gmail.com>
+---
+ drivers/media/dvb/dvb-usb/Kconfig                |    7 +
+ drivers/media/dvb/dvb-usb/Makefile               |   12 +
+ drivers/media/dvb/dvb-usb/demod_rtl2832.c        | 2871 +++
+ drivers/media/dvb/dvb-usb/demod_rtl2832.h        |  466 +
+ drivers/media/dvb/dvb-usb/demod_rtl2836.c        | 2049 ++
+ drivers/media/dvb/dvb-usb/demod_rtl2836.h        |  376 +
+ drivers/media/dvb/dvb-usb/demod_rtl2840.c        | 2437 +++
+ drivers/media/dvb/dvb-usb/demod_rtl2840.h        |  386 +
+ drivers/media/dvb/dvb-usb/dtmb_demod_base.c      | 1566 ++
+ drivers/media/dvb/dvb-usb/dtmb_demod_base.h      | 2501 +++
+ drivers/media/dvb/dvb-usb/dtmb_nim_base.c        |  545 +
+ drivers/media/dvb/dvb-usb/dtmb_nim_base.h        |  951 +
+ drivers/media/dvb/dvb-usb/dvb-usb-ids.h          |    1 +
+ drivers/media/dvb/dvb-usb/dvbt_demod_base.c      |  816 +
+ drivers/media/dvb/dvb-usb/dvbt_demod_base.h      | 2722 +++
+ drivers/media/dvb/dvb-usb/dvbt_nim_base.c        |  531 +
+ drivers/media/dvb/dvb-usb/dvbt_nim_base.h        |  934 +
+ drivers/media/dvb/dvb-usb/foundation.c           |  352 +
+ drivers/media/dvb/dvb-usb/foundation.h           | 1001 +
+ drivers/media/dvb/dvb-usb/i2c_bridge.h           |  122 +
+ drivers/media/dvb/dvb-usb/math_mpi.c             | 1054 ++
+ drivers/media/dvb/dvb-usb/math_mpi.h             |  201 +
+ drivers/media/dvb/dvb-usb/nim_rtl2832_e4000.c    |  798 +
+ drivers/media/dvb/dvb-usb/nim_rtl2832_e4000.h    |  213 +
+ drivers/media/dvb/dvb-usb/nim_rtl2832_fc0012.c   |  627 +
+ drivers/media/dvb/dvb-usb/nim_rtl2832_fc0012.h   |  155 +
+ drivers/media/dvb/dvb-usb/nim_rtl2832_fc0013.c   |  816 +
+ drivers/media/dvb/dvb-usb/nim_rtl2832_fc0013.h   |  155 +
+ drivers/media/dvb/dvb-usb/nim_rtl2832_fc2580.c   |  343 +
+ drivers/media/dvb/dvb-usb/nim_rtl2832_fc2580.h   |  141 +
+ drivers/media/dvb/dvb-usb/nim_rtl2832_max3543.c  |  346 +
+ drivers/media/dvb/dvb-usb/nim_rtl2832_max3543.h  |  145 +
+ drivers/media/dvb/dvb-usb/nim_rtl2832_mt2063.c   |  360 +
+ drivers/media/dvb/dvb-usb/nim_rtl2832_mt2063.h   |  160 +
+ drivers/media/dvb/dvb-usb/nim_rtl2832_mt2266.c   | 1082 ++
+ drivers/media/dvb/dvb-usb/nim_rtl2832_mt2266.h   |  264 +
+ drivers/media/dvb/dvb-usb/nim_rtl2832_mxl5007t.c |  355 +
+ drivers/media/dvb/dvb-usb/nim_rtl2832_mxl5007t.h |  151 +
+ drivers/media/dvb/dvb-usb/nim_rtl2832_tda18272.c |  408 +
+ drivers/media/dvb/dvb-usb/nim_rtl2832_tda18272.h |  148 +
+ drivers/media/dvb/dvb-usb/nim_rtl2832_tua9001.c  |  340 +
+ drivers/media/dvb/dvb-usb/nim_rtl2832_tua9001.h  |  137 +
+ drivers/media/dvb/dvb-usb/nim_rtl2836_fc2580.c   |  308 +
+ drivers/media/dvb/dvb-usb/nim_rtl2836_fc2580.h   |  140 +
+ drivers/media/dvb/dvb-usb/nim_rtl2836_mxl5007t.c |  319 +
+ drivers/media/dvb/dvb-usb/nim_rtl2836_mxl5007t.h |  150 +
+ drivers/media/dvb/dvb-usb/nim_rtl2840_max3543.c  |  341 +
+ drivers/media/dvb/dvb-usb/nim_rtl2840_max3543.h  |  146 +
+ drivers/media/dvb/dvb-usb/nim_rtl2840_mt2063.c   |  307 +
+ drivers/media/dvb/dvb-usb/nim_rtl2840_mt2063.h   |  163 +
+ drivers/media/dvb/dvb-usb/qam_demod_base.c       | 1289 ++
+ drivers/media/dvb/dvb-usb/qam_demod_base.h       | 2827 +++
+ drivers/media/dvb/dvb-usb/qam_nim_base.c         |  496 +
+ drivers/media/dvb/dvb-usb/qam_nim_base.h         |  864 +
+ drivers/media/dvb/dvb-usb/rtl2832u.c             | 1825 ++
+ drivers/media/dvb/dvb-usb/rtl2832u.h             |  275 +
+ drivers/media/dvb/dvb-usb/rtl2832u_fe.c          | 4009 ++++
+ drivers/media/dvb/dvb-usb/rtl2832u_fe.h          |  312 +
+ drivers/media/dvb/dvb-usb/rtl2832u_io.c          |  912 +
+ drivers/media/dvb/dvb-usb/rtl2832u_io.h          |  287 +
+ drivers/media/dvb/dvb-usb/rtl2832u_ioctl.c       |  521 +
+ drivers/media/dvb/dvb-usb/rtl2832u_ioctl.h       |   60 +
+ drivers/media/dvb/dvb-usb/tuner_base.h           | 1723 ++
+ drivers/media/dvb/dvb-usb/tuner_e4000.c          | 2482 +++
+ drivers/media/dvb/dvb-usb/tuner_e4000.h          |  295 +
+ drivers/media/dvb/dvb-usb/tuner_fc0012.c         | 1056 ++
+ drivers/media/dvb/dvb-usb/tuner_fc0012.h         |  292 +
+ drivers/media/dvb/dvb-usb/tuner_fc0013.c         | 1261 ++
+ drivers/media/dvb/dvb-usb/tuner_fc0013.h         |  307 +
+ drivers/media/dvb/dvb-usb/tuner_fc2580.c         |  932 +
+ drivers/media/dvb/dvb-usb/tuner_fc2580.h         |  461 +
+ drivers/media/dvb/dvb-usb/tuner_max3543.c        | 1441 ++
+ drivers/media/dvb/dvb-usb/tuner_max3543.h        |  572 +
+ drivers/media/dvb/dvb-usb/tuner_mt2063.c         | 5267 ++++++
+ drivers/media/dvb/dvb-usb/tuner_mt2063.h         | 2207 +++
+ drivers/media/dvb/dvb-usb/tuner_mt2266.c         | 3278 ++++
+ drivers/media/dvb/dvb-usb/tuner_mt2266.h         | 1534 ++
+ drivers/media/dvb/dvb-usb/tuner_mxl5007t.c       | 1267 ++
+ drivers/media/dvb/dvb-usb/tuner_mxl5007t.h       |  784 +
+ drivers/media/dvb/dvb-usb/tuner_tda18272.c       |21631 ++++++++++++++++++++++
+ drivers/media/dvb/dvb-usb/tuner_tda18272.h       | 7362 ++++++++
+ drivers/media/dvb/dvb-usb/tuner_tua9001.c        | 1245 ++
+ drivers/media/dvb/dvb-usb/tuner_tua9001.h        |  493 +
+ 83 files changed, 100486 insertions(+), 0 deletions(-)
+ create mode 100644 drivers/media/dvb/dvb-usb/demod_rtl2832.c
+ create mode 100644 drivers/media/dvb/dvb-usb/demod_rtl2832.h
+ create mode 100644 drivers/media/dvb/dvb-usb/demod_rtl2836.c
+ create mode 100644 drivers/media/dvb/dvb-usb/demod_rtl2836.h
+ create mode 100644 drivers/media/dvb/dvb-usb/demod_rtl2840.c
+ create mode 100644 drivers/media/dvb/dvb-usb/demod_rtl2840.h
+ create mode 100644 drivers/media/dvb/dvb-usb/dtmb_demod_base.c
+ create mode 100644 drivers/media/dvb/dvb-usb/dtmb_demod_base.h
+ create mode 100644 drivers/media/dvb/dvb-usb/dtmb_nim_base.c
+ create mode 100644 drivers/media/dvb/dvb-usb/dtmb_nim_base.h
+ create mode 100644 drivers/media/dvb/dvb-usb/dvbt_demod_base.c
+ create mode 100644 drivers/media/dvb/dvb-usb/dvbt_demod_base.h
+ create mode 100644 drivers/media/dvb/dvb-usb/dvbt_nim_base.c
+ create mode 100644 drivers/media/dvb/dvb-usb/dvbt_nim_base.h
+ create mode 100644 drivers/media/dvb/dvb-usb/foundation.c
+ create mode 100644 drivers/media/dvb/dvb-usb/foundation.h
+ create mode 100644 drivers/media/dvb/dvb-usb/i2c_bridge.h
+ create mode 100644 drivers/media/dvb/dvb-usb/math_mpi.c
+ create mode 100644 drivers/media/dvb/dvb-usb/math_mpi.h
+ create mode 100644 drivers/media/dvb/dvb-usb/nim_rtl2832_e4000.c
+ create mode 100644 drivers/media/dvb/dvb-usb/nim_rtl2832_e4000.h
+ create mode 100644 drivers/media/dvb/dvb-usb/nim_rtl2832_fc0012.c
+ create mode 100644 drivers/media/dvb/dvb-usb/nim_rtl2832_fc0012.h
+ create mode 100644 drivers/media/dvb/dvb-usb/nim_rtl2832_fc0013.c
+ create mode 100644 drivers/media/dvb/dvb-usb/nim_rtl2832_fc0013.h
+ create mode 100644 drivers/media/dvb/dvb-usb/nim_rtl2832_fc2580.c
+ create mode 100644 drivers/media/dvb/dvb-usb/nim_rtl2832_fc2580.h
+ create mode 100644 drivers/media/dvb/dvb-usb/nim_rtl2832_max3543.c
+ create mode 100644 drivers/media/dvb/dvb-usb/nim_rtl2832_max3543.h
+ create mode 100644 drivers/media/dvb/dvb-usb/nim_rtl2832_mt2063.c
+ create mode 100644 drivers/media/dvb/dvb-usb/nim_rtl2832_mt2063.h
+ create mode 100644 drivers/media/dvb/dvb-usb/nim_rtl2832_mt2266.c
+ create mode 100644 drivers/media/dvb/dvb-usb/nim_rtl2832_mt2266.h
+ create mode 100644 drivers/media/dvb/dvb-usb/nim_rtl2832_mxl5007t.c
+ create mode 100644 drivers/media/dvb/dvb-usb/nim_rtl2832_mxl5007t.h
+ create mode 100644 drivers/media/dvb/dvb-usb/nim_rtl2832_tda18272.c
+ create mode 100644 drivers/media/dvb/dvb-usb/nim_rtl2832_tda18272.h
+ create mode 100644 drivers/media/dvb/dvb-usb/nim_rtl2832_tua9001.c
+ create mode 100644 drivers/media/dvb/dvb-usb/nim_rtl2832_tua9001.h
+ create mode 100644 drivers/media/dvb/dvb-usb/nim_rtl2836_fc2580.c
+ create mode 100644 drivers/media/dvb/dvb-usb/nim_rtl2836_fc2580.h
+ create mode 100644 drivers/media/dvb/dvb-usb/nim_rtl2836_mxl5007t.c
+ create mode 100644 drivers/media/dvb/dvb-usb/nim_rtl2836_mxl5007t.h
+ create mode 100644 drivers/media/dvb/dvb-usb/nim_rtl2840_max3543.c
+ create mode 100644 drivers/media/dvb/dvb-usb/nim_rtl2840_max3543.h
+ create mode 100644 drivers/media/dvb/dvb-usb/nim_rtl2840_mt2063.c
+ create mode 100644 drivers/media/dvb/dvb-usb/nim_rtl2840_mt2063.h
+ create mode 100644 drivers/media/dvb/dvb-usb/qam_demod_base.c
+ create mode 100644 drivers/media/dvb/dvb-usb/qam_demod_base.h
+ create mode 100644 drivers/media/dvb/dvb-usb/qam_nim_base.c
+ create mode 100644 drivers/media/dvb/dvb-usb/qam_nim_base.h
+ create mode 100644 drivers/media/dvb/dvb-usb/rtl2832u.c
+ create mode 100644 drivers/media/dvb/dvb-usb/rtl2832u.h
+ create mode 100644 drivers/media/dvb/dvb-usb/rtl2832u_fe.c
+ create mode 100644 drivers/media/dvb/dvb-usb/rtl2832u_fe.h
+ create mode 100644 drivers/media/dvb/dvb-usb/rtl2832u_io.c
+ create mode 100644 drivers/media/dvb/dvb-usb/rtl2832u_io.h
+ create mode 100644 drivers/media/dvb/dvb-usb/rtl2832u_ioctl.c
+ create mode 100644 drivers/media/dvb/dvb-usb/rtl2832u_ioctl.h
+ create mode 100644 drivers/media/dvb/dvb-usb/tuner_base.h
+ create mode 100644 drivers/media/dvb/dvb-usb/tuner_e4000.c
+ create mode 100644 drivers/media/dvb/dvb-usb/tuner_e4000.h
+ create mode 100644 drivers/media/dvb/dvb-usb/tuner_fc0012.c
+ create mode 100644 drivers/media/dvb/dvb-usb/tuner_fc0012.h
+ create mode 100644 drivers/media/dvb/dvb-usb/tuner_fc0013.c
+ create mode 100644 drivers/media/dvb/dvb-usb/tuner_fc0013.h
+ create mode 100644 drivers/media/dvb/dvb-usb/tuner_fc2580.c
+ create mode 100644 drivers/media/dvb/dvb-usb/tuner_fc2580.h
+ create mode 100644 drivers/media/dvb/dvb-usb/tuner_max3543.c
+ create mode 100644 drivers/media/dvb/dvb-usb/tuner_max3543.h
+ create mode 100644 drivers/media/dvb/dvb-usb/tuner_mt2063.c
+ create mode 100644 drivers/media/dvb/dvb-usb/tuner_mt2063.h
+ create mode 100644 drivers/media/dvb/dvb-usb/tuner_mt2266.c
+ create mode 100644 drivers/media/dvb/dvb-usb/tuner_mt2266.h
+ create mode 100644 drivers/media/dvb/dvb-usb/tuner_mxl5007t.c
+ create mode 100644 drivers/media/dvb/dvb-usb/tuner_mxl5007t.h
+ create mode 100644 drivers/media/dvb/dvb-usb/tuner_tda18272.c
+ create mode 100644 drivers/media/dvb/dvb-usb/tuner_tda18272.h
+ create mode 100644 drivers/media/dvb/dvb-usb/tuner_tua9001.c
+ create mode 100644 drivers/media/dvb/dvb-usb/tuner_tua9001.h
+
 diff --git a/drivers/media/dvb/dvb-usb/Kconfig b/drivers/media/dvb/dvb-usb/Kconfig
-index 0701bad..890e3e0 100644
+index bc38b07..d11bfcf 100644
 --- a/drivers/media/dvb/dvb-usb/Kconfig
 +++ b/drivers/media/dvb/dvb-usb/Kconfig
-@@ -356,6 +356,13 @@ config DVB_USB_A867
+@@ -358,6 +358,13 @@ config DVB_USB_A867
  	  Choose Y or M here if you have an Avermedia A867 device
  	  To compile this driver as a module, choose M here
  
@@ -11,7 +211,7 @@ index 0701bad..890e3e0 100644
 +	depends on DVB_USB
 +	default m
 +	help
-+		Say Y or M to support Realtek RTL2832 DVB-T driver
++	  Say Y or M to support the Realtek RTL2832 DVB-T receiver
 +
  config DVB_USB_CE6230
  	tristate "Intel CE6230 DVB-T USB2.0 support"
@@ -14247,6 +14447,18 @@ index 0000000..fcbe3c1
 +
 +
 +#endif
+diff --git a/drivers/media/dvb/dvb-usb/dvb-usb-ids.h b/drivers/media/dvb/dvb-usb/dvb-usb-ids.h
+index c89dbd5..4298b20 100644
+--- a/drivers/media/dvb/dvb-usb/dvb-usb-ids.h
++++ b/drivers/media/dvb/dvb-usb/dvb-usb-ids.h
+@@ -300,6 +300,7 @@
+ #define USB_PID_WINFAST_DTV_DONGLE_H			0x60f6
+ #define USB_PID_WINFAST_DTV_DONGLE_STK7700P_2		0x6f01
+ #define USB_PID_WINFAST_DTV_DONGLE_GOLD			0x6029
++#define USB_PID_WINFAST_DTV_DONGLE_MINI			0x6a03
+ #define USB_PID_GENPIX_8PSK_REV_1_COLD			0x0200
+ #define USB_PID_GENPIX_8PSK_REV_1_WARM			0x0201
+ #define USB_PID_GENPIX_8PSK_REV_2			0x0202
 diff --git a/drivers/media/dvb/dvb-usb/dvbt_demod_base.c b/drivers/media/dvb/dvb-usb/dvbt_demod_base.c
 new file mode 100644
 index 0000000..ef4a787
@@ -24836,7 +25048,7 @@ index 0000000..d8af754
 +
 diff --git a/drivers/media/dvb/dvb-usb/nim_rtl2832_fc2580.c b/drivers/media/dvb/dvb-usb/nim_rtl2832_fc2580.c
 new file mode 100644
-index 0000000..09036021
+index 0000000..0903602
 --- /dev/null
 +++ b/drivers/media/dvb/dvb-usb/nim_rtl2832_fc2580.c
 @@ -0,0 +1,343 @@
@@ -36722,10 +36934,11 @@ index 0000000..abeea77
 +#endif
 diff --git a/drivers/media/dvb/dvb-usb/rtl2832u.c b/drivers/media/dvb/dvb-usb/rtl2832u.c
 new file mode 100644
-index 0000000..1787943
+index 0000000..9d09727
 --- /dev/null
 +++ b/drivers/media/dvb/dvb-usb/rtl2832u.c
-@@ -0,0 +1,1821 @@
+@@ -0,0 +1,1825 @@
++
 +#include <linux/module.h>
 +#include <linux/version.h>
 +
@@ -36737,6 +36950,10 @@ index 0000000..1787943
 +#define V4L2_REFACTORED_MFE_CODE
 +#endif
 +
++/* FIXME: I do not know the exact V4L2_VERSION that introduced the refactored rc_map_table struct  */
++#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3,0,0)) || ((defined V4L2_VERSION) && (V4L2_VERSION >= 196608))
++#define V4L2_REFACTORED_RC_CODE
++#endif
 +
 +int dvb_usb_rtl2832u_debug=0;
 +module_param_named(debug,dvb_usb_rtl2832u_debug, int, 0644);
@@ -37355,7 +37572,7 @@ index 0000000..1787943
 +			tableSize = ARRAY_SIZE(rtl2832u_rc_keys_map_table);
 +			for (i = 0; i < tableSize; i++) {
 +				if(rtl2832u_rc_keys_map_table[i].scancode == scancode ){
-+#if LINUX_VERSION_CODE >= KERNEL_VERSION(3,0,0)
++#ifdef V4L2_REFACTORED_RC_CODE
 +					*event = rtl2832u_rc_keys_map_table[i].keycode;
 +#else
 +					*event = rtl2832u_rc_keys_map_table[i].event;
@@ -37548,7 +37765,7 @@ index 0000000..1787943
 +	{ USB_DEVICE(USB_VID_GTEK, USB_PID_GTEK_WARM_A683)},		// 59
 +
 +	{ USB_DEVICE(USB_VID_LEADTEK, USB_PID_LEADTEK_WARM_1)},		// 60			
-+	{ USB_DEVICE(USB_VID_LEADTEK, USB_PID_LEADTEK_WARM_2)},		// 61	
++	{ USB_DEVICE(USB_VID_LEADTEK, USB_PID_LEADTEK_WARM_2)},		// 61
 +
 +	{ USB_DEVICE(USB_VID_YUAN, USB_PID_YUAN_WARM)},			//62
 +        { USB_DEVICE(USB_VID_YUAN, USB_PID_YUAN_WARM80)},		//63
@@ -37567,7 +37784,7 @@ index 0000000..1787943
 +	
 +	{ USB_DEVICE(USB_VID_GOLDENBRIDGE, USB_PID_GOLDENBRIDGE_WARM)},	//75
 +
-+	{ USB_DEVICE(USB_VID_LEADTEK, USB_PID_LEADTEK_WARM_3)},		// 76
++	{ USB_DEVICE(USB_VID_LEADTEK, USB_PID_WINFAST_DTV_DONGLE_MINI)},	// 76
 +
 +	{ USB_DEVICE(USB_VID_TERRATEC, USB_PID_TERRATEC_00D3)},		// 77
 +	{ USB_DEVICE(USB_VID_TERRATEC, USB_PID_TERRATEC_00D4)},		// 78
@@ -37623,7 +37840,7 @@ index 0000000..1787943
 +	
 +	//remote control
 +	.rc.legacy = {
-+#if LINUX_VERSION_CODE >= KERNEL_VERSION(3,0,0)
++#ifdef V4L2_REFACTORED_RC_CODE
 +		.rc_map_table = rtl2832u_rc_keys_map_table,             //user define key map
 +		.rc_map_size  = ARRAY_SIZE(rtl2832u_rc_keys_map_table), //user define key map size	
 +#else
@@ -37721,7 +37938,7 @@ index 0000000..1787943
 +
 +	//remote control
 +	.rc.legacy = {
-+#if LINUX_VERSION_CODE >= KERNEL_VERSION(3,0,0)
++#ifdef V4L2_REFACTORED_RC_CODE
 +		.rc_map_table = rtl2832u_rc_keys_map_table,             //user define key map
 +		.rc_map_size  = ARRAY_SIZE(rtl2832u_rc_keys_map_table), //user define key map size	
 +#else
@@ -37821,7 +38038,7 @@ index 0000000..1787943
 +
 +	//remote control
 +	.rc.legacy = {
-+#if LINUX_VERSION_CODE >= KERNEL_VERSION(3,0,0)
++#ifdef V4L2_REFACTORED_RC_CODE
 +		.rc_map_table = rtl2832u_rc_keys_map_table,             //user define key map
 +		.rc_map_size  = ARRAY_SIZE(rtl2832u_rc_keys_map_table), //user define key map size	
 +#else
@@ -37924,7 +38141,7 @@ index 0000000..1787943
 +
 +	//remote control
 +	.rc.legacy = {
-+#if LINUX_VERSION_CODE >= KERNEL_VERSION(3,0,0)
++#ifdef V4L2_REFACTORED_RC_CODE
 +		.rc_map_table = rtl2832u_rc_keys_map_table,             //user define key map
 +		.rc_map_size  = ARRAY_SIZE(rtl2832u_rc_keys_map_table), //user define key map size	
 +#else
@@ -38048,7 +38265,7 @@ index 0000000..1787943
 +
 +	//remote control
 +	.rc.legacy = {
-+#if LINUX_VERSION_CODE >= KERNEL_VERSION(3,0,0)
++#ifdef V4L2_REFACTORED_RC_CODE
 +		.rc_map_table = rtl2832u_rc_keys_map_table,             //user define key map
 +		.rc_map_size  = ARRAY_SIZE(rtl2832u_rc_keys_map_table), //user define key map size	
 +#else
@@ -38155,7 +38372,7 @@ index 0000000..1787943
 +
 +	 /*remote control*/
 +	.rc.legacy = {
-+#if LINUX_VERSION_CODE >= KERNEL_VERSION(3,0,0)
++#ifdef V4L2_REFACTORED_RC_CODE
 +		.rc_map_table = rtl2832u_rc_keys_map_table,             //user define key map
 +		.rc_map_size  = ARRAY_SIZE(rtl2832u_rc_keys_map_table), //user define key map size	
 +#else
@@ -38261,7 +38478,7 @@ index 0000000..1787943
 +
 +	//remote control
 +	.rc.legacy = {
-+#if LINUX_VERSION_CODE >= KERNEL_VERSION(3,0,0)
++#ifdef V4L2_REFACTORED_RC_CODE
 +		.rc_map_table = rtl2832u_rc_keys_map_table,             //user define key map
 +		.rc_map_size  = ARRAY_SIZE(rtl2832u_rc_keys_map_table), //user define key map size	
 +#else
@@ -38313,8 +38530,7 @@ index 0000000..1787943
 +		  .cold_ids = { NULL, NULL },
 +		  .warm_ids = { &rtl2832u_usb_table[62], NULL },
 +		},
-+		{
-+		  .name ="Leadtek USB DVB-T Device",
++		{ .name = "Leadtek WinFast DTV Dongle Mini",
 +		  .cold_ids = { NULL, NULL },
 +		  .warm_ids = { &rtl2832u_usb_table[76], NULL },
 +		},
@@ -38367,7 +38583,7 @@ index 0000000..1787943
 +
 +	//remote control
 +	.rc.legacy = {
-+#if LINUX_VERSION_CODE >= KERNEL_VERSION(3,0,0)
++#ifdef V4L2_REFACTORED_RC_CODE
 +		.rc_map_table = rtl2832u_rc_keys_map_table,             //user define key map
 +		.rc_map_size  = ARRAY_SIZE(rtl2832u_rc_keys_map_table), //user define key map size	
 +#else
@@ -38468,7 +38684,7 @@ index 0000000..1787943
 +
 +	//remote control
 +	.rc.legacy = {
-+#if LINUX_VERSION_CODE >= KERNEL_VERSION(3,0,0)
++#ifdef V4L2_REFACTORED_RC_CODE
 +		.rc_map_table = rtl2832u_rc_keys_map_table,             //user define key map
 +		.rc_map_size  = ARRAY_SIZE(rtl2832u_rc_keys_map_table), //user define key map size	
 +#else
@@ -38549,10 +38765,11 @@ index 0000000..1787943
 +
 diff --git a/drivers/media/dvb/dvb-usb/rtl2832u.h b/drivers/media/dvb/dvb-usb/rtl2832u.h
 new file mode 100644
-index 0000000..531644f
+index 0000000..41bd7c5
 --- /dev/null
 +++ b/drivers/media/dvb/dvb-usb/rtl2832u.h
-@@ -0,0 +1,277 @@
+@@ -0,0 +1,275 @@
++
 +#ifndef _RTL2832U_H_
 +#define _RTL2832U_H_
 +
@@ -38668,9 +38885,6 @@ index 0000000..531644f
 +#endif
 +#define	USB_PID_LEADTEK_WARM_1					0x6680
 +#define	USB_PID_LEADTEK_WARM_2					0x6F11
-+#define	USB_PID_LEADTEK_WARM_3					0x6A03
-+
-+
 +#ifndef  USB_VID_COMPRO
 +	#define USB_VID_COMPRO						0x185B
 +#endif 
@@ -38832,11 +39046,11 @@ index 0000000..531644f
 +
 diff --git a/drivers/media/dvb/dvb-usb/rtl2832u_fe.c b/drivers/media/dvb/dvb-usb/rtl2832u_fe.c
 new file mode 100644
-index 0000000..e59a8f7
+index 0000000..fab851f
 --- /dev/null
 +++ b/drivers/media/dvb/dvb-usb/rtl2832u_fe.c
-@@ -0,0 +1,3637 @@
-+
+@@ -0,0 +1,4009 @@
++#include <linux/version.h>
 +#include "rtl2832u_fe.h"
 +#include "rtl2832u_io.h"
 +#include "rtl2832u.h"
@@ -39816,7 +40030,11 @@ index 0000000..e59a8f7
 +
 +	struct rtl2832_state*	p_state,
 +	unsigned long			frequency,
-+	enum fe_bandwidth	bandwidth,	
++#ifdef V4L2_ONLY_DVB_V5
++	unsigned long		bandwidth_hz,
++#else
++	enum fe_bandwidth	bandwidth,
++#endif	
 +	int*					reset_needed)
 +{
 +
@@ -39826,8 +40044,12 @@ index 0000000..e59a8f7
 +	deb_info(" +%s \n", __FUNCTION__);
 +
 +	*reset_needed = 1;	 //3initialize "reset_needed"
-+	
++
++#ifdef V4L2_ONLY_DVB_V5
++	if( (p_state->current_frequency == frequency) && (p_state->current_bandwidth_hz == bandwidth_hz) )
++#else
 +	if( (p_state->current_frequency == frequency) && (p_state->current_bandwidth == bandwidth) )
++#endif	
 +	{
 +		if( p_state->pNim->IsSignalLocked(p_state->pNim, &is_lock) ) goto error;
 +		diff_ms = 0;		
@@ -40336,7 +40558,76 @@ index 0000000..e59a8f7
 +}
 +
 +
++#ifdef V4L2_ONLY_DVB_V5
++static int
++rtl2840_set_parameters(
++	struct dvb_frontend*	fe)
++{
++	struct dtv_frontend_properties		*param = &fe->dtv_property_cache;
++	struct rtl2832_state				*p_state = fe->demodulator_priv;
++	unsigned long						frequency = param->frequency;
 +
++	DVBT_DEMOD_MODULE				*pDemod2832;
++	int								QamMode;
++
++	deb_info(" +%s \n", __FUNCTION__);
++
++	if(p_state->demod_type == RTL2840 && p_state->pNim2840 == NULL )
++	{
++		deb_info(" %s pNim2840 = NULL \n", __FUNCTION__);
++
++		return -1;
++	 }
++
++
++	deb_info(" +%s Freq=%lu , Symbol rate=%u, QAM=%u\n", __FUNCTION__, frequency, param->symbol_rate, param->modulation);
++
++	pDemod2832 = p_state->pNim->pDemod;
++
++	switch(param->modulation)
++	{
++		case QPSK :		QamMode = QAM_QAM_4;		break;
++		case QAM_16 :	QamMode = QAM_QAM_16;		break;
++		case QAM_32 :	QamMode = QAM_QAM_32;		break;
++		case QAM_64 :	QamMode = QAM_QAM_64;		break;
++		case QAM_128 :	QamMode = QAM_QAM_128;		break;
++		case QAM_256 :	QamMode = QAM_QAM_256;		break;		
++
++		case QAM_AUTO :
++		default:
++		deb_info(" XXX %s  : unknown QAM \n", __FUNCTION__);
++		goto  mutex_error;
++		break;
++			
++	}
++
++	if( mutex_lock_interruptible(&p_state->i2c_repeater_mutex) )	goto mutex_error;
++
++	// Enable demod DVBT_IIC_REPEAT.
++	if(pDemod2832->SetRegBitsWithPage(pDemod2832,  DVBT_IIC_REPEAT, 0x1) )   goto error;	
++	
++	p_state->pNim2840->SetParameters(p_state->pNim2840, frequency, QamMode, param->symbol_rate, QAM_ALPHA_0P15);
++
++	// Disable demod DVBT_IIC_REPEAT.
++	if(pDemod2832->SetRegBitsWithPage(pDemod2832, DVBT_IIC_REPEAT, 0x0))  goto error;
++
++	mutex_unlock(&p_state->i2c_repeater_mutex);	
++
++	deb_info(" -%s \n", __FUNCTION__);
++
++	return 0;
++
++error:
++	mutex_unlock(&p_state->i2c_repeater_mutex);	
++
++mutex_error:
++
++	deb_info(" -XXX %s \n", __FUNCTION__);
++
++	return 1;
++
++}
++#else
 +static int
 +rtl2840_set_parameters(
 +	struct dvb_frontend*	fe,
@@ -40407,9 +40698,258 @@ index 0000000..e59a8f7
 +	return 1;
 +
 +}
++#endif
++
++
++#ifdef V4L2_ONLY_DVB_V5
++static int
++rtl2832_set_parameters(
++	struct dvb_frontend*	fe)
++{
++	struct dtv_frontend_properties	*param = &fe->dtv_property_cache;
++	struct rtl2832_state			*p_state = fe->demodulator_priv;
++
++	unsigned long					frequency = param->frequency;
++	int							bandwidth_mode;
++	int							is_signal_present;
++	int							reset_needed;
++	unsigned char                             data;
++	int							int_data; 
++
++       
++       DTMB_DEMOD_MODULE *           pDemod2836;
++	DVBT_DEMOD_MODULE *           pDemod2832;
 +
 +
 +
++       if( p_state->pNim == NULL)
++       {
++		deb_info(" %s pNim = NULL \n", __FUNCTION__);
++		return -1;
++       }
++
++	if(p_state->demod_type == RTL2836 && p_state->pNim2836 == NULL )
++	{
++		deb_info(" %s pNim2836 = NULL \n", __FUNCTION__);
++		return -1;
++	 }
++
++	if( mutex_lock_interruptible(&p_state->i2c_repeater_mutex) )	goto mutex_error;
++	
++	deb_info(" +%s frequency = %lu , bandwidth = %u\n", __FUNCTION__, frequency , param->bandwidth_hz);
++
++	if(p_state->demod_type == RTL2832)
++	{
++		if ( check_dvbt_reset_parameters( p_state , frequency , param->bandwidth_hz, &reset_needed) ) goto error;
++
++		if( reset_needed == 0 )
++		{
++			mutex_unlock(&p_state->i2c_repeater_mutex);		
++			return 0;
++		}
++
++		switch (param->bandwidth_hz) 
++	      {
++		case 6000000:
++		bandwidth_mode = DVBT_BANDWIDTH_6MHZ; 	
++		break;
++		
++		case 7000000:
++		bandwidth_mode = DVBT_BANDWIDTH_7MHZ;
++		break;
++		
++		case 8000000:
++		default:
++		bandwidth_mode = DVBT_BANDWIDTH_8MHZ;	
++		break;
++	       }
++	       
++	       	//add by Dean
++	        if (p_state->tuner_type == RTL2832_TUNER_TYPE_FC0012 )
++	        {
++	        
++	   		if( gpio6_output_enable_direction(p_state) )	goto error;	    
++	   		
++	   			
++			if (frequency > 300000000)
++			{
++				
++				read_usb_sys_register(p_state, RTD2831_RMAP_INDEX_SYS_GPIO_OUTPUT_VAL, &int_data);
++				int_data |= BIT6; // set GPIO6 high
++				write_usb_sys_register(p_state, RTD2831_RMAP_INDEX_SYS_GPIO_OUTPUT_VAL, int_data);	
++				deb_info("  %s : Tuner :FC0012 V-band (GPIO6 high)\n", __FUNCTION__);		
++			}
++			else
++			{
++	
++				read_usb_sys_register(p_state, RTD2831_RMAP_INDEX_SYS_GPIO_OUTPUT_VAL, &int_data);
++				int_data &= (~BIT6); // set GPIO6 low	
++				write_usb_sys_register(p_state, RTD2831_RMAP_INDEX_SYS_GPIO_OUTPUT_VAL, int_data);	
++				deb_info("  %s : Tuner :FC0012 U-band (GPIO6 low)\n", __FUNCTION__);	
++				
++			}
++		}
++		
++
++	
++			
++		
++		if ( p_state->pNim->SetParameters( p_state->pNim,  frequency , bandwidth_mode ) ) goto error; 
++
++		if ( p_state->pNim->IsSignalPresent( p_state->pNim, &is_signal_present) ) goto error;
++		deb_info("  %s : ****** Signal Present = %d ******\n", __FUNCTION__, is_signal_present);
++		
++		
++
++
++		p_state->is_frequency_valid = 1;
++
++		
++	}
++	else if(p_state->demod_type == RTL2836)
++	{
++		pDemod2836 =  p_state->pNim2836->pDemod;
++		pDemod2832 = p_state->pNim->pDemod;
++
++		//if ( check_dtmb_reset_parameters( p_state , frequency ,  &reset_needed) ) goto error;
++		//if( reset_needed == 0 )
++		//{
++		//	mutex_unlock(&p_state->i2c_repeater_mutex);		
++		//	return 0;
++		//}
++		
++		deb_info("%s:  RTL2836 Hold Stage=9\n",__FUNCTION__);
++		if(read_rtl2836_demod_register(p_state->d, RTL2836_DEMOD_ADDR,  PAGE_3,  0xf8,  &data, LEN_1_BYTE))  goto error;
++		data &=(~BIT_0_MASK);  //reset Reg_present
++		data &=(~BIT_1_MASK);  //reset Reg_lock
++		if(write_rtl2836_demod_register(p_state->d, RTL2836_DEMOD_ADDR,  PAGE_3,  0xf8,  &data, LEN_1_BYTE))  goto error;
++		
++		//3 + RTL2836 Hold Stage=9
++		data = 0x29;
++		if(write_rtl2836_demod_register(p_state->d, RTL2836_DEMOD_ADDR,  PAGE_3,  0x4d,  &data, LEN_1_BYTE))  goto error;
++		
++		data = 0xA5;
++		if(write_rtl2836_demod_register(p_state->d, RTL2836_DEMOD_ADDR,  PAGE_3,  0x4e,  &data, LEN_1_BYTE))  goto error;
++		
++		data = 0x94;
++		if(write_rtl2836_demod_register(p_state->d, RTL2836_DEMOD_ADDR,  PAGE_3,  0x4f,  &data, LEN_1_BYTE))  goto error;
++		//3 -RTL2836 Hold Stage=9
++	
++
++		// Enable demod DVBT_IIC_REPEAT.
++	       if(pDemod2832->SetRegBitsWithPage(pDemod2832,  DVBT_IIC_REPEAT, 0x1) )   goto error;
++
++		if ( p_state->pNim2836->SetParameters( p_state->pNim2836,  frequency)) 	goto error; //no bandwidth setting	
++
++		// Disable demod DVBT_IIC_REPEAT.
++	       if(pDemod2832->SetRegBitsWithPage(pDemod2832, DVBT_IIC_REPEAT, 0x0))  goto error;
++
++		if(pDemod2832->SoftwareReset(pDemod2832))//2832 swreset
++			goto error;
++
++		p_state->is_frequency_valid = 1;
++		if( rtl2836_scan_procedure(p_state))  goto error; 
++	}
++
++
++//#if(UPDATE_FUNC_ENABLE_2832 == 0)
++	//3 FC0012/E4000 update begin --
++	if(p_state->demod_type == RTL2832 && (p_state->tuner_type == RTL2832_TUNER_TYPE_FC0012 
++										|| p_state->tuner_type == RTL2832_TUNER_TYPE_E4000
++										|| p_state->tuner_type == RTL2832_TUNER_TYPE_FC0013))
++	{
++              // Enable demod DVBT_IIC_REPEAT.
++		if(p_state->pNim->pDemod->SetRegBitsWithPage(p_state->pNim->pDemod, DVBT_IIC_REPEAT, 0x1) != FUNCTION_SUCCESS)
++			goto error;
++ 
++		if(p_state->tuner_type == RTL2832_TUNER_TYPE_FC0012)//fc0012
++		{
++			if(rtl2832_fc0012_UpdateTunerLnaGainWithRssi(p_state->pNim) != FUNCTION_SUCCESS)
++				goto error;
++		}
++		else if(p_state->tuner_type == RTL2832_TUNER_TYPE_E4000)//e4000
++		{
++			if(rtl2832_e4000_UpdateTunerMode(p_state->pNim) != FUNCTION_SUCCESS)
++				goto error;
++		}
++		else if(p_state->tuner_type == RTL2832_TUNER_TYPE_FC0013) //fc0013
++		{
++			if(rtl2832_fc0013_UpdateTunerLnaGainWithRssi(p_state->pNim) != FUNCTION_SUCCESS)
++				goto error;
++		}
++		
++		// Disable demod DVBT_IIC_REPEAT.
++		if(p_state->pNim->pDemod->SetRegBitsWithPage(p_state->pNim->pDemod, DVBT_IIC_REPEAT, 0x0) != FUNCTION_SUCCESS)
++			goto error;
++                
++
++		deb_info("%s : fc0012/e4000 update first\n", __FUNCTION__);
++
++		msleep(50);
++ 
++		if(p_state->pNim->pDemod->SetRegBitsWithPage(p_state->pNim->pDemod, DVBT_IIC_REPEAT, 0x1) != FUNCTION_SUCCESS)
++			goto error;
++
++		// Update tuner LNA gain with RSSI.
++		if(p_state->tuner_type == RTL2832_TUNER_TYPE_FC0012)//fc0012
++		{
++			if(rtl2832_fc0012_UpdateTunerLnaGainWithRssi(p_state->pNim) != FUNCTION_SUCCESS)
++				goto error;
++		}
++		else if (p_state->tuner_type == RTL2832_TUNER_TYPE_E4000)//e4000
++		{
++			if(rtl2832_e4000_UpdateTunerMode(p_state->pNim) != FUNCTION_SUCCESS)
++				goto error;
++		}
++		else if(p_state->tuner_type == RTL2832_TUNER_TYPE_FC0013) //fc0013
++		{
++			if(rtl2832_fc0013_UpdateTunerLnaGainWithRssi(p_state->pNim) != FUNCTION_SUCCESS)
++				goto error;
++		}
++			
++		// Disable demod DVBT_IIC_REPEAT.
++		if(p_state->pNim->pDemod->SetRegBitsWithPage(p_state->pNim->pDemod, DVBT_IIC_REPEAT, 0x0) != FUNCTION_SUCCESS)
++			goto error;
++
++		deb_info("%s : fc0012/e4000 update 2nd\n", __FUNCTION__);
++	}
++	//3 FC0012/E4000 update end --
++      
++//#endif
++	
++	p_state->current_frequency = frequency;	
++	p_state->current_bandwidth_hz = param->bandwidth_hz;
++
++	deb_info(" -%s \n", __FUNCTION__);
++
++	mutex_unlock(&p_state->i2c_repeater_mutex);	
++
++	return 0;
++
++error:	
++	mutex_unlock(&p_state->i2c_repeater_mutex);	
++	
++mutex_error:	
++	p_state->current_frequency = 0;
++	p_state->current_bandwidth_hz = 0;
++	p_state->is_frequency_valid = 0;
++	deb_info(" -%s  error end\n", __FUNCTION__);
++
++	return -1;
++	
++}
++
++
++
++static int 
++rtl2832_get_parameters(
++	struct dvb_frontend*	fe)
++{
++	//struct rtl2832_state* p_state = fe->demodulator_priv;
++	return 0;
++}
++
++#else
 +
 +static int
 +rtl2832_set_parameters(
@@ -40628,7 +41168,7 @@ index 0000000..e59a8f7
 +//#endif
 +	
 +	p_state->current_frequency = frequency;	
-+	p_state->current_bandwidth = p_ofdm_param->bandwidth;	
++	p_state->current_bandwidth = p_ofdm_param->bandwidth;
 +
 +	deb_info(" -%s \n", __FUNCTION__);
 +
@@ -40659,6 +41199,8 @@ index 0000000..e59a8f7
 +	//struct rtl2832_state* p_state = fe->demodulator_priv;
 +	return 0;
 +}
++#endif
++
 +
 +
 +static int 
@@ -40948,64 +41490,87 @@ index 0000000..e59a8f7
 +	if( mutex_lock_interruptible(&p_state->i2c_repeater_mutex) )	goto mutex_error;
 +
 +
-+       if(p_state->tuner_type == RTL2832_TUNER_TYPE_FC0012)	
++	if(p_state->tuner_type == RTL2832_TUNER_TYPE_FC0012)	
 +	{
-+	  if (fc0012_get_signal_strength(p_state,&_strength))	
-+	  {
++		if (fc0012_get_signal_strength(p_state,&_strength))	
++		{
 +			*strength = 0;
 +			goto error;	  	
-+	  }
++		}
 +
-+
-+	   *strength = (_strength<<8) | _strength;
-+          deb_info("  %s : use FC0012 strength = 0x%x(%d) \n", __FUNCTION__, *strength,*strength);	  		
++#if 0
++		/* this is wrong, as _strength is in the range [0,100] */
++		*strength = (_strength<<8) | _strength;
++#else
++		/* scale *strength in the proper range [0,0xffff] */
++		*strength = (_strength * 0xffff) / 100;
++#endif
++		deb_info("  %s : use FC0012 strength = 0x%x(%d) \n", __FUNCTION__, *strength,*strength);	  		
 +	}
-+       else if(p_state->demod_type == RTL2832)
-+       {
-+     	
++	else if(p_state->demod_type == RTL2832)
++	{
++
 +       		if( p_state->pNim->GetSignalStrength( p_state->pNim ,  &_strength) ) 
 +		{
 +			*strength = 0;
 +			goto error;
 +		}
 +	
++#if 0
++		/* this is wrong, as _strength is in the range [0,100] */
 +		*strength = (_strength<<8) | _strength;
++#else
++		/* scale *strength in the proper range [0,0xffff] */
++		*strength = (_strength * 0xffff) / 100;
++#endif
 +
 +		deb_info("  %s : RTL2832 strength = 0x%x \n", __FUNCTION__, *strength);		
 +        }
 +	else if(p_state->demod_type == RTL2836)
 +        {
 +		if(p_state->pNim2836 == NULL)
-+              {
++		{
 +			deb_info(" %s pNim2836 = NULL \n", __FUNCTION__);
 +			goto error;
-+               }
-+                
-+              if(p_state->pNim2836->pDemod->GetSignalStrength( p_state->pNim2836->pDemod ,  &_strength))// if(p_state->pNim2836->GetSignalStrength( p_state->pNim2836 ,  &_strength) ) 
++		}
++
++		if(p_state->pNim2836->pDemod->GetSignalStrength( p_state->pNim2836->pDemod ,  &_strength))// if(p_state->pNim2836->GetSignalStrength( p_state->pNim2836 ,  &_strength) ) 
 +		{
 +			*strength = 0;
 +			goto error;
 +		}
 +	
++#if 0
++		/* this is wrong, as _strength is in the range [0,100] */
 +		*strength = (_strength<<8) | _strength;
++#else
++		/* scale *strength in the proper range [0,0xffff] */
++		*strength = (_strength * 0xffff) / 100;
++#endif
 +
 +		deb_info("  %s : RTL2836 strength = 0x%x \n", __FUNCTION__, *strength);	
 +        }
 +	else if(p_state->demod_type == RTL2840)
 +	{
 +		if(p_state->pNim2840 == NULL)
-+              {
++		{
 +			deb_info(" %s pNim2840 = NULL \n", __FUNCTION__);
 +			goto error;
-+               }
-+                
-+              if(p_state->pNim2840->pDemod->GetSignalStrength( p_state->pNim2840->pDemod ,  &_strength))// if(p_state->pNim2836->GetSignalStrength( p_state->pNim2836 ,  &_strength) ) 
++		}
++
++		if(p_state->pNim2840->pDemod->GetSignalStrength( p_state->pNim2840->pDemod ,  &_strength))// if(p_state->pNim2836->GetSignalStrength( p_state->pNim2836 ,  &_strength) ) 
 +		{
 +			*strength = 0;
 +			goto error;
 +		}
-+	
++
++#if 0
++		/* this is wrong, as _strength is in the range [0,100] */
 +		*strength = (_strength<<8) | _strength;
++#else
++		/* scale *strength in the proper range [0,0xffff] */
++		*strength = (_strength * 0xffff) / 100;
++#endif
 +
 +		deb_info("  %s : RTL2840 strength = 0x%x \n", __FUNCTION__, *strength);	
 +	}
@@ -41298,17 +41863,22 @@ index 0000000..e59a8f7
 +	{
 +		case RTL2832:
 +			memcpy(&p_state->frontend.ops, &rtl2832_dvbt_ops, sizeof(struct dvb_frontend_ops));
++#ifndef V4L2_ONLY_DVB_V5
 +			memset(&p_state->fep, 0, sizeof(struct dvb_frontend_parameters));
-+			
++#endif
 +		break;
 +		case RTL2836:	
 +			memcpy(&p_state->frontend.ops, &rtl2836_dtmb_ops, sizeof(struct dvb_frontend_ops));
++#ifndef V4L2_ONLY_DVB_V5
 +			memset(&p_state->fep, 0, sizeof(struct dvb_frontend_parameters));
++#endif
 +		break;
 +
 +		case RTL2840:
 +			memcpy(&p_state->frontend.ops, &rtl2840_dvbc_ops, sizeof(struct dvb_frontend_ops));
++#ifndef V4L2_ONLY_DVB_V5
 +			memset(&p_state->fep, 0, sizeof(struct dvb_frontend_parameters));
++#endif
 +		break;	
 +	}	
 +	
@@ -41342,9 +41912,15 @@ index 0000000..e59a8f7
 +
 +
 +static struct dvb_frontend_ops rtl2840_dvbc_ops = {
++#ifdef V4L2_ONLY_DVB_V5
++    /* TODO: check if rtl2840 supports also SYS_DVBC_ANNEX_C */
++    .delsys = { SYS_DVBC_ANNEX_A, SYS_DVBC_ANNEX_C },
++#endif
 +    .info = {
 +        .name               = "Realtek DVB-C RTL2840 ",
++#ifndef V4L2_ONLY_DVB_V5
 +        .type               = FE_QAM,
++#endif
 +        .frequency_min      = 50000000,
 +        .frequency_max      = 862000000,
 +        .frequency_stepsize = 166667,
@@ -41378,9 +41954,14 @@ index 0000000..e59a8f7
 +
 +
 +static struct dvb_frontend_ops rtl2832_dvbt_ops = {
++#ifdef V4L2_ONLY_DVB_V5
++    .delsys = { SYS_DVBT },
++#endif
 +    .info = {
 +        .name               = "Realtek DVB-T RTL2832",
++#ifndef V4L2_ONLY_DVB_V5
 +        .type               = FE_OFDM,
++#endif
 +        .frequency_min      = 50000000,
 +        .frequency_max      = 862000000,
 +        .frequency_stepsize = 166667,
@@ -41411,9 +41992,14 @@ index 0000000..e59a8f7
 +};
 +
 +static struct dvb_frontend_ops rtl2836_dtmb_ops = {
++#ifdef V4L2_ONLY_DVB_V5
++    .delsys = { SYS_DMBTH },
++#endif
 +    .info = {
 +        .name               = "Realtek DTMB RTL2836",
++#ifndef V4L2_ONLY_DVB_V5
 +        .type               = FE_OFDM,
++#endif
 +        .frequency_min      = 50000000,
 +        .frequency_max      = 862000000,
 +        .frequency_stepsize = 166667,
@@ -42475,10 +43061,10 @@ index 0000000..e59a8f7
 +
 diff --git a/drivers/media/dvb/dvb-usb/rtl2832u_fe.h b/drivers/media/dvb/dvb-usb/rtl2832u_fe.h
 new file mode 100644
-index 0000000..42c7586
+index 0000000..270e376
 --- /dev/null
 +++ b/drivers/media/dvb/dvb-usb/rtl2832u_fe.h
-@@ -0,0 +1,296 @@
+@@ -0,0 +1,312 @@
 +
 +#ifndef __RTL2832U_FE_H__
 +#define __RTL2832U_FE_H__
@@ -42502,6 +43088,16 @@ index 0000000..42c7586
 +
 +#include "rtl2832u_io.h"
 +#include <linux/param.h>
++
++#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3,3,0)) || ((defined V4L2_VERSION) && (V4L2_VERSION >= 197120))
++/* all DVB frontend drivers now work directly with the DVBv5
++ * structure. This warrants that all drivers will be
++ * getting/setting frontend parameters on a consistent way, in
++ * order to avoid copying data from/to the DVBv3 structs
++ * without need.
++ */
++#define V4L2_ONLY_DVB_V5
++#endif
 +
 +#define  UPDATE_FUNC_ENABLE_2840      0
 +#define  UPDATE_FUNC_ENABLE_2836      1
@@ -42528,13 +43124,19 @@ index 0000000..42c7586
 +//3  state of total device 
 +struct rtl2832_state {
 +	struct dvb_frontend			frontend;
-+	struct dvb_frontend_parameters	fep;	
++#ifndef V4L2_ONLY_DVB_V5
++	struct dvb_frontend_parameters	fep;
++#endif
 +	struct dvb_usb_device*		d;
 +
 +	struct mutex					i2c_repeater_mutex;
 +
-+       unsigned long					current_frequency;	
-+	enum fe_bandwidth			current_bandwidth;		
++       unsigned long					current_frequency;
++#ifdef V4L2_ONLY_DVB_V5
++	unsigned long			current_bandwidth_hz;
++#else
++	enum fe_bandwidth			current_bandwidth;
++#endif
 +	   
 +	RTL2832_TUNER_TYPE			tuner_type;
 +	unsigned char					is_mt2266_nim_module_built;  //3 For close MT handle
@@ -44515,13 +45117,14 @@ index 0000000..883d366
 +}
 diff --git a/drivers/media/dvb/dvb-usb/rtl2832u_ioctl.h b/drivers/media/dvb/dvb-usb/rtl2832u_ioctl.h
 new file mode 100644
-index 0000000..93549d7
+index 0000000..4954d3c
 --- /dev/null
 +++ b/drivers/media/dvb/dvb-usb/rtl2832u_ioctl.h
-@@ -0,0 +1,59 @@
+@@ -0,0 +1,60 @@
 +#ifndef __RTL2832U_IOCTL_H__
 +#define __RTL2832U_IOCTL_H__
 +
++#include <linux/version.h>
 +#include "rtl2832u_fe.h"
 +#include "rtl2832u_io.h"
 +
@@ -100595,5 +101198,5 @@ index 0000000..dbfbce6
 +
 +#endif
 -- 
-1.7.5.4
+1.7.0.4
 

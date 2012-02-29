@@ -4,14 +4,20 @@ including support for IT9135 9005/9006 devices;
 From: Gianluca Gennari <gennarone@gmail.com>
 ---
  drivers/media/dvb/dvb-usb/dvb-usb-ids.h      |    3 +
- drivers/media/dvb/dvb-usb/it913x.c           |  338 +++++++++----
- drivers/media/dvb/frontends/it913x-fe-priv.h |  742 +++++++++++++++++++++++++-
- drivers/media/dvb/frontends/it913x-fe.c      |  217 ++++++--
- drivers/media/dvb/frontends/it913x-fe.h      |   43 ++-
- 5 files changed, 1184 insertions(+), 159 deletions(-)
+ drivers/media/dvb/dvb-usb/it913x.c           |  462 ++++++++++++----
+ drivers/media/dvb/frontends/it913x-fe-priv.h |  747 +++++++++++++++++++++++++-
+ drivers/media/dvb/frontends/it913x-fe.c      |  306 +++++++++--
+ drivers/media/dvb/frontends/it913x-fe.h      |   47 ++-
+ drivers/media/rc/keymaps/Makefile            |    2 +
+ drivers/media/rc/keymaps/rc-it913x-v1.c      |   95 ++++
+ drivers/media/rc/keymaps/rc-it913x-v2.c      |   94 ++++
+ include/media/rc-map.h                       |    2 +
+ 9 files changed, 1566 insertions(+), 192 deletions(-)
+ create mode 100644 drivers/media/rc/keymaps/rc-it913x-v1.c
+ create mode 100644 drivers/media/rc/keymaps/rc-it913x-v2.c
 
 diff --git a/drivers/media/dvb/dvb-usb/dvb-usb-ids.h b/drivers/media/dvb/dvb-usb/dvb-usb-ids.h
-index c89dbd5..2be408b 100644
+index 4298b20..9d46f6c 100644
 --- a/drivers/media/dvb/dvb-usb/dvb-usb-ids.h
 +++ b/drivers/media/dvb/dvb-usb/dvb-usb-ids.h
 @@ -133,6 +133,8 @@
@@ -23,7 +29,7 @@ index c89dbd5..2be408b 100644
  #define USB_PID_KWORLD_399U				0xe399
  #define USB_PID_KWORLD_399U_2				0xe400
  #define USB_PID_KWORLD_395U				0xe396
-@@ -340,6 +342,7 @@
+@@ -341,6 +343,7 @@
  #define USB_PID_TVWAY_PLUS				0x0002
  #define USB_PID_SVEON_STV20				0xe39d
  #define USB_PID_SVEON_STV22				0xe401
@@ -32,10 +38,10 @@ index c89dbd5..2be408b 100644
  #define USB_PID_TERRATEC_DVBS2CI_V1			0x10a4
  #define USB_PID_TERRATEC_DVBS2CI_V2			0x10ac
 diff --git a/drivers/media/dvb/dvb-usb/it913x.c b/drivers/media/dvb/dvb-usb/it913x.c
-index c462261..01a9f7b 100644
+index c462261..01005fa 100644
 --- a/drivers/media/dvb/dvb-usb/it913x.c
 +++ b/drivers/media/dvb/dvb-usb/it913x.c
-@@ -52,42 +52,59 @@ static int pid_filter;
+@@ -52,42 +52,60 @@ static int pid_filter;
  module_param_named(pid, pid_filter, int, 0644);
  MODULE_PARM_DESC(pid, "set default 0=on 1=off");
  
@@ -60,6 +66,7 @@ index c462261..01a9f7b 100644
 -	u8 tuner_id_1;
 -	u8 dual_mode;
 +	struct ite_config it913x_config;
++	u8 pid_filter_onoff;
  };
  
  struct ite_config it913x_config;
@@ -110,7 +117,7 @@ index c462261..01a9f7b 100644
  	return ret;
  }
  
-@@ -100,7 +117,7 @@ static u16 check_sum(u8 *p, u8 len)
+@@ -100,7 +118,7 @@ static u16 check_sum(u8 *p, u8 len)
  	return ~sum;
  }
  
@@ -119,7 +126,7 @@ index c462261..01a9f7b 100644
  			u8 cmd, u32 reg, u8 addr, u8 *data, u8 len)
  {
  	int ret = 0, i, buf_size = 1;
-@@ -159,22 +176,41 @@ static int it913x_io(struct usb_device *udev, u8 mode, u8 pro,
+@@ -159,22 +177,41 @@ static int it913x_io(struct usb_device *udev, u8 mode, u8 pro,
  	buff[buf_size++] = (chk_sum & 0xff);
  
  	ret = it913x_bulk_write(udev, buff, buf_size , 0x02);
@@ -165,28 +172,33 @@ index c462261..01a9f7b 100644
  }
  
  static int it913x_wr_reg(struct usb_device *udev, u8 pro, u32 reg , u8 data)
-@@ -223,15 +259,15 @@ static u32 it913x_query(struct usb_device *udev, u8 pro)
+@@ -223,15 +260,16 @@ static u32 it913x_query(struct usb_device *udev, u8 pro)
  
  static int it913x_pid_filter_ctrl(struct dvb_usb_adapter *adap, int onoff)
  {
 -	int ret = 0;
++	struct it913x_state *st = adap->dev->priv;
 +	struct usb_device *udev = adap->dev->udev;
 +	int ret;
  	u8 pro = (adap->id == 0) ? DEV_0_DMOD : DEV_1_DMOD;
  
- 	if (mutex_lock_interruptible(&adap->dev->i2c_mutex) < 0)
- 			return -EAGAIN;
+-	if (mutex_lock_interruptible(&adap->dev->i2c_mutex) < 0)
+-			return -EAGAIN;
++	mutex_lock(&adap->dev->i2c_mutex);
++
  	deb_info(1, "PID_C  (%02x)", onoff);
  
 -	if (!onoff)
 -		ret = it913x_wr_reg(adap->dev->udev, pro, PID_RST, 0x1);
-+	ret = it913x_wr_reg(udev, pro, PID_EN, onoff);
++	ret = it913x_wr_reg(udev, pro, PID_EN, st->pid_filter_onoff);
  
  	mutex_unlock(&adap->dev->i2c_mutex);
  	return ret;
-@@ -241,27 +277,20 @@ static int it913x_pid_filter(struct dvb_usb_adapter *adap,
+@@ -240,28 +278,29 @@ static int it913x_pid_filter_ctrl(struct dvb_usb_adapter *adap, int onoff)
+ static int it913x_pid_filter(struct dvb_usb_adapter *adap,
  		int index, u16 pid, int onoff)
  {
++	struct it913x_state *st = adap->dev->priv;
  	struct usb_device *udev = adap->dev->udev;
 -	int ret = 0;
 +	int ret;
@@ -194,30 +206,57 @@ index c462261..01a9f7b 100644
  
 -	if (pid_filter > 0)
 -		return 0;
--
- 	if (mutex_lock_interruptible(&adap->dev->i2c_mutex) < 0)
- 			return -EAGAIN;
++	mutex_lock(&adap->dev->i2c_mutex);
+ 
+-	if (mutex_lock_interruptible(&adap->dev->i2c_mutex) < 0)
+-			return -EAGAIN;
  	deb_info(1, "PID_F  (%02x)", onoff);
 -	if (onoff) {
 -		ret = it913x_wr_reg(udev, pro, PID_EN, 0x1);
--
--		ret |= it913x_wr_reg(udev, pro, PID_LSB, (u8)(pid & 0xff));
  
--		ret |= it913x_wr_reg(udev, pro, PID_MSB, (u8)(pid >> 8));
+-		ret |= it913x_wr_reg(udev, pro, PID_LSB, (u8)(pid & 0xff));
 +	ret = it913x_wr_reg(udev, pro, PID_LSB, (u8)(pid & 0xff));
  
--		ret |= it913x_wr_reg(udev, pro, PID_INX_EN, (u8)onoff);
+-		ret |= it913x_wr_reg(udev, pro, PID_MSB, (u8)(pid >> 8));
 +	ret |= it913x_wr_reg(udev, pro, PID_MSB, (u8)(pid >> 8));
  
--		ret |= it913x_wr_reg(udev, pro, PID_INX, (u8)(index & 0x1f));
+-		ret |= it913x_wr_reg(udev, pro, PID_INX_EN, (u8)onoff);
 +	ret |= it913x_wr_reg(udev, pro, PID_INX_EN, (u8)onoff);
  
--	}
+-		ret |= it913x_wr_reg(udev, pro, PID_INX, (u8)(index & 0x1f));
 +	ret |= it913x_wr_reg(udev, pro, PID_INX, (u8)(index & 0x1f));
+ 
+-	}
++	if (udev->speed == USB_SPEED_HIGH && pid == 0x2000) {
++			ret |= it913x_wr_reg(udev, pro, PID_EN, !onoff);
++			st->pid_filter_onoff = !onoff;
++	} else
++		st->pid_filter_onoff =
++			adap->fe_adap[adap->active_fe].pid_filtering;
  
  	mutex_unlock(&adap->dev->i2c_mutex);
  	return 0;
-@@ -337,15 +366,75 @@ static int it913x_rc_query(struct dvb_usb_device *d)
+@@ -287,8 +326,8 @@ static int it913x_i2c_xfer(struct i2c_adapter *adap, struct i2c_msg msg[],
+ 	int ret;
+ 	u32 reg;
+ 	u8 pro;
+-	if (mutex_lock_interruptible(&d->i2c_mutex) < 0)
+-			return -EAGAIN;
++
++	mutex_lock(&d->i2c_mutex);
+ 
+ 	debug_data_snipet(1, "Message out", msg[0].buf);
+ 	deb_info(2, "num of messages %d address %02x", num, msg[0].addr);
+@@ -329,46 +368,203 @@ static int it913x_rc_query(struct dvb_usb_device *d)
+ 	int ret;
+ 	u32 key;
+ 	/* Avoid conflict with frontends*/
+-	if (mutex_lock_interruptible(&d->i2c_mutex) < 0)
+-			return -EAGAIN;
++	mutex_lock(&d->i2c_mutex);
+ 
+ 	ret = it913x_io(d->udev, READ_LONG, PRO_LINK, CMD_IR_GET,
+ 		0, 0, &ibuf[0], sizeof(ibuf));
  
  	if ((ibuf[2] + ibuf[3]) == 0xff) {
  		key = ibuf[2];
@@ -260,11 +299,13 @@ index c462261..01a9f7b 100644
 +	case IT9135_V1_FW:
 +		it913x_config.firmware_ver = 1;
 +		it913x_config.adc_x2 = 1;
++		it913x_config.read_slevel = false;
 +		props->firmware = fw_it9135_v1;
 +		break;
 +	case IT9135_V2_FW:
 +		it913x_config.firmware_ver = 1;
 +		it913x_config.adc_x2 = 1;
++		it913x_config.read_slevel = false;
 +		props->firmware = fw_it9135_v2;
 +		switch (it913x_config.tuner_id_0) {
 +		case IT9135_61:
@@ -280,10 +321,24 @@ index c462261..01a9f7b 100644
 +	default:
 +		it913x_config.firmware_ver = 0;
 +		it913x_config.adc_x2 = 0;
++		it913x_config.read_slevel = true;
 +		props->firmware = fw_it9137;
 +	}
 +
 +	return 0;
++}
++
++static void it913x_select_remote(struct usb_device *udev,
++	struct dvb_usb_device_properties *props)
++{
++	switch (le16_to_cpu(udev->descriptor.idProduct)) {
++	case USB_PID_ITETECH_IT9135_9005:
++		props->rc.core.rc_codes = RC_MAP_IT913X_V2;
++		return;
++	default:
++		props->rc.core.rc_codes = RC_MAP_IT913X_V1;
++	}
++	return;
 +}
 +
 +#define TS_MPEG_PKT_SIZE	188
@@ -292,13 +347,56 @@ index c462261..01a9f7b 100644
 +#define EP_HIGH			348
 +#define TS_BUFFER_SIZE_MAX	(EP_HIGH*TS_MPEG_PKT_SIZE)
 +
- static int it913x_identify_state(struct usb_device *udev,
- 		struct dvb_usb_device_properties *props,
- 		struct dvb_usb_device_description **desc,
-@@ -359,6 +448,19 @@ static int it913x_identify_state(struct usb_device *udev,
- 	/* checnk for dual mode */
- 	it913x_config.dual_mode =  it913x_read_reg(udev, 0x49c5);
- 
++static int it913x_select_config(struct usb_device *udev,
++	struct dvb_usb_device_properties *props)
++{
++	int ret = 0, reg;
++	bool proprietary_ir = false;
++
++	if (it913x_config.chip_ver == 0x02
++			&& it913x_config.chip_type == 0x9135)
++		reg = it913x_read_reg(udev, 0x461d);
++	else
++		reg = it913x_read_reg(udev, 0x461b);
++
++	if (reg < 0)
++		return reg;
++
++	if (reg == 0) {
++		it913x_config.dual_mode = 0;
++		it913x_config.tuner_id_0 = IT9135_38;
++		proprietary_ir = true;
++	} else {
++		/* TS mode */
++		reg =  it913x_read_reg(udev, 0x49c5);
++		if (reg < 0)
++			return reg;
++		it913x_config.dual_mode = reg;
++
++		/* IR mode type */
++		reg = it913x_read_reg(udev, 0x49ac);
++		if (reg < 0)
++			return reg;
++		if (reg == 5) {
++			info("Remote propriety (raw) mode");
++			proprietary_ir = true;
++		} else if (reg == 1) {
++			info("Remote HID mode NOT SUPPORTED");
++			proprietary_ir = false;
++			props->rc.core.rc_codes = NULL;
++		} else
++			props->rc.core.rc_codes = NULL;
++
++		/* Tuner_id */
++		reg = it913x_read_reg(udev, 0x49d0);
++		if (reg < 0)
++			return reg;
++		it913x_config.tuner_id_0 = reg;
++	}
++
++	if (proprietary_ir)
++		it913x_select_remote(udev, props);
++
 +	if (udev->speed != USB_SPEED_HIGH) {
 +		props->adapter[0].fe[0].pid_filter_count = 5;
 +		info("USB 1 low speed mode - connect to USB 2 port");
@@ -312,13 +410,6 @@ index c462261..01a9f7b 100644
 +		if(props->adapter[0].fe[0].pid_filter_count == 5)
 +			props->adapter[0].fe[0].pid_filter_count = 31;
 +
- 	/* TODO different remotes */
- 	remote = it913x_read_reg(udev, 0x49ac); /* Remote */
- 	if (remote == 0)
-@@ -370,6 +472,28 @@ static int it913x_identify_state(struct usb_device *udev,
- 	info("Dual mode=%x Remote=%x Tuner Type=%x", it913x_config.dual_mode
- 		, remote, it913x_config.tuner_id_0);
- 
 +	/* Select Stream Buffer Size and pid filter option*/
 +	if (pid_filter) {
 +		props->adapter[0].fe[0].stream.u.bulk.buffersize =
@@ -339,12 +430,46 @@ index c462261..01a9f7b 100644
 +	} else
 +		props->num_adapters = 1;
 +
++	info("Dual mode=%x Tuner Type=%x", it913x_config.dual_mode,
++		it913x_config.tuner_id_0);
++
 +	ret = ite_firmware_select(udev, props);
 +
++	return ret;
++}
++
+ static int it913x_identify_state(struct usb_device *udev,
+ 		struct dvb_usb_device_properties *props,
+ 		struct dvb_usb_device_description **desc,
+ 		int *cold)
+ {
+ 	int ret = 0, firm_no;
+-	u8 reg, remote;
++	u8 reg;
+ 
+ 	firm_no = it913x_return_status(udev);
+ 
+-	/* checnk for dual mode */
+-	it913x_config.dual_mode =  it913x_read_reg(udev, 0x49c5);
+-
+-	/* TODO different remotes */
+-	remote = it913x_read_reg(udev, 0x49ac); /* Remote */
+-	if (remote == 0)
+-		props->rc.core.rc_codes = NULL;
+-
+-	/* TODO at the moment tuner_id is always assigned to 0x38 */
+-	it913x_config.tuner_id_0 = it913x_read_reg(udev, 0x49d0);
+-
+-	info("Dual mode=%x Remote=%x Tuner Type=%x", it913x_config.dual_mode
+-		, remote, it913x_config.tuner_id_0);
++	/* Read and select config */
++	ret = it913x_select_config(udev, props);
++	if (ret < 0)
++		return ret;
+ 
  	if (firm_no > 0) {
  		*cold = 0;
- 		return 0;
-@@ -391,18 +515,22 @@ static int it913x_identify_state(struct usb_device *udev,
+@@ -391,18 +587,22 @@ static int it913x_identify_state(struct usb_device *udev,
  				ret = it913x_wr_reg(udev, DEV_0,
  					GPIOH1_O, 0x0);
  		}
@@ -372,7 +497,31 @@ index c462261..01a9f7b 100644
  	}
  
  	*cold = 1;
-@@ -428,35 +556,45 @@ static int it913x_streaming_ctrl(struct dvb_usb_adapter *adap, int onoff)
+@@ -412,51 +612,65 @@ static int it913x_identify_state(struct usb_device *udev,
+ 
+ static int it913x_streaming_ctrl(struct dvb_usb_adapter *adap, int onoff)
+ {
++	struct it913x_state *st = adap->dev->priv;
+ 	int ret = 0;
+ 	u8 pro = (adap->id == 0) ? DEV_0_DMOD : DEV_1_DMOD;
+ 
+-	if (mutex_lock_interruptible(&adap->dev->i2c_mutex) < 0)
+-			return -EAGAIN;
+ 	deb_info(1, "STM  (%02x)", onoff);
+ 
+-	if (!onoff)
++	if (!onoff) {
++		mutex_lock(&adap->dev->i2c_mutex);
++
+ 		ret = it913x_wr_reg(adap->dev->udev, pro, PID_RST, 0x1);
+ 
++		mutex_unlock(&adap->dev->i2c_mutex);
++		st->pid_filter_onoff =
++			adap->fe_adap[adap->active_fe].pid_filtering;
+ 
+-	mutex_unlock(&adap->dev->i2c_mutex);
++	}
+ 
  	return ret;
  }
  
@@ -437,7 +586,7 @@ index c462261..01a9f7b 100644
  
  	msleep(100);
  
-@@ -474,12 +612,17 @@ static int it913x_download_firmware(struct usb_device *udev,
+@@ -474,12 +688,17 @@ static int it913x_download_firmware(struct usb_device *udev,
  	/* Tuner function */
  	if (it913x_config.dual_mode)
  		ret |= it913x_wr_reg(udev, DEV_0_DMOD , 0xec4c, 0xa0);
@@ -461,7 +610,7 @@ index c462261..01a9f7b 100644
  	}
  
  	return (ret < 0) ? -ENODEV : 0;
-@@ -500,32 +643,23 @@ static int it913x_name(struct dvb_usb_adapter *adap)
+@@ -500,32 +719,23 @@ static int it913x_name(struct dvb_usb_adapter *adap)
  static int it913x_frontend_attach(struct dvb_usb_adapter *adap)
  {
  	struct usb_device *udev = adap->dev->udev;
@@ -505,7 +654,7 @@ index c462261..01a9f7b 100644
  
  	if (adap->id == 0 && adap->fe_adap[0].fe) {
  		ret = it913x_wr_reg(udev, DEV_0_DMOD, MP2_SW_RST, 0x1);
-@@ -536,13 +670,13 @@ static int it913x_frontend_attach(struct dvb_usb_adapter *adap)
+@@ -536,13 +746,13 @@ static int it913x_frontend_attach(struct dvb_usb_adapter *adap)
  		ret = it913x_wr_reg(udev, DEV_0, EP4_TX_LEN_LSB,
  					ep_size & 0xff);
  		ret = it913x_wr_reg(udev, DEV_0, EP4_TX_LEN_MSB, ep_size >> 8);
@@ -521,7 +670,7 @@ index c462261..01a9f7b 100644
  		ret = it913x_wr_reg(udev, DEV_0_DMOD, MP2IF2_EN, 0x1);
  		ret = it913x_wr_reg(udev, DEV_1_DMOD, MP2IF_SERIAL, 0x1);
  		ret = it913x_wr_reg(udev, DEV_1, TOP_HOSTB_SER_MODE, 0x1);
-@@ -582,6 +716,9 @@ static int it913x_probe(struct usb_interface *intf,
+@@ -582,6 +792,9 @@ static int it913x_probe(struct usb_interface *intf,
  static struct usb_device_id it913x_table[] = {
  	{ USB_DEVICE(USB_VID_KWORLD_2, USB_PID_KWORLD_UB499_2T_T09) },
  	{ USB_DEVICE(USB_VID_ITETECH, USB_PID_ITETECH_IT9135) },
@@ -531,7 +680,7 @@ index c462261..01a9f7b 100644
  	{}		/* Terminating entry */
  };
  
-@@ -614,8 +751,8 @@ static struct dvb_usb_device_properties it913x_properties = {
+@@ -614,8 +827,8 @@ static struct dvb_usb_device_properties it913x_properties = {
  				.endpoint = 0x04,
  				.u = {/* Keep Low if PID filter on */
  					.bulk = {
@@ -542,7 +691,7 @@ index c462261..01a9f7b 100644
  					}
  				}
  			}
-@@ -639,8 +776,8 @@ static struct dvb_usb_device_properties it913x_properties = {
+@@ -639,8 +852,8 @@ static struct dvb_usb_device_properties it913x_properties = {
  				.endpoint = 0x05,
  				.u = {
  					.bulk = {
@@ -553,12 +702,12 @@ index c462261..01a9f7b 100644
  					}
  				}
  			}
-@@ -654,10 +791,10 @@ static struct dvb_usb_device_properties it913x_properties = {
+@@ -654,10 +867,10 @@ static struct dvb_usb_device_properties it913x_properties = {
  		.rc_query	= it913x_rc_query,
  		.rc_interval	= IT913X_POLL,
  		.allowed_protos	= RC_TYPE_NEC,
 -		.rc_codes	= RC_MAP_KWORLD_315U,
-+		.rc_codes	= RC_MAP_MSI_DIGIVOX_III,
++		.rc_codes	= RC_MAP_IT913X_V1,
  	},
  	.i2c_algo         = &it913x_i2c_algo,
 -	.num_device_descs = 2,
@@ -566,7 +715,7 @@ index c462261..01a9f7b 100644
  	.devices = {
  		{   "Kworld UB499-2T T09(IT9137)",
  			{ &it913x_table[0], NULL },
-@@ -665,6 +802,15 @@ static struct dvb_usb_device_properties it913x_properties = {
+@@ -665,6 +878,15 @@ static struct dvb_usb_device_properties it913x_properties = {
  		{   "ITE 9135 Generic",
  			{ &it913x_table[1], NULL },
  			},
@@ -582,15 +731,15 @@ index c462261..01a9f7b 100644
  	}
  };
  
-@@ -698,5 +844,5 @@ module_exit(it913x_module_exit);
+@@ -698,5 +920,5 @@ module_exit(it913x_module_exit);
  
  MODULE_AUTHOR("Malcolm Priestley <tvboxspy@gmail.com>");
  MODULE_DESCRIPTION("it913x USB 2 Driver");
 -MODULE_VERSION("1.07");
-+MODULE_VERSION("1.24");
++MODULE_VERSION("1.27");
  MODULE_LICENSE("GPL");
 diff --git a/drivers/media/dvb/frontends/it913x-fe-priv.h b/drivers/media/dvb/frontends/it913x-fe-priv.h
-index 1c6fb4b..ad2b644 100644
+index 1c6fb4b..41e9182 100644
 --- a/drivers/media/dvb/frontends/it913x-fe-priv.h
 +++ b/drivers/media/dvb/frontends/it913x-fe-priv.h
 @@ -153,8 +153,7 @@ struct table {
@@ -611,8 +760,15 @@ index 1c6fb4b..ad2b644 100644
  };
  
  /* fe get */
-@@ -205,6 +203,10 @@ fe_modulation_t fe_con[] = {
+@@ -203,8 +201,17 @@ fe_modulation_t fe_con[] = {
+ 	QAM_64,
+ };
  
++enum {
++	PRIORITY_HIGH = 0,	/* High-priority stream */
++	PRIORITY_LOW,	/* Low-priority stream */
++};
++
  /* Standard demodulator functions */
  static struct it913xset set_solo_fe[] = {
 +	{PRO_LINK, GPIOH5_EN, {0x01}, 0x01},
@@ -622,7 +778,7 @@ index 1c6fb4b..ad2b644 100644
  	{PRO_LINK, DVBT_INTEN, {0x04}, 0x01},
  	{PRO_LINK, DVBT_ENABLE, {0x05}, 0x01},
  	{PRO_DMOD, MP2IF_MPEG_PAR_MODE, {0x00}, 0x01},
-@@ -228,13 +230,127 @@ static struct it913xset init_1[] = {
+@@ -228,13 +235,127 @@ static struct it913xset init_1[] = {
  	{PRO_LINK, LOCK3_OUT, {0x01}, 0x01},
  	{PRO_LINK, PADMISCDRSR, {0x01}, 0x01},
  	{PRO_LINK, PADMISCDR2, {0x00}, 0x01},
@@ -752,7 +908,7 @@ index 1c6fb4b..ad2b644 100644
  	{PRO_DMOD, 0x0043, {0x00}, 0x01},
  	{PRO_DMOD, 0x0046, {0x38}, 0x01},
  	{PRO_DMOD, 0x0051, {0x01}, 0x01},
-@@ -244,7 +360,7 @@ static struct it913xset it9137_set[] = {
+@@ -244,7 +365,7 @@ static struct it913xset it9137_set[] = {
  	{PRO_DMOD, 0x0075, {0x8c, 0x8c, 0x8c, 0xc8, 0x01}, 0x05},
  	{PRO_DMOD, 0x007e, {0x04, 0x00}, 0x02},
  	{PRO_DMOD, 0x0081, {	0x0a, 0x12, 0x02, 0x0a, 0x03, 0xc8, 0xb8,
@@ -761,7 +917,7 @@ index 1c6fb4b..ad2b644 100644
  	{PRO_DMOD, 0x008e, {0x01}, 0x01},
  	{PRO_DMOD, 0x0092, {0x06, 0x00, 0x00, 0x00, 0x00}, 0x05},
  	{PRO_DMOD, 0x0099, {0x01}, 0x01},
-@@ -262,15 +378,25 @@ static struct it913xset it9137_set[] = {
+@@ -262,15 +383,25 @@ static struct it913xset it9137_set[] = {
  	{PRO_DMOD, 0x00f3, {0x05, 0x8c, 0x8c}, 0x03},
  	{PRO_DMOD, 0x00f8, {0x03, 0x06, 0x06}, 0x03},
  	{PRO_DMOD, 0x00fc, {	0x02, 0x02, 0x02, 0x09, 0x50, 0x7b, 0x77,
@@ -791,7 +947,7 @@ index 1c6fb4b..ad2b644 100644
  	{PRO_DMOD, 0xf130, {0x04}, 0x01},
  	{PRO_DMOD, 0xf132, {0x04}, 0x01},
  	{PRO_DMOD, 0xf144, {0x1a}, 0x01},
-@@ -301,7 +427,7 @@ static struct it913xset it9137_set[] = {
+@@ -301,7 +432,7 @@ static struct it913xset it9137_set[] = {
  	{PRO_DMOD, 0xf5f8, {0x01}, 0x01},
  	{PRO_DMOD, 0xf5fd, {0x01}, 0x01},
  	{PRO_DMOD, 0xf600, {	0x05, 0x08, 0x0b, 0x0e, 0x11, 0x14, 0x17,
@@ -800,7 +956,7 @@ index 1c6fb4b..ad2b644 100644
  	{PRO_DMOD, 0xf60e, {0x00, 0x04, 0x32, 0x10}, 0x04},
  	{PRO_DMOD, 0xf707, {0xfc, 0x00, 0x37, 0x00}, 0x04},
  	{PRO_DMOD, 0xf78b, {0x01}, 0x01},
-@@ -309,21 +435,605 @@ static struct it913xset it9137_set[] = {
+@@ -309,21 +440,605 @@ static struct it913xset it9137_set[] = {
  	{PRO_DMOD, 0xf905, {0x01}, 0x01},
  	{PRO_DMOD, 0xfb06, {0x03}, 0x01},
  	{PRO_DMOD, 0xfd8b, {0x00}, 0x01},
@@ -810,8 +966,8 @@ index 1c6fb4b..ad2b644 100644
 -	{PRO_LINK, GPIOH5_O, {0x01}, 0x01},
 -	{0xff, 0x0000, {0x00}, 0x00}, /* Terminating Entry */
 +	{0xff, 0x0000, {0x00}, 0x00} /* Terminating Entry */
-+};
-+
+ };
+ 
 +static struct it913xset it9135_51[] = {
 +	{PRO_DMOD, 0x0043, {0x00}, 0x01},
 +	{PRO_DMOD, 0x0046, {0x51}, 0x01},
@@ -986,8 +1142,8 @@ index 1c6fb4b..ad2b644 100644
 +	{PRO_DMOD, 0xfb06, {0x03}, 0x01},
 +	{PRO_DMOD, 0xfd8b, {0x00}, 0x01},
 +	{0xff, 0x0000, {0x00}, 0x00} /* Terminating Entry */
- };
- 
++};
++
 +/* Version 2 types */
 +static struct it913xset it9135_v2[] = {
 +	{PRO_DMOD, 0x0051, {0x01}, 0x01},
@@ -1412,10 +1568,10 @@ index 1c6fb4b..ad2b644 100644
  	{PRO_DMOD, 0xee06, {0x00}, 0x01},
  	{PRO_DMOD, 0xec56, {0x00}, 0x01},
 diff --git a/drivers/media/dvb/frontends/it913x-fe.c b/drivers/media/dvb/frontends/it913x-fe.c
-index d4bd24e..e3727e6 100644
+index d4bd24e..8298cb5 100644
 --- a/drivers/media/dvb/frontends/it913x-fe.c
 +++ b/drivers/media/dvb/frontends/it913x-fe.c
-@@ -46,13 +46,17 @@ MODULE_PARM_DESC(debug, "set debugging level (1=info (or-able)).");
+@@ -46,13 +46,18 @@ MODULE_PARM_DESC(debug, "set debugging level (1=info (or-able)).");
  	  dprintk(level, name" (%02x%02x%02x%02x%02x%02x%02x%02x)", \
  		*p, *(p+1), *(p+2), *(p+3), *(p+4), \
  			*(p+5), *(p+6), *(p+7));
@@ -1431,10 +1587,11 @@ index d4bd24e..e3727e6 100644
 -	u8 adf;
 +	fe_modulation_t constellation;
 +	fe_transmit_mode_t transmission_mode;
++	u8 priority;
  	u32 crystalFrequency;
  	u32 adcFrequency;
  	u8 tuner_type;
-@@ -62,6 +66,7 @@ struct it913x_fe_state {
+@@ -62,6 +67,7 @@ struct it913x_fe_state {
  	u8 tun_fdiv;
  	u8 tun_clk_mode;
  	u32 tun_fn_min;
@@ -1442,7 +1599,7 @@ index d4bd24e..e3727e6 100644
  };
  
  static int it913x_read_reg(struct it913x_fe_state *state,
-@@ -211,13 +216,17 @@ static int it913x_init_tuner(struct it913x_fe_state *state)
+@@ -211,13 +217,17 @@ static int it913x_init_tuner(struct it913x_fe_state *state)
  	state->tun_fn_min /= (state->tun_fdiv * nv_val);
  	deb_info("Tuner fn_min %d", state->tun_fn_min);
  
@@ -1467,7 +1624,7 @@ index d4bd24e..e3727e6 100644
  	}
  
  	return it913x_write_reg(state, PRO_DMOD, 0xed81, val);
-@@ -237,6 +246,11 @@ static int it9137_set_tuner(struct it913x_fe_state *state,
+@@ -237,6 +247,11 @@ static int it9137_set_tuner(struct it913x_fe_state *state,
  	u8 lna_band;
  	u8 bw;
  
@@ -1479,8 +1636,100 @@ index d4bd24e..e3727e6 100644
  	deb_info("Tuner Frequency %d Bandwidth %d", frequency, bandwidth);
  
  	if (frequency >= 51000 && frequency <= 440000) {
-@@ -492,26 +506,74 @@ static int it913x_fe_read_signal_strength(struct dvb_frontend *fe,
+@@ -477,41 +492,157 @@ static int it913x_fe_read_status(struct dvb_frontend *fe, fe_status_t *status)
  	return 0;
+ }
+ 
++/* FEC values based on fe_code_rate_t non supported values 0*/
++int it913x_qpsk_pval[] = {0, -93, -91, -90, 0, -89, -88};
++int it913x_16qam_pval[] = {0, -87, -85, -84, 0, -83, -82};
++int it913x_64qam_pval[] = {0, -82, -80, -78, 0, -77, -76};
++
++static int it913x_get_signal_strength(struct dvb_frontend *fe)
++{
++	struct dtv_frontend_properties *p = &fe->dtv_property_cache;
++	struct it913x_fe_state *state = fe->demodulator_priv;
++	u8 code_rate;
++	int ret, temp;
++	u8 lna_gain_os;
++
++	ret = it913x_read_reg_u8(state, VAR_P_INBAND);
++	if (ret < 0)
++		return ret;
++
++	/* VHF/UHF gain offset */
++	if (state->frequency < 300000000)
++		lna_gain_os = 7;
++	else
++		lna_gain_os = 14;
++
++	temp = (ret - 100) - lna_gain_os;
++
++	if (state->priority == PRIORITY_HIGH)
++		code_rate = p->code_rate_HP;
++	else
++		code_rate = p->code_rate_LP;
++
++	if (code_rate >= ARRAY_SIZE(it913x_qpsk_pval))
++		return -EINVAL;
++
++	deb_info("Reg VAR_P_INBAND:%d Calc Offset Value:%d", ret, temp);
++
++	/* Apply FEC offset values*/
++	switch (p->modulation) {
++	case QPSK:
++		temp -= it913x_qpsk_pval[code_rate];
++		break;
++	case QAM_16:
++		temp -= it913x_16qam_pval[code_rate];
++		break;
++	case QAM_64:
++		temp -= it913x_64qam_pval[code_rate];
++		break;
++	default:
++		return -EINVAL;
++	}
++
++	if (temp < -15)
++		ret = 0;
++	else if ((-15 <= temp) && (temp < 0))
++		ret = (2 * (temp + 15)) / 3;
++	else if ((0 <= temp) && (temp < 20))
++		ret = 4 * temp + 10;
++	else if ((20 <= temp) && (temp < 35))
++		ret = (2 * (temp - 20)) / 3 + 90;
++	else if (temp >= 35)
++		ret = 100;
++
++	deb_info("Signal Strength :%d", ret);
++
++	return ret;
++}
++
+ static int it913x_fe_read_signal_strength(struct dvb_frontend *fe,
+ 		u16 *strength)
+ {
+ 	struct it913x_fe_state *state = fe->demodulator_priv;
+-	int ret = it913x_read_reg_u8(state, SIGNAL_LEVEL);
+-	/*SIGNAL_LEVEL always returns 100%! so using FE_HAS_SIGNAL as switch*/
+-	if (state->it913x_status & FE_HAS_SIGNAL)
+-		ret = (ret * 0xff) / 0x64;
+-	else
+-		ret = 0x0;
+-	ret |= ret << 0x8;
+-	*strength = ret;
+-	return 0;
++	int ret = 0;
++	if (state->config->read_slevel) {
++		if (state->it913x_status & FE_HAS_SIGNAL)
++			ret = it913x_read_reg_u8(state, SIGNAL_LEVEL);
++	} else
++		ret = it913x_get_signal_strength(fe);
++
++	if (ret >= 0)
++		*strength = (u16)((u32)ret * 0xffff / 0x64);
++
++	return (ret < 0) ? -ENODEV : 0;
  }
  
 -static int it913x_fe_read_snr(struct dvb_frontend *fe, u16* snr)
@@ -1563,7 +1812,7 @@ index d4bd24e..e3727e6 100644
  }
  
  static int it913x_fe_get_frontend(struct dvb_frontend *fe,
-@@ -526,9 +588,13 @@ static int it913x_fe_get_frontend(struct dvb_frontend *fe,
+@@ -526,15 +657,21 @@ static int it913x_fe_get_frontend(struct dvb_frontend *fe,
  	if (reg[3] < 3)
  		p->u.ofdm.constellation = fe_con[reg[3]];
  
@@ -1577,7 +1826,15 @@ index d4bd24e..e3727e6 100644
  	if (reg[1] < 4)
  		p->u.ofdm.guard_interval = fe_gi[reg[1]];
  
-@@ -578,7 +644,12 @@ static int it913x_fe_set_frontend(struct dvb_frontend *fe,
+ 	if (reg[2] < 4)
+ 		p->u.ofdm.hierarchy_information = fe_hi[reg[2]];
+ 
++	state->priority = reg[5];
++
+ 	p->u.ofdm.code_rate_HP = (reg[6] < 6) ? fe_code[reg[6]] : FEC_NONE;
+ 	p->u.ofdm.code_rate_LP = (reg[7] < 6) ? fe_code[reg[7]] : FEC_NONE;
+ 
+@@ -578,7 +715,12 @@ static int it913x_fe_set_frontend(struct dvb_frontend *fe,
  
  	deb_info("Frontend Set Tuner Type %02x", state->tuner_type);
  	switch (state->tuner_type) {
@@ -1591,7 +1848,7 @@ index d4bd24e..e3727e6 100644
  		ret = it9137_set_tuner(state,
  			p->u.ofdm.bandwidth, p->frequency);
  		break;
-@@ -678,16 +749,19 @@ static u32 compute_div(u32 a, u32 b, u32 x)
+@@ -678,16 +820,19 @@ static u32 compute_div(u32 a, u32 b, u32 x)
  
  static int it913x_fe_start(struct it913x_fe_state *state)
  {
@@ -1615,7 +1872,7 @@ index d4bd24e..e3727e6 100644
  		state->crystalFrequency = fe_clockTable[adf].xtal ;
  		state->table = fe_clockTable[adf].table;
  		state->adcFrequency = state->table->adcFrequency;
-@@ -698,9 +772,6 @@ static int it913x_fe_start(struct it913x_fe_state *state)
+@@ -698,9 +843,6 @@ static int it913x_fe_start(struct it913x_fe_state *state)
  	} else
  		return -EINVAL;
  
@@ -1625,7 +1882,7 @@ index d4bd24e..e3727e6 100644
  	/* Set LED indicator on GPIOH3 */
  	ret = it913x_write_reg(state, PRO_LINK, GPIOH3_EN, 0x1);
  	ret |= it913x_write_reg(state, PRO_LINK, GPIOH3_ON, 0x1);
-@@ -721,22 +792,71 @@ static int it913x_fe_start(struct it913x_fe_state *state)
+@@ -721,22 +863,71 @@ static int it913x_fe_start(struct it913x_fe_state *state)
  	b[2] = (adc >> 16) & 0xff;
  	ret |= it913x_write(state, PRO_DMOD, ADC_FREQ, b, 3);
  
@@ -1667,15 +1924,15 @@ index d4bd24e..e3727e6 100644
 +		break;
 +	case IT9135_61:
 +		set_lna = it9135_61;
-+		break;
+ 		break;
 +	case IT9135_62:
 +		set_lna = it9135_62;
- 		break;
++		break;
 +	case IT9135_38:
  	default:
 -		return -EINVAL;
 +		set_lna = it9135_38;
- 	}
++	}
 +	info("Tuner LNA type :%02x", state->tuner_type);
 +
 +	ret = it913x_fe_script_loader(state, set_lna);
@@ -1687,7 +1944,7 @@ index d4bd24e..e3727e6 100644
 +		ret |= it913x_write_reg(state, PRO_LINK, PADODPU, 0x0);
 +		ret |= it913x_write_reg(state, PRO_LINK, AGC_O_D, 0x0);
 +		ret |= it913x_init_tuner(state);
-+	}
+ 	}
 +	if (ret < 0)
 +		return -ENODEV;
  
@@ -1703,7 +1960,7 @@ index d4bd24e..e3727e6 100644
  }
  
  static int it913x_fe_init(struct dvb_frontend *fe)
-@@ -746,17 +866,11 @@ static int it913x_fe_init(struct dvb_frontend *fe)
+@@ -746,17 +937,11 @@ static int it913x_fe_init(struct dvb_frontend *fe)
  	/* Power Up Tuner - common all versions */
  	ret = it913x_write_reg(state, PRO_DMOD, 0xec40, 0x1);
  
@@ -1724,7 +1981,7 @@ index d4bd24e..e3727e6 100644
  
  	return (ret < 0) ? -ENODEV : 0;
  }
-@@ -770,19 +884,34 @@ static void it913x_fe_release(struct dvb_frontend *fe)
+@@ -770,19 +955,34 @@ static void it913x_fe_release(struct dvb_frontend *fe)
  static struct dvb_frontend_ops it913x_fe_ofdm_ops;
  
  struct dvb_frontend *it913x_fe_attach(struct i2c_adapter *i2c_adap,
@@ -1762,18 +2019,18 @@ index d4bd24e..e3727e6 100644
  
  	ret = it913x_fe_start(state);
  	if (ret < 0)
-@@ -835,5 +964,5 @@ static struct dvb_frontend_ops it913x_fe_ofdm_ops = {
+@@ -835,5 +1035,5 @@ static struct dvb_frontend_ops it913x_fe_ofdm_ops = {
  
  MODULE_DESCRIPTION("it913x Frontend and it9137 tuner");
  MODULE_AUTHOR("Malcolm Priestley tvboxspy@gmail.com");
 -MODULE_VERSION("1.07");
-+MODULE_VERSION("1.13");
++MODULE_VERSION("1.15");
  MODULE_LICENSE("GPL");
 diff --git a/drivers/media/dvb/frontends/it913x-fe.h b/drivers/media/dvb/frontends/it913x-fe.h
-index 9d97f32..c4a908e 100644
+index 9d97f32..07fa459 100644
 --- a/drivers/media/dvb/frontends/it913x-fe.h
 +++ b/drivers/media/dvb/frontends/it913x-fe.h
-@@ -23,13 +23,27 @@
+@@ -23,13 +23,29 @@
  
  #include <linux/dvb/frontend.h>
  #include "dvb_frontend.h"
@@ -1788,6 +2045,8 @@ index 9d97f32..c4a908e 100644
 +	u8 tuner_id_1;
 +	u8 dual_mode;
 +	u8 adf;
++	/* option to read SIGNAL_LEVEL */
++	u8 read_slevel;
 +};
 +
  #if defined(CONFIG_DVB_IT913X_FE) || (defined(CONFIG_DVB_IT913X_FE_MODULE) && \
@@ -1803,7 +2062,7 @@ index 9d97f32..c4a908e 100644
  {
  	printk(KERN_WARNING "%s: driver disabled by Kconfig\n", __func__);
  	return NULL;
-@@ -134,6 +148,16 @@ static inline struct dvb_frontend *it913x_fe_attach(
+@@ -134,6 +150,16 @@ static inline struct dvb_frontend *it913x_fe_attach(
  #define COEFF_1_2048		0x0001
  #define XTAL_CLK		0x0025
  #define BFS_FCW			0x0029
@@ -1820,11 +2079,13 @@ index 9d97f32..c4a908e 100644
  #define TPSD_LOCK		0x003c
  #define TRAINING_MODE		0x0040
  #define ADC_X_2			0x0045
-@@ -144,8 +168,14 @@ static inline struct dvb_frontend *it913x_fe_attach(
+@@ -144,8 +170,16 @@ static inline struct dvb_frontend *it913x_fe_attach(
  #define EST_SIGNAL_LEVEL	0x004a
  #define FREE_BAND		0x004b
  #define SUSPEND_FLAG		0x004c
 -/* Build in tuners */
++#define VAR_P_INBAND		0x00f7
++
 +/* Build in tuner types */
  #define IT9137 0x38
 +#define IT9135_38 0x38
@@ -1836,7 +2097,7 @@ index 9d97f32..c4a908e 100644
  
  enum {
  	CMD_DEMOD_READ = 0,
-@@ -193,4 +223,11 @@ enum {
+@@ -193,4 +227,11 @@ enum {
  	WRITE_CMD,
  };
  
@@ -1848,6 +2109,233 @@ index 9d97f32..c4a908e 100644
 +};
 +
  #endif /* IT913X_FE_H */
+diff --git a/drivers/media/rc/keymaps/Makefile b/drivers/media/rc/keymaps/Makefile
+index 36e4d5e..9514d82 100644
+--- a/drivers/media/rc/keymaps/Makefile
++++ b/drivers/media/rc/keymaps/Makefile
+@@ -41,6 +41,8 @@ obj-$(CONFIG_RC_MAP) += rc-adstech-dvb-t-pci.o \
+ 			rc-imon-mce.o \
+ 			rc-imon-pad.o \
+ 			rc-iodata-bctv7e.o \
++			rc-it913x-v1.o \
++			rc-it913x-v2.o \
+ 			rc-kaiomy.o \
+ 			rc-kworld-315u.o \
+ 			rc-kworld-plus-tv-analog.o \
+diff --git a/drivers/media/rc/keymaps/rc-it913x-v1.c b/drivers/media/rc/keymaps/rc-it913x-v1.c
+new file mode 100644
+index 0000000..0ac775f
+--- /dev/null
++++ b/drivers/media/rc/keymaps/rc-it913x-v1.c
+@@ -0,0 +1,95 @@
++/* ITE Generic remotes Version 1
++ *
++ * Copyright (C) 2012 Malcolm Priestley (tvboxspy@gmail.com)
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License as published by
++ * the Free Software Foundation; either version 2 of the License, or
++ * (at your option) any later version.
++ */
++
++#include <media/rc-map.h>
++#include <linux/module.h>
++
++
++static struct rc_map_table it913x_v1_rc[] = {
++	/* Type 1 */
++	{ 0x61d601, KEY_VIDEO },           /* Source */
++	{ 0x61d602, KEY_3 },
++	{ 0x61d603, KEY_POWER },           /* ShutDown */
++	{ 0x61d604, KEY_1 },
++	{ 0x61d605, KEY_5 },
++	{ 0x61d606, KEY_6 },
++	{ 0x61d607, KEY_CHANNELDOWN },     /* CH- */
++	{ 0x61d608, KEY_2 },
++	{ 0x61d609, KEY_CHANNELUP },       /* CH+ */
++	{ 0x61d60a, KEY_9 },
++	{ 0x61d60b, KEY_ZOOM },            /* Zoom */
++	{ 0x61d60c, KEY_7 },
++	{ 0x61d60d, KEY_8 },
++	{ 0x61d60e, KEY_VOLUMEUP },        /* Vol+ */
++	{ 0x61d60f, KEY_4 },
++	{ 0x61d610, KEY_ESC },             /* [back up arrow] */
++	{ 0x61d611, KEY_0 },
++	{ 0x61d612, KEY_OK },              /* [enter arrow] */
++	{ 0x61d613, KEY_VOLUMEDOWN },      /* Vol- */
++	{ 0x61d614, KEY_RECORD },          /* Rec */
++	{ 0x61d615, KEY_STOP },            /* Stop */
++	{ 0x61d616, KEY_PLAY },            /* Play */
++	{ 0x61d617, KEY_MUTE },            /* Mute */
++	{ 0x61d618, KEY_UP },
++	{ 0x61d619, KEY_DOWN },
++	{ 0x61d61a, KEY_LEFT },
++	{ 0x61d61b, KEY_RIGHT },
++	{ 0x61d61c, KEY_RED },
++	{ 0x61d61d, KEY_GREEN },
++	{ 0x61d61e, KEY_YELLOW },
++	{ 0x61d61f, KEY_BLUE },
++	{ 0x61d643, KEY_POWER2 },          /* [red power button] */
++	/* Type 2 - 20 buttons */
++	{ 0x807f0d, KEY_0 },
++	{ 0x807f04, KEY_1 },
++	{ 0x807f05, KEY_2 },
++	{ 0x807f06, KEY_3 },
++	{ 0x807f07, KEY_4 },
++	{ 0x807f08, KEY_5 },
++	{ 0x807f09, KEY_6 },
++	{ 0x807f0a, KEY_7 },
++	{ 0x807f1b, KEY_8 },
++	{ 0x807f1f, KEY_9 },
++	{ 0x807f12, KEY_POWER },
++	{ 0x807f01, KEY_MEDIA_REPEAT}, /* Recall */
++	{ 0x807f19, KEY_PAUSE }, /* Timeshift */
++	{ 0x807f1e, KEY_VOLUMEUP }, /* 2 x -/+ Keys not marked */
++	{ 0x807f03, KEY_VOLUMEDOWN }, /* Volume defined as right hand*/
++	{ 0x807f1a, KEY_CHANNELUP },
++	{ 0x807f02, KEY_CHANNELDOWN },
++	{ 0x807f0c, KEY_ZOOM },
++	{ 0x807f00, KEY_RECORD },
++	{ 0x807f0e, KEY_STOP },
++};
++
++static struct rc_map_list it913x_v1_map = {
++	.map = {
++		.scan    = it913x_v1_rc,
++		.size    = ARRAY_SIZE(it913x_v1_rc),
++		.rc_type = RC_TYPE_NEC,
++		.name    = RC_MAP_IT913X_V1,
++	}
++};
++
++static int __init init_rc_it913x_v1_map(void)
++{
++	return rc_map_register(&it913x_v1_map);
++}
++
++static void __exit exit_rc_it913x_v1_map(void)
++{
++	rc_map_unregister(&it913x_v1_map);
++}
++
++module_init(init_rc_it913x_v1_map)
++module_exit(exit_rc_it913x_v1_map)
++
++MODULE_LICENSE("GPL");
++MODULE_AUTHOR("Malcolm Priestley tvboxspy@gmail.com");
+diff --git a/drivers/media/rc/keymaps/rc-it913x-v2.c b/drivers/media/rc/keymaps/rc-it913x-v2.c
+new file mode 100644
+index 0000000..28e376e
+--- /dev/null
++++ b/drivers/media/rc/keymaps/rc-it913x-v2.c
+@@ -0,0 +1,94 @@
++/* ITE Generic remotes Version 2
++ *
++ * Copyright (C) 2012 Malcolm Priestley (tvboxspy@gmail.com)
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License as published by
++ * the Free Software Foundation; either version 2 of the License, or
++ * (at your option) any later version.
++ */
++
++#include <media/rc-map.h>
++#include <linux/module.h>
++
++
++static struct rc_map_table it913x_v2_rc[] = {
++	/* Type 1 */
++	/* 9005 remote */
++	{ 0x807f12, KEY_POWER2 },	/* Power (RED POWER BUTTON)*/
++	{ 0x807f1a, KEY_VIDEO },	/* Source */
++	{ 0x807f1e, KEY_MUTE },		/* Mute */
++	{ 0x807f01, KEY_RECORD },	/* Record */
++	{ 0x807f02, KEY_CHANNELUP },	/* Channel+ */
++	{ 0x807f03, KEY_TIME },		/* TimeShift */
++	{ 0x807f04, KEY_VOLUMEUP },	/* Volume- */
++	{ 0x807f05, KEY_SCREEN },	/* FullScreen */
++	{ 0x807f06, KEY_VOLUMEDOWN },	/* Volume- */
++	{ 0x807f07, KEY_0 },		/* 0 */
++	{ 0x807f08, KEY_CHANNELDOWN },	/* Channel- */
++	{ 0x807f09, KEY_PREVIOUS },	/* Recall */
++	{ 0x807f0a, KEY_1 },		/* 1 */
++	{ 0x807f1b, KEY_2 },		/* 2 */
++	{ 0x807f1f, KEY_3 },		/* 3 */
++	{ 0x807f0c, KEY_4 },		/* 4 */
++	{ 0x807f0d, KEY_5 },		/* 5 */
++	{ 0x807f0e, KEY_6 },		/* 6 */
++	{ 0x807f00, KEY_7 },		/* 7 */
++	{ 0x807f0f, KEY_8 },		/* 8 */
++	{ 0x807f19, KEY_9 },		/* 9 */
++
++	/* Type 2 */
++	/* keys stereo, snapshot unassigned */
++	{ 0x866b00, KEY_0 },
++	{ 0x866b1b, KEY_1 },
++	{ 0x866b02, KEY_2 },
++	{ 0x866b03, KEY_3 },
++	{ 0x866b04, KEY_4 },
++	{ 0x866b05, KEY_5 },
++	{ 0x866b06, KEY_6 },
++	{ 0x866b07, KEY_7 },
++	{ 0x866b08, KEY_8 },
++	{ 0x866b09, KEY_9 },
++	{ 0x866b12, KEY_POWER },
++	{ 0x866b13, KEY_MUTE },
++	{ 0x866b0a, KEY_PREVIOUS }, /* Recall */
++	{ 0x866b1e, KEY_PAUSE },
++	{ 0x866b0c, KEY_VOLUMEUP },
++	{ 0x866b18, KEY_VOLUMEDOWN },
++	{ 0x866b0b, KEY_CHANNELUP },
++	{ 0x866b18, KEY_CHANNELDOWN },
++	{ 0x866b10, KEY_ZOOM },
++	{ 0x866b1d, KEY_RECORD },
++	{ 0x866b0e, KEY_STOP },
++	{ 0x866b11, KEY_EPG},
++	{ 0x866b1a, KEY_FASTFORWARD },
++	{ 0x866b0f, KEY_REWIND },
++	{ 0x866b1c, KEY_TV },
++	{ 0x866b1b, KEY_TEXT },
++
++};
++
++static struct rc_map_list it913x_v2_map = {
++	.map = {
++		.scan    = it913x_v2_rc,
++		.size    = ARRAY_SIZE(it913x_v2_rc),
++		.rc_type = RC_TYPE_NEC,
++		.name    = RC_MAP_IT913X_V2,
++	}
++};
++
++static int __init init_rc_it913x_v2_map(void)
++{
++	return rc_map_register(&it913x_v2_map);
++}
++
++static void __exit exit_rc_it913x_v2_map(void)
++{
++	rc_map_unregister(&it913x_v2_map);
++}
++
++module_init(init_rc_it913x_v2_map)
++module_exit(exit_rc_it913x_v2_map)
++
++MODULE_LICENSE("GPL");
++MODULE_AUTHOR("Malcolm Priestley tvboxspy@gmail.com");
+diff --git a/include/media/rc-map.h b/include/media/rc-map.h
+index 26a3bd0..142c32b 100644
+--- a/include/media/rc-map.h
++++ b/include/media/rc-map.h
+@@ -100,6 +100,8 @@ void rc_map_init(void);
+ #define RC_MAP_IMON_MCE                  "rc-imon-mce"
+ #define RC_MAP_IMON_PAD                  "rc-imon-pad"
+ #define RC_MAP_IODATA_BCTV7E             "rc-iodata-bctv7e"
++#define RC_MAP_IT913X_V1                 "rc-it913x-v1"
++#define RC_MAP_IT913X_V2                 "rc-it913x-v2"
+ #define RC_MAP_KAIOMY                    "rc-kaiomy"
+ #define RC_MAP_KWORLD_315U               "rc-kworld-315u"
+ #define RC_MAP_KWORLD_PLUS_TV_ANALOG     "rc-kworld-plus-tv-analog"
 -- 
 1.7.0.4
 
