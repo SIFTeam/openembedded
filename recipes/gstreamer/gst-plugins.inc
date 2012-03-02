@@ -4,7 +4,7 @@ require gst-plugins-package.inc
 DESCRIPTION = "Plugins for GStreamer"
 DEPENDS += "libcdio wavpack libvisual gstreamer jack virtual/libsdl libvpx x264 libmms libmusicbrainz schroedinger faac faad2 libmikmod liboil libogg tremor libvorbis"
 DEPENDS += "${@base_conditional('ENTERPRISE_DISTRO', '1', '', 'libmad libid3tag', d)}"
-DEPENDS_openpli = "gstreamer libmikmod liboil libogg tremor libvorbis neon flac libmatroska libcdio libmad libid3tag libdca liba52"
+DEPENDS_openpli = "gstreamer libmikmod liboil libogg tremor libvorbis neon flac libmatroska libcdio libmad libid3tag libdca liba52 libmms"
 
 INC_PR = "r11"
 

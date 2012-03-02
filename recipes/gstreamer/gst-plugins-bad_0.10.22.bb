@@ -12,7 +12,7 @@ DEPENDS_openpli += "gst-plugins-base librtmp"
 RCONFLICTS_gst-plugin-mpegdemux = "gst-plugin-fluendo-mpegdemux"
 RREPLACES_gst-plugin-mpegdemux = "gst-plugin-fluendo-mpegdemux"
 
-PR = "${INC_PR}.2"
+PR = "${INC_PR}.3"
 
 do_configure_prepend() {
     sed -i -e s:docs::g Makefile.am
