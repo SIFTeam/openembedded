@@ -17,6 +17,7 @@ RDEPENDS_${PN} = "python-codecs python-core python-lang python-re python-threadi
 	gst-plugin-souphttpsrc gst-plugin-mpegaudioparse gst-plugin-subparse \
 	gst-plugin-apetag gst-plugin-icydemux gst-plugin-autodetect gst-plugin-audioparsers \
 	gst-plugin-subsink gst-plugin-amrwbdec gst-plugin-amrnb \
+	gst-plugin-mms gst-plugin-asf \
 	python-twisted-core python-elementtree python-compression \
 	python-utf8-hack \
 	enigma2-fonts \
@@ -84,7 +85,7 @@ inherit gitpkgv
 
 PV = "2.7+git${SRCPV}"
 PKGV = "2.7+git${GITPKGV}"
-PR = "r30"
+PR = "r31"
 
 SRC_URI = "git://openpli.git.sourceforge.net/gitroot/openpli/enigma2;protocol=git"
 # SRC_URI = "git://${HOME}/pli/enigma2;protocol=file"
