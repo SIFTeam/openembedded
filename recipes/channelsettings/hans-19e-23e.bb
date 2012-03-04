@@ -1,4 +1,4 @@
-DESCRIPTION = "Hans 19E"
+DESCRIPTION = "Hans 19E,23E"
 
 PN = "enigma2-plugin-settings-hans-19e-23e"
 
