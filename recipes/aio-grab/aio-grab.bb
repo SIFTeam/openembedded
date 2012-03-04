@@ -11,6 +11,12 @@ PKGV = "1.0+git${GITPKGV}"
 PR = "r1"
 
 SRC_URI = "git://openpli.git.sourceforge.net/gitroot/openpli/aio-grab;protocol=git"
+SRC_URI_azboxhd = "git://openpli.git.sourceforge.net/gitroot/openpli/aio-grab;protocol=git \
+		   file://azbox_support.patch"
+SRC_URI_azboxme = "git://openpli.git.sourceforge.net/gitroot/openpli/aio-grab;protocol=git \
+		   file://azbox_support.patch"
+
+
 
 S = "${WORKDIR}/git"
 
