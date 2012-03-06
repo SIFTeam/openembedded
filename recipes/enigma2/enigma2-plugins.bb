@@ -40,6 +40,7 @@ DEPENDS = "enigma2 \
 	dvdbackup \
 	libcddb \
         ${@base_contains("MACHINE_FEATURES", "tpm", "" , "enigma2-plugin-extensions-webinterface-old", d)} \
+	dreambox-modem-ppp-scripts \
 	"
 
 python populate_packages_prepend () {

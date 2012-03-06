@@ -9,6 +9,7 @@ mount -t devpts devpts /dev/pts
 # manually create /dev/null, so mdev can use it in device scripts
 mknod /dev/null c 1 3
 chmod 666 /dev/null
+echo > /dev/mdev.seq
 
 echo "/sbin/mdev" >/proc/sys/kernel/hotplug
 

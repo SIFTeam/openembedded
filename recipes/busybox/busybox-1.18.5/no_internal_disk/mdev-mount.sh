@@ -71,18 +71,31 @@ case "$ACTION" in
 			fi
 			if grep -q " /media/$DEVICETYPE " /proc/mounts || grep -q -w "\s/media/$DEVICETYPE\s" /etc/fstab
 			then
-			        # DEVICETYPE already mounted, or in fstab
+			        # $DEVICETYPE already mounted, or in fstab
 				MOUNTPOINT="/media/$MDEV"
 			else
-				MOUNTPOINT="/media/$DEVICETYPE"
+				# Use mkdir as 'atomic' action, failure means someone beat us to the punch
+				if mkdir "/dev/mdev.$DEVICETYPE"
+				then
+					# /media/$DEVICETYPE is available
+					MOUNTPOINT="/media/$DEVICETYPE"
+				else
+					MOUNTPOINT="/media/$MDEV"
+				fi
 			fi
 			mkdir -p $MOUNTPOINT
 			mount -t auto /dev/$MDEV $MOUNTPOINT
 		fi
 		;;
 	remove)
+		MOUNTPOINT=`grep "^/dev/$MDEV\s" /proc/mounts | cut -d' ' -f 2`
+		if [ ! -z "$MOUNTPOINT" ]
+		then
+			DEVICETYPE=`basename "$MOUNTPOINT"`
+			rmdir "/dev/mdev.$DEVICETYPE"
+		fi
 		umount /dev/$MDEV
-		# remove automatic mountpoint or symlink (if empty)
+		# remove automatic mountpoint or symlink
 		rmdir /media/$MDEV || rm -f /media/$MDEV
 		;;
 	*)
