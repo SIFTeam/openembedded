@@ -4,7 +4,7 @@ SRCDATE = "20100904"
 SRCREV = "6e0befab696a"
 PV = "0.0+hg${SRCDATE}"
 
-MACHINE_KERNEL_PR_append = ".9"
+MACHINE_KERNEL_PR_append = ".10"
 
 SRC_URI = "http://linuxtv.org/hg/v4l-dvb/archive/${SRCREV}.tar.gz \
            file://defconfig \
@@ -33,3 +33,6 @@ SRC_URI = "http://linuxtv.org/hg/v4l-dvb/archive/${SRCREV}.tar.gz \
 "
 
 S = "${WORKDIR}/v4l-dvb-${SRCREV}"
+
+RDEPENDS_v4l-dvb-module-smsusb += "v4l-dvb-module-smsdvb"
+RDEPENDS_v4l-dvb-module-em28xx += "v4l-dvb-module-em28xx-dvb"

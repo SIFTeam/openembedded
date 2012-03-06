@@ -3,7 +3,7 @@ SECTION = "base"
 PRIORITY = "required"
 LICENSE = "proprietary"
 
-SRCDATE = "20120125"
+SRCDATE = "20120306"
 
 KV = "2.6.22.19-44-opensat"
 PV = "2.6.22.19-44-opensat-${SRCDATE}"

@@ -52,3 +52,5 @@ pkg_postinst_kernel-image () {
         true
 }
 
+RDEPENDS_kernel-module-smsusb += "kernel-module-smsdvb"
+RDEPENDS_kernel-module-em28xx += "kernel-module-em28xx-dvb"
