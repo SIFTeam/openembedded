@@ -1,7 +1,7 @@
 DESCRIPTION = "Linux kernel for ${MACHINE}"
 LICENSE = "GPL"
 
-MACHINE_KERNEL_PR_append = ".6"
+MACHINE_KERNEL_PR_append = ".7"
 
 DEPENDS = "mtd-minimal-nand-utils"
 RDEPENDS_kernel-image = "mtd-minimal-nand-utils"
@@ -63,3 +63,6 @@ pkg_postinst_kernel-image () {
 	fi
 	true
 }
+
+RDEPENDS_kernel-module-smsusb += "kernel-module-smsdvb"
+RDEPENDS_kernel-module-em28xx += "kernel-module-em28xx-dvb"
