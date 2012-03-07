@@ -2,7 +2,7 @@ DESCRIPTION = "Mediacenter for azbox"
 
 inherit gitpkgv
 
-SRCDATE = "20120221"
+SRCDATE = "20120306"
 PV = "${SRCDATE}"
 PR = "r0"
 
