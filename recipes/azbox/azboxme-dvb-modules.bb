@@ -8,7 +8,7 @@ SRCDATE = "20120306"
 KV = "2.6.22.19-44-opensat"
 PV = "2.6.22.19-44-opensat-${SRCDATE}"
 
-PR = "r10"
+PR = "r11"
 
 RDEPENDS = "kernel (${KV})"
 
@@ -35,7 +35,7 @@ do_install_mipsel() {
 	install -d ${D}/${sysconfdir}/modutils
 	
 	cd ${WORKDIR}/files/modules
-	for f in smp8655i2c avl2108 mxl241sf nimdetect 865xdvb sci; do
+	for f in smp8655i2c avl2108 mxl241sf nimdetect 865xdvb sci cifs; do
 		install -m 0644 ${WORKDIR}/files/modules/$f.ko ${D}/lib/modules/${KV}/extra/$f.ko
 		echo $f >> ${D}/${sysconfdir}/modutils/_${MACHINE}
 	done
