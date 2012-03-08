@@ -4,7 +4,7 @@ require linux-opendreambox.inc
 
 SRCREV = "ac6cc9511a5f70eaa584c63fc5c3de33cae1d0e7"
 # When changing SRCREV without incrementing MACHINE_KERNEL_PR, increment INCREMENTAL_PR instead, to force a package version increment
-INCREMENTAL_PR = "4"
+INCREMENTAL_PR = "5"
 
 PR_INC = "+git${INCREMENTAL_PR}+${SRCREV}"
 
