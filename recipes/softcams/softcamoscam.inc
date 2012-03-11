@@ -12,7 +12,21 @@ DESCRIPTION ?= "${CAMNAME}"
 
 FILES_${PN} = "/usr/bin /etc"
 
-SRC_URI = "file://oscam.*"
+SRC_URI = "\
+	file://oscam.conf \
+	file://oscam.server \
+	file://oscam.srvid \
+	file://oscam.user \
+	file://oscam.ac \
+	file://oscam.cert \
+	file://oscam.dvbapi \
+	file://oscam.guess \
+	file://oscam.ird \
+	file://oscam.pem \
+	file://oscam.provid \
+	file://oscam.services \
+	file://oscam.tiers \
+	"
 S = "${WORKDIR}/${CAMNAME}"
 
 # no docs, locales etc.
