@@ -40,4 +40,6 @@ RDEPENDS_${PN} = " \
 	firmware-as102-data1-st \
 	firmware-as102-data2-st \
 	firmware-dvb-usb-af9035-01 \
+	firmware-dvb-usb-it9135 \
+	firmware-dvb-usb-it913x \
 	"
