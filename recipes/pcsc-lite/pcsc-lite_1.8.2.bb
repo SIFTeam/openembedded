@@ -2,10 +2,10 @@ DESCRIPTION = "PC/SC Lite smart card framework and applications"
 HOMEPAGE = "http://pcsclite.alioth.debian.org/"
 LICENSE = "BSD"
 
-DEPENDS = "hal"
-RDEPENDS_${PN} = "hal"
+DEPENDS = "libusb1"
+RDEPENDS_${PN} = "libusb1"
 
-SRC_URI = "https://alioth.debian.org/frs/download.php/2795/pcsc-lite-${PV}.tar.bz2 \
+SRC_URI = "https://alioth.debian.org/frs/download.php/3695/pcsc-lite-${PV}.tar.bz2 \
            file://pcscd.init "
 
 inherit autotools update-rc.d
@@ -14,9 +14,10 @@ INITSCRIPT_NAME = "pcscd"
 INITSCRIPT_PARAMS = "defaults"
 
 EXTRA_OECONF = " \
-	--enable-libhal \
-	--disable-libusb \
+	--disable-libhal \
+	--enable-libusb \
 	--enable-usbdropdir=${libdir}/pcsc/drivers \
+	--disable-libudev \
 	"
 
 do_install() {
@@ -29,5 +30,3 @@ PACKAGES =+ "libpcsclite"
 
 FILES_libpcsclite = "${libdir}/libpcsclite.so.*"
 
-SRC_URI[md5sum] = "d7d466621bec39354351f09349f6374c"
-SRC_URI[sha256sum] = "a0c11b0b5cc46d4c4ec499b875cfdc4e766fdf12fe2f6ea635e1b11ab7b8821e"

@@ -83,6 +83,7 @@ ENIGMA2_OPTIONAL = " \
 				minidlna \
 				nano \
 				sifteam-firmwares \
+				ccid \
 				"
 
 IMAGE_INSTALL += " \
