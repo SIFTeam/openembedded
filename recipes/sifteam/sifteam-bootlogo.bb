@@ -6,7 +6,7 @@ MAINTAINER = "SifTeam"
 
 RDEPENDS_${PN} += "virtual/showiframe"
 
-PV = "2.2"
+PV = "2.3"
 PR = "r0"
 
 S = "${WORKDIR}/"
