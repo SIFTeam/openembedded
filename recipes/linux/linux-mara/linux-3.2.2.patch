@@ -1,0 +1,27 @@
+--- linux-3.2.2/arch/mips/brcmstb/sysfs.c	2012-02-04 01:16:22.000000000 +0900
++++ linux-3.2.2.new/arch/mips/brcmstb/sysfs.c	2012-03-03 18:08:39.000000000 +0900
+@@ -293,6 +293,12 @@
+ 	__ATTR_NULL,
+ };
+ 
++struct device *brcm_pdev_get_device(void)
++{
++	return &brcmstb_pdev->dev;
++}
++EXPORT_SYMBOL(brcm_pdev_get_device);
++
+ static int __init brcm_pdev_init(void)
+ {
+ 	struct device *dev;
+ 
+--- linux-3.2.2/drivers/video/bcmfb.c	2012-02-04 01:16:48.000000000 +0900
++++ linux-3.2.2.new/drivers/video/bcmfb.c	2012-03-03 18:10:20.000000000 +0900
+@@ -131,6 +131,8 @@
+ 	struct bcmfb_par *fbi;
+ 	struct device *device = &pdev->dev;
+ 	
++	return 0;
++
+ 	info = framebuffer_alloc(sizeof(struct bcmfb_par), device);
+ 	if (!info) return -ENOMEM;
+ 	fbi = (struct bcmfb_par*)info->par;
