@@ -1,0 +1,8 @@
+# Azbox Stuff
+
+/dev/sci0 	c       755     0       0       253     0       -       -       -
+/dev/frameyuv 	c	755     0       0       60	0       -       -       -
+/dev/misc            d       755     0       0       -       -       -       -       -                                                                          
+/dev/misc/pvr  	c       755     0       0       70     0       -       -       -
+/dev/rfmod0 	c	755     0       0       71	0       -       -       -
+
