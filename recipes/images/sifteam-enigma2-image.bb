@@ -58,12 +58,12 @@ ENIGMA2_PLUGINS_append_azboxhd = " \
 
 ENIGMA2_PLUGINS_append_gb800se = " \
 				gst-gb800 \
-				enigma2-plugin-systemplugins-vfdgiga \
+				enigma2-plugin-systemplugins-vfd-giga \
 				"
 
 ENIGMA2_PLUGINS_append_gb800solo = " \
 				gst-gb800 \
-				enigma2-plugin-systemplugins-vfdgiga \
+				enigma2-plugin-systemplugins-vfd-giga \
 				"
 
 DEPENDS += "enigma2 enigma2-plugins enigma2-pliplugins"
