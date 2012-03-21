@@ -56,6 +56,16 @@ ENIGMA2_PLUGINS_append_azboxhd = " \
 				enigma2-plugin-extensions-rtiled \
 				"
 
+ENIGMA2_PLUGINS_append_gb800se = " \
+				gst-gb800 \
+				enigma2-plugin-systemplugins-vfdgiga \
+				"
+
+ENIGMA2_PLUGINS_append_gb800solo = " \
+				gst-gb800 \
+				enigma2-plugin-systemplugins-vfdgiga \
+				"
+
 DEPENDS += "enigma2 enigma2-plugins enigma2-pliplugins"
 
 ENIGMA2_OPTIONAL = " \
