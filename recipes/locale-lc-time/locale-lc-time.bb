@@ -2,7 +2,9 @@ DESCRIPTION = "LC_TIME locale support"
 SECTION = "base"
 PRIORITY = "required"
 MAINTAINER = "OpenPli team"
-PR = "r2"
+PR = "r3"
+
+RREPLACES_${PN} = fakelocale
 
 SRC_URI = "file://lctimelocales.tar.gz file://locale.alias"
 
