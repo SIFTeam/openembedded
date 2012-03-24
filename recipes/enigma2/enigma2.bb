@@ -95,6 +95,14 @@ SRC_URI = "git://github.com/SIFTeam/enigma2.git;protocol=git file://swap"
 SRC_URI_azboxhd = "git://github.com/SIFTeam/enigma2.git;protocol=git;branch=azbox file://swap"
 SRC_URI_azboxme = "git://github.com/SIFTeam/enigma2.git;protocol=git;branch=azbox file://swap"
 
+SRC_URI_append_gb800se = " \
+			file://gb800-evfd.patch \
+			"
+
+SRC_URI_append_gb800solo = " \
+			file://gb800-evfd.patch \
+			"	
+
 S = "${WORKDIR}/git"
 
 FILES_${PN} += "${datadir}/keymaps"
