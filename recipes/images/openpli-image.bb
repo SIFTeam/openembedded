@@ -9,7 +9,7 @@ IMAGE_INSTALL = " \
 				vsftpd \
 				util-linux-ng-sfdisk \
 				avahi-daemon \
-				locale-lc-time \
+				fakelocale \
 				timezones-alternative \
 				${BOOTLOGO} \
 				tuxbox-links \
