@@ -6,11 +6,15 @@ DEPENDS = "gstreamer gst-plugins-base libdca"
 RREPLACES_${PN} = "gst-plugin-dvbmediasink"
 RCONFLICTS_${PN} = "gst-plugin-dvbmediasink"
 
-SRC_URI = "http://www.et-view.com/download/dvbmediasink-1.0.tar.gz"
+SRC_URI = "git://openpli.git.sourceforge.net/gitroot/openpli/gst-plugin-dvbmediasink;protocol=git"
 
-S = "${WORKDIR}/dvbmediasink"
+S = "${WORKDIR}/git"
 
-PV = "0.10.0"
+inherit gitpkgv
+
+SRCREV_pn-${PN} ?= "${AUTOREV}"
+PV = "0.10.0+git${SRCPV}"
+PKGV = "0.10.0+git${SRCPV}"
 PR = "r0"
 
 inherit autotools pkgconfig
