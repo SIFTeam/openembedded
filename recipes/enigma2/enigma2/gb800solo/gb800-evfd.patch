@@ -1,5 +1,5 @@
---- enigma_python.i.org	2012-03-24 13:09:04.062875841 +0100
-+++ enigma_python.i	2012-03-24 13:01:04.210891966 +0100
+--- /lib/python/enigma_python.i.org	2012-03-24 13:09:04.062875841 +0100
++++ /lib/python/enigma_python.i	2012-03-24 13:01:04.210891966 +0100
 @@ -98,6 +98,7 @@
  #include <lib/components/tuxtxtapp.h>
  #include <lib/driver/avswitch.h>
