@@ -65,7 +65,7 @@ module_autoload_dvb-usb-vp7045 = "dvb-usb-vp7045"
 module_autoload_smsusb = "smsdvb smsusb"
 
 MACHINE_EXTRA_RRECOMMENDS = " \
-	gst-plugin-dvbmediasink \
+	gst-plugin-etmediasink \
 	ntfs-3g \
 	"
 

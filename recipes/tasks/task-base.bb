@@ -1,6 +1,5 @@
 DESCRIPTION = "Merge machine and distro options to create a basic machine task/package"
-PR = "r95.6"
-PR_append_dm7020hd = ".1"
+PR = "r95.7"
 
 inherit task
 
