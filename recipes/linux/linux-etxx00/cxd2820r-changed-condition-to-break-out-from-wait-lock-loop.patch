@@ -7,10 +7,10 @@ From: Gianluca Gennari <gennarone@gmail.com>
  1 files changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/media/dvb/frontends/cxd2820r_core.c b/drivers/media/dvb/frontends/cxd2820r_core.c
-index 036480f..24641be 100644
+index 5c7c2aa..3bba37d 100644
 --- a/drivers/media/dvb/frontends/cxd2820r_core.c
 +++ b/drivers/media/dvb/frontends/cxd2820r_core.c
-@@ -699,12 +699,12 @@ static enum dvbfe_search cxd2820r_search(struct dvb_frontend *fe,
+@@ -526,12 +526,12 @@ static enum dvbfe_search cxd2820r_search(struct dvb_frontend *fe)
  		if (ret)
  			goto error;
  
@@ -26,5 +26,5 @@ index 036480f..24641be 100644
  		return DVBFE_ALGO_SEARCH_SUCCESS;
  	} else {
 -- 
-1.7.0.4
+1.7.5.4
 

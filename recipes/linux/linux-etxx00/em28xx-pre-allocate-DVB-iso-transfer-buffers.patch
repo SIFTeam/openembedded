@@ -3,17 +3,17 @@ em28xx: pre-allocate DVB iso transfer buffers
 From: Gianluca Gennari <gennarone@gmail.com>
 ---
  drivers/media/video/em28xx/em28xx-cards.c |   16 +++-
- drivers/media/video/em28xx/em28xx-core.c  |  146 +++++++++++++++++++----------
- drivers/media/video/em28xx/em28xx-dvb.c   |   14 +--
- drivers/media/video/em28xx/em28xx-video.c |   10 +-
+ drivers/media/video/em28xx/em28xx-core.c  |  140 +++++++++++++++++++----------
+ drivers/media/video/em28xx/em28xx-dvb.c   |   14 ++--
+ drivers/media/video/em28xx/em28xx-video.c |   10 ++-
  drivers/media/video/em28xx/em28xx.h       |   23 ++++-
- 5 files changed, 143 insertions(+), 66 deletions(-)
+ 5 files changed, 139 insertions(+), 64 deletions(-)
 
 diff --git a/drivers/media/video/em28xx/em28xx-cards.c b/drivers/media/video/em28xx/em28xx-cards.c
-index 6b992b7..11bc178 100644
+index 4561cd8..ce1b60f 100644
 --- a/drivers/media/video/em28xx/em28xx-cards.c
 +++ b/drivers/media/video/em28xx/em28xx-cards.c
-@@ -3221,6 +3221,17 @@ static int em28xx_usb_probe(struct usb_interface *interface,
+@@ -3307,6 +3307,17 @@ static int em28xx_usb_probe(struct usb_interface *interface,
  		goto unlock_and_free;
  	}
  
@@ -31,7 +31,7 @@ index 6b992b7..11bc178 100644
  	request_modules(dev);
  
  	/* Should be the last thing to do, to avoid newer udev's to
-@@ -3293,7 +3304,7 @@ static void em28xx_usb_disconnect(struct usb_interface *interface)
+@@ -3379,7 +3390,7 @@ static void em28xx_usb_disconnect(struct usb_interface *interface)
  		     video_device_node_name(dev->vdev));
  
  		dev->state |= DEV_MISCONFIGURED;
@@ -40,7 +40,7 @@ index 6b992b7..11bc178 100644
  		dev->state |= DEV_DISCONNECTED;
  		wake_up_interruptible(&dev->wait_frame);
  		wake_up_interruptible(&dev->wait_stream);
-@@ -3302,6 +3313,9 @@ static void em28xx_usb_disconnect(struct usb_interface *interface)
+@@ -3388,6 +3399,9 @@ static void em28xx_usb_disconnect(struct usb_interface *interface)
  		em28xx_release_resources(dev);
  	}
  
@@ -51,7 +51,7 @@ index 6b992b7..11bc178 100644
  
  	em28xx_close_extension(dev);
 diff --git a/drivers/media/video/em28xx/em28xx-core.c b/drivers/media/video/em28xx/em28xx-core.c
-index bc1d5dd..fd2b745 100644
+index 0aacc96..b1e8a51 100644
 --- a/drivers/media/video/em28xx/em28xx-core.c
 +++ b/drivers/media/video/em28xx/em28xx-core.c
 @@ -666,6 +666,7 @@ int em28xx_capture_start(struct em28xx *dev, int start)
@@ -62,7 +62,7 @@ index bc1d5dd..fd2b745 100644
  
  int em28xx_vbi_supported(struct em28xx *dev)
  {
-@@ -961,145 +962,192 @@ static void em28xx_irq_callback(struct urb *urb)
+@@ -961,40 +962,46 @@ static void em28xx_irq_callback(struct urb *urb)
  /*
   * Stop and Deallocate URBs
   */
@@ -122,17 +122,15 @@ index bc1d5dd..fd2b745 100644
  
  	em28xx_capture_start(dev, 0);
  }
- EXPORT_SYMBOL_GPL(em28xx_uninit_isoc);
- 
+@@ -1003,91 +1010,130 @@ EXPORT_SYMBOL_GPL(em28xx_uninit_isoc);
  /*
-- * Allocate URBs and start IRQ
-+ * Allocate URBs
+  * Allocate URBs and start IRQ
   */
 -int em28xx_init_isoc(struct em28xx *dev, int max_packets,
 -		     int num_bufs, int max_pkt_size,
 -		     int (*isoc_copy) (struct em28xx *dev, struct urb *urb))
 +int em28xx_alloc_isoc(struct em28xx *dev, enum em28xx_mode mode,
-+		      int max_packets, int num_bufs, int max_pkt_size)
++		     int max_packets, int num_bufs, int max_pkt_size)
  {
 -	struct em28xx_dmaqueue *dma_q = &dev->vidq;
 -	struct em28xx_dmaqueue *vbi_dma_q = &dev->vbiq;
@@ -168,10 +166,9 @@ index bc1d5dd..fd2b745 100644
  	}
  
 -	dev->isoc_ctl.transfer_buffer = kzalloc(sizeof(void *)*num_bufs,
--					      GFP_KERNEL);
--	if (!dev->isoc_ctl.transfer_buffer) {
 +	isoc_bufs->transfer_buffer = kzalloc(sizeof(void *)*num_bufs,
-+					     GFP_KERNEL);
+ 					      GFP_KERNEL);
+-	if (!dev->isoc_ctl.transfer_buffer) {
 +	if (!isoc_bufs->transfer_buffer) {
  		em28xx_errdev("cannot allocate memory for usb transfer\n");
 -		kfree(dev->isoc_ctl.urb);
@@ -223,9 +220,9 @@ index bc1d5dd..fd2b745 100644
  			should also be using 'desc.bInterval'
  		 */
  		pipe = usb_rcvisocpipe(dev->udev,
--			dev->mode == EM28XX_ANALOG_MODE ? EM28XX_EP_ANALOG : EM28XX_EP_DIGITAL);
+-				       dev->mode == EM28XX_ANALOG_MODE ?
 +				       mode == EM28XX_ANALOG_MODE ?
-+				       EM28XX_EP_ANALOG : EM28XX_EP_DIGITAL);
+ 				       EM28XX_EP_ANALOG : EM28XX_EP_DIGITAL);
  
  		usb_fill_int_urb(urb, dev->udev, pipe,
 -				 dev->isoc_ctl.transfer_buffer[i], sb_size,
@@ -247,7 +244,6 @@ index bc1d5dd..fd2b745 100644
 +			k += isoc_bufs->max_pkt_size;
  		}
  	}
- 
 +	return 0;
 +}
 +EXPORT_SYMBOL_GPL(em28xx_alloc_isoc);
@@ -285,10 +281,10 @@ index bc1d5dd..fd2b745 100644
 +		if (rc)
 +			return rc;
 +	}
-+
+ 
  	init_waitqueue_head(&dma_q->wq);
  	init_waitqueue_head(&vbi_dma_q->wq);
- 
+@@ -1095,12 +1141,12 @@ int em28xx_init_isoc(struct em28xx *dev, int max_packets,
  	em28xx_capture_start(dev, 1);
  
  	/* submit urbs and enables IRQ */
@@ -305,10 +301,10 @@ index bc1d5dd..fd2b745 100644
  		}
  	}
 diff --git a/drivers/media/video/em28xx/em28xx-dvb.c b/drivers/media/video/em28xx/em28xx-dvb.c
-index 313d2df..694e1f5 100644
+index 25fc73f..4917b71 100644
 --- a/drivers/media/video/em28xx/em28xx-dvb.c
 +++ b/drivers/media/video/em28xx/em28xx-dvb.c
-@@ -60,9 +60,6 @@ if (debug >= level) 						\
+@@ -61,9 +61,6 @@ if (debug >= level) 						\
  	printk(KERN_DEBUG "%s/2-dvb: " fmt, dev->name, ## arg);	\
  } while (0)
  
@@ -318,7 +314,7 @@ index 313d2df..694e1f5 100644
  struct em28xx_dvb {
  	struct dvb_frontend        *fe[2];
  
-@@ -171,20 +168,21 @@ static int em28xx_start_streaming(struct em28xx_dvb *dvb)
+@@ -172,20 +169,21 @@ static int em28xx_start_streaming(struct em28xx_dvb *dvb)
  	max_dvb_packet_size = dev->dvb_max_pkt_size;
  	if (max_dvb_packet_size < 0)
  		return max_dvb_packet_size;
@@ -346,7 +342,7 @@ index 313d2df..694e1f5 100644
  	em28xx_set_mode(dev, EM28XX_SUSPEND);
  
 diff --git a/drivers/media/video/em28xx/em28xx-video.c b/drivers/media/video/em28xx/em28xx-video.c
-index 9b4557a..82a3435 100644
+index 613300b..324b695 100644
 --- a/drivers/media/video/em28xx/em28xx-video.c
 +++ b/drivers/media/video/em28xx/em28xx-video.c
 @@ -760,17 +760,19 @@ buffer_prepare(struct videobuf_queue *vq, struct videobuf_buffer *vb,
@@ -372,7 +368,7 @@ index 9b4557a..82a3435 100644
  					      EM28XX_NUM_BUFS,
  					      dev->max_pkt_size,
  					      em28xx_isoc_copy);
-@@ -2263,7 +2265,7 @@ static int em28xx_v4l2_close(struct file *filp)
+@@ -2267,7 +2269,7 @@ static int em28xx_v4l2_close(struct file *filp)
  		v4l2_device_call_all(&dev->v4l2_dev, 0, core, s_power, 0);
  
  		/* do this before setting alternate! */
@@ -382,10 +378,10 @@ index 9b4557a..82a3435 100644
  
  		/* set alternate 0 */
 diff --git a/drivers/media/video/em28xx/em28xx.h b/drivers/media/video/em28xx/em28xx.h
-index c49a381..2ee4b61 100644
+index 22e252b..2ae6815 100644
 --- a/drivers/media/video/em28xx/em28xx.h
 +++ b/drivers/media/video/em28xx/em28xx.h
-@@ -147,12 +147,14 @@
+@@ -151,12 +151,14 @@
  
  /* number of buffers for isoc transfers */
  #define EM28XX_NUM_BUFS 5
@@ -400,7 +396,7 @@ index c49a381..2ee4b61 100644
  
  #define EM28XX_INTERLACED_DEFAULT 1
  
-@@ -193,10 +195,13 @@ enum em28xx_mode {
+@@ -197,10 +199,13 @@ enum em28xx_mode {
  
  struct em28xx;
  
@@ -415,7 +411,7 @@ index c49a381..2ee4b61 100644
  		/* number of allocated urbs */
  	int				num_bufs;
  
-@@ -205,6 +210,14 @@ struct em28xx_usb_isoc_ctl {
+@@ -209,6 +214,14 @@ struct em28xx_usb_isoc_ctl {
  
  		/* transfer buffers for isoc transfer */
  	char				**transfer_buffer;
@@ -430,7 +426,7 @@ index c49a381..2ee4b61 100644
  
  		/* Last buffer command and region */
  	u8				cmd;
-@@ -672,10 +685,12 @@ int em28xx_vbi_supported(struct em28xx *dev);
+@@ -676,10 +689,12 @@ int em28xx_vbi_supported(struct em28xx *dev);
  int em28xx_set_outfmt(struct em28xx *dev);
  int em28xx_resolution_set(struct em28xx *dev);
  int em28xx_set_alternate(struct em28xx *dev);
@@ -447,5 +443,5 @@ index c49a381..2ee4b61 100644
  int em28xx_set_mode(struct em28xx *dev, enum em28xx_mode set_mode);
  int em28xx_gpio_set(struct em28xx *dev, struct em28xx_reg_seq *gpio);
 -- 
-1.7.0.4
+1.7.5.4
 

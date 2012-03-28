@@ -1,8 +1,8 @@
 diff --git a/drivers/media/dvb/dvb-usb/Kconfig b/drivers/media/dvb/dvb-usb/Kconfig
-index 385ffa5..0701bad 100644
+index d2014c0..e8c7ad7 100644
 --- a/drivers/media/dvb/dvb-usb/Kconfig
 +++ b/drivers/media/dvb/dvb-usb/Kconfig
-@@ -348,6 +348,14 @@ config DVB_USB_AF9035
+@@ -351,6 +351,14 @@ config DVB_USB_AF9035
  	help
  	  Say Y here to support the Afatech AF9035 based DVB-T USB2.0 receiver
  
@@ -16,7 +16,7 @@ index 385ffa5..0701bad 100644
 +
  config DVB_USB_CE6230
  	tristate "Intel CE6230 DVB-T USB2.0 support"
- 	depends on DVB_USB && EXPERIMENTAL
+ 	depends on DVB_USB
 diff --git a/drivers/media/dvb/dvb-usb/Makefile b/drivers/media/dvb/dvb-usb/Makefile
 index f8b1013..4745905 100644
 --- a/drivers/media/dvb/dvb-usb/Makefile
@@ -2633,10 +2633,10 @@ index 0000000..3a030a8
 +//EXPORT_SYMBOL(Device_init);
 diff --git a/drivers/media/dvb/dvb-usb/a867_af903x-fe.c b/drivers/media/dvb/dvb-usb/a867_af903x-fe.c
 new file mode 100644
-index 0000000..5f56ec0
+index 0000000..22f7171
 --- /dev/null
 +++ b/drivers/media/dvb/dvb-usb/a867_af903x-fe.c
-@@ -0,0 +1,865 @@
+@@ -0,0 +1,835 @@
 +#include <linux/sched.h>
 +#include <linux/list.h>
 +#include <linux/module.h>
@@ -2658,7 +2658,6 @@ index 0000000..5f56ec0
 +
 +struct af903xm_state {
 +	struct dvb_frontend demod;
-+	fe_bandwidth_t current_bandwidth;
 +	uint32_t current_frequency;
 +
 +	struct completion thread_exit;
@@ -2918,7 +2917,6 @@ index 0000000..5f56ec0
 +	
 +	// reset values
 +	state->current_frequency = 0;
-+	state->current_bandwidth = 0;
 +
 +	af903x_start_monitor_thread(demod);
 +
@@ -2949,32 +2947,23 @@ index 0000000..5f56ec0
 +	return 0;
 +}
 +
-+static int af903x_get_frontend(struct dvb_frontend* fe,
-+				struct dvb_frontend_parameters *fep)
++static int af903x_get_frontend(struct dvb_frontend* fe)
 +{
-+	struct af903xm_state *state = fe->demodulator_priv;
-+
-+	deb_data("- Enter %s Function -\n",__FUNCTION__);
-+	memset(fep, 0, sizeof(*fep));
-+	fep->frequency = state->current_frequency;
-+	fep->inversion = INVERSION_AUTO;
-+	fep->u.ofdm.bandwidth = state->current_bandwidth;
 +	return 0;
 +}
 +
-+static int af903x_set_frontend(struct dvb_frontend* fe,
-+				struct dvb_frontend_parameters *fep)
++static int af903x_set_frontend(struct dvb_frontend* fe)
 +{
++	struct dtv_frontend_properties *c = &fe->dtv_property_cache;
 +	struct af903xm_state *state = fe->demodulator_priv;
 +	struct af903x_ofdm_channel ch;
-+	u16 bw=0;
 +	int ret=0;
 +
 +	deb_data("- Enter %s Function -\n",__FUNCTION__);
 +
 +
-+	if( fep->frequency < A333_FREQ_MIN || fep->frequency > A333_FREQ_MAX ) {
-+		deb_data("- %s freq=%d Hz out of range(%d~%d)-\n",__FUNCTION__, fep->frequency, 
++	if( c->frequency < A333_FREQ_MIN || c->frequency > A333_FREQ_MAX ) {
++		deb_data("- %s freq=%d Hz out of range(%d~%d)-\n",__FUNCTION__, c->frequency, 
 +				A333_FREQ_MIN, A333_FREQ_MAX);
 +		// set to zero so we can report unlock to AP, because return -EINVAL apparently 
 +		// does not stop AP from continuing tuning.
@@ -2982,30 +2971,11 @@ index 0000000..5f56ec0
 +		return -EINVAL;
 +	}
 +
-+	switch(fep->u.ofdm.bandwidth) {
-+	case BANDWIDTH_8_MHZ: bw=8; break;
-+	case BANDWIDTH_7_MHZ: bw=7; break;
-+	case BANDWIDTH_6_MHZ: bw=6; break;
-+
-+	case 6: 
-+	//case 7:
-+	//case 8:
-+		bw = fep->u.ofdm.bandwidth;
-+		deb_data("- %s wrong bw value: %d -\n",__FUNCTION__, fep->u.ofdm.bandwidth);
-+		break;
-+	default:
-+
-+		deb_data("- %s unknown bw value: %d -\n",__FUNCTION__, fep->u.ofdm.bandwidth);
-+		return -EINVAL;
-+	}
-+
-+
-+	ch.RF_kHz           = fep->frequency / 1000;
-+	ch.Bw               = bw;
++	ch.RF_kHz           = c->frequency / 1000;
++	ch.Bw               = c->bandwidth_hz / 1000000;
 +	deb_data("- %s freq=%d KHz, bw=%d MHz -\n",__FUNCTION__, ch.RF_kHz,  ch.Bw);
 +
-+	state->current_bandwidth = fep->u.ofdm.bandwidth;
-+	state->current_frequency = fep->frequency;
++	state->current_frequency = c->frequency;
 +
 +	ret = af903x_tune(fe, &ch);
 +
@@ -3539,10 +3509,10 @@ index 0000000..14b6df9
 +#endif /* _AF903X-IOCTL_H_ */
 diff --git a/drivers/media/dvb/dvb-usb/a867_af903x-tuner.c b/drivers/media/dvb/dvb-usb/a867_af903x-tuner.c
 new file mode 100644
-index 0000000..62520c9
+index 0000000..1062506
 --- /dev/null
 +++ b/drivers/media/dvb/dvb-usb/a867_af903x-tuner.c
-@@ -0,0 +1,92 @@
+@@ -0,0 +1,93 @@
 +#include <linux/module.h>
 +#include <linux/moduleparam.h>
 +#include <linux/delay.h>
@@ -3554,13 +3524,14 @@ index 0000000..62520c9
 +#define IF2  36150       // IF2 frequency = 36.150 MHz
 +#define FREF 16000       // Quartz oscillator 16 MHz
 +
-+static int tuner_set_params(struct dvb_frontend *fe, struct dvb_frontend_parameters *params)
++static int tuner_set_params(struct dvb_frontend *fe)
 +{
++	struct dtv_frontend_properties *c = &fe->dtv_property_cache;
 +	struct tuner_priv *priv=NULL;
 +	DWORD dwError = Error_NO_ERROR;
-+	DWORD freq = params->frequency ;// 1000; // Hz -> kHz
++	DWORD freq = c->frequency ;// 1000; // Hz -> kHz
 +	
-+	priv->bandwidth = (fe->ops.info.type == FE_OFDM) ? params->u.ofdm.bandwidth : 0;
++	priv->bandwidth = (fe->ops.info.type == FE_OFDM) ? c->bandwidth_hz : 0;
 +
 +       deb_data("%s - freq : %d , bandwidth : %dn",__FUNCTION__, freq,priv->bandwidth);
 +	   
