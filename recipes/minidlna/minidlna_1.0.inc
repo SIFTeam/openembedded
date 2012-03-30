@@ -6,7 +6,7 @@ LICENSE = "GPL"
 SECTION = "net"
 DEPENDS = "libexif ffmpeg"
 
-INC_PR = "r1"
+INC_PR = "r2"
 
 SRC_URI = "http://downloads.sourceforge.net/project/minidlna/minidlna/${PV}/${PN}_${PV}_src.tar.gz file://init"
 
@@ -30,7 +30,7 @@ do_configure() {
 }
 
 do_install() {
-    oe_runmake 'DESTDIR=${D}' install
+    oe_runmake 'DESTDIR=${D}' install install-conf
     install -d ${D}${sysconfdir}/init.d/
     install -m 755 ${WORKDIR}/init ${D}${sysconfdir}/init.d/${PN}
 }
