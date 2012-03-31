@@ -3,13 +3,13 @@ SECTION = "base"
 PRIORITY = "required"
 LICENSE = "proprietary"
 
-KV = "2.6.37"
+KV = "2.6.37-2.5"
 PV = "${KV}"
 
 SRCDATE = "20110101"
 
 RDEPENDS = "kernel (${KV})"
-PR = "r02-${SRCDATE}"
+PR = "r03-${SRCDATE}"
 
 MACHINE_KERNEL_PR_append = ".${SRCDATE}"
 
