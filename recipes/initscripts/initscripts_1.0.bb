@@ -4,7 +4,7 @@ PRIORITY = "required"
 DEPENDS = "makedevs"
 RDEPENDS_${PN} = "makedevs"
 LICENSE = "GPL"
-PR = "r127"
+PR = "r129"
 
 SRC_URI = "file://functions \
            file://halt \
@@ -45,7 +45,11 @@ SRC_URI_append_gb800solo = " \
 
 SRC_URI_append_gb800ue = " \
 	file://ddbootup \
-	"	
+	"
+	
+SRC_URI_append_quattro = " \
+	file://ddbootup \
+	"		
 
 KERNEL_VERSION = ""
 
@@ -64,6 +68,13 @@ do_install_append_gb800ue () {
 }
 
 do_install_append_gb800solo () {
+	install -d ${D}${sysconfdir}/init.d
+	install -d ${D}${sysconfdir}/rcS.d
+	install -m 0755    ${WORKDIR}/ddbootup	${D}${sysconfdir}/init.d
+	ln -sf		../init.d/ddbootup	${D}${sysconfdir}/rcS.d/S06ddbootup
+}
+
+do_install_append_quattro () {
 	install -d ${D}${sysconfdir}/init.d
 	install -d ${D}${sysconfdir}/rcS.d
 	install -m 0755    ${WORKDIR}/ddbootup	${D}${sysconfdir}/init.d
