@@ -6,8 +6,8 @@ PV = "2.0"
 PR = "r0"
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 
-PROVIDES += "virtual/blindscanutils"
-RPROVIDES_${PN} += "virtual/blindscanutils"
+PROVIDES += "virtual/satscanutils"
+RPROVIDES_${PN} += "virtual/satscanutils"
 
 
 SRC_URI = "http://archive.vuplus.com/download/utils/vuplus-blindscan-utils-${MACHINE}-${PV}.tar.bz2"

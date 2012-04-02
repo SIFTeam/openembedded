@@ -69,6 +69,8 @@ MACHINE_EXTRA_RRECOMMENDS = " \
 	ntfs-3g \
 	"
 
+DVBMEDIASINK_CONFIG = "--with-wma --with-wmv --with-pcm --with-dtsdownmix"
+
 IMAGE_FSTYPES ?= "ubi"
 
 UBI_VOLNAME = "rootfs"

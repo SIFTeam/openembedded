@@ -4,7 +4,7 @@ PRIORITY = "optional"
 
 PR = "r4"
 
-FPVERSION = "13"
+FPVERSION = "15"
 FPUPDATE = "1.0"
 
 PV = "${FPVERSION}"

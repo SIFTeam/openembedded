@@ -5,6 +5,8 @@ PATH=/sbin:/bin:/usr/sbin:/usr/bin
 if test -e /usr/share/switchoff.mvi
 then
 	showiframe /usr/share/switchoff.mvi
+	#clear frame buffer to ensure switchoff.mvi is viewable
+	dd if=/dev/zero of=/dev/fb0 bs=4096 count=2108
 fi
 
 halt -d -f -i -p -h
