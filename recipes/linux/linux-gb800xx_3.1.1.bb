@@ -7,9 +7,9 @@ MACHINE_KERNEL_PR_append = ".0"
 DEPENDS = "mtd-minimal-nand-utils"
 RDEPENDS_kernel-image = "mtd-minimal-nand-utils"
 
-SRC_URI = "file://linux-${PV}-gb800xx-${SRCDATE}.tgz \
+SRC_URI = "file://linux-${PV}-gb800xx-${SRCDATE}.tar.gz \
 		file://${MACHINE}_defconfig"
-		
+
 S = "${WORKDIR}/linux-${PV}"
 
 inherit kernel
