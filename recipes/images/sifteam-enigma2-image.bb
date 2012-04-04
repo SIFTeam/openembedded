@@ -57,7 +57,6 @@ ENIGMA2_PLUGINS_append_azboxhd = " \
 				"
 
 ENIGMA2_PLUGINS_append_gb800se = " \
-				gst-gb800 \
 				enigma2-plugin-systemplugins-vfd-giga \
 				"
 
