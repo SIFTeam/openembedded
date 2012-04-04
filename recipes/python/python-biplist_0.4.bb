@@ -7,11 +7,12 @@ PRIORITY = "optional"
 HOMEPAGE = "http://github.com/wooster/biplist"
 SRCNAME = "biplist"
 DEPENDS = "python"
+PR = "r1"
 
 SRC_URI = "https://github.com/downloads/wooster/biplist/${SRCNAME}-${PV}.tar.gz"
 S = "${WORKDIR}/${SRCNAME}-${PV}"
 
-inherit distutils
+inherit setuptools
 
 SRC_URI[md5sum] = "870f2e0d16a48440b37dadedca06552b"
 SRC_URI[sha256sum] = "d3097952e344b5d440c7588162faadf02474cd522527acd9e0a0a4923ddbff45"
