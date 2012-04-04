@@ -1,6 +1,6 @@
 require gst-plugins.inc
 
-SRC_URI = "http://gstreamer.freedesktop.org/src/${PN}/pre/${PN}-${PV}.tar.bz2;name=archive"
+SRC_URI = "http://gstreamer.freedesktop.org/src/${PN}/${PN}-${PV}.tar.bz2;name=archive"
 SRC_URI += " \
             file://ivorbis-thumb.patch \
 "

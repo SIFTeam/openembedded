@@ -1,5 +1,5 @@
 require gstreamer.inc
-SRC_URI = "http://gstreamer.freedesktop.org/src/gstreamer/pre/gstreamer-${PV}.tar.bz2;name=archive"
+SRC_URI = "http://gstreamer.freedesktop.org/src/gstreamer/gstreamer-${PV}.tar.bz2;name=archive"
 
 PR="r0"
 

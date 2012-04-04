@@ -1,8 +1,7 @@
 require gst-plugins.inc
 
-SRC_URI = "http://gstreamer.freedesktop.org/src/${PN}/pre/${PN}-${PV}.tar.bz2;name=archive \
-	file://hlsdemux_reset_mediasequence.patch \
-	"
+SRC_URI = "http://gstreamer.freedesktop.org/src/${PN}/${PN}-${PV}.tar.bz2;name=archive"
+#	file://git_head_20120402_experimental.patch \
 
 DEPENDS += "opencv orc-native orc libcdaudio gst-plugins-base openssl directfb libmodplug librsvg"
 DEPENDS_sifteam += "gst-plugins-base librtmp"
@@ -10,7 +9,7 @@ DEPENDS_sifteam += "gst-plugins-base librtmp"
 RCONFLICTS_gst-plugin-mpegdemux = "gst-plugin-fluendo-mpegdemux"
 RREPLACES_gst-plugin-mpegdemux = "gst-plugin-fluendo-mpegdemux"
 
-PR = "${INC_PR}.7"
+PR = "${INC_PR}.13"
 
 do_configure_prepend() {
     sed -i -e s:docs::g Makefile.am
