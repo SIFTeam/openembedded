@@ -1,16 +1,16 @@
 DESCRIPTION = "Linux kernel for Gigablue HD ${MACHINE}"
 LICENSE = "GPL"
-SRCDATE = "2012"
+SRCDATE = "20120405"
 
 MACHINE_KERNEL_PR_append = ".0"
 
 DEPENDS = "mtd-minimal-nand-utils"
 RDEPENDS_kernel-image = "mtd-minimal-nand-utils"
 
-SRC_URI = "file://stblinux-2.6.37-2.5.tar.bz2 \
+SRC_URI = "file://quattro-linux-${PV}_${SRCDATE}.tgz \
 		file://${MACHINE}_defconfig"
 		
-S = "${WORKDIR}/stblinux-${PV}"
+S = "${WORKDIR}/linux-${PV}"
 
 inherit kernel
 
