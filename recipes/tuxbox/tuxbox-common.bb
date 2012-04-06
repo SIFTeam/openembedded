@@ -1,47 +1,40 @@
 DESCRIPTION = "Tuxbox common files"
 LICENSE = "GPL"
-MAINTAINER = "PLi team"
+MAINTAINER = "openAAF"
 
 PN = "tuxbox-common"
-PR = "r2"
+PR = "r6"
 
-PV = "1.0+svn${SRCREV}"
+PV = "2.0"
 
-# use cables.xml and terrestrial.xml from tuxbox.org
-SRC_URI = "cvs://anoncvs@cvs.tuxbox.org/cvs/tuxbox/;module=cdk/root/share/tuxbox;method=ext;rsh=ssh;tag=dreambox;date=${SRCDATE} \
-	"
+SRC_URI = "file://cables.xml \
+		   file://satellites.xml \
+		   file://scart.conf \
+		   file://terrestrial.xml \
+		   file://timezone.xml \
+"
 
-SRCREV_FORMAT = "satsxml"
-
-# everything else from openpli svn
-SRC_URI += " ${PLISVNURL}/${PLISVNBRANCH}/cdk/cdk/root;module=share;proto=${PLISVNPROTO};name=satsxml \
-	${PLISVNURL}/${PLISVNBRANCH}/cdk/cdk/root;module=etc;proto=${PLISVNPROTO}"
 
 FILES_${PN} = "/"
 
 S = "${WORKDIR}"
 
-TRANSPONDER_LISTS = "satellites.xml terrestrial.xml"
-
-#enigma1 need a cables.xml
-TRANSPONDER_LISTS_append_dm7020 = " cables.xml"
-TRANSPONDER_LISTS_append_dm500plus = " cables.xml"
-TRANSPONDER_LISTS_append_dm600pvr = " cables.xml"
+TRANSPONDER_LISTS = "satellites.xml terrestrial.xml cables.xml"
 
 do_install() {
-	install -d ${D}/etc/tuxbox/
+    install -d ${D}/etc/enigma2
+	install -d ${D}/etc/tuxbox
+	install -d ${D}/usr/share
 	install -d ${D}/usr/share/tuxbox
-	install -m 0644 ${S}/share/tuxbox/scart.conf ${D}/etc/tuxbox/scart.conf
+	install -m 0644 ${S}/scart.conf ${D}/etc/tuxbox/scart.conf
 
-	install -m 0644 ${S}/etc/timezone.xml ${D}/etc/tuxbox/timezone.xml
+	install -m 0644 ${S}/timezone.xml ${D}/etc/tuxbox/timezone.xml
 	ln -sf /etc/tuxbox/timezone.xml ${D}/etc/
 
 	ln -sf /usr/share ${D}/share
 
-	install -m 0644 ${S}/share/tuxbox/satellites.xml ${S}/tuxbox
-
 	for i in ${TRANSPONDER_LISTS}; do
-		install -m 0644 ${S}/tuxbox/$i ${D}/etc/tuxbox/$i
+		install -m 0644 ${S}/$i ${D}/etc/tuxbox/$i
 		ln -sf /etc/tuxbox/$i ${D}/etc/;
 		ln -sf /etc/tuxbox/$i ${D}/usr/share/;
 		ln -sf /etc/tuxbox/$i ${D}/usr/share/tuxbox/;
