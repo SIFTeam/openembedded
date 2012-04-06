@@ -15,9 +15,15 @@ mknod /dev/sound/dsp c 14 3
 mknod /dev/sound/mixer c 14 0
 mknod /dev/sound/mixer1 c 14 16
 
-
-mknod /dev/dvb/adapter0/demux4 c 212 68
-mknod /dev/dvb/adapter0/dvr4 c 212 69
+#mknod /dev/dvb/adapter0/demux5 c 212 84
+#mknod /dev/dvb/adapter0/demux6 c 212 100
+#mknod /dev/dvb/adapter0/demux7 c 212 116 
+#mknod /dev/dvb/adapter0/dvr5 c 212 85
+#mknod /dev/dvb/adapter0/dvr6 c 212 101
+#mknod /dev/dvb/adapter0/dvr7 c 212 117
+#mknod /dev/dvb/adapter0/net5 c 212 87
+#mknod /dev/dvb/adapter0/net6 c 212 103
+#mknod /dev/dvb/adapter0/net7 c 212 119 
 
 mknod /dev/input/mouse0 c 13 32
 
