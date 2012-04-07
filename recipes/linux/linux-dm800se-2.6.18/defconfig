@@ -708,7 +708,7 @@ CONFIG_NETIF_DMA=y
 # CONFIG_DUMMY is not set
 # CONFIG_BONDING is not set
 # CONFIG_EQUALIZER is not set
-# CONFIG_TUN is not set
+CONFIG_TUN=m
 
 #
 # ARCnet devices
