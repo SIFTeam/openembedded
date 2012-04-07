@@ -9,10 +9,10 @@ RDEPENDS_kernel-image = "mtd-minimal-nand-utils"
 
 SRC_URI = "file://linux-${PV}-gb800xx-${SRCDATE}.tar.gz \
 		file://${MACHINE}_defconfig \
-		file://fix_cpu_proc.patch \
+		file://fix_cpu_proc.patch;striplevel=1 \
 		file://igmp.patch \
-		file://linux_3.1.1.patch \
-        file://fix_cpu_proc2.patch \
+		file://linux_3.1.1.patch;striplevel=1 \
+        file://fix_cpu_proc2.patch;striplevel=1 \
 		file://dvb-usb-af9035.patch \
 		file://dvb-usb-it9135.patch \
 		file://tda18218-7mhz-lopass.patch \
