@@ -65,7 +65,6 @@ ENIGMA2_PLUGINS_append_gb800ue = " \
 				"
 
 ENIGMA2_PLUGINS_append_gb800solo = " \
-				gst-gb800 \
 				enigma2-plugin-systemplugins-vfd-giga \
 				"
 

@@ -9,6 +9,7 @@ RDEPENDS_kernel-image = "mtd-minimal-nand-utils"
 
 SRC_URI = "file://linux-${PV}-gb800xx-${SRCDATE}.tar.gz \
 		file://${MACHINE}_defconfig \
+		file://nor-maps-gb800solo.patch \
         file://iosched-slice_idle-1.patch \
 		file://dvb-usb-af9035.patch \
 		file://dvb-usb-it9135.patch \
