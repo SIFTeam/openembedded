@@ -34,6 +34,4 @@ mknod /dev/ci0 c 213 0
 
 ln -s /dev/misc!vtuner0 /dev/misc/vtuner0
 ln -s /dev/misc!vtuner1 /dev/misc/vtuner1
-
-echo "Gigablue" > /proc/stb/info/model
  
