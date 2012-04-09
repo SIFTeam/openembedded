@@ -80,6 +80,7 @@ ENIGMA2_OPTIONAL = " \
 				minidlna \
 				nano \
 				${@base_contains("MACHINE_FEATURES", "satscan", "enigma2-plugin-systemplugins-satscan" , "", d)} \
+				enigma2-plugin-extensions-et-livestream \
 				"
 
 IMAGE_INSTALL += " \
