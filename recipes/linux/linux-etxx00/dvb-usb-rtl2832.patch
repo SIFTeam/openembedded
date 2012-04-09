@@ -199,12 +199,12 @@ From: Gianluca Gennari <gennarone@gmail.com>
  create mode 100644 drivers/media/dvb/dvb-usb/tuner_tua9001.h
 
 diff --git a/drivers/media/dvb/dvb-usb/Kconfig b/drivers/media/dvb/dvb-usb/Kconfig
-index e8c7ad7..eefe3d3 100644
+index 787ffab..cbb591f 100644
 --- a/drivers/media/dvb/dvb-usb/Kconfig
 +++ b/drivers/media/dvb/dvb-usb/Kconfig
-@@ -359,6 +359,13 @@ config DVB_USB_A867
- 	  Choose Y or M here if you have an Avermedia A867 device
- 	  To compile this driver as a module, choose M here
+@@ -351,6 +351,13 @@ config DVB_USB_AF9035
+ 	help
+ 	  Say Y here to support the Afatech AF9035 based DVB-T USB2.0 receiver
  
 +config DVB_USB_RTL2832
 +	tristate "Realtek RTL2832 DVB-T USB2.0 support"
@@ -25048,7 +25048,7 @@ index 0000000..d8af754
 +
 diff --git a/drivers/media/dvb/dvb-usb/nim_rtl2832_fc2580.c b/drivers/media/dvb/dvb-usb/nim_rtl2832_fc2580.c
 new file mode 100644
-index 0000000..09036021
+index 0000000..0903602
 --- /dev/null
 +++ b/drivers/media/dvb/dvb-usb/nim_rtl2832_fc2580.c
 @@ -0,0 +1,343 @@
@@ -101198,5 +101198,5 @@ index 0000000..dbfbce6
 +
 +#endif
 -- 
-1.7.5.4
+1.7.0.4
 

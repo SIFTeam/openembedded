@@ -23,7 +23,7 @@ index aae0505..564e558 100644
  
  static void as102_stop_stream(struct as102_dev_t *dev)
 diff --git a/drivers/staging/media/as102/as102_fe.c b/drivers/staging/media/as102/as102_fe.c
-index bdc5a38..ead2db2 100644
+index 043c520..99e26c5 100644
 --- a/drivers/staging/media/as102/as102_fe.c
 +++ b/drivers/staging/media/as102/as102_fe.c
 @@ -22,6 +22,9 @@
@@ -64,5 +64,5 @@ index bdc5a38..ead2db2 100644
  	return 0;
  }
 -- 
-1.7.5.4
+1.7.0.4
 
