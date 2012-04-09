@@ -100,6 +100,7 @@ gst-plugin-pnm.* \
 gst-plugin-qtmux.* \
 gst-plugin-rawparse.* \
 gst-plugin-rfbsrc.* \
+gst-plugin-rtmp.* \
 gst-plugin-rsvg.* \
 gst-plugin-rtpmux.* \
 gst-plugin-scaletempoplugin.* \
