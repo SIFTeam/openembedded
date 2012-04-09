@@ -3216,9 +3216,9 @@ index 0000000..22f7171
 +}
 +
 +static struct dvb_frontend_ops af903x_ops = {
++	.delsys = { SYS_DVBT },
 +	.info = {
 +		.name = "A867 USB DVB-T",
-+		.type = FE_OFDM,
 +		.frequency_min      = A333_FREQ_MIN,
 +		.frequency_max      = A333_FREQ_MAX,
 +		.frequency_stepsize = 62500,
@@ -3531,7 +3531,7 @@ index 0000000..1062506
 +	DWORD dwError = Error_NO_ERROR;
 +	DWORD freq = c->frequency ;// 1000; // Hz -> kHz
 +	
-+	priv->bandwidth = (fe->ops.info.type == FE_OFDM) ? c->bandwidth_hz : 0;
++	priv->bandwidth = c->bandwidth_hz;
 +
 +       deb_data("%s - freq : %d , bandwidth : %dn",__FUNCTION__, freq,priv->bandwidth);
 +	   
