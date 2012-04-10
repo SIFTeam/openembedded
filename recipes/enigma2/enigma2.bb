@@ -85,7 +85,7 @@ inherit gitpkgv
 
 PV = "2.7+git${SRCPV}"
 PKGV = "2.7+git${GITPKGV}"
-PR = "r33"
+PR = "r34"
 
 ENIGMA2_BRANCH ?= "master"
 SRC_URI = "git://openpli.git.sourceforge.net/gitroot/openpli/enigma2;protocol=git;branch=${ENIGMA2_BRANCH}"
@@ -153,9 +153,8 @@ FILES_${PN}-src = "\
 	"
 RADIOMVI = "${@base_contains("MACHINE_FEATURES", "hdtv", "radio-hd.mvi" , "radio-sd.mvi", d)}"
 
-RCONFLICTS_${PN} = "dreambox-keymaps"
+RCONFLICTS_${PN} = "dreambox-keymaps usbtunerhelper"
 RREPLACES_${PN} = "dreambox-keymaps usbtunerhelper"
-RCONFLICTS_${PN} = "usbtunerhelper"
 
 do_openpli_preinstall() {
 	ln -f ${S}/data/${RADIOMVI} ${S}/data/radio.mvi
