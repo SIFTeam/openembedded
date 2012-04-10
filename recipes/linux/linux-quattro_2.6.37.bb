@@ -4,8 +4,8 @@ SRCDATE = "20120405"
 
 MACHINE_KERNEL_PR_append = ".0"
 
-DEPENDS = "mtd-minimal-nand-utils"
-RDEPENDS_kernel-image = "mtd-minimal-nand-utils"
+DEPENDS = "mtd-utils"
+RDEPENDS_kernel-image = "mtd-utils"
 
 SRC_URI = "file://quattro-linux-${PV}_${SRCDATE}.tgz \
 		file://${MACHINE}_defconfig"

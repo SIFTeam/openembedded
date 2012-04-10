@@ -4,8 +4,8 @@ SRCDATE = "20120404"
 
 MACHINE_KERNEL_PR_append = ".0"
 
-DEPENDS = "mtd-minimal-nand-utils"
-RDEPENDS_kernel-image = "mtd-minimal-nand-utils"
+DEPENDS = "mtd-utils"
+RDEPENDS_kernel-image = "mtd-utils"
 
 SRC_URI = "file://linux-${PV}-gb800xx-${SRCDATE}.tar.gz \
 		file://${MACHINE}_defconfig \
