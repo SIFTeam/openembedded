@@ -1,6 +1,6 @@
 DESCRIPTION = "Linux kernel for Gigablue ${MACHINE}"
 LICENSE = "GPL"
-SRCDATE = "20120404"
+SRCDATE = "20120412"
 
 MACHINE_KERNEL_PR_append = ".0"
 
