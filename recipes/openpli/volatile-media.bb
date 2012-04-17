@@ -1,6 +1,8 @@
 DESCRIPTION = "Mounts and populates a tmpfs over /media"
 LICENSE = "GPL"
 
+PV="1.1"
+
 SRC_URI = "file://*"
 
 PACKAGES = "${PN}"
