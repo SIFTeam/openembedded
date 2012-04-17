@@ -1,16 +1,19 @@
-em28xx: pre-allocate DVB iso transfer buffers
+em28xx: pre-allocate DVB isoc transfer buffers
 
-From: Gianluca Gennari <gennarone@gmail.com>
+full description:
+http://patchwork.linuxtv.org/patch/9875/
+
+Signed-off-by: Gianluca Gennari <gennarone@gmail.com>
 ---
  drivers/media/video/em28xx/em28xx-cards.c |   16 +++-
- drivers/media/video/em28xx/em28xx-core.c  |  140 +++++++++++++++++++----------
- drivers/media/video/em28xx/em28xx-dvb.c   |   14 ++--
- drivers/media/video/em28xx/em28xx-video.c |   10 ++-
+ drivers/media/video/em28xx/em28xx-core.c  |  145 +++++++++++++++++++----------
+ drivers/media/video/em28xx/em28xx-dvb.c   |   14 +--
+ drivers/media/video/em28xx/em28xx-video.c |   10 +-
  drivers/media/video/em28xx/em28xx.h       |   23 ++++-
- 5 files changed, 139 insertions(+), 64 deletions(-)
+ 5 files changed, 142 insertions(+), 66 deletions(-)
 
 diff --git a/drivers/media/video/em28xx/em28xx-cards.c b/drivers/media/video/em28xx/em28xx-cards.c
-index 4561cd8..ce1b60f 100644
+index 2aa772a..5c06bac 100644
 --- a/drivers/media/video/em28xx/em28xx-cards.c
 +++ b/drivers/media/video/em28xx/em28xx-cards.c
 @@ -3307,6 +3307,17 @@ static int em28xx_usb_probe(struct usb_interface *interface,
@@ -51,7 +54,7 @@ index 4561cd8..ce1b60f 100644
  
  	em28xx_close_extension(dev);
 diff --git a/drivers/media/video/em28xx/em28xx-core.c b/drivers/media/video/em28xx/em28xx-core.c
-index 0aacc96..b1e8a51 100644
+index 0aacc96..53a9fb9 100644
 --- a/drivers/media/video/em28xx/em28xx-core.c
 +++ b/drivers/media/video/em28xx/em28xx-core.c
 @@ -666,6 +666,7 @@ int em28xx_capture_start(struct em28xx *dev, int start)
@@ -62,7 +65,7 @@ index 0aacc96..b1e8a51 100644
  
  int em28xx_vbi_supported(struct em28xx *dev)
  {
-@@ -961,40 +962,46 @@ static void em28xx_irq_callback(struct urb *urb)
+@@ -961,146 +962,192 @@ static void em28xx_irq_callback(struct urb *urb)
  /*
   * Stop and Deallocate URBs
   */
@@ -122,15 +125,17 @@ index 0aacc96..b1e8a51 100644
  
  	em28xx_capture_start(dev, 0);
  }
-@@ -1003,91 +1010,130 @@ EXPORT_SYMBOL_GPL(em28xx_uninit_isoc);
+ EXPORT_SYMBOL_GPL(em28xx_uninit_isoc);
+ 
  /*
-  * Allocate URBs and start IRQ
+- * Allocate URBs and start IRQ
++ * Allocate URBs
   */
 -int em28xx_init_isoc(struct em28xx *dev, int max_packets,
 -		     int num_bufs, int max_pkt_size,
 -		     int (*isoc_copy) (struct em28xx *dev, struct urb *urb))
 +int em28xx_alloc_isoc(struct em28xx *dev, enum em28xx_mode mode,
-+		     int max_packets, int num_bufs, int max_pkt_size)
++		      int max_packets, int num_bufs, int max_pkt_size)
  {
 -	struct em28xx_dmaqueue *dma_q = &dev->vidq;
 -	struct em28xx_dmaqueue *vbi_dma_q = &dev->vbiq;
@@ -166,9 +171,10 @@ index 0aacc96..b1e8a51 100644
  	}
  
 -	dev->isoc_ctl.transfer_buffer = kzalloc(sizeof(void *)*num_bufs,
-+	isoc_bufs->transfer_buffer = kzalloc(sizeof(void *)*num_bufs,
- 					      GFP_KERNEL);
+-					      GFP_KERNEL);
 -	if (!dev->isoc_ctl.transfer_buffer) {
++	isoc_bufs->transfer_buffer = kzalloc(sizeof(void *)*num_bufs,
++					     GFP_KERNEL);
 +	if (!isoc_bufs->transfer_buffer) {
  		em28xx_errdev("cannot allocate memory for usb transfer\n");
 -		kfree(dev->isoc_ctl.urb);
@@ -244,6 +250,7 @@ index 0aacc96..b1e8a51 100644
 +			k += isoc_bufs->max_pkt_size;
  		}
  	}
+ 
 +	return 0;
 +}
 +EXPORT_SYMBOL_GPL(em28xx_alloc_isoc);
@@ -281,10 +288,10 @@ index 0aacc96..b1e8a51 100644
 +		if (rc)
 +			return rc;
 +	}
- 
++
  	init_waitqueue_head(&dma_q->wq);
  	init_waitqueue_head(&vbi_dma_q->wq);
-@@ -1095,12 +1141,12 @@ int em28xx_init_isoc(struct em28xx *dev, int max_packets,
+ 
  	em28xx_capture_start(dev, 1);
  
  	/* submit urbs and enables IRQ */
@@ -301,7 +308,7 @@ index 0aacc96..b1e8a51 100644
  		}
  	}
 diff --git a/drivers/media/video/em28xx/em28xx-dvb.c b/drivers/media/video/em28xx/em28xx-dvb.c
-index 25fc73f..4917b71 100644
+index aabbf48..fbd9010 100644
 --- a/drivers/media/video/em28xx/em28xx-dvb.c
 +++ b/drivers/media/video/em28xx/em28xx-dvb.c
 @@ -61,9 +61,6 @@ if (debug >= level) 						\
@@ -443,5 +450,5 @@ index 22e252b..2ae6815 100644
  int em28xx_set_mode(struct em28xx *dev, enum em28xx_mode set_mode);
  int em28xx_gpio_set(struct em28xx *dev, struct em28xx_reg_seq *gpio);
 -- 
-1.7.5.4
+1.7.0.4
 

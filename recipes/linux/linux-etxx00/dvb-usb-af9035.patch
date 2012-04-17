@@ -1,8 +1,8 @@
 diff --git a/drivers/media/common/tuners/Kconfig b/drivers/media/common/tuners/Kconfig
-index 996302a..90db9ff 100644
+index 4a6d5ce..feddaf6 100644
 --- a/drivers/media/common/tuners/Kconfig
 +++ b/drivers/media/common/tuners/Kconfig
-@@ -197,6 +197,13 @@ config MEDIA_TUNER_TDA18218
+@@ -204,6 +204,13 @@ config MEDIA_TUNER_TDA18218
  	help
  	  NXP TDA18218 silicon tuner driver.
  
@@ -17,10 +17,10 @@ index 996302a..90db9ff 100644
  	tristate "NXP TDA18212 silicon tuner"
  	depends on VIDEO_MEDIA && I2C
 diff --git a/drivers/media/common/tuners/Makefile b/drivers/media/common/tuners/Makefile
-index 196c12a..50bc302 100644
+index 8295854..ad2fccd 100644
 --- a/drivers/media/common/tuners/Makefile
 +++ b/drivers/media/common/tuners/Makefile
-@@ -26,6 +26,7 @@ obj-$(CONFIG_MEDIA_TUNER_MXL5007T) += mxl5007t.o
+@@ -27,6 +27,7 @@ obj-$(CONFIG_MEDIA_TUNER_MXL5007T) += mxl5007t.o
  obj-$(CONFIG_MEDIA_TUNER_MC44S803) += mc44s803.o
  obj-$(CONFIG_MEDIA_TUNER_MAX2165) += max2165.o
  obj-$(CONFIG_MEDIA_TUNER_TDA18218) += tda18218.o
@@ -432,7 +432,7 @@ index 0000000..7588df1
 +
 +#endif
 diff --git a/drivers/media/dvb/dvb-usb/Kconfig b/drivers/media/dvb/dvb-usb/Kconfig
-index 5825716..d215f41 100644
+index 9f203c6..d2014c0 100644
 --- a/drivers/media/dvb/dvb-usb/Kconfig
 +++ b/drivers/media/dvb/dvb-usb/Kconfig
 @@ -281,6 +281,7 @@ config DVB_USB_DW2102
@@ -443,7 +443,7 @@ index 5825716..d215f41 100644
  	select DVB_MT312 if !DVB_FE_CUSTOMISE
  	select DVB_ZL10039 if !DVB_FE_CUSTOMISE
  	select DVB_DS3000 if !DVB_FE_CUSTOMISE
-@@ -338,6 +339,17 @@ config DVB_USB_AF9015
+@@ -339,6 +340,17 @@ config DVB_USB_AF9015
  	help
  	  Say Y here to support the Afatech AF9015 based DVB-T USB2.0 receiver
  
@@ -460,7 +460,7 @@ index 5825716..d215f41 100644
 +
  config DVB_USB_CE6230
  	tristate "Intel CE6230 DVB-T USB2.0 support"
- 	depends on DVB_USB && EXPERIMENTAL
+ 	depends on DVB_USB
 diff --git a/drivers/media/dvb/dvb-usb/Makefile b/drivers/media/dvb/dvb-usb/Makefile
 index 26c8b9e..f8b1013 100644
 --- a/drivers/media/dvb/dvb-usb/Makefile
@@ -1948,7 +1948,7 @@ index 0000000..7c0c971
 +
 +#endif
 diff --git a/drivers/media/dvb/dvb-usb/dvb-usb-ids.h b/drivers/media/dvb/dvb-usb/dvb-usb-ids.h
-index 2d08c9b..c89dbd5 100644
+index d390dda..9df8f28 100644
 --- a/drivers/media/dvb/dvb-usb/dvb-usb-ids.h
 +++ b/drivers/media/dvb/dvb-usb/dvb-usb-ids.h
 @@ -75,6 +75,11 @@
@@ -1963,7 +1963,7 @@ index 2d08c9b..c89dbd5 100644
  #define USB_PID_TREKSTOR_DVBT				0x901b
  #define USB_VID_ALINK_DTU				0xf170
  #define USB_PID_ANSONIC_DVBT_USB			0x6000
-@@ -212,6 +217,17 @@
+@@ -217,6 +222,17 @@
  #define USB_PID_AVERMEDIA_A850T				0x850b
  #define USB_PID_AVERMEDIA_A805				0xa805
  #define USB_PID_AVERMEDIA_A815M				0x815a
@@ -1981,7 +1981,7 @@ index 2d08c9b..c89dbd5 100644
  #define USB_PID_TECHNOTREND_CONNECT_S2400               0x3006
  #define USB_PID_TECHNOTREND_CONNECT_CT3650		0x300d
  #define USB_PID_TERRATEC_CINERGY_DT_XS_DIVERSITY	0x005a
-@@ -221,6 +237,8 @@
+@@ -226,6 +242,8 @@
  #define USB_PID_TERRATEC_CINERGY_T_EXPRESS		0x0062
  #define USB_PID_TERRATEC_CINERGY_T_XXS			0x0078
  #define USB_PID_TERRATEC_CINERGY_T_XXS_2		0x00ab
@@ -1991,7 +1991,7 @@ index 2d08c9b..c89dbd5 100644
  #define USB_PID_TERRATEC_T5				0x10a1
  #define USB_PID_PINNACLE_EXPRESSCARD_320CX		0x022e
 diff --git a/drivers/media/dvb/frontends/Kconfig b/drivers/media/dvb/frontends/Kconfig
-index 4a2d2e6..777b99d 100644
+index ebb5ed7..907afc0 100644
 --- a/drivers/media/dvb/frontends/Kconfig
 +++ b/drivers/media/dvb/frontends/Kconfig
 @@ -397,6 +397,13 @@ config DVB_AF9013
@@ -2009,7 +2009,7 @@ index 4a2d2e6..777b99d 100644
  	tristate "E3C EC100"
  	depends on DVB_CORE && I2C
 diff --git a/drivers/media/dvb/frontends/Makefile b/drivers/media/dvb/frontends/Makefile
-index f639f67..f2a620b 100644
+index 00a2063..3a2eb97 100644
 --- a/drivers/media/dvb/frontends/Makefile
 +++ b/drivers/media/dvb/frontends/Makefile
 @@ -73,6 +73,7 @@ obj-$(CONFIG_DVB_LGS8GXX) += lgs8gxx.o

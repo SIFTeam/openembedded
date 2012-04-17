@@ -88,7 +88,7 @@ inherit gitpkgv
 
 PV = "2.7+git${SRCPV}"
 PKGV = "2.7+git${GITPKGV}"
-PR = "r47"
+PR = "r48"
 
 SRC_URI = "git://github.com/SIFTeam/enigma2.git;protocol=git file://swap"
 #SRC_URI = "git://${HOME}/sifteam/enigma2;protocol=file file://swap"
@@ -161,8 +161,8 @@ FILES_${PN}-src = "\
 	"
 RADIOMVI = "${@base_contains("MACHINE_FEATURES", "hdtv", "radio-hd.mvi" , "radio-sd.mvi", d)}"
 
-RCONFLICTS_${PN} = "dreambox-keymaps"
-RREPLACES_${PN} = "dreambox-keymaps"
+RCONFLICTS_${PN} = "dreambox-keymaps usbtunerhelper"
+RREPLACES_${PN} = "dreambox-keymaps usbtunerhelper"
 
 do_sifteam_preinstall() {
 	ln -f ${S}/data/${RADIOMVI} ${S}/data/radio.mvi

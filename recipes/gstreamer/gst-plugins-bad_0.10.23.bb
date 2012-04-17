@@ -9,7 +9,7 @@ DEPENDS_sifteam += "gst-plugins-base librtmp"
 RCONFLICTS_gst-plugin-mpegdemux = "gst-plugin-fluendo-mpegdemux"
 RREPLACES_gst-plugin-mpegdemux = "gst-plugin-fluendo-mpegdemux"
 
-PR = "${INC_PR}.13"
+PR = "${INC_PR}.14"
 
 do_configure_prepend() {
     sed -i -e s:docs::g Makefile.am
@@ -99,6 +99,7 @@ gst-plugin-pnm.* \
 gst-plugin-qtmux.* \
 gst-plugin-rawparse.* \
 gst-plugin-rfbsrc.* \
+gst-plugin-rtmp.* \
 gst-plugin-rsvg.* \
 gst-plugin-rtpmux.* \
 gst-plugin-scaletempoplugin.* \

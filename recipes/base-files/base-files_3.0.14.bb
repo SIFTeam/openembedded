@@ -1,8 +1,9 @@
 DESCRIPTION = "Miscellaneous files for the base system."
 SECTION = "base"
 PRIORITY = "required"
-PR = "r101.1"
+PR = "r101.2"
 LICENSE = "GPL"
+RDEPENDS_${PN}_openpli = "volatile-media"
 
 FSTAB = "fstab"
 
@@ -167,12 +168,7 @@ do_install_append_sifteam() {
 	rm -rf ${D}/hdd
 	ln -sf media/hdd ${D}/hdd
 	ln -sf media ${D}/mnt
-	rm -rf ${D}/media/card
-	rm -rf ${D}/media/cf
-	rm -rf ${D}/media/mmc1
-	rm -rf ${D}/media/ram
-	rm -rf ${D}/media/realroot
-	rm -rf ${D}/media/union
+	rm -rf ${D}/media/*
 	rmdir ${D}/tmp
 	ln -s var/volatile/tmp ${D}/tmp
 }
