@@ -104,7 +104,7 @@ TARGET_ARCH = "mipsel"
 
 GLIBC_EXTRA_OECONF = "--with-tls"
 
-PREFERRED_PROVIDER_virtual/kernel = "linux-${MACHINE}"
+PREFERRED_PROVIDER_virtual/kernel = "linux-vuplus"
 
 PREFERRED_PROVIDER_virtual/showiframe = "vuplus-dvb-tools"
 
