@@ -2,7 +2,7 @@ DESCRIPTION = "Linux kernel for ${MACHINE}"
 LICENSE = "GPL"
 KV = "3.1.1"
 SRCREV = "r2"
-MACHINE_KERNEL_PR_append = ".15"
+MACHINE_KERNEL_PR_append = ".16"
 
 DEPENDS = "mtd-utils"
 RDEPENDS_kernel-image = "mtd-utils"
