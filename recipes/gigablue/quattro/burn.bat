@@ -1,8 +1,9 @@
-flash -noheader -forceerase usbdisk0:vmlinux.gz nandflash0.kernel
+macprog2 AC-DB-EF-11-22-33
 
-flash -noheader -forceerase usbdisk0:ubi.img nandflash0.rootfs
+flash -noheader -forceerase usbdisk0:gigablue/se/kernel.bin nandflash0.kernel
 
-setenv -p STARTUP "boot -z -elf nandflash0.kernel: 'ubi.mtd=0 root=ubi0:rootfs rootfstype=ubifs rw bmem=128M@128M bmem=256M@512M'"
+flash -noheader -forceerase usbdisk0:gigablue/se/rootfs.bin nandflash0.rootfs
+
+setenv -p STARTUP "boot -z -elf nandflash0.kernel:"
 
 boot -z -elf nandflash0.kernel:
-

@@ -4,7 +4,7 @@ PRIORITY = "required"
 LICENSE = "proprietary"
 MAINTAINER = "openMips"
 
-PR = "r2"
+PR = "r3"
 
 S = "${WORKDIR}"
 
