@@ -27,8 +27,6 @@ RDEPENDS_${PN} = "python-codecs python-core python-lang python-re python-threadi
 RDEPENDS_${PN} += "libdreamdvd"
 RRECOMMENDS_${PN} = "libdvdcss"
 
-RDEPENDS_${PN} += "${@base_contains("MACHINE_FEATURES", "blindscan", "virtual/blindscanutils" , "", d)}"
-
 # PLi-HD is the default skin for HD hardware, and Magic for SD hardware
 DEFAULTSKIN = "${@base_contains("MACHINE_FEATURES", "hdtv", \
 					"enigma2-plugin-skins-pli-hd", \
