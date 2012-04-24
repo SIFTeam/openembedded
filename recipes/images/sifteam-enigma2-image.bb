@@ -75,7 +75,7 @@ ENIGMA2_OPTIONAL = " \
 					enigma2-plugin-skins-magic-hd \
 					enigma2-plugin-skins-pli-hd \
 					" , "", d)} \
-				enigma2-plugin-skins-julesblackhd \
+				enigma2-plugin-skins-jules-black-hd \
 				channelsettings-enigma2-meta \
 				picons-enigma2-meta \
 				dvbsnoop \
