@@ -3,13 +3,16 @@ DESCRIPTION = "tuxbox tuxtxt for enigma2"
 
 inherit gitpkgv
 
-SRC_URI = "git://openpli.git.sourceforge.net/gitroot/openpli/tuxtxt;protocol=git"
+OPENPLI_URI = "git://openpli.git.sourceforge.net/gitroot/openpli/tuxtxt;protocol=git"
+GIGABLUE_URI = "git://git.openmips.com/tuxtxt.git;protocol=git"
+
+SRC_URI = "${@base_contains("MACHINE_FEATURES", "gigablue", "${GIGABLUE_URI}", "${OPENPLI_URI}", d)}"
 
 S = "${WORKDIR}/git/tuxtxt"
 
 PV = "2.0+git${SRCPV}"
 PKGV = "2.0+git${GITPKGV}"
-PR = "r0"
+PR = "r1"
 
 FILES_${PN}-dbg = "/usr/lib/.debug"
 FILES_${PN}-src = "/usr/lib/enigma2/python/Plugins/Extensions/Tuxtxt/*.py"

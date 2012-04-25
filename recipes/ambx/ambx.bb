@@ -10,9 +10,12 @@ inherit gitpkgv
 
 PV = "1.0+git${SRCPV}"
 PKGV = "1.0+git${GITPKGV}"
-PR = "r0"
+PR = "r1"
 
-SRC_URI = "git://openpli.git.sourceforge.net/gitroot/openpli/plugin-ambx;protocol=git"
+OPENPLI_URI = "git://openpli.git.sourceforge.net/gitroot/openpli/plugin-ambx;protocol=git"
+GIGABLUE_URI = "git://git.openmips.com/plugin-ambx.git;protocol=git"
+
+SRC_URI = "${@base_contains("MACHINE_FEATURES", "gigablue", "${GIGABLUE_URI}", "${OPENPLI_URI}", d)}"
 
 S = "${WORKDIR}/git"
 
