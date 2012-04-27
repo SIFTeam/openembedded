@@ -2,7 +2,7 @@ DESCRIPTION = "Linux kernel for Gigablue ${MACHINE}"
 LICENSE = "GPL"
 SRCDATE = "20120420"
 
-MACHINE_KERNEL_PR_append = ".2"
+MACHINE_KERNEL_PR_append = ".3"
 
 DEPENDS = "mtd-utils"
 RDEPENDS_kernel-image = "mtd-utils"
@@ -50,11 +50,33 @@ kernel_do_install_append() {
 	gzip ${D}/${KERNEL_IMAGEDEST}/${KERNEL_IMAGETYPE}
 }
 
-pkg_postinst_kernel-image () {
+pkg_postinst_kernel-image_gb800se () {
 	if [ "x$D" == "x" ]; then
 		if [ -f /${KERNEL_IMAGEDEST}/${KERNEL_IMAGETYPE}.gz ] ; then
 			flash_eraseall -j /dev/mtd2
 			nandwrite -p /dev/mtd2 /${KERNEL_IMAGEDEST}/${KERNEL_IMAGETYPE}.gz
+		fi
+	fi
+	rm -f /${KERNEL_IMAGEDEST}/${KERNEL_IMAGETYPE}.gz
+	true
+}
+
+pkg_postinst_kernel-image_gb800ue () {
+	if [ "x$D" == "x" ]; then
+		if [ -f /${KERNEL_IMAGEDEST}/${KERNEL_IMAGETYPE}.gz ] ; then
+			flash_eraseall -j /dev/mtd2
+			nandwrite -p /dev/mtd2 /${KERNEL_IMAGEDEST}/${KERNEL_IMAGETYPE}.gz
+		fi
+	fi
+	rm -f /${KERNEL_IMAGEDEST}/${KERNEL_IMAGETYPE}.gz
+	true
+}
+
+pkg_postinst_kernel-image_gb800solo () {
+	if [ "x$D" == "x" ]; then
+		if [ -f /${KERNEL_IMAGEDEST}/${KERNEL_IMAGETYPE}.gz ] ; then
+			flash_eraseall -j /dev/mtd2
+			flashcp /${KERNEL_IMAGEDEST}/${KERNEL_IMAGETYPE}.gz /dev/mtd2
 		fi
 	fi
 	rm -f /${KERNEL_IMAGEDEST}/${KERNEL_IMAGETYPE}.gz
