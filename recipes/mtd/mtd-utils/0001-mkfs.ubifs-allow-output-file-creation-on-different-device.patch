@@ -1,0 +1,54 @@
+From 6ea6e3ba7931947cc89edd2869e43455f2f5971a Mon Sep 17 00:00:00 2001
+From: pieterg <pieterg@users.sourceforge.net>
+Date: Wed, 27 Jul 2011 10:06:18 +0200
+Subject: [PATCH] mkfs.ubifs: allow output file creation on different device
+
+When a different blockdevice is mounted on a subdir of the root,
+in_path() indicates the mountpoint is under the root directory,
+and mkfs.ubifs would refuse to create a filesystem output file
+on it.
+Compare the root and output deviceid, and allow mkfs.ubifs to
+continue when the output is on a different device.
+---
+ mkfs.ubifs/mkfs.ubifs.c |   18 +++++++++++++++++-
+ 1 files changed, 17 insertions(+), 1 deletions(-)
+
+diff --git a/mkfs.ubifs/mkfs.ubifs.c b/mkfs.ubifs/mkfs.ubifs.c
+index 9f2a226..cec6b4a 100644
+--- a/mkfs.ubifs/mkfs.ubifs.c
++++ b/mkfs.ubifs/mkfs.ubifs.c
+@@ -313,6 +313,22 @@ static int in_path(const char *dir_name, const char *file_name)
+ }
+ 
+ /**
++ * same_device - determine if a file is on the same blockdevice as a directory.
++ * @dir_name: directory path name
++ * @file_name: file path name
++ */
++static int same_device(const char *dir_name, const char *file_name)
++{
++	struct stat stat1, stat2;
++
++	if (stat(dir_name, &stat1) == -1)
++		return -1;
++	if (stat(file_name, &stat2) == -1)
++		return -1;
++	return stat1.st_dev == stat2.st_dev;
++}
++
++/**
+  * calc_min_log_lebs - calculate the minimum number of log LEBs needed.
+  * @max_bud_bytes: journal size (buds only)
+  */
+@@ -369,7 +385,7 @@ static int validate_options(void)
+ 
+ 	if (!output)
+ 		return err_msg("no output file or UBI volume specified");
+-	if (root && in_path(root, output))
++	if (root && same_device(root, output) && in_path(root, output))
+ 		return err_msg("output file cannot be in the UBIFS root "
+ 			       "directory");
+ 	if (!is_power_of_2(c->min_io_size))
+-- 
+1.7.4.1
+
