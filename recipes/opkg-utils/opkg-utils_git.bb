@@ -4,15 +4,17 @@ HOMEPAGE = "http://wiki.openmoko.org/wiki/Opkg"
 PRIORITY = "optional"
 RDEPENDS_${PN} = "python"
 RDEPENDS_${PN}_virtclass-native = ""
-SRCREV = "4747"
-PV = "0.1.8+svnr${SRCPV}"
-PR = "r6"
 
-SRC_URI = "svn://svn.openmoko.org/trunk/src/host/;module=opkg-utils;proto=http \
-           file://index-ignore-filenotfound.patch \
-           file://mtime-int.patch"
+GITREV = "16665959c330b5958c0f0f4624a9ca7f823f98de"
+PV = "0.1.8+git-${GITREV}"
+PR = "r8"
 
-S = "${WORKDIR}/opkg-utils"
+#SRC_URI = "git://git.yoctoproject.org/opkg-utils;protocol=git"
+SRC_URI = "http://git.yoctoproject.org/cgit/cgit.cgi/opkg-utils/snapshot/opkg-utils-${GITREV}.tar.gz \
+	    file://index-ignore-filenotfound.patch \
+	    file://mtime-int.patch"
+
+S = "${WORKDIR}/opkg-utils-${GITREV}"
 
 # Avoid circular dependencies from package_ipk.bbclass
 PACKAGES_virtclass-native = ""
