@@ -5,7 +5,10 @@ LICENSE = "proprietary"
 MAINTAINER = "Felix Domke <tmbinc@elitedvb.net>"
 
 PV = "1.0"
-PR = "r1.1"
+PR = "r2"
+
+inherit klibc
+
 DEPENDS = "klcc-cross"
 
 SRC_URI = "file://boottool-${MACHINE}.c"
@@ -18,7 +21,7 @@ do_install_append() {
 }
 
 do_compile_append() {
-	${STAGING_BINDIR_CROSS}/klcc ${S}/boottool-${MACHINE}.c -o ${S}/boottool
+	${CC} ${S}/boottool-${MACHINE}.c -o ${S}/boottool
 }
 
 PACKAGE_ARCH := "${MACHINE_ARCH}"

@@ -4,14 +4,15 @@ PRIORITY = "optional"
 MAINTAINER = "Mike Looijmans <MiLo@pli-images.org>"
 
 PV = "1.0"
-PR = "r5"
-DEPENDS = "klcc-cross"
+PR = "r6"
+
+inherit klibc
 
 SRC_URI = "file://boottool-${MACHINE}.c file://root_to_cf.sh"
 
 S = "${WORKDIR}/"
 
-do_install_append() {
+do_install() {
 	install -d ${D}/boot/bin
 	install ${S}/boottool ${D}/boot/bin/initcf
 	install -d ${D}/boot/dev
@@ -19,8 +20,8 @@ do_install_append() {
 	install -m 755 ${WORKDIR}/root_to_cf.sh ${D}/usr/bin/
 }
 
-do_compile_append() {
-	${STAGING_BINDIR_CROSS}/klcc ${S}/boottool-${MACHINE}.c -o ${S}/boottool
+do_compile() {
+	${CC} ${S}/boottool-${MACHINE}.c -o ${S}/boottool
 }
 
 # Need a read/write /boot filesystem
