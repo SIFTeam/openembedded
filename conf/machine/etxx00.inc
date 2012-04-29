@@ -96,7 +96,7 @@ TARGET_FPU = "hard"
 MACHINE_FEATURES += "kernel26 alsa usbhost wifi nl80211"
 
 # openpli specific features:
-MACHINE_FEATURES += "32bpp hdtv 3dtv switchoff lpcm textlcd dvbapi5"
+MACHINE_FEATURES += "32bpp hdtv 3dtv switchoff lpcm textlcd dvbapi5 blindscan-dvbs"
 
 CHIPSET = "bcm7413"
 
@@ -109,8 +109,8 @@ TARGET_ARCH = "mipsel"
 GLIBC_EXTRA_OECONF = "--with-tls"
 
 PREFERRED_PROVIDER_virtual/kernel = "linux-etxx00"
-
 PREFERRED_PROVIDER_virtual/showiframe = "et-dvb-tools"
+PREFERRED_PROVIDER_virtual/blindscan-dvbs = "et-blindscan-dvbs-utils"
 
 require conf/machine/include/tune-mips32.inc
 
