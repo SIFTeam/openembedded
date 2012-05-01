@@ -47,6 +47,7 @@ OPTIONAL_PACKAGES += " \
 			ntfs-3g \
 			mpd \
 			parted \
+			dosfstools \
 			"
 
 export IMAGE_BASENAME = "openpli"
