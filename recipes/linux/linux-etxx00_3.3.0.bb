@@ -1,7 +1,7 @@
 DESCRIPTION = "Linux kernel for ${MACHINE}"
 LICENSE = "GPL"
 
-MACHINE_KERNEL_PR_append = ".7"
+MACHINE_KERNEL_PR_append = ".8"
 
 DEPENDS = "mtd-minimal-nand-utils"
 RDEPENDS_kernel-image = "mtd-minimal-nand-utils"
@@ -31,6 +31,7 @@ SRC_URI += "http://www.et-view.com/download/linux-${PV}.tar.gz \
 	file://it913x-switch-off-PID-filter-by-default.patch \
 	file://tda10071-BUGFIX-delivery-system.patch \
 	file://dvb-usb-dib0700-disable-sleep.patch \
+	file://dvb_usb_disable_rc_polling.patch \
 	"
 
 SRC_URI_append_et5x00 = " file://disable_early_fb.patch"
