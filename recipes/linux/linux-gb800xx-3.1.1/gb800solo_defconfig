@@ -2534,7 +2534,7 @@ CONFIG_HAVE_ARCH_KGDB=y
 # CONFIG_TEST_KSTRTOX is not set
 CONFIG_EARLY_PRINTK=y
 CONFIG_CMDLINE_BOOL=y
-CONFIG_CMDLINE="root=/dev/mtdblock0 rootfstype=jffs2 rw bmem=150M@106M"
+CONFIG_CMDLINE="root=/dev/mtdblock0 rootfstype=jffs2 rw bmem=106M"
 CONFIG_CMDLINE_OVERRIDE=y
 # CONFIG_DEBUG_STACKOVERFLOW is not set
 # CONFIG_RUNTIME_DEBUG is not set
