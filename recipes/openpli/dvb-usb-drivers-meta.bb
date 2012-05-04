@@ -9,6 +9,7 @@ DEPENDS = "\
 	enigma2-plugin-drivers-dvb-usb-as102 \
 	enigma2-plugin-drivers-dvb-usb-it913x \
 	enigma2-plugin-drivers-dvb-usb-pctv452e \
+	enigma2-plugin-drivers-dvb-usb-dtt200u \
 	"
 
 PR = "r0"
