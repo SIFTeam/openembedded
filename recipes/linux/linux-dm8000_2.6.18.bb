@@ -6,7 +6,7 @@ RDEPENDS_${PN} += "dreambox-secondstage (>=83)"
 
 SRC_URI += "\
 	file://linux-2.6.18-disable-unneeded-uarts.patch \
-	file://linux-2.6.18-use-full-flash.patch;patch=1 \
+	file://linux-2.6.18-use-full-flash.patch \
 "
 
 pkg_preinst_kernel-image_append_dm8000 () {

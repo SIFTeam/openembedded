@@ -5,7 +5,7 @@ LOAD_MODULE=modprobe
 
 if [ -e /sbin/depmod -a ! -f /lib/modules/`uname -r`/modules.dep ]; then
 	[ "$VERBOSE" != no ] && echo "Calculating module dependencies ..."
-	depmod -Ae
+	depmod -A
 fi
 
 if [ -f /proc/modules ]; then
