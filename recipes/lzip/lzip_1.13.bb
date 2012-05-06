@@ -4,8 +4,8 @@ LICENSE = "GPLv3+"
 PR = "1"
 
 SRC_URI = "${SAVANNAH_MIRROR}/releases/lzip/lzip-${PV}.tar.gz"
-SRC_URI[md5sum] = "ba9d0a705e47bcd2b73145d238aa7b58"
-SRC_URI[sha256sum] = "c3cfd2396733f6817b25a2bd1b019447ac2fa692f6fe5dc477631a9dbb31b00b"
+SRC_URI[md5sum] = "2f401e995c36cca05bd1805aa9c28231"
+SRC_URI[sha256sum] = "c73d36c0a926b71d484eacc192262a1d209674e3f903016f2c74a2bcbc5c28ac"
 
 CONFIGUREOPTS = "\
     '--srcdir=${S}' \

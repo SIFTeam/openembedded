@@ -5,8 +5,8 @@ SECTION = "libs"
 PRIORITY = "optional"
 
 SRC_URI = "http://www.oberhumer.com/opensource/lzo/download/lzo-${PV}.tar.gz"
-SRC_URI[md5sum] = "0c3d078c2e8ea5a88971089a2f02a726"
-SRC_URI[sha256sum] = "8b1b0da8f757b9ac318e1c15a0eac8bdb56ca902a2dd25beda06c0f265f22591"
+SRC_URI[md5sum] = "95380bd4081f85ef08c5209f4107e9f8"
+SRC_URI[sha256sum] = "ff79e6f836d62d3f86ef6ce893ed65d07e638ef4d3cb952963471b4234d43e73"
 
 S = "${WORKDIR}/lzo-${PV}"
 

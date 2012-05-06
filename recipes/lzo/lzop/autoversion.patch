@@ -1,0 +1,13 @@
+Index: lzop-1.03/configure.ac
+===================================================================
+--- lzop-1.03.orig/configure.ac
++++ lzop-1.03/configure.ac
+@@ -36,7 +36,7 @@ All Rights Reserved.
+ This configure script may be copied, distributed and modified under the
+ terms of the GNU General Public License; see COPYING for more details.])
+ 
+-AC_PREREQ(2.67)
++AC_PREREQ(2.65)
+ AC_INIT([lzop],[1.03],[lzop-bugs@oberhumer.com],[lzop],[http://www.oberhumer.com/opensource/lzop/])
+ AC_MSG_NOTICE([Configuring $PACKAGE_NAME $PACKAGE_VERSION])
+ AC_CONFIG_SRCDIR(src/lzop.c)
