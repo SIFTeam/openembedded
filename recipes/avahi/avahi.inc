@@ -5,14 +5,15 @@ SECTION = "network"
 PRIORITY = "optional"
 LICENSE = "GPL"
 DEPENDS = "libcap2 python-native expat virtual/libintl libdaemon dbus glib-2.0"
-INC_PR = "r13"
+INC_PR = "r14"
 # uclibc has no nss
 RRECOMMENDS_avahi-daemon_append_libc-glibc = "libnss-mdns"
 RDEPENDS_avahi-daemon += "sysvinit-pidof update-rc.d"
 RDEPENDS_avahi-autoipd += "update-rc.d"
 
 SRC_URI = "http://avahi.org/download/avahi-${PV}.tar.gz \
-	   file://00avahi-autoipd file://99avahi-autoipd"
+	   file://00avahi-autoipd file://99avahi-autoipd \
+	   file://http.service"
 
 inherit autotools pkgconfig update-rc.d python-dir
 # handle update-rc.d RDEPENDS_${PN} manually, we don't need it on
@@ -21,7 +22,7 @@ inherit autotools pkgconfig update-rc.d python-dir
 # TODO: build and enable all the extra stuff avahi offers
 EXTRA_OECONF = "--with-distro=debian  --disable-stack-protector --disable-nls --disable-gdbm ${AVAHI_GTK} --disable-mono --disable-monodoc --disable-qt3 --disable-qt4 ${AVAHI_PYTHON}"
 AVAHI_PYTHON ?= "--enable-python"
-AVAHI_GTK ?= "-disable-gtk"
+AVAHI_GTK ?= "--disable-gtk"
 
 LDFLAGS_append_libc-uclibc = " -lintl"
 LDFLAGS_append_uclinux-uclibc = " -lintl"
@@ -84,7 +85,7 @@ pkg_postinst_avahi-daemon () {
 
 	DBUSPID="/var/run/dbus/pid"
 	if [ -f $DBUSPID ]; then
-		if ps `cat $DBUSPID` > /dev/null; then
+		if ( ps | grep `cat $DBUSPID` | grep dbus ) > /dev/null ; then
 			/etc/init.d/dbus-1 force-reload
 		fi
 	fi
@@ -114,5 +115,7 @@ do_install() {
 	install -d ${D}${sysconfdir}/udhcpc.d
 	install ${WORKDIR}/00avahi-autoipd ${D}${sysconfdir}/udhcpc.d
 	install ${WORKDIR}/99avahi-autoipd ${D}${sysconfdir}/udhcpc.d
+	install -d ${D}${sysconfdir}/avahi/services
+	install -m 0644 ${WORKDIR}/http.service ${D}${sysconfdir}/avahi/services
 }
 
