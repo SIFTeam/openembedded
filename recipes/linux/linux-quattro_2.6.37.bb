@@ -35,7 +35,7 @@ kernel_do_install_append() {
 
 pkg_postinst_kernel-image () {
 	if [ -d /proc/stb ] ; then
-		flash_eraseall -j /dev/mtd2
+		flash_eraseall -j /dev/mtd2 0 32
 		nandwrite -p /dev/mtd2 /${KERNEL_IMAGEDEST}/${KERNEL_IMAGETYPE}.gz
 	fi
 	rm -f /${KERNEL_IMAGEDEST}/${KERNEL_IMAGETYPE}.gz
