@@ -13,7 +13,8 @@ PACKAGE_ARCH = "${@base_contains('COMBINED_FEATURES', 'madwifi', '${MACHINE_ARCH
 SRC_URI = "http://hostap.epitest.fi/releases/wpa_supplicant-${PV}.tar.gz \
 	file://defconfig-gnutls \
 	file://ifupdown.sh \
-	file://functions.sh"
+	file://functions.sh \
+	file://gpg-error.diff"
 
 SRC_URI_append_sifteam = " \
 	file://driver-zydas.patch \

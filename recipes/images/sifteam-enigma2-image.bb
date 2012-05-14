@@ -15,6 +15,7 @@ WIFI_DRIVERS = " \
 					rtl8192cu \
 					firmware-carl9170 \
 					firmware-htc9271 \
+					firmware-htc7010 \
 					firmware-rt2870 \
 					", d)} \
 				firmware-rt73 \

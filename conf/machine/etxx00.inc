@@ -13,6 +13,7 @@ module_autoload_cdfs = "cdfs"
 
 # WIFI modules
 module_autoload_ath9k_htc = "ath9k_htc"
+module_autoload_ath9k = "ath9k"
 module_autoload_carl9170 = "carl9170"
 module_autoload_prism2_usb = "prism2_usb"
 module_autoload_rt73usb = "rt73usb"
