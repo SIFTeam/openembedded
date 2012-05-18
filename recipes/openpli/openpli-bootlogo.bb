@@ -7,7 +7,7 @@ MAINTAINER = "PLi team"
 RDEPENDS_${PN} += "virtual/showiframe"
 
 PV = "2.1"
-PR = "r1"
+PR = "r2"
 
 S = "${WORKDIR}/"
 
@@ -28,7 +28,7 @@ SRC_URI = " \
 	"
 
 BINARY_VERSION = "1"
-BINARY_VERSION_mipsel = "8"
+BINARY_VERSION_mipsel = "9"
 
 IMAGES_VERSION = "1"
 
