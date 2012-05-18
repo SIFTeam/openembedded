@@ -8,11 +8,11 @@ SRC_URI = "http://archive.vuplus.com/download/utils/vuplus-blindscan-utils-${MAC
 PROVIDES += "virtual/blindscan-dvbs"
 RPROVIDES_${PN} += "virtual/blindscan-dvbs"
 
-RREPLACES += "vuplus-blindscan-utils"
-RCONFLICTS += "vuplus-blindscan-utils"
+RREPLACES_${PN} += "vuplus-blindscan-utils"
+RCONFLICTS_${PN} += "vuplus-blindscan-utils"
 
 PV = "2.0"
-PR = "r1"
+PR = "r2"
 
 S = "${WORKDIR}/blindscan-utils"
 
