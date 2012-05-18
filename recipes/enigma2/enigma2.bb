@@ -26,6 +26,7 @@ RDEPENDS_${PN} = "python-codecs python-core python-lang python-re python-threadi
 # DVD playback is integrated, we need the libraries
 RDEPENDS_${PN} += "libdreamdvd"
 RRECOMMENDS_${PN} = "libdvdcss"
+RDEPENDS_${PN} += "${@base_contains("MACHINE_FEATURES", "blindscan-dvbc", "virtual/blindscan-dvbc" , "", d)}"
 
 # PLi-HD is the default skin for HD hardware, and Magic for SD hardware
 DEFAULTSKIN = "${@base_contains("MACHINE_FEATURES", "hdtv", \
@@ -83,7 +84,7 @@ inherit gitpkgv
 
 PV = "2.7+git${SRCPV}"
 PKGV = "2.7+git${GITPKGV}"
-PR = "r34"
+PR = "r36"
 
 ENIGMA2_BRANCH ?= "master"
 SRC_URI = "git://openpli.git.sourceforge.net/gitroot/openpli/enigma2;protocol=git;branch=${ENIGMA2_BRANCH}"

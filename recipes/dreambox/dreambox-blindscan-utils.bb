@@ -7,11 +7,11 @@ RDEPENDS_${PN} = "ncurses"
 PV = "1.0"
 PV_dm600pvr = "1.1"
 PV_mipsel = "1.4"
-PR = "r0"
+PR = "r1"
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 
-PROVIDES += "virtual/blindscanutils"
-RPROVIDES_${PN} += "virtual/blindscanutils"
+PROVIDES += "virtual/blindscan-dvbc"
+RPROVIDES_${PN} += "virtual/blindscan-dvbc"
 
 SRC_URI = "http://sources.dreamboxupdate.com/download/opendreambox/dreambox-blindscan-utils-${MACHINE}-${PV}.tar.bz2"
 

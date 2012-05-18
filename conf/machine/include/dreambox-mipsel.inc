@@ -12,6 +12,7 @@ PREFERRED_VERSION_mtd-utils = "1.1.0"
 PREFERRED_VERSION_madwifi-ng = "r3314-20080131"
 
 PREFERRED_PROVIDER_virtual/showiframe = "dreambox-dvb-tools-v3"
+PREFERRED_PROVIDER_virtual/blindscan-dvbc = "dreambox-blindscan-utils"
 
 OLDEST_KERNEL = "2.6.12"
 
