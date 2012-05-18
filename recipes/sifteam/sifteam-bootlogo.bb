@@ -26,6 +26,8 @@ SRC_URI = " \
 	file://bootlogo.sh \
 	"
 
+
+
 BINARY_VERSION = "1"
 BINARY_VERSION_mipsel = "8"
 
@@ -35,6 +37,7 @@ SRC_URI += "${@base_contains("MACHINE_FEATURES", "dreambox", "http://sources.dre
 
 MVI = "${SWITCHOFFMVI}"
 MVISYMLINKS = "bootlogo_wait backdrop"
+
 
 do_install() {
 	install -d ${D}/boot

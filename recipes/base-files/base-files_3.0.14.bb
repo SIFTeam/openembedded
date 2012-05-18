@@ -101,8 +101,13 @@ do_install () {
                 install -m 644 ${WORKDIR}/issue*  ${D}${sysconfdir}  
 
                 if [ -n "${DISTRO_NAME}" ]; then
-        		echo -n "${DISTRO_NAME} " >> ${D}${sysconfdir}/issue
-        		echo -n "${DISTRO_NAME} " >> ${D}${sysconfdir}/issue.net
+			if [ "${MACHINE}" != "azboxme" ] && [ "${MACHINE}" != "azboxminime" ]; then
+        			echo -n "${DISTRO_NAME} " >> ${D}${sysconfdir}/issue
+	        		echo -n "${DISTRO_NAME} " >> ${D}${sysconfdir}/issue.net
+			else
+				echo -n "based on ${DISTRO_NAME} " >> ${D}${sysconfdir}/issue
+	        		echo -n "based on ${DISTRO_NAME} " >> ${D}${sysconfdir}/issue.net
+			fi
         		if [ -n "${DISTRO_VERSION}" ]; then
         			echo -n "${DISTRO_VERSION} " >> ${D}${sysconfdir}/issue
         			echo -n "${DISTRO_VERSION} " >> ${D}${sysconfdir}/issue.net

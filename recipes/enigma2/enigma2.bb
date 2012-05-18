@@ -89,9 +89,31 @@ PKGV = "2.7+git${GITPKGV}"
 PR = "r49"
 
 SRC_URI = "git://github.com/SIFTeam/enigma2.git;protocol=git file://swap"
-#SRC_URI = "git://${HOME}/sifteam/enigma2;protocol=file file://swap"
 SRC_URI_azboxhd = "git://github.com/SIFTeam/enigma2.git;protocol=git;branch=azbox file://swap"
-SRC_URI_azboxme = "git://github.com/SIFTeam/enigma2.git;protocol=git;branch=azbox file://swap"
+
+
+SRC_URI_append_azboxme = " \
+ 
+ file://azboxe2.patch \
+ file://rc.png \
+ file://rcold.png \
+ file://rcpositions.xml \
+ file://input_rcnew.png  \
+ file://input_rcnew-configured.png \
+ file://input_rcold.png  \
+ file://input_rcold-configured.png  \
+"
+
+SRC_URI_append_azboxminime = " \
+ file://azboxe2.patch \
+ file://rc.png \
+ file://rcold.png \
+ file://rcpositions.xml \
+ file://input_rcnew.png  \
+ file://input_rcnew-configured.png \
+ file://input_rcold.png  \
+ file://input_rcold-configured.png  \
+"
 
 S = "${WORKDIR}/git"
 
@@ -159,6 +181,9 @@ FILES_${PN}-src = "\
 	"
 RADIOMVI = "${@base_contains("MACHINE_FEATURES", "hdtv", "radio-hd.mvi" , "radio-sd.mvi", d)}"
 
+
+
+
 RCONFLICTS_${PN} = "dreambox-keymaps usbtunerhelper"
 RREPLACES_${PN} = "dreambox-keymaps usbtunerhelper"
 
@@ -168,6 +193,23 @@ do_sifteam_preinstall() {
 }
 
 addtask sifteam_preinstall after do_compile before do_install
+do_openpli_preinstall_azboxme() {
+ 	install -m 0644 ${WORKDIR}/azboxradiobootlogo.mvi ${S}/data/radio.mvi
+	install -d ${D}${sysconfdir}/enigma2
+ 	install -m 0644 ${WORKDIR}/rc.png ${S}/data/skin_default/
+	install -m 0644 ${WORKDIR}/rcold.png ${S}/data/skin_default/
+ 	install -m 0644 ${WORKDIR}/rcpositions.xml ${S}/data
+	install -m 0644 ${WORKDIR}/input_rcnew.png  ${S}/data/skin_default/icons
+	install -m 0644 ${WORKDIR}/input_rcnew-configured.png  ${S}/data/skin_default/icons
+	install -m 0644 ${WORKDIR}/input_rcold.png  ${S}/data/skin_default/icons
+	install -m 0644 ${WORKDIR}/input_rcold-configured.png  ${S}/data/skin_default/icons
+}
+
+do_openpli_preinstall_azboxminime() {
+	do_openpli_preinstall_azboxme
+}
+
+addtask openpli_preinstall after do_compile before do_install
 
 do_install_append() {
 	install -d ${D}/usr/share/keymaps
@@ -188,6 +230,8 @@ do_install_append() {
 	
 	cp ${S}/panel.conf ${D}/${datadir}/enigma2/defaults/
 }
+
+
 
 # On the 7025, put the enigma files into a zip archive
 do_install_append_dm7025() {

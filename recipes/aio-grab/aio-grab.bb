@@ -8,15 +8,12 @@ inherit gitpkgv
 
 PV = "1.0+git${SRCPV}"
 PKGV = "1.0+git${GITPKGV}"
-PR = "r4"
+PR = "r5"
 
 SRC_URI = "git://openpli.git.sourceforge.net/gitroot/openpli/aio-grab;protocol=git"
-SRC_URI_azboxhd = "git://openpli.git.sourceforge.net/gitroot/openpli/aio-grab;rev=d024e177217f0102e9c3c57881c2cac8ea2d7016;protocol=git \
-		   file://azbox_support.patch"
-SRC_URI_azboxme = "git://openpli.git.sourceforge.net/gitroot/openpli/aio-grab;rev=d024e177217f0102e9c3c57881c2cac8ea2d7016;protocol=git \
-		   file://azbox_support.patch"
-
-
+SRC_URI_append_azboxme = " file://azbox.patch"
+SRC_URI_append_azboxminime = " file://azbox.patch"
+SRC_URI_append_azboxhd = " file://azbox.patch"
 
 S = "${WORKDIR}/git"
 
