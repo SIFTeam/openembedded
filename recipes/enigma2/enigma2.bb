@@ -193,8 +193,8 @@ do_sifteam_preinstall() {
 }
 
 addtask sifteam_preinstall after do_compile before do_install
-do_openpli_preinstall_azboxme() {
- 	install -m 0644 ${WORKDIR}/azboxradiobootlogo.mvi ${S}/data/radio.mvi
+do_sifteam_preinstall_azboxme() {
+	ln -f ${S}/data/${RADIOMVI} ${S}/data/radio.mvi
 	install -d ${D}${sysconfdir}/enigma2
  	install -m 0644 ${WORKDIR}/rc.png ${S}/data/skin_default/
 	install -m 0644 ${WORKDIR}/rcold.png ${S}/data/skin_default/
@@ -205,7 +205,7 @@ do_openpli_preinstall_azboxme() {
 	install -m 0644 ${WORKDIR}/input_rcold-configured.png  ${S}/data/skin_default/icons
 }
 
-do_openpli_preinstall_azboxminime() {
+do_sifteam_preinstall_azboxminime() {
 	do_openpli_preinstall_azboxme
 }
 

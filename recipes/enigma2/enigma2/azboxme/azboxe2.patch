@@ -107,17 +107,5 @@ diff -Nuar a/lib/python/Tools/HardwareInfo.py b/lib/python/Tools/HardwareInfo.py
  		return HardwareInfo.device_version
  
  	def has_hdmi(self):
--		return (HardwareInfo.device_name == 'dm7020hd' or HardwareInfo.device_name == 'dm800se' or HardwareInfo.device_name == 'dm500hd' or (HardwareInfo.device_name == 'dm8000' and HardwareInfo.device_version != None))
+-		return (HardwareInfo.device_name == 'dm800se' or HardwareInfo.device_name == 'dm500hd' or (HardwareInfo.device_name == 'dm8000' and HardwareInfo.device_version != None))
 +		return (HardwareInfo.device_name == 'me' or HardwareInfo.device_name == 'minime' or HardwareInfo.device_name == 'dm7020hd' or HardwareInfo.device_name == 'dm800se' or HardwareInfo.device_name == 'dm500hd' or (HardwareInfo.device_name == 'dm8000' and HardwareInfo.device_version != None))
-diff -Nuar a/main/bsod.cpp b/main/bsod.cpp
---- a/main/bsod.cpp	2012-05-15 20:09:11.000000000 +0200
-+++ b/main/bsod.cpp	2012-05-16 13:37:36.000000000 +0200
-@@ -18,7 +18,7 @@
- 
- /************************************************/
- 
--#define CRASH_EMAILADDR "forum at www.openpli.org"
-+#define CRASH_EMAILADDR "forum at www.openazbox.info"
- #define INFOFILE "/maintainer.info"
- 
- #define RINGBUFFER_SIZE 16384
