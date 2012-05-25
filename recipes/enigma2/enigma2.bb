@@ -206,7 +206,7 @@ do_sifteam_preinstall_azboxme() {
 }
 
 do_sifteam_preinstall_azboxminime() {
-	do_openpli_preinstall_azboxme
+	do_sifteam_preinstall_azboxme
 }
 
 addtask openpli_preinstall after do_compile before do_install
