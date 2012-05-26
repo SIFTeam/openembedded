@@ -1,13 +1,13 @@
 DESCRIPTION = "Linux kernel for Gigablue ${MACHINE}"
 LICENSE = "GPL"
-SRCDATE = "20120420"
+SRCDATE = "20120526"
 
 MACHINE_KERNEL_PR_append = ".4"
 
 DEPENDS = "mtd-utils"
 RDEPENDS_kernel-image = "mtd-utils"
 
-SRC_URI = "file://linux-${PV}-gb800xx-${SRCDATE}.tar.gz \
+SRC_URI = "http://archiv.openmips.com/linux-3.1.1-gb800xx-${PV}_${SRCDATE}.tgz \
 		file://${MACHINE}_defconfig \
 		file://nor-maps-gb800solo.patch \
         file://iosched-slice_idle-1.patch \
