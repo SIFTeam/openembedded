@@ -6,10 +6,10 @@ LICENSE = "proprietary"
 KV = "2.6.37-2.8"
 PV = "${KV}"
 
-SRCDATE = "20120511"
+SRCDATE = "20120526"
 
 RDEPENDS = "kernel (${KV})"
-PR = "r05-${SRCDATE}"
+PR = "r06-${SRCDATE}"
 
 MACHINE_KERNEL_PR_append = ".${SRCDATE}"
 

@@ -1,8 +1,8 @@
 DESCRIPTION = "Linux kernel for Gigablue HD ${MACHINE}"
 LICENSE = "GPL"
-SRCDATE = "20120511"
+SRCDATE = "20120526"
 
-MACHINE_KERNEL_PR_append = ".2"
+MACHINE_KERNEL_PR_append = ".3"
 
 DEPENDS = "mtd-utils"
 RDEPENDS_kernel-image = "mtd-utils"
