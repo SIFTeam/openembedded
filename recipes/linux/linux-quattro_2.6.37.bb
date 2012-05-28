@@ -7,9 +7,9 @@ MACHINE_KERNEL_PR_append = ".3"
 DEPENDS = "mtd-utils"
 RDEPENDS_kernel-image = "mtd-utils"
 
-SRC_URI += "http://archiv.openmips.com/gigablue-quattro-linux-${PV}_${SRCDATE}.tgz \
+SRC_URI = "http://archiv.openmips.com/gigablue-quattro-linux-${PV}_${SRCDATE}.tgz \
 		file://${MACHINE}_defconfig"
-
+		
 S = "${WORKDIR}/linux-${PV}"
 
 inherit kernel
