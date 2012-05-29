@@ -86,7 +86,7 @@ inherit gitpkgv
 
 PV = "2.7+git${SRCPV}"
 PKGV = "2.7+git${GITPKGV}"
-PR = "r49"
+PR = "r50"
 
 SRC_URI = "git://github.com/SIFTeam/enigma2.git;protocol=git file://swap"
 SRC_URI_azboxhd = "git://github.com/SIFTeam/enigma2.git;protocol=git;branch=azbox file://swap"
@@ -192,7 +192,6 @@ do_sifteam_preinstall() {
 	install -d ${D}${sysconfdir}/enigma2
 }
 
-addtask sifteam_preinstall after do_compile before do_install
 do_sifteam_preinstall_azboxme() {
 	ln -f ${S}/data/${RADIOMVI} ${S}/data/radio.mvi
 	install -d ${D}${sysconfdir}/enigma2
@@ -209,7 +208,7 @@ do_sifteam_preinstall_azboxminime() {
 	do_sifteam_preinstall_azboxme
 }
 
-addtask openpli_preinstall after do_compile before do_install
+addtask sifteam_preinstall after do_compile before do_install
 
 do_install_append() {
 	install -d ${D}/usr/share/keymaps
