@@ -6,9 +6,11 @@ LICENSE = "proprietary"
 PV = "3.1.1"
 
 SRCDATE = "20120531"
+RCONFLICTS_${PN} = "gb800se-dvb-modules"
+RREPLACES_${PN} = "gb800se-dvb-modules"
 
 RDEPENDS = "kernel (${PV})"
-PR = "r03-${SRCDATE}"
+PR = "r08-${SRCDATE}"
 
 MACHINE_KERNEL_PR_append = ".${SRCDATE}"
 
