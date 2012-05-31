@@ -5,7 +5,7 @@ LICENSE = "proprietary"
 
 PV = "3.1.1"
 
-SRCDATE = "20120526"
+SRCDATE = "20120531"
 
 RDEPENDS = "kernel (${PV})"
 PR = "r03-${SRCDATE}"
@@ -20,7 +20,7 @@ do_compile() {
 do_strip_modules() {
 }
 
-SRC_URI = "file://gigablue-gb800xx-drivers-${PV}-${SRCDATE}.tar.gz"
+SRC_URI = "file://gigablue-gb800xx-drivers-${PV}-${SRCDATE}.zip"
 
 S = "${WORKDIR}"
 
