@@ -22,7 +22,7 @@ SRCREV_pn-gst-plugin-subsink ?= "${AUTOREV}"
 SRCREV_pn-librtmp ?= "${AUTOREV}"
 
 # svn
-SRCREV_pn-tuxbox-common ?= "259"
+SRCREV_pn-tuxbox-common ?= "${AUTOREV}"
 SRCREV_pn-tuxbox-stream ?= "${AUTOREV}"
 SRCREV_pn-tuxbox-plugins-enigma ?= "${AUTOREV}"
 SRCREV_pn-tuxterm ?= "${AUTOREV}"
