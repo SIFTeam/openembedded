@@ -5,7 +5,7 @@ LICENSE = "proprietary"
 
 PV = "3.1.1"
 
-SRCDATE = "20120531"
+SRCDATE = "20120602"
 RCONFLICTS_${PN} = "gb800se-dvb-modules"
 RREPLACES_${PN} = "gb800se-dvb-modules"
 
