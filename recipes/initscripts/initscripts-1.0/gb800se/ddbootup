@@ -20,7 +20,3 @@ mknod /dev/input/mouse0 c 13 32
 mknod /dev/i2c/0 c 89 0
 
 touch /dev/dbox/lcd0
-
-#ln -s /dev/misc!vtuner0 /dev/misc/vtuner0
-#ln -s /dev/misc!vtuner1 /dev/misc/vtuner1
-
