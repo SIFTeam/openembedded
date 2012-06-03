@@ -1,8 +1,17 @@
-PV = "${SRCDATE}"
-PR = "r0"
+PV = "1.0+git${SRCPV}"
+PKGV = "1.0+git${GITPKGV}"
+PR = "r1"
 
-SRC_URI = "http://downloads.pli-images.org/settings/${SETTINGS_FILENAME}_${SRCDATE}.tar.gz"
+SRC_URI = "git://github.com/OpenPLi/HenksatSettings.git;protocol=git"
+S = "${WORKDIR}/git"
 
-S = "${WORKDIR}"
+inherit gitpkgv
 
-include e2settings.inc
+FILES_${PN} = "/etc/enigma2/"
+
+do_install () {
+	install -d ${D}/etc/enigma2
+	cp -r ${S}/${SETTINGS_FILENAME}/* ${D}/etc/enigma2
+}
+
+PACKAGE_ARCH = "all"
