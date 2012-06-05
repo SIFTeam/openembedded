@@ -33,7 +33,7 @@ SRC_URI_append_gb800ue = " \
 					file://splash.bin \
 					file://lcdsplash.bin \
 					"
-SRC_URI_append_quattro = " \
+SRC_URI_append_gbquad = " \
 					file://bootlogo.mvi \
 					file://splash.bin \
 					file://lcdsplash.bin \
@@ -72,7 +72,7 @@ do_install_append_gb800ue() {
 	install -m 0755 ${S}/splash.bin ${DEPLOY_DIR_IMAGE}/splash.bin
 	install -m 0755 ${S}/lcdsplash.bin ${DEPLOY_DIR_IMAGE}/lcdsplash.bin
 }
-do_install_append_quattro() {
+do_install_append_gbquad() {
     install -d ${DEPLOY_DIR_IMAGE}
 	install -m 0755 ${S}/splash.bin ${DEPLOY_DIR_IMAGE}/splash.bin
 	install -m 0755 ${S}/lcdsplash.bin ${DEPLOY_DIR_IMAGE}/lcdsplash.bin

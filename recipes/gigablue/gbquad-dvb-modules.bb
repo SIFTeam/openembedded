@@ -1,4 +1,4 @@
-DESCRIPTION = "Hardware drivers for Gigablue HD Quattro"
+DESCRIPTION = "Hardware drivers for Gigablue HD Quad"
 SECTION = "base"
 PRIORITY = "required"
 LICENSE = "proprietary"
