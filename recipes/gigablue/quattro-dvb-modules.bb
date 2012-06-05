@@ -6,7 +6,7 @@ LICENSE = "proprietary"
 KV = "2.6.37-2.8"
 PV = "${KV}"
 
-SRCDATE = "20120526"
+SRCDATE = "20120604"
 
 RDEPENDS = "kernel (${KV})"
 PR = "r06-${SRCDATE}"
