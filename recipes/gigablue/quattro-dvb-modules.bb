@@ -4,7 +4,7 @@ PRIORITY = "required"
 LICENSE = "proprietary"
 
 KV = "2.6.37-2.8"
-PV = "${KV}"
+PV = "2.6.37"
 
 SRCDATE = "20120604"
 
@@ -20,7 +20,7 @@ do_compile() {
 
 PACKAGE_STRIP = "no"
 
-SRC_URI = "file://quattro-dvb-modules-${SRCDATE}.tar.gz"
+SRC_URI = "file://gigablue-quad-drivers-${PV}-${SRCDATE}.zip"
 
 S = "${WORKDIR}"
 
