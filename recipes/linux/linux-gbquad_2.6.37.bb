@@ -1,13 +1,13 @@
 DESCRIPTION = "Linux kernel for Gigablue HD ${MACHINE}"
 LICENSE = "GPL"
-SRCDATE = "20120529"
+SRCDATE = "20120611"
 
 MACHINE_KERNEL_PR_append = ".6"
 
 DEPENDS = "mtd-utils"
 RDEPENDS_kernel-image = "mtd-utils"
 
-SRC_URI = "http://archiv.openmips.com/gigablue-quad-linux-${PV}_${SRCDATE}.tgz \
+SRC_URI = "http://archiv.openmips.com/gigablue-quad-linux-${PV}_${SRCDATE}.tar.bz2 \
 		file://${MACHINE}_defconfig"
 		
 S = "${WORKDIR}/linux-${PV}"
