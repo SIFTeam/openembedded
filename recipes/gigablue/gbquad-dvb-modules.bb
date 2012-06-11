@@ -3,10 +3,10 @@ SECTION = "base"
 PRIORITY = "required"
 LICENSE = "proprietary"
 
-KV = "2.6.37-2.8"
+KV = "2.6.37-3.1"
 PV = "2.6.37"
 
-SRCDATE = "20120604"
+SRCDATE = "20120611"
 
 RDEPENDS = "kernel (${KV})"
 PR = "r06-${SRCDATE}"
