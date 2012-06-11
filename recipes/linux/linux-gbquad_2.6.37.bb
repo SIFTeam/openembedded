@@ -10,7 +10,7 @@ RDEPENDS_kernel-image = "mtd-utils"
 SRC_URI = "http://archiv.openmips.com/gigablue-quad-linux-${PV}_${SRCDATE}.tar.bz2 \
 		file://${MACHINE}_defconfig"
 		
-S = "${WORKDIR}/linux-${PV}"
+S = "${WORKDIR}/stblinux-${PV}"
 
 inherit kernel
 
