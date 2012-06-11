@@ -1,8 +1,19 @@
-PV = "${SRCDATE}"
-PR = "r0"
+LICENSE = "CLOSED"
 
-SRC_URI = "http://www.dse.nl/~hro/${SETTINGS_FILENAME}_${PV}.tar.gz"
+PV = "1.0+git${SRCPV}"
+PKGV = "1.0+git${GITPKGV}"
+PR = "r1"
 
-S = "${WORKDIR}"
+SRC_URI = "git://github.com/haroo/HansSettings.git;protocol=git"
+S = "${WORKDIR}/git"
 
-include e2settings.inc
+inherit gitpkgv
+
+FILES_${PN} = "/etc/enigma2/"
+
+do_install () {
+	install -d ${D}/etc/enigma2
+	cp -r ${S}/${SETTINGS_FILENAME}/* ${D}/etc/enigma2
+}
+
+PACKAGE_ARCH = "all"
