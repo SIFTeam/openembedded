@@ -6,7 +6,7 @@ MAINTAINER = "SifTeam"
 
 RDEPENDS_${PN} += "virtual/showiframe"
 
-PV = "2.4"
+PV = "2.5"
 PR = "r0"
 
 S = "${WORKDIR}/"
@@ -29,7 +29,8 @@ SRC_URI = " \
 
 
 BINARY_VERSION = "1"
-BINARY_VERSION_mipsel = "8"
+BINARY_VERSION_mipsel = "9"
+BINARY_VERSION_dm7025 = "8"
 
 IMAGES_VERSION = "1"
 

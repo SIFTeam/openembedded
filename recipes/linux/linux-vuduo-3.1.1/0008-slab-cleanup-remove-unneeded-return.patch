@@ -1,0 +1,39 @@
+From 42c8c99cd891184bf4bcf6f09d62c54e42599453 Mon Sep 17 00:00:00 2001
+From: Zhao Jin <cronozhj@gmail.com>
+Date: Sat, 27 Aug 2011 00:26:17 +0800
+Subject: [PATCH 8/9] slab, cleanup: remove unneeded return
+
+The procedure ends right after the if-statement, so remove ``return''.
+Also move the last common statement outside.
+
+Signed-off-by: Zhao Jin <cronozhj@gmail.com>
+Acked-by: David Rientjes <rientjes@google.com>
+Acked-by: Christoph Lameter <cl@linux.com>
+Signed-off-by: Pekka Enberg <penberg@kernel.org>
+---
+ mm/slab.c |    5 ++---
+ 1 files changed, 2 insertions(+), 3 deletions(-)
+
+diff --git a/mm/slab.c b/mm/slab.c
+index f0bd785..806a754 100644
+--- a/mm/slab.c
++++ b/mm/slab.c
+@@ -3693,13 +3693,12 @@ static inline void __cache_free(struct kmem_cache *cachep, void *objp,
+ 
+ 	if (likely(ac->avail < ac->limit)) {
+ 		STATS_INC_FREEHIT(cachep);
+-		ac->entry[ac->avail++] = objp;
+-		return;
+ 	} else {
+ 		STATS_INC_FREEMISS(cachep);
+ 		cache_flusharray(cachep, ac);
+-		ac->entry[ac->avail++] = objp;
+ 	}
++
++	ac->entry[ac->avail++] = objp;
+ }
+ 
+ /**
+-- 
+1.7.2.5
+

@@ -1,7 +1,7 @@
 DESCRIPTION = "Linux kernel for ${MACHINE}"
 LICENSE = "GPL"
 
-MACHINE_KERNEL_PR_append = ".9"
+MACHINE_KERNEL_PR_append = ".10"
 
 DEPENDS = "mtd-minimal-nand-utils"
 RDEPENDS_kernel-image = "mtd-minimal-nand-utils"
@@ -10,6 +10,7 @@ SRC_URI += "http://www.et-view.com/download/linux-${PV}.tar.gz \
 	file://${MACHINE}_defconfig \
 	file://fix-proc-cputype.patch \
 	file://iosched-slice_idle-1.patch \
+	file://0001-Revert-MIPS-Add-fast-get_user_pages.patch \
 	file://add-dmx-source-timecode.patch \
 	file://rtl8712-release-firmware-fix.patch \
 	file://dvb-usb-af9035.patch \

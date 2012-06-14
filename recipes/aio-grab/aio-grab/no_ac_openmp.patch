@@ -1,0 +1,11 @@
+diff --git a/configure.ac b/configure.ac
+index 575f776..715cffe 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -2,6 +2,5 @@ AC_INIT(main.c)
+ AM_INIT_AUTOMAKE(grab,1.0)
+ 
+ AC_PROG_CC
+-AC_OPENMP([CFLAGS="$CFLAGS $OPENMP_CFLAGS"])
+ 
+ AC_OUTPUT(Makefile)

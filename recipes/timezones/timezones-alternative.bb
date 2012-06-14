@@ -4,21 +4,19 @@ PRIORITY = "optional"
 MAINTAINER = "Felix Domke <tmbinc@elitedvb.net>"
 LICENSE = "GPL"
 
-PV = "2008i"
+PV = "2012b"
 PR = "r1"
 
 SRC_URI = "file://zoneinfo.tar.bz2"
 S = "${WORKDIR}/zoneinfo"
 
-FILES_${PN} = "usr/share/zoneinfo/[A-Z]*"
+FILES_${PN} = "usr/share/zoneinfo"
 PACKAGE_ARCH = "all"
 
 do_install() {
 	install -d ${D}/usr/share/zoneinfo/
-	
-	for file in ${S}/*
-	do
-		[ -f $file ] && install -m 644 "$file" ${D}/usr/share/zoneinfo/
-	done;
+
+	cd ${S}
+	cp -a * ${D}/usr/share/zoneinfo/
 	true;
 }
