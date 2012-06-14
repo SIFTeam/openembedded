@@ -29,6 +29,7 @@ RDEPENDS_${PN} = "python-codecs python-core python-lang python-re python-threadi
 # DVD playback is integrated, we need the libraries
 RDEPENDS_${PN} += "libdreamdvd"
 RRECOMMENDS_${PN} = "libdvdcss"
+RDEPENDS_${PN} += "${@base_contains("MACHINE_FEATURES", "blindscan-dvbc", "virtual/blindscan-dvbc" , "", d)}"
 
 # PLi-HD is the default skin for HD hardware, and Magic for SD hardware
 DEFAULTSKIN = "${@base_contains("MACHINE_FEATURES", "hdtv", \
@@ -86,12 +87,34 @@ inherit gitpkgv
 
 PV = "2.7+git${SRCPV}"
 PKGV = "2.7+git${GITPKGV}"
-PR = "r49"
+PR = "r50"
 
 SRC_URI = "git://github.com/SIFTeam/enigma2.git;protocol=git file://swap"
-#SRC_URI = "git://${HOME}/sifteam/enigma2;protocol=file file://swap"
 SRC_URI_azboxhd = "git://github.com/SIFTeam/enigma2.git;protocol=git;branch=azbox file://swap"
-SRC_URI_azboxme = "git://github.com/SIFTeam/enigma2.git;protocol=git;branch=azbox file://swap"
+
+
+SRC_URI_append_azboxme = " \
+ 
+ file://azboxe2.patch \
+ file://rc.png \
+ file://rcold.png \
+ file://rcpositions.xml \
+ file://input_rcnew.png  \
+ file://input_rcnew-configured.png \
+ file://input_rcold.png  \
+ file://input_rcold-configured.png  \
+"
+
+SRC_URI_append_azboxminime = " \
+ file://azboxe2.patch \
+ file://rc.png \
+ file://rcold.png \
+ file://rcpositions.xml \
+ file://input_rcnew.png  \
+ file://input_rcnew-configured.png \
+ file://input_rcold.png  \
+ file://input_rcold-configured.png  \
+"
 
 S = "${WORKDIR}/git"
 
@@ -159,12 +182,31 @@ FILES_${PN}-src = "\
 	"
 RADIOMVI = "${@base_contains("MACHINE_FEATURES", "hdtv", "radio-hd.mvi" , "radio-sd.mvi", d)}"
 
+
+
+
 RCONFLICTS_${PN} = "dreambox-keymaps usbtunerhelper"
 RREPLACES_${PN} = "dreambox-keymaps usbtunerhelper"
 
 do_sifteam_preinstall() {
 	ln -f ${S}/data/${RADIOMVI} ${S}/data/radio.mvi
 	install -d ${D}${sysconfdir}/enigma2
+}
+
+do_sifteam_preinstall_azboxme() {
+	ln -f ${S}/data/${RADIOMVI} ${S}/data/radio.mvi
+	install -d ${D}${sysconfdir}/enigma2
+ 	install -m 0644 ${WORKDIR}/rc.png ${S}/data/skin_default/
+	install -m 0644 ${WORKDIR}/rcold.png ${S}/data/skin_default/
+ 	install -m 0644 ${WORKDIR}/rcpositions.xml ${S}/data
+	install -m 0644 ${WORKDIR}/input_rcnew.png  ${S}/data/skin_default/icons
+	install -m 0644 ${WORKDIR}/input_rcnew-configured.png  ${S}/data/skin_default/icons
+	install -m 0644 ${WORKDIR}/input_rcold.png  ${S}/data/skin_default/icons
+	install -m 0644 ${WORKDIR}/input_rcold-configured.png  ${S}/data/skin_default/icons
+}
+
+do_sifteam_preinstall_azboxminime() {
+	do_sifteam_preinstall_azboxme
 }
 
 addtask sifteam_preinstall after do_compile before do_install
@@ -188,6 +230,8 @@ do_install_append() {
 	
 	cp ${S}/panel.conf ${D}/${datadir}/enigma2/defaults/
 }
+
+
 
 # On the 7025, put the enigma files into a zip archive
 do_install_append_dm7025() {

@@ -15,6 +15,7 @@ WIFI_DRIVERS = " \
 					rtl8192cu \
 					firmware-carl9170 \
 					firmware-htc9271 \
+					firmware-htc7010 \
 					firmware-rt2870 \
 					", d)} \
 				firmware-rt73 \
@@ -98,6 +99,9 @@ ENIGMA2_OPTIONAL = " \
 				sifteam-firmwares \
 				ccid \
 				${@base_contains("MACHINE_FEATURES", "satscan", "enigma2-plugin-systemplugins-satscan" , "", d)} \
+				${@base_contains("MACHINE_FEATURES", "blindscan-dvbc", "virtual/blindscan-dvbc" , "", d)} \
+				${@base_contains("MACHINE_FEATURES", "blindscan-dvbs", "virtual/blindscan-dvbs" , "", d)} \
+				${@base_contains("MACHINE_FEATURES", "blindscan-dvbs", "enigma2-plugin-systemplugins-satscan" , "", d)} \
 				enigma2-plugin-extensions-et-livestream \
 				"
 

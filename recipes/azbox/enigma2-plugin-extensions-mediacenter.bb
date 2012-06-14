@@ -2,9 +2,9 @@ DESCRIPTION = "Mediacenter for azbox"
 
 inherit gitpkgv
 
-SRCDATE = "20120306"
+SRCDATE = "20120526"
 PV = "${SRCDATE}"
-PR = "r0"
+PR = "r1"
 
 SRC_URI = "http://openee.sifteam.eu/azbox/mediacenter-${MACHINE}-${SRCDATE}.zip"
 
@@ -20,8 +20,10 @@ do_install() {
 	install -d ${D}/usr/lib/enigma2/python/Plugins/Extensions/MediaCenter
 	install -d ${D}/usr/lib/enigma2/python/Plugins/Extensions/RTiSubtitleConverter
 	install -d ${D}/usr/lib/enigma2/python/Plugins/Extensions/RTiSubtitler
+	install -d ${D}/usr/lib/enigma2/python/Plugins/Extensions/MediaPlayer
 	cp -rp ${S}/plugin/* ${D}/usr/lib/enigma2/python/Plugins/Extensions/MediaCenter
 	cp -rp ${S}/RTiSubtitleConverter/* ${D}/usr/lib/enigma2/python/Plugins/Extensions/RTiSubtitleConverter
+	cp -rp ${S}/MediaPlayer/* ${D}/usr/lib/enigma2/python/Plugins/Extensions/MediaPlayer
 	cp -rp ${S}/RTiSubtitler/* ${D}/usr/lib/enigma2/python/Plugins/Extensions/RTiSubtitler
 	cp -rp ${S}/bin/* ${D}/usr/bin
 	chmod 755 ${D}/usr/bin/*

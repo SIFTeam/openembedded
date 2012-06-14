@@ -1,7 +1,7 @@
 DESCRIPTION = "Linux kernel for ${MACHINE}"
 LICENSE = "GPL"
 
-MACHINE_KERNEL_PR_append = ".8"
+MACHINE_KERNEL_PR_append = ".10"
 
 DEPENDS = "mtd-minimal-nand-utils"
 RDEPENDS_kernel-image = "mtd-minimal-nand-utils"
@@ -10,6 +10,7 @@ SRC_URI += "http://www.et-view.com/download/linux-${PV}.tar.gz \
 	file://${MACHINE}_defconfig \
 	file://fix-proc-cputype.patch \
 	file://iosched-slice_idle-1.patch \
+	file://0001-Revert-MIPS-Add-fast-get_user_pages.patch \
 	file://add-dmx-source-timecode.patch \
 	file://rtl8712-release-firmware-fix.patch \
 	file://dvb-usb-af9035.patch \
@@ -29,6 +30,7 @@ SRC_URI += "http://www.et-view.com/download/linux-${PV}.tar.gz \
 	file://it913x-backports-from-kernel-3.4.patch \
 	file://it913x-backports-from-kernel-3.5.patch \
 	file://it913x-switch-off-PID-filter-by-default.patch \
+	file://it913x-fix-bulk-read-write-retry-loop.patch \
 	file://tda10071-BUGFIX-delivery-system.patch \
 	file://dvb-usb-dib0700-disable-sleep.patch \
 	file://dvb_usb_disable_rc_polling.patch \

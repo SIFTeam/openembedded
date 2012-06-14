@@ -8,7 +8,7 @@ inherit gitpkgv
 
 PV = "1.0+git${SRCPV}"
 PKGV = "1.0+git${GITPKGV}"
-PR = "r5"
+PR = "r6"
 
 OPENPLI_URI = "git://openpli.git.sourceforge.net/gitroot/openpli/aio-grab;protocol=git"
 GIGABLUE_URI = "git://git.openmips.com/aio-grab.git;protocol=git"
@@ -19,7 +19,7 @@ SRC_URI_azboxhd = "git://openpli.git.sourceforge.net/gitroot/openpli/aio-grab;re
 SRC_URI_azboxme = "git://openpli.git.sourceforge.net/gitroot/openpli/aio-grab;rev=d024e177217f0102e9c3c57881c2cac8ea2d7016;protocol=git \
 		   file://azbox_support.patch"
 
-
+SRC_URI_powerpc += "file://no_ac_openmp.patch"
 
 S = "${WORKDIR}/git"
 

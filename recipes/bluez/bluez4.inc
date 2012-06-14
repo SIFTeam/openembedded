@@ -12,7 +12,7 @@ RPROVIDES_bluez4 += "bluez-utils bluez-libs bluez-utils-dbus"
 RPROVIDES_bluez4-dev = "bluez-libs-dev"
 
 SRC_URI = "\
-  http://www.kernel.org/pub/linux/bluetooth/bluez-${PV}.tar.gz \
+  ${KERNELORG_MIRROR}/pub/linux/bluetooth/bluez-${PV}.tar.gz \
   file://fix-dfutool-usb-declaration-mismatch.patch \
   file://sbc-thumb.patch \
   file://bluetooth.conf \

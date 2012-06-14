@@ -3,12 +3,12 @@ SECTION = "base"
 PRIORITY = "required"
 LICENSE = "proprietary"
 
-SRCDATE = "20120306"
+SRCDATE = "20120306_2"
 
 KV = "2.6.22.19-25-opensat"
 PV = "2.6.22.19-25-opensat-${SRCDATE}"
 
-PR = "r0"
+PR = "r2"
 
 RDEPENDS = "kernel (${KV})"
 
@@ -16,7 +16,6 @@ DEPENDS = " module-init-tools"
 RDEPENDS_append = " module-init-tools-depmod"
 
 SRC_URI = "http://openee.sifteam.eu/azbox/azboxhd-dvb-modules_${SRCDATE}.zip \
-           file://staticdevices.tar.gz.install \
            file://setoutputports"
 
 S = "${WORKDIR}"
@@ -59,7 +58,6 @@ do_install_mipsel() {
 	install -m 0755 ${WORKDIR}/setoutputports ${D}/etc/init.d/setoutputports
 	
 	install -d ${D}/etc/mdev
-	install -m 0755 ${WORKDIR}/staticdevices.tar.gz.install ${D}/etc/mdev/staticdevices.tar.gz
 	
 	install -d ${D}/etc/rcS.d
 	ln -s ../init.d/setoutputports ${D}/etc/rcS.d/S19setoutputports

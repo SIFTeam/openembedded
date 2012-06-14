@@ -1,0 +1,131 @@
+diff -Naur a/gstdvbvideosink.c b/gstdvbvideosink.c
+--- a/gstdvbvideosink.c	2012-05-14 16:55:22.000000000 +0200
++++ b/gstdvbvideosink.c	2012-05-17 22:48:57.000000000 +0200
+@@ -76,6 +76,7 @@
+ #include <gst/base/gstbasesink.h>
+ 
+ #define PACK_UNPACKED_XVID_DIVX5_BITSTREAM
++int azbox = 0;
+ 
+ #include "common.h"
+ #include "gstdvbvideosink.h"
+@@ -252,8 +253,24 @@
+ 		"Outputs PES into a linuxtv dvb video device",
+ 		""
+ 	};
++	
+ 	GstElementClass *element_class = GST_ELEMENT_CLASS (self);
+ 
++	int fd = open("/proc/stb/info/model", O_RDONLY);
++	if ( fd >= 0 )
++	{
++		gchar string[9] = { 0, };
++		ssize_t rd = read(fd, string, 8);
++		if ( rd >= 1 )
++		{
++			if ( !strncasecmp(string, "me", 2) || !strncasecmp(string, "minime", 6) )
++					azbox = 1; 
++
++		}
++
++		close(fd);
++	}
++
+ 	gst_element_class_add_pad_template(element_class, gst_static_pad_template_get(&sink_factory));
+ 	gst_element_class_set_details(element_class, &element_details);
+ }
+@@ -615,6 +632,8 @@
+ 
+ 	if (self->fd < 0) return GST_FLOW_OK;
+ 
++	if(!azbox) 
++	{
+ #ifdef PACK_UNPACKED_XVID_DIVX5_BITSTREAM
+ 	if (self->must_pack_bitstream)
+ 	{
+@@ -692,6 +711,8 @@
+ 			}
+ 		}
+ 	}
++
++	} //azbox
+ #endif
+ 
+ 	pes_header[0] = 0;
+@@ -800,6 +821,8 @@
+ 	}
+ 
+ #ifdef PACK_UNPACKED_XVID_DIVX5_BITSTREAM
++	if(!azbox)
++	{
+ 	if (self->must_pack_bitstream)
+ 	{
+ 		unsigned int pos = 0;
+@@ -892,11 +915,16 @@
+ 			}
+ 		}
+ 	}
++
++	} //azbox
+ #endif
+ 
+ 	payload_len = data_len + pes_header_len - 6;
+ 
+ #ifdef PACK_UNPACKED_XVID_DIVX5_BITSTREAM
++	if(!azbox)
++	{
++
+ 	if (self->prev_frame && self->prev_frame != buffer)
+ 	{
+ 		pes_set_pts(GST_BUFFER_TIMESTAMP(self->prev_frame), pes_header);
+@@ -906,9 +934,12 @@
+ 	{
+ 		payload_len += GST_BUFFER_SIZE(self->prev_frame);
+ 	}
++	
++	} //azbox
+ #endif
+ 
+-	if (self->codec_type == CT_MPEG2 || self->codec_type == CT_MPEG1)
++
++	if ( (self->codec_type == CT_MPEG2 || self->codec_type == CT_MPEG1) && !azbox)
+ 	{
+ 		if (!self->codec_data && data_len > 3 && !memcmp(data, "\x00\x00\x01\xb3", 4))
+ 		{
+@@ -1011,6 +1042,10 @@
+ 	if (video_write(sink, self, self->pesheader_buffer, 0, pes_header_len) < 0) goto error;
+ 
+ #ifdef PACK_UNPACKED_XVID_DIVX5_BITSTREAM
++
++	if(!azbox)
++	{
++
+ 	if (commit_prev_frame_data)
+ 	{
+ 		if (video_write(sink, self, self->prev_frame, 0, GST_BUFFER_SIZE (self->prev_frame)) < 0) goto error;
+@@ -1027,6 +1062,8 @@
+ 		gst_buffer_ref(buffer);
+ 		self->prev_frame = buffer;
+ 	}
++
++	} //azbox
+ #endif
+ 	if (video_write(sink, self, buffer, data - GST_BUFFER_DATA(buffer), (data - GST_BUFFER_DATA(buffer)) + data_len) < 0) goto error;
+ 
+@@ -1043,11 +1080,16 @@
+ 	return GST_FLOW_OK;
+ error:
+ #ifdef PACK_UNPACKED_XVID_DIVX5_BITSTREAM
++	if(!azbox)
++	{
++
+ 	if (self->prev_frame && self->prev_frame != buffer)
+ 	{
+ 		gst_buffer_unref(self->prev_frame);
+ 		self->prev_frame = NULL;
+ 	}
++
++	} //azbox
+ #endif
+ 	if (tmpbuf)
+ 	{

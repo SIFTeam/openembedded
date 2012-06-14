@@ -1,0 +1,76 @@
+From fdde6abb3e8dd45e4b026fcf32d40aed96ce3944 Mon Sep 17 00:00:00 2001
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Date: Fri, 29 Jul 2011 18:22:13 +0200
+Subject: [PATCH 1/9] slab: use print_hex_dump
+
+Less code and the advantage of ascii dump.
+
+before:
+| Slab corruption: names_cache start=c5788000, len=4096
+| 000: 6b 6b 01 00 00 00 56 00 00 00 24 00 00 00 2a 00
+| 010: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+| 020: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ff ff
+| 030: ff ff ff ff e2 b4 17 18 c7 e4 08 06 00 01 08 00
+| 040: 06 04 00 01 e2 b4 17 18 c7 e4 0a 00 00 01 00 00
+| 050: 00 00 00 00 0a 00 00 02 6b 6b 6b 6b 6b 6b 6b 6b
+
+after:
+| Slab corruption: size-4096 start=c38a9000, len=4096
+| 000: 6b 6b 01 00 00 00 56 00 00 00 24 00 00 00 2a 00  kk....V...$...*.
+| 010: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+| 020: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ff ff  ................
+| 030: ff ff ff ff d2 56 5f aa db 9c 08 06 00 01 08 00  .....V_.........
+| 040: 06 04 00 01 d2 56 5f aa db 9c 0a 00 00 01 00 00  .....V_.........
+| 050: 00 00 00 00 0a 00 00 02 6b 6b 6b 6b 6b 6b 6b 6b  ........kkkkkkkk
+
+Acked-by: Christoph Lameter <cl@linux.com>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Signed-off-by: Pekka Enberg <penberg@kernel.org>
+---
+ mm/slab.c |   17 ++++++-----------
+ 1 files changed, 6 insertions(+), 11 deletions(-)
+
+diff --git a/mm/slab.c b/mm/slab.c
+index 1e523ed..41fc578 100644
+--- a/mm/slab.c
++++ b/mm/slab.c
+@@ -1811,15 +1811,15 @@ static void dump_line(char *data, int offset, int limit)
+ 	unsigned char error = 0;
+ 	int bad_count = 0;
+ 
+-	printk(KERN_ERR "%03x:", offset);
++	printk(KERN_ERR "%03x: ", offset);
+ 	for (i = 0; i < limit; i++) {
+ 		if (data[offset + i] != POISON_FREE) {
+ 			error = data[offset + i];
+ 			bad_count++;
+ 		}
+-		printk(" %02x", (unsigned char)data[offset + i]);
+ 	}
+-	printk("\n");
++	print_hex_dump(KERN_CONT, "", 0, 16, 1,
++			&data[offset], limit, 1);
+ 
+ 	if (bad_count == 1) {
+ 		error ^= POISON_FREE;
+@@ -2989,14 +2989,9 @@ bad:
+ 		printk(KERN_ERR "slab: Internal list corruption detected in "
+ 				"cache '%s'(%d), slabp %p(%d). Hexdump:\n",
+ 			cachep->name, cachep->num, slabp, slabp->inuse);
+-		for (i = 0;
+-		     i < sizeof(*slabp) + cachep->num * sizeof(kmem_bufctl_t);
+-		     i++) {
+-			if (i % 16 == 0)
+-				printk("\n%03x:", i);
+-			printk(" %02x", ((unsigned char *)slabp)[i]);
+-		}
+-		printk("\n");
++		print_hex_dump(KERN_ERR, "", DUMP_PREFIX_OFFSET, 16, 1, slabp,
++			sizeof(*slabp) + cachep->num * sizeof(kmem_bufctl_t),
++			1);
+ 		BUG();
+ 	}
+ }
+-- 
+1.7.2.5
+

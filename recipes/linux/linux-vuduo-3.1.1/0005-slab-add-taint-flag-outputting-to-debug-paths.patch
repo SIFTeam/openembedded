@@ -1,0 +1,45 @@
+From face37f5e615646f364fa848f0a5c9d361d7a46e Mon Sep 17 00:00:00 2001
+From: Dave Jones <davej@redhat.com>
+Date: Tue, 15 Nov 2011 15:03:52 -0800
+Subject: [PATCH 5/9] slab: add taint flag outputting to debug paths.
+
+When we get corruption reports, it's useful to see if the kernel was
+tainted, to rule out problems we can't do anything about.
+
+Signed-off-by: Dave Jones <davej@redhat.com>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Pekka Enberg <penberg@kernel.org>
+---
+ mm/slab.c |    9 +++++----
+ 1 files changed, 5 insertions(+), 4 deletions(-)
+
+diff --git a/mm/slab.c b/mm/slab.c
+index b0414d1..a7f9c24 100644
+--- a/mm/slab.c
++++ b/mm/slab.c
+@@ -1941,8 +1941,8 @@ static void check_poison_obj(struct kmem_cache *cachep, void *objp)
+ 			/* Print header */
+ 			if (lines == 0) {
+ 				printk(KERN_ERR
+-					"Slab corruption: %s start=%p, len=%d\n",
+-					cachep->name, realobj, size);
++					"Slab corruption (%s): %s start=%p, len=%d\n",
++					print_tainted(), cachep->name, realobj, size);
+ 				print_objinfo(cachep, objp, 0);
+ 			}
+ 			/* Hexdump the affected line */
+@@ -3051,8 +3051,9 @@ static void check_slabp(struct kmem_cache *cachep, struct slab *slabp)
+ 	if (entries != cachep->num - slabp->inuse) {
+ bad:
+ 		printk(KERN_ERR "slab: Internal list corruption detected in "
+-				"cache '%s'(%d), slabp %p(%d). Hexdump:\n",
+-			cachep->name, cachep->num, slabp, slabp->inuse);
++			"cache '%s'(%d), slabp %p(%d). Tainted(%s). Hexdump:\n",
++			cachep->name, cachep->num, slabp, slabp->inuse,
++			print_tainted());
+ 		print_hex_dump(KERN_ERR, "", DUMP_PREFIX_OFFSET, 16, 1, slabp,
+ 			sizeof(*slabp) + cachep->num * sizeof(kmem_bufctl_t),
+ 			1);
+-- 
+1.7.2.5
+
