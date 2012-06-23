@@ -7,7 +7,7 @@ MAINTAINER = "SifTeam"
 RDEPENDS_${PN} += "virtual/showiframe"
 
 PV = "2.5"
-PR = "r0"
+PR = "r1"
 
 S = "${WORKDIR}/"
 
@@ -25,8 +25,24 @@ SRC_URI = " \
 	file://bootlogo.jpg \
 	file://bootlogo.sh \
 	"
+	
+SRC_URI_append_gb800se = " \
+	file://splash.bin \
+	"
 
-
+SRC_URI_append_gb800solo = " \
+	file://splash.bin \
+	"
+	
+SRC_URI_append_gb800ue = " \
+	file://splash.bin \
+	file://lcdsplash.bin \
+	"
+	
+SRC_URI_append_gbquad = " \
+	file://splash.bin \
+	file://lcdsplash.bin \
+	"
 
 BINARY_VERSION = "1"
 BINARY_VERSION_mipsel = "9"
@@ -56,6 +72,28 @@ do_install() {
 	done;
 	install -d ${D}/${sysconfdir}/init.d
 	install -m 0755 ${S}/bootlogo.sh ${D}/${sysconfdir}/init.d/bootlogo
+}
+
+do_install_append_gb800se() {
+	install -d ${DEPLOY_DIR_IMAGE}
+	install -m 0755 ${S}/splash.bin ${DEPLOY_DIR_IMAGE}/splash.bin
+}
+
+do_install_append_gb800solo() {
+	install -d ${DEPLOY_DIR_IMAGE}
+	install -m 0755 ${S}/splash.bin ${DEPLOY_DIR_IMAGE}/splash.bin
+}
+
+do_install_append_gb800ue() {
+	install -d ${DEPLOY_DIR_IMAGE}
+	install -m 0755 ${S}/splash.bin ${DEPLOY_DIR_IMAGE}/splash.bin
+	install -m 0755 ${S}/lcdsplash.bin ${DEPLOY_DIR_IMAGE}/lcdsplash.bin
+}
+
+do_install_append_gbquad() {
+	install -d ${DEPLOY_DIR_IMAGE}
+	install -m 0755 ${S}/splash.bin ${DEPLOY_DIR_IMAGE}/splash.bin
+	install -m 0755 ${S}/lcdsplash.bin ${DEPLOY_DIR_IMAGE}/lcdsplash.bin
 }
 
 pkg_preinst() {
