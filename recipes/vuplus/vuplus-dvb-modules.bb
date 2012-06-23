@@ -7,10 +7,10 @@ LICENSE = "proprietary"
 KV = "3.1.1"
 PV = "${KV}"
 
-SRCDATE = "20120228"
+SRCDATE = "20120126"
 
 RDEPENDS = "kernel (${KV})" 
-MACHINE_KERNEL_PR_append = ".${SRCDATE}.2"
+MACHINE_KERNEL_PR_append = ".20120228.downgrade.${SRCDATE}.2"
 
 VUPLUS_KERNEL_GCC = "4.4.3"
 DOWNLOADMACHINE = "${MACHINE}"
