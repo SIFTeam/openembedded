@@ -48,7 +48,7 @@ SRCDATE_inadyn-mt ?= "20100519"
 SRCDATE_squashfs-tools-native = "20100319"
 
 # others
-SRCDATE_enigma2-plugin-extensions-xmltvimport-rytec ?= "20120402"
+SRCDATE_enigma2-plugin-extensions-xmltvimport-rytec ?= "20120529"
 SRCDATE_enigma2-plugin-picons-sat ?= "20110907"
 SRCDATE_enigma2-plugin-picons-ziggo.casema ?= "20120722"
 SRCDATE_enigma2-plugin-picons-ziggo.tvhome ?= "20120504"
