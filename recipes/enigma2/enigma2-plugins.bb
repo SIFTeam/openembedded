@@ -7,12 +7,13 @@ inherit gitpkgv
 
 PV = "experimental-git${SRCPV}"
 PKGV = "experimental-git${GITPKGV}"
-PR = "r7"
+PR = "r8"
 
-OPENPLI_URI = "git://openpli.git.sourceforge.net/gitroot/openpli/plugins-enigma2;protocol=git"
-GIGABLUE_URI = "git://git.openmips.com/plugins.git;protocol=git"
+#OPENPLI_URI = "git://openpli.git.sourceforge.net/gitroot/openpli/plugins-enigma2;protocol=git"
+#GIGABLUE_URI = "git://git.openmips.com/plugins.git;protocol=git"
 
-SRC_URI = "${@base_contains("MACHINE_FEATURES", "gigablue", "${GIGABLUE_URI}", "${OPENPLI_URI}", d)}"
+#SRC_URI = "${@base_contains("MACHINE_FEATURES", "gigablue", "${GIGABLUE_URI}", "${OPENPLI_URI}", d)}"
+SRC_URI = "git://openpli.git.sourceforge.net/gitroot/openpli/plugins-enigma2;protocol=git"
 
 EXTRA_OECONF = " \
 	BUILD_SYS=${BUILD_SYS} \
