@@ -1,0 +1,1246 @@
+diff -Naur linux-3.3.1_src/arch/mips/boot/Makefile linux-3.3.1/arch/mips/boot/Makefile
+--- linux-3.3.1_src/arch/mips/boot/Makefile	2012-04-14 17:51:07.000000000 +0200
++++ linux-3.3.1/arch/mips/boot/Makefile	2012-06-22 17:01:04.000000000 +0200
+@@ -53,13 +53,14 @@
+ endif
+ 
+ ifdef CONFIG_TANGO2
+-$(obj)/vmlinux.zbf: $(obj)/vmlinux.gz 
+-	genzbf -l $(loadaddr) -s 0x90020000 -a lzf -o $@ $<
+ 
+-$(obj)/xrpc_xload_vmlinux_$(certtype).bin: $(obj)/vmlinux.zbf
+-	bash $(srctree)/arch/mips/boot/build_cpu_xrpc_xload.bash $(obj)/vmlinux $(certid) $(certtype)
++$(obj)/vmlinux_gz.zbf: $(obj)/vmlinux.gz
++	cp -f $< $@
++
++$(obj)/vmlinux_xload.zbf: $(obj)/vmlinux_gz.zbf
++	$(srctree)/arch/mips/boot/genzbf -l $(loadaddr) -s 0x90020000 -a lzf -o $@ $<
+ 
+-zbimage-linux-xrpc: $(obj)/zbimage-linux-xrpc
++zbimage-linux-xload: $(obj)/zbimage-linux-xload
+ endif
+ 
+ ifdef CONFIG_TANGO3
+@@ -93,10 +94,11 @@
+ endif
+ 
+ ifdef CONFIG_TANGO2
+-$(obj)/zbimage-linux-xrpc: $(obj)/xrpc_xload_vmlinux_$(certtype).bin
++$(obj)/zbimage-linux-xload: $(obj)/vmlinux_xload.zbf
+ 	mkdir romfs
+ 	cp -f $< romfs
+ 	genromfs -V MIPS_LINUX_XRPC -d romfs -f $@
++	cp  $(srctree)/arch/mips/boot/zbimage-linux-xload $(srctree)/
+ 	rm -rf romfs
+ endif
+ ifdef CONFIG_TANGO3
+diff -Naur linux-3.3.1_src/arch/mips/kernel/cpu-probe.c linux-3.3.1/arch/mips/kernel/cpu-probe.c
+--- linux-3.3.1_src/arch/mips/kernel/cpu-probe.c	2012-04-13 22:19:39.000000000 +0200
++++ linux-3.3.1/arch/mips/kernel/cpu-probe.c	2012-05-29 21:08:29.000000000 +0200
+@@ -822,7 +822,11 @@
+ 	case PRID_IMP_24K:
+ 	case PRID_IMP_24KE:
+ 		c->cputype = CPU_24K;
++#ifdef CONFIG_TANGOX
++		__cpu_name[cpu] = "MIPS 24K/MIPS 4KEc V6.9";
++#else
+ 		__cpu_name[cpu] = "MIPS 24Kc";
++#endif
+ 		break;
+ 	case PRID_IMP_25KF:
+ 		c->cputype = CPU_25KF;
+diff -Naur linux-3.3.1_src/arch/mips/Makefile linux-3.3.1/arch/mips/Makefile
+--- linux-3.3.1_src/arch/mips/Makefile	2012-04-14 02:10:59.000000000 +0200
++++ linux-3.3.1/arch/mips/Makefile	2012-06-12 16:21:39.000000000 +0200
+@@ -281,14 +281,9 @@
+ 	+@$(call makeboot,$@)
+ 
+ ifdef CONFIG_TANGO2
+-zbimage-linux-xrpc: vmlinux.bin
+-	+@$(call makeboot,$@,$(load-y),$(CERT_TYPE),$(CERT_ID))
+-
+-zbimage-linux-enc: vmlinux.bin
++zbimage-linux-xload: sigma.bin
+ 	+@$(call makeboot,$@,$(load-y),$(CERT_TYPE),$(CERT_ID))
+ 
+-zbimage-linux-encs: vmlinux.bin
+-	+@$(call makeboot,$@,$(load-y),$(CERT_TYPE),$(CERT_ID))
+ endif
+ 
+ ifdef CONFIG_TANGO3
+diff -Naur linux-3.3.1_src/drivers/ide/tango2-bmide.c linux-3.3.1/drivers/ide/tango2-bmide.c
+--- linux-3.3.1_src/drivers/ide/tango2-bmide.c	2012-01-27 12:25:11.000000000 +0100
++++ linux-3.3.1/drivers/ide/tango2-bmide.c	2012-06-13 01:54:33.000000000 +0200
+@@ -18,6 +18,8 @@
+ #include <asm/tango2/tango2_gbus.h>
+ #include <asm/tango2/tango2api.h>
+ 
++#include <asm/ide.h>
++
+ static DEFINE_SPINLOCK(bmide_tune_chipset_spin_lock);
+ 
+ #define PFX	"tango2_bmide: "
+@@ -212,7 +214,7 @@
+ 	tango2_bmide_outb(val,  addr);
+ }
+ 
+-void tango2_bmide_dma_host_set(ide_drive_t *drive, int on)
++static void tango2_bmide_dma_host_set(ide_drive_t *drive, int on)
+ {
+ 	ide_hwif_t *hwif = drive->hwif;
+ 	u8 unit = drive->dn & 1;
+@@ -226,15 +228,26 @@
+ 	tango2_bmide_dma_sff_write_status(hwif, dma_stat);
+ }
+ 
++static inline int mbus_inuse(unsigned int regbase)
++{
++	return (gbus_read_reg32(regbase + MIF_cmd_offset) & 0x7) != 0; 
++}
++static void em86xx_mbus_setup_dma_void(unsigned int regbase)
++{
++	while (mbus_inuse(regbase) != 0)
++		;
++	gbus_write_reg32(regbase + MIF_cmd_offset, 4);
++}
++
+ static void tango2_mbus_intr(int irq, void *arg)
+ {
+ 	ide_drive_t *drive = (ide_drive_t *)arg;
+ 	ide_hwif_t *hwif = HWIF(drive);
+ 	struct scatterlist *sg;
+ 
+-	if (g_next_sg > hwif->sg_nents)
++	if (g_next_sg > hwif->cmd.sg_nents)
+ 		return; /* should be the last interrupt */
+-	else if (g_next_sg == hwif->sg_nents) { /* no more sg */
++	else if (g_next_sg == hwif->cmd.sg_nents) { /* no more sg */
+ 		g_next_sg++;
+ 		em86xx_mbus_setup_dma_void(g_mbus_reg); 
+ 		return;
+@@ -283,13 +296,13 @@
+ 
+ 	/* enable bus mastering */
+ 	val = 0x05;
+-	if (hwif->sg_dma_direction == DMA_FROM_DEVICE)
++	if (hwif->cmd.sg_dma_direction == DMA_FROM_DEVICE)
+ 		val |= 0x8;
+ 
+ 	WR_HOST_REG32(IDECTRL_bmic, val);
+ }
+ 
+-static int tango2_bmide_dma_setup(ide_drive_t *drive)
++static int tango2_bmide_dma_setup(ide_drive_t *drive, struct ide_cmd *cmd)
+ {
+ 	ide_hwif_t *hwif = HWIF(drive);
+ 	struct request *rq;
+@@ -299,13 +312,13 @@
+ 	rq = hwif->rq;
+ 
+ 	iswrite = (rq_data_dir(rq) == WRITE);
+-	hwif->sg_dma_direction = iswrite ? DMA_TO_DEVICE : DMA_FROM_DEVICE;
++	hwif->cmd.sg_dma_direction = iswrite ? DMA_TO_DEVICE : DMA_FROM_DEVICE;
+ 
+ 
+ 	/*
+ 	 * ide_map_sg will merge contiguous memory zone for us
+ 	 */
+-	ide_map_sg(drive, rq);
++	ide_map_sg(drive, cmd);
+ 
+ 	/* try to setup dma channel */
+ 	if (em86xx_mbus_alloc_dma(SBOX_IDEDVD, iswrite ? 0 : 1, &g_mbus_reg,
+@@ -317,7 +330,7 @@
+ 	/*
+ 	 * map and transfer first segment
+ 	 */
+-	dma_map_sg(&hwif->gendev, sg, hwif->sg_nents, hwif->sg_dma_direction);
++	dma_map_sg(&hwif->gendev, sg, hwif->cmd.sg_nents, hwif->cmd.sg_dma_direction);
+ 	g_next_sg = 1;
+ 
+ #ifdef USE_BOUNCE_BUF
+@@ -396,12 +409,12 @@
+ 	 */
+ 	if (em86xx_mbus_setup_dma(g_mbus_reg, sg_dma_address(sg),
+ 				sg_dma_len(sg),
+-				(hwif->sg_nents == 1) ? NULL : tango2_mbus_intr,
++				(hwif->cmd.sg_nents == 1) ? NULL : tango2_mbus_intr,
+ 				drive,
+-				(hwif->sg_nents == 1) ? 1 : 0)) {
++				(hwif->cmd.sg_nents == 1) ? 1 : 0)) {
+ 		printk(KERN_ERR PFX "fail to setup dma, fallback to pio\n");
+-		dma_unmap_sg(&hwif->gendev, sg, hwif->sg_nents,
+-				hwif->sg_dma_direction);
++		dma_unmap_sg(&hwif->gendev, sg, hwif->cmd.sg_nents,
++				hwif->cmd.sg_dma_direction);
+ 		em86xx_mbus_free_dma(g_mbus_reg, SBOX_IDEDVD);
+ 		goto fallback_pio;
+ 	}
+@@ -411,7 +424,7 @@
+ 	return 0;
+ 
+ fallback_pio:
+-	ide_map_sg(drive, rq);
++	ide_map_sg(drive, cmd);
+ 	return 1;
+ }
+ 
+@@ -450,8 +463,8 @@
+ 	/* stop bus mastering */
+ 	WR_HOST_REG32(IDECTRL_bmic, 0x4);
+ 
+-	dma_unmap_sg(&hwif->gendev, sg, hwif->sg_nents,
+-				hwif->sg_dma_direction);
++	dma_unmap_sg(&hwif->gendev, sg, hwif->cmd.sg_nents,
++				hwif->cmd.sg_dma_direction);
+ 
+ 	drive->waiting_for_dma = 0;
+ 
+@@ -530,12 +543,13 @@
+ 
+ static u8 drive_speed[2] = { 0xff, 0xff };
+ 
+-static void tango2_bmide_set_pio_mode(ide_drive_t *drive, const u8 mode)
++static void tango2_bmide_set_pio_mode(ide_hwif_t *hwif, ide_drive_t *drive)
+ {
+ 	int didx;
+ 	unsigned int ctrlreg, newflag;
+     	unsigned long flags;
+ 	u8 xferspeed, pio;
++	const u8 mode = drive->pio_mode - XFER_PIO_0;
+ 
+ #ifdef CONFIG_RUNTIME_CLK_CALC
+ 	extern unsigned long tangox_get_sysclock(void);
+@@ -573,13 +587,13 @@
+ 	drive_speed[didx] = xferspeed;
+ }
+ 
+-static void tango2_bmide_set_xfer_mode(ide_drive_t *drive, const u8 xferspeed)
++static void tango2_bmide_set_xfer_mode(ide_hwif_t *hwif, ide_drive_t *drive)
+ {
+ 	int didx;
+ 	unsigned int ctrlreg, newflag;
+     unsigned long flags;
+ 	u8 mode, pio;
+-
++	const u8 xferspeed = drive->dma_mode;
+ #ifdef CONFIG_RUNTIME_CLK_CALC
+ 	extern unsigned long tangox_get_sysclock(void);
+ 	unsigned int ide_clock = TIMING_MARGIN(tangox_get_sysclock() / 1000000); /* in MHz */
+@@ -699,7 +713,7 @@
+ 	//ide_config_drive_speed(drive, xferspeed);
+ }
+ 
+-static void tango2_hw_setup(hw_regs_t *hw, unsigned long data_port,
++static void tango2_hw_setup(struct ide_hw *hw, unsigned long data_port,
+ 		     unsigned long ctrl_port)
+ {
+ 	int i;
+@@ -756,124 +770,81 @@
+ 	return 0;
+ }
+ 
+-static void tango2_bmide_tf_load(ide_drive_t *drive, ide_task_t *task)
++static void tango2_bmide_dev_select(ide_drive_t *drive)
++{
++ ide_hwif_t *hwif = drive->hwif;
++ u8 select = drive->select | ATA_DEVICE_OBS;
++
++ tango2_bmide_outb(select, hwif->io_ports.device_addr);
++}
++
++static void tango2_bmide_tf_load(ide_drive_t *drive, struct ide_taskfile *tf, u8 valid)
+ {
+ 	ide_hwif_t *hwif = drive->hwif;
+ 	struct ide_io_ports *io_ports = &hwif->io_ports;
+-	struct ide_taskfile *tf = &task->tf;
+-	u8 HIHI = task->tf_flags & IDE_TFLAG_LBA48 ? 0xE0 : 0xEF;
++	void (*tf_outb)(u8 addr, unsigned long port);
+ 
+-	if (task->tf_flags & IDE_TFLAG_FLAGGED)
+-		HIHI = 0xFF;
++	tf_outb = tango2_bmide_outb;
+ 
+-	if (task->tf_flags & IDE_TFLAG_OUT_DATA) {
+-		u16 data = (tf->hob_data << 8) | tf->data;
+-		tango2_bmide_outw(data, io_ports->data_addr);
+-	}
+-
+-	if (task->tf_flags & IDE_TFLAG_OUT_HOB_FEATURE)
+-		tango2_bmide_outb(tf->hob_feature, io_ports->feature_addr);
+-	if (task->tf_flags & IDE_TFLAG_OUT_HOB_NSECT)
+-		tango2_bmide_outb(tf->hob_nsect, io_ports->nsect_addr);
+-	if (task->tf_flags & IDE_TFLAG_OUT_HOB_LBAL)
+-		tango2_bmide_outb(tf->hob_lbal, io_ports->lbal_addr);
+-	if (task->tf_flags & IDE_TFLAG_OUT_HOB_LBAM)
+-		tango2_bmide_outb(tf->hob_lbam, io_ports->lbam_addr);
+-	if (task->tf_flags & IDE_TFLAG_OUT_HOB_LBAH)
+-		tango2_bmide_outb(tf->hob_lbah, io_ports->lbah_addr);
+-
+-	if (task->tf_flags & IDE_TFLAG_OUT_FEATURE)
+-		tango2_bmide_outb(tf->feature, io_ports->feature_addr);
+-	if (task->tf_flags & IDE_TFLAG_OUT_NSECT)
+-		tango2_bmide_outb(tf->nsect, io_ports->nsect_addr);
+-	if (task->tf_flags & IDE_TFLAG_OUT_LBAL)
+-		tango2_bmide_outb(tf->lbal, io_ports->lbal_addr);
+-	if (task->tf_flags & IDE_TFLAG_OUT_LBAM)
+-		tango2_bmide_outb(tf->lbam, io_ports->lbam_addr);
+-	if (task->tf_flags & IDE_TFLAG_OUT_LBAH)
+-		tango2_bmide_outb(tf->lbah, io_ports->lbah_addr);
+-
+-	if (task->tf_flags & IDE_TFLAG_OUT_DEVICE) {
+-		tango2_bmide_outb((tf->device & HIHI) | drive->select,
+-			       io_ports->device_addr);
+-	}
++	if (valid & IDE_VALID_FEATURE)
++	        tf_outb(tf->feature, io_ports->feature_addr);
++	if (valid & IDE_VALID_NSECT)
++		tf_outb(tf->nsect, io_ports->nsect_addr);
++	if (valid & IDE_VALID_LBAL)
++		tf_outb(tf->lbal, io_ports->lbal_addr);
++	if (valid & IDE_VALID_LBAM)
++		tf_outb(tf->lbam, io_ports->lbam_addr);
++	if (valid & IDE_VALID_LBAH)
++		tf_outb(tf->lbah, io_ports->lbah_addr);
++	if (valid & IDE_VALID_DEVICE)
++		tf_outb(tf->device, io_ports->device_addr);
+ }
+ 
+-static void tango2_bmide_tf_read(ide_drive_t *drive, ide_task_t *task)
++static void tango2_bmide_tf_read(ide_drive_t *drive, struct ide_taskfile *tf, u8 valid)
+ {
+ 	ide_hwif_t *hwif = drive->hwif;
+ 	struct ide_io_ports *io_ports = &hwif->io_ports;
+-	struct ide_taskfile *tf = &task->tf;
++	u8 (*tf_inb)(unsigned long port);
+ 
+-	if (task->tf_flags & IDE_TFLAG_IN_DATA) {
+-		u16 data;
++	
++	tf_inb = tango2_bmide_inb;
+ 
+-		data = tango2_bmide_inw(io_ports->data_addr);
+-		tf->data = data & 0xff;
+-		tf->hob_data = (data >> 8) & 0xff;
+-	}
+-
+-	/* be sure we're looking at the low order bits */
+-	tango2_bmide_outb(ATA_DEVCTL_OBS & ~0x80, io_ports->ctl_addr);
+-
+-	if (task->tf_flags & IDE_TFLAG_IN_FEATURE)
+-		tf->feature = tango2_bmide_inb(io_ports->feature_addr);
+-	if (task->tf_flags & IDE_TFLAG_IN_NSECT)
+-		tf->nsect  = tango2_bmide_inb(io_ports->nsect_addr);
+-	if (task->tf_flags & IDE_TFLAG_IN_LBAL)
+-		tf->lbal   = tango2_bmide_inb(io_ports->lbal_addr);
+-	if (task->tf_flags & IDE_TFLAG_IN_LBAM)
+-		tf->lbam   = tango2_bmide_inb(io_ports->lbam_addr);
+-	if (task->tf_flags & IDE_TFLAG_IN_LBAH)
+-		tf->lbah   = tango2_bmide_inb(io_ports->lbah_addr);
+-	if (task->tf_flags & IDE_TFLAG_IN_DEVICE)
+-		tf->device = tango2_bmide_inb(io_ports->device_addr);
+-
+-	if (task->tf_flags & IDE_TFLAG_LBA48) {
+-		tango2_bmide_outb(ATA_DEVCTL_OBS | 0x80, io_ports->ctl_addr);
+-
+-		if (task->tf_flags & IDE_TFLAG_IN_HOB_FEATURE)
+-			tf->hob_feature = tango2_bmide_inb(io_ports->feature_addr);
+-		if (task->tf_flags & IDE_TFLAG_IN_HOB_NSECT)
+-			tf->hob_nsect   = tango2_bmide_inb(io_ports->nsect_addr);
+-		if (task->tf_flags & IDE_TFLAG_IN_HOB_LBAL)
+-			tf->hob_lbal    = tango2_bmide_inb(io_ports->lbal_addr);
+-		if (task->tf_flags & IDE_TFLAG_IN_HOB_LBAM)
+-			tf->hob_lbam    = tango2_bmide_inb(io_ports->lbam_addr);
+-		if (task->tf_flags & IDE_TFLAG_IN_HOB_LBAH)
+-			tf->hob_lbah    = tango2_bmide_inb(io_ports->lbah_addr);
+-	}
++	if (valid & IDE_VALID_ERROR)
++                tf->error  = tf_inb(io_ports->feature_addr);
++        if (valid & IDE_VALID_NSECT)
++                tf->nsect  = tf_inb(io_ports->nsect_addr);
++        if (valid & IDE_VALID_LBAL)
++                tf->lbal   = tf_inb(io_ports->lbal_addr);
++        if (valid & IDE_VALID_LBAM)
++                tf->lbam   = tf_inb(io_ports->lbam_addr);
++        if (valid & IDE_VALID_LBAH)
++                tf->lbah   = tf_inb(io_ports->lbah_addr);
++        if (valid & IDE_VALID_DEVICE)
++                tf->device = tf_inb(io_ports->device_addr);
++	
+ }
+ 
+-u8 tango2_bmide_read_status(ide_hwif_t *hwif)
++static u8 tango2_bmide_read_status(ide_hwif_t *hwif)
+ {
+ 	u8 status;
+ 	status = tango2_bmide_inb(hwif->io_ports.status_addr);
+ 	return status;
+ }
+ 
+-u8 tango2_bmide_read_altstatus(ide_hwif_t *hwif)
++static u8 tango2_bmide_read_altstatus(ide_hwif_t *hwif)
+ {
+ 	u8 alt_status;
+ 	alt_status = tango2_bmide_inb(hwif->io_ports.ctl_addr);
+ 	return alt_status;
+ }
+ 
+-void tango2_bmide_set_irq(ide_hwif_t *hwif, int on)
++static void tango2_bmide_write_devctl(ide_hwif_t *hwif, u8 ctl)
+ {
+-	u8 ctl = ATA_DEVCTL_OBS;
+-
+-	if (on == 4) { /* hack for SRST */
+-		ctl |= 4;
+-		on &= ~4;
+-	}
+-
+-	ctl |= on ? 0 : 2;
+ 
+ 	tango2_bmide_outb(ctl, hwif->io_ports.ctl_addr);
+ }
+ 
+-static void tango2_bmide_input_data(ide_drive_t *drive, struct request *rq,
++static void tango2_bmide_input_data(ide_drive_t *drive, struct ide_cmd *cmd,
+ 				void *buf, unsigned int len)
+ {
+ 	unsigned long port = drive->hwif->io_ports.data_addr;
+@@ -885,7 +856,7 @@
+ 	__ide_flush_dcache_range((unsigned long)buf, roundup(len, 2));
+ }
+ 
+-static void tango2_bmide_output_data(ide_drive_t *drive, struct request *rq,
++static void tango2_bmide_output_data(ide_drive_t *drive, struct ide_cmd *cmd,
+ 				void *buf, unsigned int len)
+ {
+ 	unsigned long port = drive->hwif->io_ports.data_addr;
+@@ -898,7 +869,7 @@
+ 	}
+ 	__ide_flush_dcache_range((unsigned long)buf, roundup(len, 2));
+ }
+-void tango2_bmide_exec_command(ide_hwif_t *hwif, u8 cmd)
++static void tango2_bmide_exec_command(ide_hwif_t *hwif, u8 cmd)
+ {
+ 	tango2_bmide_outb(cmd, hwif->io_ports.command_addr);
+ }
+@@ -908,36 +879,35 @@
+ 	.read_status		= tango2_bmide_read_status,
+ 	.read_altstatus		= tango2_bmide_read_altstatus,
+ 
+-	.set_irq			= tango2_bmide_set_irq,
++	.write_devctl		= tango2_bmide_write_devctl,
+ 
+-	.tf_load			= tango2_bmide_tf_load,
+-	.tf_read			= tango2_bmide_tf_read,
++	.dev_select		= tango2_bmide_dev_select,
++	.tf_load		= tango2_bmide_tf_load,
++	.tf_read		= tango2_bmide_tf_read,
+ 
+-	.input_data			= tango2_bmide_input_data,
++	.input_data		= tango2_bmide_input_data,
+ 	.output_data		= tango2_bmide_output_data,
+ };
+ 
+ static const struct ide_port_ops tango2_bmide_port_ops = {
+ 	.set_pio_mode		= tango2_bmide_set_pio_mode,
+ 	.set_dma_mode		= tango2_bmide_set_xfer_mode,
+-	.clear_irq			= tango2_bmide_clear_irq,
++	.clear_irq		= tango2_bmide_clear_irq,
+ 	.udma_filter		= tango2_bmide_udma_filter,
+ 	.cable_detect		= tango2_bmide_cable_detect,
+ };
+ 
+-static const struct ide_dma_ops tango2_bmide_dma_ops = {
+-	.dma_exec_cmd		= ide_dma_exec_cmd,
++static const struct ide_dma_ops tango2_bmide_dma_ops = {	
+ 	.dma_lost_irq		= ide_dma_lost_irq,
+-	.dma_timeout		= ide_dma_timeout,
+ 	.dma_host_set		= tango2_bmide_dma_host_set,
+-	.dma_setup			= tango2_bmide_dma_setup,
+-	.dma_start			= tango2_bmide_dma_start,
+-	.dma_end			= tango2_bmide_dma_end,
++	.dma_setup		= tango2_bmide_dma_setup,
++	.dma_start		= tango2_bmide_dma_start,
++	.dma_end		= tango2_bmide_dma_end,
+ 	.dma_test_irq		= tango2_bmide_dma_test_irq,
+-	.dma_sff_read_status= tango2_bmide_dma_sff_read_status,
++	.dma_sff_read_status	= tango2_bmide_dma_sff_read_status,
+ 	};
+ 
+-static const struct ide_port_info tango2_bmide_port_info __initdata = {
++static const struct ide_port_info tango2_bmide_port_info __devinitdata = {
+ 	.init_hwif		= tango2_bmide_init_hwif,
+ 	.init_dma		= tango2_bmide_init_dma,
+ 	.port_ops		= &tango2_bmide_port_ops,
+@@ -950,10 +920,10 @@
+ 	.chipset		= ide_generic,
+ };
+ 
+-static int __init tango2_bmide_probe(struct platform_device *pdev)
++static __devinit int tango2_bmide_probe(struct platform_device *pdev)
+ {
+-	hw_regs_t hw;
+-	hw_regs_t *hws[] = { &hw, NULL, NULL, NULL };
++	struct ide_hw hw;
++	struct ide_hw *hws[] = { &hw, NULL, NULL, NULL };
+ 	struct ide_host *host;
+ 	int  ret;
+ 	unsigned int mapbase, mapctl;
+@@ -1000,7 +970,7 @@
+ 
+ 	pr_info("TANGO2 Bus Mastering IDE interface (base 0x%x,ctl 0x%x,irq %d)\n", 
+ 									mapbase, mapctl, hw.irq);
+-	host = ide_host_alloc(&tango2_bmide_port_info, hws);
++	host = ide_host_alloc(&tango2_bmide_port_info, hws, 2);
+ 	if (!host)
+ 		return -ENOMEM;
+ 	/* use extra_base for base address of the all registers */
+@@ -1012,8 +982,6 @@
+ 	}
+ 	platform_set_drvdata(pdev, host);
+ 
+-	em86xx_mbus_init();
+-
+ #ifdef USE_BOUNCE_BUF
+ 	if ((g_bounce_buf = (unsigned char *)__get_free_pages(GFP_KERNEL, DMA_BOUNCE_BUF_ORDER)) == NULL)
+ 		printk("IDE: Can not allocate buffer for IDE transfer\n");
+@@ -1024,7 +992,7 @@
+ 	return 0;
+ }
+ 
+-static int __exit tango2_bmide_remove(struct platform_device *pdev)
++static __devexit int tango2_bmide_remove(struct platform_device *pdev)
+ {
+ 	struct ide_host *host = platform_get_drvdata(pdev);
+ 
+@@ -1044,7 +1012,7 @@
+ 		.owner = THIS_MODULE,
+ 	},
+ 	.probe  = tango2_bmide_probe,
+-	.remove = tango2_bmide_remove,
++	.remove = __devexit_p(tango2_bmide_remove),
+ 	.resume = tango2_bmide_resume,
+ };
+ 
+@@ -1063,7 +1031,7 @@
+ 	.resource       = 0,
+ };
+ 
+-int __init tango2_bmide_init(void)
++static int __init tango2_bmide_init(void)
+ {
+    int status = 0;
+ 
+diff -Naur linux-3.3.1_src/drivers/net/ethernet/tango2_enet.c linux-3.3.1/drivers/net/ethernet/tango2_enet.c
+--- linux-3.3.1_src/drivers/net/ethernet/tango2_enet.c	2012-01-26 15:24:08.000000000 +0100
++++ linux-3.3.1/drivers/net/ethernet/tango2_enet.c	2012-06-12 15:14:30.000000000 +0200
+@@ -34,6 +34,8 @@
+ #include <linux/delay.h>
+ #include <linux/ethtool.h>
+ #include <linux/crc32.h>
++#include <linux/sched.h>
++#include <linux/interrupt.h>
+ 
+ #include "tango2_enet.h"
+ 
+@@ -499,10 +501,10 @@
+ static void enet_set_multicast_list(struct net_device *dev)
+ {
+ 	struct tango2_enet_priv *priv;
+-	struct dev_mc_list *mclist;
++	struct netdev_hw_addr *ha;
+ 	unsigned long val;
+ 	uint32_t mc_filter[2];
+-	int i;
++	
+ 
+ 	priv = netdev_priv(dev);
+ 
+@@ -517,7 +519,7 @@
+ 		val &= ~MACCR_PR;
+ 		/* if we want all multicast or if address count is too
+ 		 * high, don't try to compute hash value */
+-		if (dev->mc_count > 64 || dev->flags & IFF_ALLMULTI) {
++		if (netdev_mc_count(dev) > 64 || dev->flags & IFF_ALLMULTI) {
+ 			val |= MACCR_PM;
+ 		}
+ 	}
+@@ -530,14 +532,13 @@
+ 		return;
+ 
+ 	mc_filter[0] = mc_filter[1] = 0;
+-	mclist = dev->mc_list;
++	
+ 
+-	for (i = 0; i < dev->mc_count; i++) {
++	netdev_for_each_mc_addr(ha, dev)  {
+ 		unsigned int n;
+ 		char *addr;
+ 
+-		addr = mclist->dmi_addr;
+-		mclist = mclist->next;
++		addr = ha->addr;
+ 		if (!(*addr & 1))
+ 			continue;
+ 
+@@ -927,7 +928,7 @@
+ 	.ndo_start_xmit = enet_xmit,
+ 	.ndo_get_stats = enet_get_stats,
+ 	.ndo_set_mac_address = enet_set_mac_address,
+-	.ndo_set_multicast_list = enet_set_multicast_list,
++	.ndo_set_rx_mode = enet_set_multicast_list,
+ 	.ndo_do_ioctl = enet_ioctl,
+ };
+ 
+diff -Naur linux-3.3.1_src/drivers/usb/host/ehci-hcd.c linux-3.3.1/drivers/usb/host/ehci-hcd.c
+--- linux-3.3.1_src/drivers/usb/host/ehci-hcd.c	2012-04-02 19:32:52.000000000 +0200
++++ linux-3.3.1/drivers/usb/host/ehci-hcd.c	2012-06-13 13:10:24.000000000 +0200
+@@ -52,6 +52,10 @@
+ #include <asm/firmware.h>
+ #endif
+ 
++#ifdef CONFIG_TANGOX
++#include "../core/usb.h"
++#include "../core/tangox-usb.h"
++#endif
+ /*-------------------------------------------------------------------------*/
+ 
+ /*
+@@ -95,14 +99,22 @@
+  */
+ #define	EHCI_TUNE_FLS		1	/* (medium) 512-frame schedule */
+ 
++#ifdef CONFIG_TANGOX
++#define EHCI_IAA_MSECS		1		/* arbitrary */
++#else
+ #define EHCI_IAA_MSECS		10		/* arbitrary */
++#endif
+ #define EHCI_IO_JIFFIES		(HZ/10)		/* io watchdog > irq_thresh */
+ #define EHCI_ASYNC_JIFFIES	(HZ/20)		/* async idle timeout */
+ #define EHCI_SHRINK_JIFFIES	(DIV_ROUND_UP(HZ, 200) + 1)
+ 						/* 5-ms async qh unlink delay */
+ 
+ /* Initial IRQ latency:  faster than hw default */
++#ifdef CONFIG_TANGOX
++static int log2_irq_thresh = 1;		// 0 to 6
++#else
+ static int log2_irq_thresh = 0;		// 0 to 6
++#endif
+ module_param (log2_irq_thresh, int, S_IRUGO);
+ MODULE_PARM_DESC (log2_irq_thresh, "log2 IRQ latency, 1-64 microframes");
+ 
+@@ -131,6 +143,13 @@
+ 
+ /*-------------------------------------------------------------------------*/
+ 
++
++#ifdef CONFIG_TANGOX
++/* function pointers  to distinguish es8 from earlier revisions
++*/
++static void (*start_unlink_async) (struct ehci_hcd *, struct ehci_qh *);
++#endif
++
+ static void
+ timer_action(struct ehci_hcd *ehci, enum ehci_timer_action action)
+ {
+@@ -317,6 +336,10 @@
+ /* reset a non-running (STS_HALT == 1) controller */
+ static int ehci_reset (struct ehci_hcd *ehci)
+ {
++#ifdef CONFIG_TANGOX
++	unsigned long tangox_chip_id(void);
++	unsigned long chip_id = (tangox_chip_id() >> 16) & 0xfffe;
++#endif
+ 	int	retval;
+ 	u32	command = ehci_readl(ehci, &ehci->regs->command);
+ 
+@@ -339,6 +362,13 @@
+ 		ehci_writel(ehci, TXFIFO_DEFAULT,
+ 			(u32 __iomem *)(((u8 *)ehci->regs) + TXFILLTUNING));
+ 	}
++
++#ifdef CONFIG_TANGOX
++	if ((chip_id == 0x8652) || (chip_id == 0x8646) || ((chip_id & 0xfff0) == 0x8670)){
++		int ctrl = (ehci_to_hcd(ehci)->irq == TANGOX_EHCI0_IRQ) ? 0 : 1; 
++		ehci_writel(ehci, 0x3, (void *)(NON_CACHED(tangox_ehci_base[ctrl]) + TANGOX_USB_MODE));
++	}
++#endif
+ 	if (retval)
+ 		return retval;
+ 
+@@ -607,6 +637,13 @@
+ 	u32			hcc_params;
+ 	struct ehci_qh_hw	*hw;
+ 
++#ifdef CONFIG_TANGOX
++	if(is_tango2_es89() || is_tango3_chip())
++		start_unlink_async = (void *) tangox_es8_start_unlink_async;
++	else 
++		start_unlink_async = (void *) tangox_es7_start_unlink_async;
++#endif
++
+ 	spin_lock_init(&ehci->lock);
+ 
+ 	/*
+@@ -1366,6 +1403,10 @@
+ #define PLATFORM_DRIVER		ehci_pxa168_driver
+ #endif
+ 
++#ifdef CONFIG_TANGOX
++#include "ehci-tangox.c"
++#endif
++
+ #ifdef CONFIG_CPU_XLR
+ #include "ehci-xls.c"
+ #define PLATFORM_DRIVER		ehci_xls_driver
+@@ -1386,6 +1427,16 @@
+ {
+ 	int retval = 0;
+ 
++#ifdef CONFIG_TANGOX
++	unsigned long tangox_chip_id(void);
++	unsigned long chip_id = (tangox_chip_id() >> 16) & 0xfffe;
++#endif
++
++#ifdef CONFIG_TANGOX_XENV_READ
++	if (!tangox_usb_enabled())
++		return -ENODEV;
++#endif
++
+ 	if (usb_disabled())
+ 		return -ENODEV;
+ 
+@@ -1401,6 +1452,21 @@
+ 		 sizeof(struct ehci_qh), sizeof(struct ehci_qtd),
+ 		 sizeof(struct ehci_itd), sizeof(struct ehci_sitd));
+ 
++#ifdef CONFIG_TANGOX
++	if ((chip_id & 0xfff0) == 0x8670) 
++		retval = platform_add_devices(tangox_platform_devices,
++							ARRAY_SIZE(tangox_platform_devices));
++	else
++		retval = platform_add_devices(tangox_platform_devices,
++							ARRAY_SIZE(tangox_platform_devices) - 1);
++
++	if(retval){
++		printk("Failed to register tangox ehci platform device .\n");
++		clear_bit(USB_EHCI_LOADED, &usb_hcds_loaded);
++		return retval;
++	}
++#endif
++
+ #ifdef DEBUG
+ 	ehci_debug_root = debugfs_create_dir("ehci", usb_debug_root);
+ 	if (!ehci_debug_root) {
+@@ -1409,6 +1475,36 @@
+ 	}
+ #endif
+ 
++#ifdef CONFIG_TANGOX
++	retval = platform_driver_register(&ehci_tangox_driver[0]);
++	if(retval){
++		printk("Failed to register tangox ehci platform driver.\n");
++		platform_device_unregister(&tangox_ehci_device[0]);
++#ifdef DEBUG
++		debugfs_remove(ehci_debug_root);
++		ehci_debug_root = NULL;
++#endif
++		clear_bit(USB_EHCI_LOADED, &usb_hcds_loaded);
++		return retval;
++	}
++	if ((chip_id & 0xfff0) == 0x8670) {
++		retval = platform_driver_register(&ehci_tangox_driver[1]);
++		if(retval){
++			platform_driver_unregister(&ehci_tangox_driver[0]);
++			platform_device_unregister(&tangox_ehci_device[0]);
++			printk("Failed to register tangox ehci platform driver.\n");
++			platform_device_unregister(&tangox_ehci_device[1]);
++#ifdef DEBUG
++			debugfs_remove(ehci_debug_root);
++			ehci_debug_root = NULL;
++#endif
++			clear_bit(USB_EHCI_LOADED, &usb_hcds_loaded);
++			return retval;
++		}
++	}
++	return retval;
++#endif
++
+ #ifdef PLATFORM_DRIVER
+ 	retval = platform_driver_register(&PLATFORM_DRIVER);
+ 	if (retval < 0)
+@@ -1472,6 +1568,18 @@
+ 
+ static void __exit ehci_hcd_cleanup(void)
+ {
++#ifdef CONFIG_TANGOX
++	unsigned long tangox_chip_id(void);
++	unsigned long chip_id = (tangox_chip_id() >> 16) & 0xfffe;
++#endif
++#ifdef CONFIG_TANGOX
++	platform_driver_unregister(&ehci_tangox_driver[0]);
++	platform_device_unregister(&tangox_ehci_device[0]);
++	if ((chip_id & 0xfff0) == 0x8670) {
++		platform_driver_unregister(&ehci_tangox_driver[1]);
++		platform_device_unregister(&tangox_ehci_device[1]);
++	}
++#endif
+ #ifdef XILINX_OF_PLATFORM_DRIVER
+ 	platform_driver_unregister(&XILINX_OF_PLATFORM_DRIVER);
+ #endif
+diff -Naur linux-3.3.1_src/drivers/usb/host/ehci-q.c linux-3.3.1/drivers/usb/host/ehci-q.c
+--- linux-3.3.1_src/drivers/usb/host/ehci-q.c	2012-04-02 19:32:52.000000000 +0200
++++ linux-3.3.1/drivers/usb/host/ehci-q.c	2012-06-13 11:37:45.000000000 +0200
+@@ -287,6 +287,11 @@
+ 		urb->actual_length, urb->transfer_buffer_length);
+ #endif
+ 
++#ifdef CONFIG_USB_EHSET
++	if (likely (urb->transfer_flags == URB_HCD_DRIVER_TEST))
++		return;
++#endif
++
+ 	/* complete() can reenter this HCD */
+ 	usb_hcd_unlink_urb_from_ep(ehci_to_hcd(ehci), urb);
+ 	spin_unlock (&ehci->lock);
+@@ -294,7 +299,9 @@
+ 	spin_lock (&ehci->lock);
+ }
+ 
++#ifndef CONFIG_TANGOX
+ static void start_unlink_async (struct ehci_hcd *ehci, struct ehci_qh *qh);
++#endif
+ static void unlink_async (struct ehci_hcd *ehci, struct ehci_qh *qh);
+ 
+ static int qh_schedule (struct ehci_hcd *ehci, struct ehci_qh *qh);
+@@ -1156,6 +1163,29 @@
+ 
+ /*-------------------------------------------------------------------------*/
+ 
++
++/* The TangoX USB2.0 core has a bug related async qh unlinking. */
++static void tangox_unlink_async_fix(struct ehci_hcd *ehci)
++{
++        struct ehci_qh *next    =NULL;
++        int async_list          = 0;
++        int cmd = readl (&ehci->regs->command);
++
++        /* Disable ASYNC */
++        writel (cmd & ~CMD_ASE, &ehci->regs->command);
++        udelay(250);
++        async_list =(u32)phys_to_virt(readl (&ehci->regs->async_next));
++        next = (struct ehci_qh *) async_list;
++        if(next->qh_next.qh)
++                writel(next->hw->hw_next, &ehci->regs->async_next);
++        else
++                writel ((u32)ehci->async->qh_dma, &ehci->regs->async_next);
++        wmb();
++        /* Enable ASYNC */
++        writel (cmd | CMD_ASE, &ehci->regs->command);
++        (void) readl (&ehci->regs->command);
++}
++
+ /* the async qh for the qtds being reclaimed are now unlinked from the HC */
+ 
+ static void end_unlink_async (struct ehci_hcd *ehci)
+@@ -1202,6 +1232,117 @@
+ /* makes sure the async qh will become idle */
+ /* caller must own ehci->lock */
+ 
++#ifdef CONFIG_TANGOX
++static void tangox_es7_start_unlink_async (struct ehci_hcd *ehci, struct ehci_qh *qh)
++{
++	int		cmd = ehci_readl(ehci, &ehci->regs->command);
++	struct ehci_qh	*prev;
++
++#ifdef DEBUG
++	assert_spin_locked(&ehci->lock);
++	if (ehci->reclaim
++			|| (qh->qh_state != QH_STATE_LINKED
++				&& qh->qh_state != QH_STATE_UNLINK_WAIT)
++			)
++		BUG ();
++#endif
++
++	tangox_unlink_async_fix(ehci);
++
++	/* stop async schedule right now? */
++	if (unlikely (qh == ehci->async)) {
++		/* can't get here without STS_ASS set */
++		if (ehci_to_hcd(ehci)->state != HC_STATE_HALT
++				&& !ehci->reclaim) {
++			/* ... and CMD_IAAD clear */
++			ehci_writel(ehci, cmd & ~CMD_ASE,
++				    &ehci->regs->command);
++			wmb ();
++			// handshake later, if we need to
++			timer_action_done (ehci, TIMER_ASYNC_OFF);
++		}
++		return;
++	}
++
++	qh->qh_state = QH_STATE_UNLINK;
++	ehci->reclaim = qh = qh_get (qh);
++
++	prev = ehci->async;
++	while (prev->qh_next.qh != qh)
++		prev = prev->qh_next.qh;
++
++	prev->hw->hw_next = qh->hw->hw_next;
++	prev->qh_next = qh->qh_next;
++	wmb ();
++
++	if (unlikely (ehci_to_hcd(ehci)->state == HC_STATE_HALT)) {
++		/* if (unlikely (qh->reclaim != 0))
++		 *	this will recurse, probably not much
++		 */
++		end_unlink_async (ehci);
++		return;
++	}
++
++	cmd |= CMD_IAAD;
++	ehci_writel(ehci, cmd, &ehci->regs->command);
++	(void)ehci_readl(ehci, &ehci->regs->command);
++	iaa_watchdog_start(ehci);
++}
++
++static void tangox_es8_start_unlink_async (struct ehci_hcd *ehci, struct ehci_qh *qh)
++{
++	int		cmd = ehci_readl(ehci, &ehci->regs->command);
++	struct ehci_qh	*prev;
++
++#ifdef DEBUG
++	assert_spin_locked(&ehci->lock);
++	if (ehci->reclaim
++			|| (qh->qh_state != QH_STATE_LINKED
++				&& qh->qh_state != QH_STATE_UNLINK_WAIT)
++			)
++		BUG ();
++#endif
++
++	/* stop async schedule right now? */
++	if (unlikely (qh == ehci->async)) {
++		/* can't get here without STS_ASS set */
++		if (ehci_to_hcd(ehci)->state != HC_STATE_HALT
++				&& !ehci->reclaim) {
++			/* ... and CMD_IAAD clear */
++			ehci_writel(ehci, cmd & ~CMD_ASE,
++				    &ehci->regs->command);
++			wmb ();
++			// handshake later, if we need to
++			timer_action_done (ehci, TIMER_ASYNC_OFF);
++		}
++		return;
++	}
++
++	qh->qh_state = QH_STATE_UNLINK;
++	ehci->reclaim = qh = qh_get (qh);
++
++	prev = ehci->async;
++	while (prev->qh_next.qh != qh)
++		prev = prev->qh_next.qh;
++
++	prev->hw->hw_next = qh->hw->hw_next;
++	prev->qh_next = qh->qh_next;
++	wmb ();
++
++	if (unlikely (ehci_to_hcd(ehci)->state == HC_STATE_HALT)) {
++		/* if (unlikely (qh->reclaim != 0))
++		 *	this will recurse, probably not much
++		 */
++		end_unlink_async (ehci);
++		return;
++	}
++
++	cmd |= CMD_IAAD;
++	ehci_writel(ehci, cmd, &ehci->regs->command);
++	(void)ehci_readl(ehci, &ehci->regs->command);
++	iaa_watchdog_start(ehci);
++}
++#else
+ static void start_unlink_async (struct ehci_hcd *ehci, struct ehci_qh *qh)
+ {
+ 	int		cmd = ehci_readl(ehci, &ehci->regs->command);
+@@ -1258,7 +1399,7 @@
+ 	(void)ehci_readl(ehci, &ehci->regs->command);
+ 	iaa_watchdog_start(ehci);
+ }
+-
++#endif
+ /*-------------------------------------------------------------------------*/
+ 
+ static void scan_async (struct ehci_hcd *ehci)
+@@ -1295,7 +1436,7 @@
+ 			if (temp != 0)
+ 				goto rescan;
+ 		}
+-
++#ifndef CONFIG_TANGOX
+ 		/* unlink idle entries, reducing DMA usage as well
+ 		 * as HCD schedule-scanning costs.  delay for any qh
+ 		 * we just scanned, there's a not-unusual case that it
+@@ -1310,6 +1451,7 @@
+ 			else
+ 				action = TIMER_ASYNC_SHRINK;
+ 		}
++#endif
+ 	}
+ 	if (action == TIMER_ASYNC_SHRINK)
+ 		timer_action (ehci, TIMER_ASYNC_SHRINK);
+diff -Naur linux-3.3.1_src/drivers/usb/host/ehci-tangox.c linux-3.3.1/drivers/usb/host/ehci-tangox.c
+--- linux-3.3.1_src/drivers/usb/host/ehci-tangox.c	2012-01-26 14:46:52.000000000 +0100
++++ linux-3.3.1/drivers/usb/host/ehci-tangox.c	2012-06-13 11:14:11.000000000 +0200
+@@ -22,6 +22,7 @@
+  * Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+  */
+ 
++
+ #include <linux/platform_device.h>
+ #ifndef CONFIG_TANGOX
+ #error "This file is TANGOX EHCI bus glue.  CONFIG_TANGOX must be defined."
+diff -Naur linux-3.3.1_src/drivers/usb/host/Kconfig linux-3.3.1/drivers/usb/host/Kconfig
+--- linux-3.3.1_src/drivers/usb/host/Kconfig	2012-04-13 21:12:07.000000000 +0200
++++ linux-3.3.1/drivers/usb/host/Kconfig	2012-06-12 21:54:52.000000000 +0200
+@@ -16,27 +16,6 @@
+ 
+ 	  To compile this driver as a module, choose M here: the
+ 	  module will be called c67x00.
+-config TANGOX_EHCI_HCD
+-        tristate "SMP86xx EHCI HCD (USB 2.0) support"
+-        depends on USB && TANGOX 
+-	---help---
+-	  SMP86xx chips has an USB 2.0 host controller integrated. 
+-	  Enable this option if your board has this chip. If unsure, say N.
+-
+-	  To compile this driver as a module, choose M here: the
+-	  module will be called tangox-ehci-hcd.
+-
+-config TANGOX_OHCI_HCD
+-        tristate "SMP86xx OHCI HCD support"
+-        depends on USB && USB_ARCH_HAS_OHCI && TANGOX && !USB_EHSET
+-        ---help---
+-	  SMP86xx chips has an USB 1.1 OHCI controller integrated. 
+-	  Enable this option if your board has this chip. If unsure, say N.
+-
+-	  To compile this driver as a module, choose M here: the
+-	  module will be called tangox-ohci-hcd.
+-
+-
+ config USB_XHCI_HCD
+ 	tristate "xHCI HCD (USB 3.0) support (EXPERIMENTAL)"
+ 	depends on USB && USB_ARCH_HAS_XHCI && EXPERIMENTAL
+diff -Naur linux-3.3.1_src/drivers/usb/host/Makefile linux-3.3.1/drivers/usb/host/Makefile
+--- linux-3.3.1_src/drivers/usb/host/Makefile	2012-04-13 21:11:13.000000000 +0200
++++ linux-3.3.1/drivers/usb/host/Makefile	2012-06-12 21:54:58.000000000 +0200
+@@ -33,8 +33,6 @@
+ obj-$(CONFIG_USB_R8A66597_HCD)	+= r8a66597-hcd.o
+ obj-$(CONFIG_USB_ISP1760_HCD)	+= isp1760.o
+ obj-$(CONFIG_USB_HWA_HCD)	+= hwa-hc.o
+-obj-$(CONFIG_TANGOX_EHCI_HCD)   += tangox-ehci-hcd.o
+-obj-$(CONFIG_TANGOX_OHCI_HCD)   += tangox-ohci-hcd.o
+ obj-$(CONFIG_USB_IMX21_HCD)	+= imx21-hcd.o
+ obj-$(CONFIG_USB_FSL_MPH_DR_OF)	+= fsl-mph-dr-of.o
+ obj-$(CONFIG_USB_OCTEON2_COMMON) += octeon2-common.o
+diff -Naur linux-3.3.1_src/drivers/usb/host/ohci-hcd.c linux-3.3.1/drivers/usb/host/ohci-hcd.c
+--- linux-3.3.1_src/drivers/usb/host/ohci-hcd.c	2012-04-02 19:32:52.000000000 +0200
++++ linux-3.3.1/drivers/usb/host/ohci-hcd.c	2012-06-13 11:39:02.000000000 +0200
+@@ -114,6 +114,29 @@
+ #endif
+ 
+ 
++#ifdef CONFIG_TANGOX
++/* modules parameters for polling mode*/
++static int polling_mode = 1;
++module_param (polling_mode, int, 0);
++MODULE_PARM_DESC (polling_mode, "1: polling mode, 0 interrupt mode");
++
++static int polling_scale = 1;
++module_param (polling_scale, int, 0);
++MODULE_PARM_DESC (polling_scale, "time interval scaling factor for polling mode timer");
++
++static int polling_interval_min = 1;
++module_param (polling_interval_min, int, 0);
++MODULE_PARM_DESC (polling_interval_min, "Minimum time interval for polling mode timer");
++
++static int polling_interval_max = HZ;
++module_param (polling_interval_max, int, 0);
++MODULE_PARM_DESC (polling_interval_max, "Maximum time interval for polling mode timer");
++
++/* Timer for polling mode*/
++static struct timer_list ohci_timer;
++static unsigned int polling_interval = 1;
++#endif
++
+ /* Some boards misreport power switching/overcurrent */
+ static bool distrust_firmware = 1;
+ module_param (distrust_firmware, bool, 0);
+@@ -771,8 +794,21 @@
+ 	ints &= ohci_readl(ohci, &regs->intrenable);
+ 
+ 	/* interrupt for some other device? */
+-	if (ints == 0 || unlikely(ohci->rh_state == OHCI_RH_HALTED))
++	if (ints == 0 || unlikely(ohci->rh_state == OHCI_RH_HALTED)) {
++#ifdef CONFIG_TANGOX
++	   if(polling_mode){
++		polling_interval <<= polling_scale;
++		if (polling_interval > polling_interval_max) /* Poll at least once per second */
++			polling_interval = polling_interval_max;
++		}
++#endif
+ 		return IRQ_NOTMINE;
++	}
++
++#ifdef CONFIG_TANGOX
++	if(polling_mode)
++		polling_interval = polling_interval_min;
++#endif
+ 
+ 	if (ints & OHCI_INTR_UE) {
+ 		// e.g. due to PCI Master/Target Abort
+@@ -884,6 +920,27 @@
+ 
+ 	return IRQ_HANDLED;
+ }
++#ifdef CONFIG_TANGOX
++static void ohci_polling (unsigned long data)
++{
++        unsigned long flags;
++	struct usb_hcd *hcd = (struct usb_hcd *)data;
++
++        local_save_flags(flags);
++        ohci_irq (hcd);
++        local_irq_restore(flags);
++
++#ifdef USE_FIXED_POLL_INTERVAL
++	/* poll using fixed delay: 50ms */
++	mod_timer(&ohci_timer, jiffies + (50 * HZ) / 1000);
++#else
++	/* poll using variable delay */
++	mod_timer(&ohci_timer, jiffies + polling_interval);
++#endif
++
++        return;
++}
++#endif
+ 
+ /*-------------------------------------------------------------------------*/
+ 
+@@ -1106,6 +1163,10 @@
+ #define PLATFORM_DRIVER		ohci_octeon_driver
+ #endif
+ 
++#ifdef CONFIG_TANGOX
++#include "ohci-tangox.c"
++#endif
++
+ #ifdef CONFIG_USB_CNS3XXX_OHCI
+ #include "ohci-cns3xxx.c"
+ #define PLATFORM_DRIVER		ohci_hcd_cns3xxx_driver
+@@ -1138,9 +1199,32 @@
+ {
+ 	int retval = 0;
+ 
++#ifdef CONFIG_TANGOX
++	unsigned long tangox_chip_id(void);
++	unsigned long chip_id = (tangox_chip_id() >> 16) & 0xfffe;
++#endif
++
+ 	if (usb_disabled())
+ 		return -ENODEV;
+ 
++#ifdef CONFIG_TANGOX_XENV_READ
++	if (!tangox_usb_enabled())
++		return -ENODEV;
++#endif
++	if ((chip_id == 0x8652) || (chip_id == 0x8646) || ((chip_id & 0xfff0) == 0x8670) || (chip_id == 0x8910)) {
++		printk("No OHCI in SMP8652/SMP8653/SMP8646/SMP8647/SMP867X/SMP89XX.\n");
++		return -ENODEV;
++	}
++
++#ifdef CONFIG_TANGOX
++       retval = platform_add_devices(tangox_platform_devices,
++                             ARRAY_SIZE(tangox_platform_devices));
++	if(retval){
++		printk("Failed to register tangox ohci platform device .\n");
++		clear_bit(USB_OHCI_LOADED, &usb_hcds_loaded);
++		return retval;
++	}
++#endif
+ 	printk(KERN_INFO "%s: " DRIVER_DESC "\n", hcd_name);
+ 	pr_debug ("%s: block sizes: ed %Zd td %Zd\n", hcd_name,
+ 		sizeof (struct ed), sizeof (struct td));
+@@ -1154,6 +1238,19 @@
+ 	}
+ #endif
+ 
++#ifdef CONFIG_TANGOX
++	retval = platform_driver_register(&tangox_ohci_driver);
++	if(retval){
++		printk("Failed to register tangox ohci platform driver.\n");
++		platform_device_unregister(&tangox_ohci_device);
++#ifdef DEBUG
++		debugfs_remove(ohci_debug_root);
++		ohci_debug_root = NULL;
++#endif
++		clear_bit(USB_OHCI_LOADED, &usb_hcds_loaded);
++	}
++	return retval;
++#endif
+ #ifdef PS3_SYSTEM_BUS_DRIVER
+ 	retval = ps3_ohci_driver_register(&PS3_SYSTEM_BUS_DRIVER);
+ 	if (retval < 0)
+@@ -1270,6 +1367,12 @@
+ 
+ static void __exit ohci_hcd_mod_exit(void)
+ {
++
++#ifdef CONFIG_TANGOX
++	platform_driver_unregister(&tangox_ohci_driver);
++	platform_device_unregister(&tangox_ohci_device);
++#endif
++
+ #ifdef TMIO_OHCI_DRIVER
+ 	platform_driver_unregister(&TMIO_OHCI_DRIVER);
+ #endif
+diff -Naur linux-3.3.1_src/drivers/usb/host/ohci-tangox.c linux-3.3.1/drivers/usb/host/ohci-tangox.c
+--- linux-3.3.1_src/drivers/usb/host/ohci-tangox.c	2012-01-26 13:00:22.000000000 +0100
++++ linux-3.3.1/drivers/usb/host/ohci-tangox.c	2012-06-13 11:12:35.000000000 +0200
+@@ -11,6 +11,7 @@
+  * This file is licenced under the GPL.
+  */
+ 
++#include "../core/tangox-usb.h"
+ #include <linux/platform_device.h>
+ 
+ /**
+@@ -140,9 +141,9 @@
+ 	 */
+ 	.hub_status_data =	ohci_hub_status_data,
+ 	.hub_control =		ohci_hub_control,
+-#if defined(CONFIG_PM)
+-	.bus_suspend 		= ohci_bus_suspend,
+-	.bus_resume 		= ohci_bus_resume,
++#ifdef	CONFIG_USB_SUSPEND
++	.hub_suspend =		ohci_hub_suspend,
++	.hub_resume =		ohci_hub_resume,
+ #endif
+ 	.start_port_reset =	ohci_start_port_reset,
+ };
+@@ -203,7 +204,7 @@
+ 	  The OHCI register reset bug should be resolved in ES8 or above,
+ 	  as the result, using interrupt mode instead.
+ 	*/
+-	if(is_tango2_es89() || is_tango3_chip() || is_tango4_chip())
++	if(is_tango2_es89() || is_tango3_chip())
+ 		polling_mode = 0;
+ 	else {
+ 		temp = gbus_read_reg32(tangox_ctrl_base[0] + 0x8);
+@@ -235,7 +236,7 @@
+ 	struct usb_hcd *hcd = dev_get_drvdata(&pdev->dev);
+ 
+ 	tangox_ohci_remove(hcd, pdev);
+-        tangox_usb_deinit(0);
++	tangox_usb_deinit(0);
+ 	return 0;
+ }
+ 
