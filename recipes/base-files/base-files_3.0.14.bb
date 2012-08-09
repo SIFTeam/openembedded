@@ -29,6 +29,10 @@ SRC_URI = " \
            file://licenses/LGPL-3 \
            file://licenses/GFDL-1.2 \
            file://licenses/Artistic "
+
+SRC_URI_append_azboxhd = "file://fstab_azboxhd"
+
+/fstab
 S = "${WORKDIR}"
 
 docdir_append = "/${P}"
@@ -101,7 +105,7 @@ do_install () {
                 install -m 644 ${WORKDIR}/issue*  ${D}${sysconfdir}  
 
                 if [ -n "${DISTRO_NAME}" ]; then
-			if [ "${MACHINE}" != "azboxme" ] && [ "${MACHINE}" != "azboxminime" ]; then
+			if [ "${MACHINE}" != "azboxme" ] && [ "${MACHINE}" != "azboxminime" ] && [ "${MACHINE}" != "azboxhd" ]; then
         			echo -n "${DISTRO_NAME} " >> ${D}${sysconfdir}/issue
 	        		echo -n "${DISTRO_NAME} " >> ${D}${sysconfdir}/issue.net
 			else
@@ -121,7 +125,11 @@ do_install () {
                         install -m 0644 ${WORKDIR}/issue.net ${D}${sysconfdir}/issue.net
                 fi
 
-                install -m 0644 ${WORKDIR}/${FSTAB} ${D}${sysconfdir}/fstab
+		if [ "${MACHINE}" == "azboxhd" ]; then
+			install -m 0644 ${WORKDIR}/fstab_azboxhd ${D}${sysconfdir}/fstab
+		else
+			install -m 0644 ${WORKDIR}/${FSTAB} ${D}${sysconfdir}/fstab
+		fi
         	install -m 0644 ${WORKDIR}/filesystems ${D}${sysconfdir}/filesystems
         	install -m 0644 ${WORKDIR}/usbd ${D}${sysconfdir}/default/usbd
         	install -m 0644 ${WORKDIR}/profile ${D}${sysconfdir}/profile
