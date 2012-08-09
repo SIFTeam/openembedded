@@ -12,14 +12,6 @@ SRC_URI += "http://azbox-enigma2-project.googlecode.com/files/linux-azbox-${KV}.
 	   file://genzbf.c \
 	   file://sigblock.h \
 	   file://zboot.h \
-<<<<<<< HEAD:recipes/linux/linux-azbox_3.3.1.bb
-	   file://emhwlib_registers_tango2.h \
-	   "
-
-SRC_URI_append_azboxme = "http://azbox-enigma2-project.googlecode.com/files/initramfs-${MACHINE}.tar.bz2"
-SRC_URI_append_azboxminime = "http://azbox-enigma2-project.googlecode.com/files/initramfs-${MACHINE}.tar.bz2"
-SRC_URI_append_azboxhd = "http://azbox-enigma2-project.googlecode.com/files/initramfs-${MACHINE}.tar.bz2"
-=======
 	   file://emhwlib_registers_tango2.h \	   
 	   "
 
@@ -30,7 +22,6 @@ SRC_URI_append_azboxminime = "http://azbox-enigma2-project.googlecode.com/files/
 			  file://azboxhd.patch;striplevel=1"
 
 SRC_URI_append_azboxhd = "http://azbox-enigma2-project.googlecode.com/files/initramfs-${MACHINE}-29062012.tar.bz2"
->>>>>>> 355f32e... added AzboxHD defconfig + adjusted linux azbox bitbake:recipes/linux/linux-azbox.bb
 
 S = "${WORKDIR}/linux-${KV}"
 

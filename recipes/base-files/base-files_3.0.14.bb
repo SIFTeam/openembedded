@@ -32,7 +32,6 @@ SRC_URI = " \
 
 SRC_URI_append_azboxhd = "file://fstab_azboxhd"
 
-/fstab
 S = "${WORKDIR}"
 
 docdir_append = "/${P}"
