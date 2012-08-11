@@ -46,7 +46,7 @@ case "$ACTION" in
 		then
 			# no fstab entry, use automatic mountpoint
 			REMOVABLE=`cat /sys/block/$DEVBASE/removable`
-			readlink -fn /sys/block/$DEVBASE/device | grep -qs 'pci'
+			readlink -fn /sys/block/$DEVBASE/device | grep -s 'pci'
 			EXTERNAL=$?
 			if [ $EXTERNAL != 0 ]; then
 				# AZBox HD internal SATA need different identification
