@@ -48,6 +48,11 @@ case "$ACTION" in
 			REMOVABLE=`cat /sys/block/$DEVBASE/removable`
 			readlink -fn /sys/block/$DEVBASE/device | grep -qs 'pci'
 			EXTERNAL=$?
+			if [ $EXTERNAL != 0 ]; then
+				# AZBox HD internal SATA need different identification
+				readlink -fn /sys/block/$DEVBASE/device | grep -s 'tango2_bmide'
+				EXTERNAL=$?
+			fi
 			if [ "${REMOVABLE}" -eq "0" -a $EXTERNAL -eq 0 ]; then
 				# mount the first non-removable internal device on /media/hdd
 				DEVICETYPE="hdd"
