@@ -33,6 +33,8 @@ SRC_URI = "\
   file://usb.sh \
 "
 
+SRC_URI_append_azboxhd = "file://mdev-mount-azboxhd.sh"
+
 EXTRA_OEMAKE += "V=1 ARCH=${TARGET_ARCH} CROSS_COMPILE=${TARGET_PREFIX}"
 
 do_configure_prepend () {
@@ -49,7 +51,11 @@ do_install_append() {
     install -d ${D}${sysconfdir}/init.d/
     install -d ${D}${sysconfdir}/mdev
     install -m 0755 ${WORKDIR}/find-touchscreen.sh ${D}${sysconfdir}/mdev/
-	install -m 0755 ${WORKDIR}/mdev-mount.sh ${D}${sysconfdir}/mdev/
+	if [ "${MACHINE}" == "azboxhd" ]; then	
+		install -m 0755 ${WORKDIR}/mdev-mount-azboxhd.sh ${D}${sysconfdir}/mdev/mdev-mount.sh
+	else
+		install -m 0755 ${WORKDIR}/mdev-mount.sh ${D}${sysconfdir}/mdev/
+	fi
     install -m 0755 ${WORKDIR}/usb.sh ${D}${sysconfdir}/mdev/
     install -m 0755 ${WORKDIR}/mdev ${D}${sysconfdir}/init.d/
 

@@ -3,19 +3,27 @@ LICENSE = "GPL"
 
 MACHINE_KERNEL_PR_append = ".0"
 
-SRC_URI += "http://azbox-enigma2-project.googlecode.com/files/linux-azbox-${PV}.tar.bz2 \
+KV_azboxme = "3.3.1"
+KV_azboxminime = "3.3.1"
+KV_azboxhd = "3.4.4"
+
+SRC_URI += "http://azbox-enigma2-project.googlecode.com/files/linux-azbox-${KV}.tar.bz2 \
 	   file://${MACHINE}_defconfig \
 	   file://genzbf.c \
 	   file://sigblock.h \
 	   file://zboot.h \
-	   file://emhwlib_registers_tango2.h \
+	   file://emhwlib_registers_tango2.h \	   
 	   "
 
-SRC_URI_append_azboxme = "http://azbox-enigma2-project.googlecode.com/files/initramfs-${MACHINE}.tar.bz2"
-SRC_URI_append_azboxminime = "http://azbox-enigma2-project.googlecode.com/files/initramfs-${MACHINE}.tar.bz2"
-SRC_URI_append_azboxhd = "http://azbox-enigma2-project.googlecode.com/files/initramfs-${MACHINE}.tar.bz2"
+SRC_URI_append_azboxme = "http://azbox-enigma2-project.googlecode.com/files/initramfs-${MACHINE}-29062012.tar.bz2 \
+			  file://azboxhd.patch;striplevel=1"
 
-S = "${WORKDIR}/linux-${PV}"
+SRC_URI_append_azboxminime = "http://azbox-enigma2-project.googlecode.com/files/initramfs-${MACHINE}-29062012.tar.bz2 \
+			  file://azboxhd.patch;striplevel=1"
+
+SRC_URI_append_azboxhd = "http://azbox-enigma2-project.googlecode.com/files/initramfs-${MACHINE}-29062012.tar.bz2"
+
+S = "${WORKDIR}/linux-${KV}"
 
 inherit kernel
 
