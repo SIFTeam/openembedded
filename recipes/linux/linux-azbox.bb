@@ -21,7 +21,7 @@ SRC_URI_append_azboxme = "http://azbox-enigma2-project.googlecode.com/files/init
 SRC_URI_append_azboxminime = "http://azbox-enigma2-project.googlecode.com/files/initramfs-${MACHINE}-29062012.tar.bz2 \
 			  file://azboxhd.patch;striplevel=1"
 
-SRC_URI_append_azboxhd = "http://azbox-enigma2-project.googlecode.com/files/initramfs-${MACHINE}-29062012.tar.bz2"
+SRC_URI_append_azboxhd = "http://azbox-enigma2-project.googlecode.com/files/initramfs-${MACHINE}-28082012-1.tar.bz2"
 
 S = "${WORKDIR}/linux-${KV}"
 
