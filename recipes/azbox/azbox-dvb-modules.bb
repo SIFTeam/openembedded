@@ -8,7 +8,10 @@ KV_azboxme = "3.3.1-opensat"
 KV_azboxminime = "3.3.1-opensat"
 KV_azboxhd = "3.4.4-opensat"
 
-SRCDATE = "20120817"
+SRCDATE_azboxme = "20120817"
+SRCDATE_azboxminime = "20120817"
+SRCDATE_azboxhd = "20120828-2"
+
 
 PV = "${KV}+${SRCDATE}"
 MACHINE_KERNEL_PR_append = ".0"
