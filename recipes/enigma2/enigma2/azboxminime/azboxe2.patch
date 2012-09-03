@@ -1,112 +1,71 @@
-diff -Nuar a/lib/python/Components/Harddisk.py b/lib/python/Components/Harddisk.py
---- a/lib/python/Components/Harddisk.py	2012-05-16 13:49:53.000000000 +0200
-+++ b/lib/python/Components/Harddisk.py	2012-05-16 13:50:44.000000000 +0200
-@@ -608,7 +608,7 @@
- 		try:
- 			removable = bool(int(readFile(devpath + "/removable")))
- 			dev = int(readFile(devpath + "/dev").split(':')[0])
--			if dev in (7, 31, 253): # loop, mtdblock, romblock
-+			if dev in (1, 7, 31, 253): # ram, loop, mtdblock, romblock
- 				blacklisted = True
- 			if blockdev[0:2] == 'sr':
- 				is_cdrom = True
-diff -Nuar a/lib/python/Plugins/SystemPlugins/Videomode/VideoHardware.py b/lib/python/Plugins/SystemPlugins/Videomode/VideoHardware.py
---- a/lib/python/Plugins/SystemPlugins/Videomode/VideoHardware.py	2012-05-16 13:51:53.000000000 +0200
-+++ b/lib/python/Plugins/SystemPlugins/Videomode/VideoHardware.py	2012-05-16 00:02:10.000000000 +0200
-@@ -10,6 +10,7 @@
- # available and preferred modes, as well as handling the currently
- # selected mode. No other strict checking is done.
- class VideoHardware:
-+	hw_type = HardwareInfo().get_device_name()
- 	rates = { } # high-level, use selectable modes.
+diff -Naur a/lib/python/Components/Harddisk.py b/lib/python/Components/Harddisk.py
+--- a/lib/python/Components/Harddisk.py	2012-08-07 14:07:42.000000000 +0200
++++ b/lib/python/Components/Harddisk.py	2012-08-29 21:22:13.000000000 +0200
+@@ -6,6 +6,7 @@
+ from SystemInfo import SystemInfo
+ from Components.Console import Console
+ import Task
++from Tools.HardwareInfo import HardwareInfo
  
- 	modes = { }  # a list of (high-level) modes for a certain port.
-@@ -38,6 +39,11 @@
- 								"60Hz":		{ 60: "1080i" },
- 								"multi":	{ 50: "1080i50", 60: "1080i" } }
+ def readFile(filename):
+ 	file = open(filename)
+@@ -118,7 +119,11 @@
+ 		elif self.type == DEVTYPE_DEVFS:
+ 			ide_cf = self.device[:2] == "hd" and "host0" not in self.dev_path
  
-+	if hw_type == "me" or hw_type == "minime" :
-+		rates["1080p"] =		{ "50Hz":		{ 50: "1080p50" },
-+								"60Hz":		{ 60: "1080p" },
-+								"multi":	{ 50: "1080p50", 60: "1080p" } }
-+
- 	rates["PC"] = { 
- 		"1024x768": { 60: "1024x768" }, # not possible on DM7025
- 		"800x600" : { 60: "800x600" },  # also not possible
-@@ -56,7 +62,11 @@
+-		internal = "pci" in self.phys_path
++		hw_type = HardwareInfo().get_device_name()
++		if hw_type == 'elite' or hw_type == 'premium' or hw_type == 'premium+' or hw_type == 'ultra' :
++			internal = "ide" in self.phys_path
++		else:
++			internal = "pci" in self.phys_path
  
- 	modes["Scart"] = ["PAL", "NTSC", "Multi"]
- 	modes["YPbPr"] = ["720p", "1080i", "576p", "480p", "576i", "480i"]
--	modes["DVI"] = ["720p", "1080i", "576p", "480p", "576i", "480i"]
-+	if hw_type == "me" or hw_type == "minime" :
-+		modes["DVI"] = ["720p", "1080p", "1080i", "576p", "480p", "576i", "480i"]
-+		config.av.edid_override = True
-+	else:
-+		modes["DVI"] = ["720p", "1080i", "576p", "480p", "576i", "480i"]
- 	modes["DVI-PC"] = ["PC"]
+ 		if ide_cf:
+ 			ret = "External (CF)"
+@@ -669,6 +674,9 @@
+ 				physdev = dev
+ 				print "couldn't determine blockdev physdev for device", device
+ 		error, blacklisted, removable, is_cdrom, partitions, medium_found = self.getBlockDevInfo(device)
++		hw_type = HardwareInfo().get_device_name()
++		if hw_type == 'elite' or hw_type == 'premium' or hw_type == 'premium+' or hw_type == 'ultra' :
++			if device[0:3] == "hda": blacklisted = True
+ 		if not blacklisted and medium_found:
+ 			description = self.getUserfriendlyDeviceName(device, physdev)
+ 			p = Partition(mountpoint = self.getMountpoint(device), description = description, force_mounted = True, device = device)
+diff -Naur a/lib/python/Components/RcModel.py b/lib/python/Components/RcModel.py
+--- a/lib/python/Components/RcModel.py	2012-08-08 16:53:31.000000000 +0200
++++ b/lib/python/Components/RcModel.py	2012-08-09 00:00:21.000000000 +0200
+@@ -6,6 +6,8 @@
+ 	RCTYPE_ET6X00 = 2
+ 	RCTYPE_ET9500 = 3
+ 	RCTYPE_VU = 4
++	RCTYPE_AZHD = 50
++	RCTYPE_AZMe = 51
  
- 	widescreen_modes = set(["720p", "1080i"])
-@@ -97,10 +107,14 @@
+ 	def __init__(self):
+ 		self.currentRcType = self.RCTYPE_DMM
+@@ -41,6 +43,14 @@
+ 					self.currentRcType = self.RCTYPE_ET9500
+ 		elif os.path.exists('/proc/stb/info/vumodel'):
+ 			self.currentRcType = self.RCTYPE_VU
++		elif os.path.exists('/proc/stb/info/azmodel'):
++			f = open("/proc/stb/info/model",'r')
++			model = f.readline().strip()
++			f.close()
++			if model == "elite" or model == "premium" or model == "premium+" or model == "ultra":
++				self.currentRcType = self.RCTYPE_AZHD
++			elif model == "me" or model == "minime":
++				self.currentRcType = self.RCTYPE_AZMe
  
- 		self.readAvailableModes()
+ 	def getRcLocation(self):
+ 		if self.currentRcType == self.RCTYPE_ET9X00:
+@@ -51,5 +61,9 @@
+ 			return '/usr/share/enigma2/rc_models/et6x00/'
+ 		elif self.currentRcType == self.RCTYPE_VU:
+ 			return '/usr/share/enigma2/rc_models/vu/'
++		elif self.currentRcType == self.RCTYPE_AZHD:
++			return '/usr/share/enigma2/rc_models/azhd/'
++		elif self.currentRcType == self.RCTYPE_AZMe:
++			return '/usr/share/enigma2/rc_models/azme/'
  
-+		if self.hw_type == "me" or self.hw_type == "minime" : del self.modes["Scart"]
-+
- 		if self.modes.has_key("DVI-PC") and not self.getModeList("DVI-PC"):
- 			print "remove DVI-PC because of not existing modes"
- 			del self.modes["DVI-PC"]
- 
-+		if self.hw_type == "me" or self.hw_type == "minime" : self.readPreferredModes()
-+
- 		self.createConfig()
- #		self.on_hotplug.append(self.createConfig)
- 
-@@ -151,10 +165,13 @@
- 		rate = self.rates[mode][rate]
- 		for mode in rate.values():
- 			# DVI modes must be in "modes_preferred"
--#			if port == "DVI":
--#				if mode not in self.modes_preferred and not config.av.edid_override.value:
--#					print "no, not preferred"
--#					return False
-+			if port == "DVI":
-+##### Only for test #####
-+				if self.hw_type == "me" or self.hw_type == "minime" :
-+					if mode not in self.modes_preferred and not config.av.edid_override.value:
-+						print "no, not preferred"
-+						return False
-+##### Only for test #####
- 			if mode not in self.modes_available:
- 				return False
- 		return True
-diff -Nuar a/lib/python/Plugins/SystemPlugins/Videomode/videowizard.xml b/lib/python/Plugins/SystemPlugins/Videomode/videowizard.xml
---- a/lib/python/Plugins/SystemPlugins/Videomode/videowizard.xml	2011-12-29 23:13:15.000000000 +0100
-+++ b/lib/python/Plugins/SystemPlugins/Videomode/videowizard.xml	2012-05-16 00:02:10.000000000 +0200
-@@ -9,7 +9,7 @@
- self.selectKey("OK")
- 		</code>
- 	</step>
--	<step id="modeselection" nextstep="rateselection" timeout="20" timeoutaction="selectnext">
-+	<step id="modeselection" nextstep="rateselection" timeout="30" timeoutaction="selectnext">
- 		<text value="Video mode selection." />
- 		<displaytext value="Select video mode" />
- 		<list type="dynamic" source="listModes" evaluation="modeSelectionMade" onselect="modeSelectionMoved" />
-@@ -20,7 +20,7 @@
- self["portpic"].hide()
- 		</code>
- 	</step>
--	<step id="rateselection" nextstep="end" timeout="20" timeoutaction="selectnext">
-+	<step id="rateselection" nextstep="end" timeout="30" timeoutaction="selectnext">
- 		<condition>
- self.condition = (self.port != "DVI" or self.mode == "PC")
- 		</condition>		
-diff -Nuar a/lib/python/Tools/HardwareInfo.py b/lib/python/Tools/HardwareInfo.py
---- a/lib/python/Tools/HardwareInfo.py 2012-05-16 13:46:41.000000000 +0200
-+++ b/lib/python/Tools/HardwareInfo.py	2012-05-16 13:47:14.000000000 +0200
-@@ -44,4 +44,4 @@
- 		return HardwareInfo.device_version
- 
- 	def has_hdmi(self):
--		return (HardwareInfo.device_name == 'dm800se' or HardwareInfo.device_name == 'dm500hd' or HardwareInfo.device_name == 'Gigablue' or (HardwareInfo.device_name == 'dm8000' and HardwareInfo.device_version != None))
-+		return (HardwareInfo.device_name == 'me' or HardwareInfo.device_name == 'minime' or HardwareInfo.device_name == 'dm7020hd' or HardwareInfo.device_name == 'dm800se' or HardwareInfo.device_name == 'dm500hd' or (HardwareInfo.device_name == 'dm8000' and HardwareInfo.device_version != None))
-
+ rc_model = RcModel()
