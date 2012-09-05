@@ -8,8 +8,8 @@ KV_azboxme = "3.3.1-opensat"
 KV_azboxminime = "3.3.1-opensat"
 KV_azboxhd = "3.4.4-opensat"
 
-SRCDATE_azboxme = "20120905"
-SRCDATE_azboxminime = "20120905"
+SRCDATE_azboxme = "20120905-1"
+SRCDATE_azboxminime = "20120905-1"
 SRCDATE_azboxhd = "20120905"
 
 
