@@ -3,10 +3,10 @@ RDEPENDS = "enigma2"
 DEPENDS = "python-native"
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 
-SRCREV = "56d482eb5eba395c275f6d80c1bda3f7a7145c6b"
+SRCREV = "89cf85f894406a4838f8b9b579bc906bf8932439"
 inherit gitpkgv
 
-PR = "r0"
+PR = "r1"
 
 
 SRC_URI = "git://azboxopenpli.git.sourceforge.net/gitroot/azboxopenpli/RtiSYS;protocol=git;tag=${SRCREV}"
@@ -18,8 +18,6 @@ do_install() {
 	
 	install -m 0644 ${S}/*.py \
 	${D}/usr/lib/enigma2/python/Plugins/SystemPlugins/RtiSYS
-
-	python -O -m compileall ${D}/usr/lib/enigma2/python/Plugins/SystemPlugins/RtiSYS
 
 	install -m 0755 ${S}/ntpdate \
 	${D}/usr/lib/enigma2/python/Plugins/SystemPlugins/RtiSYS
