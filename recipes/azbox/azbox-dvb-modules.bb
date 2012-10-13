@@ -4,17 +4,15 @@ PRIORITY = "required"
 LICENSE = "proprietary"
 
 
-KV_azboxme = "3.3.1-opensat"
-KV_azboxminime = "3.3.1-opensat"
-KV_azboxhd = "3.4.4-opensat"
+KV = "3.5.5-opensat"
 
-SRCDATE_azboxme = "20120905-1"
-SRCDATE_azboxminime = "20120905-1"
-SRCDATE_azboxhd = "20120905"
+SRCDATE_azboxme = "20121008"
+SRCDATE_azboxminime = "20121008"
+SRCDATE_azboxhd = "20121008"
 
 
 PV = "${KV}+${SRCDATE}"
-MACHINE_KERNEL_PR_append = ".1"
+MACHINE_KERNEL_PR_append = ".2"
 
 
 SRC_URI = "http://azbox-enigma2-project.googlecode.com/files/${MACHINE}-dvb-modules-${KV}-${SRCDATE}.tar.gz"
@@ -33,7 +31,7 @@ do_install_azboxhd() {
     install -d ${D}/lib/modules/${KV}/extra
     install -d ${D}/${sysconfdir}/modutils
 
-    for f in llad em8xxx 863xi2c cx24116 mxl201rf mxl5007t stv6110x stv090x tda10023 zl10353 nimdetect sci 863xdvb; do
+    for f in llad em8xxx 863xi2c az_cx24116 az_mxl201rf az_mxl5007t az_stv6110x az_stv090x az_tda10023 az_zl10353 nimdetect sci 863xdvb; do
 	install -m 0644 ${WORKDIR}/$f.ko ${D}/lib/modules/${KV}/extra/$f.ko
 	echo $f >> ${D}/${sysconfdir}/modutils/_${MACHINE}
     done
