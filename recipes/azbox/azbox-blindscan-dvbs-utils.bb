@@ -11,8 +11,8 @@ RPROVIDES_${PN} += "virtual/blindscan-dvbs"
 RREPLACES_${PN} += "azbox-blindscan-utils"
 RCONFLICTS_${PN} += "azbox-blindscan-utils"
 
-PV = "1.1"
-PR = "r1"
+PV = "1.2"
+PR = "r2"
 
 S = "${WORKDIR}/blindscan-utils"
 
