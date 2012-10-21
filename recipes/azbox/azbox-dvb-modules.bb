@@ -48,7 +48,7 @@ do_install_azboxme() {
     install -d ${D}/lib/modules/${KV}/extra
     install -d ${D}/${sysconfdir}/modutils
 
-    for f in 865xi2c avl6211 avl2108 mxl241sf nimdetect sci 865xdvb; do
+    for f in llad em8xxx 865xi2c avl6211 avl2108 mxl241sf nimdetect sci 865xdvb; do
 	install -m 0644 ${WORKDIR}/$f.ko ${D}/lib/modules/${KV}/extra/$f.ko
 	echo $f >> ${D}/${sysconfdir}/modutils/_${MACHINE}
     done
