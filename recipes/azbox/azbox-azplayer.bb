@@ -2,7 +2,7 @@ DESCRIPTION = "Azbox AZplayer app plugin"
 RDEPENDS = "enigma2"
 
 
-PR = "r3"
+PR = "r4"
 
 SRC_URI = "file://bin \
 	   file://lib \
